@@ -1,0 +1,41 @@
+[project]
+name = "fabric-api"
+version = "0.1.0"
+description = "ConnectWise PSA to Microsoft Fabric OneLake integration."
+authors = ["Your Name <your.email@example.com>"]
+requires-python = ">=3.9"
+readme = "README.md"
+dependencies = [
+    "requests",
+    "pandas",
+    "msfabricpysdkcore"
+]
+
+[project.optional-dependencies]
+reports_api = [
+    "requests",
+    "python-dotenv"
+]
+
+[tool.uv]
+# uv-specific settings can be added here
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N"]
+exclude = [".venv", "venv", "build", "dist"]
+# Optionally, add more rules or ignore patterns here
+
+[tool.basedpyright]
+typeCheckingMode = "basic"
+reportMissingImports = true
+reportMissingTypeStubs = false
+exclude = [".venv", "venv", "build", "dist"]
+# Explicitly set python version and executable
+pythonVersion = "3.11"
+pythonPlatform = "Windows"
+pythonPath = "C:/Python311/python.exe"
+
+[build-system]
+requires = ["uv>=0.1.36"]
+build-backend = "uv.build"
