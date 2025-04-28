@@ -1,44 +1,24 @@
-import base64
-import os
+from __future__ import annotations
 
-import requests
-from dotenv import load_dotenv
+from .extract import extract
+from .transform import process_fabric_data
 
 
-def main():
-    from .extract import get_company_data
-    from .transform import process_and_store_data
-    from .upload import upload_to_onelake
-    print("Extracting company data from ConnectWise...")
-    companies = get_company_data()
-    print(f"Retrieved {len(companies)} companies")
-    file_name, df = process_and_store_data(companies)
-    print(f"Saved data to {file_name}")
-    upload_to_onelake(
-        file_name=file_name,
-        workspace_name='YourWorkspaceName',
-        lakehouse_name='YourLakehouseName'
-    )
+def extract_to_fabric(entity: str, **params):  # noqa: D401
+    """Extract *entity* from ConnectWise and land in OneLake.
 
-def get_reports():
-    load_dotenv()
-    url = "https://verk.thekking.is/v4_6_release/apis/3.0/system/reports"
-    company = os.getenv("CW_COMPANY", "yourcompany")
-    username = os.getenv("CW_USERNAME")
-    password = os.getenv("CW_PASSWORD")
-    headers = {
-        "clientId": os.getenv("CW_CLIENTID"),
-        "Accept": "application/vnd.connectwise.com+json; version=2025.1"
-    }
-    auth = (f"{company}+{username}", password)
-    print(f"Requesting: {url}")
-    print(f"Headers: {headers}")
-    print(f"Auth username: {auth[0]}")
-    response = requests.get(url, headers=headers, auth=auth)
-    print(f"Status: {response.status_code}")
-    print(response.text)
-    return response
+    Parameters
+    ----------
+    entity : str
+        One of the keys registered in *fabric_api.extract.REGISTRY*.
+    **params : Any
+        Query‑string parameters forwarded to the underlying API call.
 
-if __name__ == "__main__":
-    # main()
-    get_reports()
+    Returns
+    -------
+    pandas.DataFrame
+        The materialised data frame that was also persisted to OneLake.
+    """
+    rows = extract(entity, **params)
+    _, df = process_fabric_data(rows, entity)
+    return df

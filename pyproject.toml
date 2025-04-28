@@ -1,24 +1,25 @@
-[project]
+[tool.poetry]
 name = "fabric-api"
 version = "0.1.0"
 description = "ConnectWise PSA to Microsoft Fabric OneLake integration."
-authors = ["Your Name <your.email@example.com>"]
-requires-python = ">=3.9"
+authors = ["Hákon Freyr Gunnarsson <hakonf@wise.is>"]
 readme = "README.md"
-dependencies = [
-    "requests",
-    "pandas",
-    "msfabricpysdkcore"
-]
+packages = [{ include = "fabric_api" }]
 
-[project.optional-dependencies]
-reports_api = [
-    "requests",
-    "python-dotenv"
-]
+[tool.poetry.dependencies]
+python = ">=3.11"
+requests = "*"
+pandas = ">=1.5.0"
+pyarrow = ">=10.0.0"
+python-dotenv = "*"
 
-[tool.uv]
-# uv-specific settings can be added here
+[tool.poetry.extras]
+fabric = ["pyspark"]
+azure = ["azure-identity", "azure-keyvault-secrets"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 100
@@ -36,6 +37,5 @@ pythonVersion = "3.11"
 pythonPlatform = "Windows"
 pythonPath = "C:/Python311/python.exe"
 
-[build-system]
-requires = ["uv>=0.1.36"]
-build-backend = "uv.build"
+[tool.uv]
+# uv-specific settings can be added here
