@@ -1,9 +1,6 @@
 from __future__ import annotations
 import logging
 from requests.models import Response
-from requests.models import Response
-from requests.models import Response
-from requests.models import Response
 from types import ModuleType
 
 """fabric_api.client

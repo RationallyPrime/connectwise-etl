@@ -16,10 +16,11 @@ Coding conventions
 """
 
 from datetime import date, datetime
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
-# Local import is safe because client has no runtime dependency on utils
-from .client import ConnectWiseClient  # noqa: WPS433  (allowed inside package)
+# Use TYPE_CHECKING to avoid circular imports
+if TYPE_CHECKING:
+    from .client import ConnectWiseClient
 
 ###############################################################################
 # Agreement helpers
@@ -37,7 +38,7 @@ def is_timapottur_agreement(agreement_type: str) -> bool:  # noqa: D401
 
 
 def get_parent_agreement_data(
-    client: ConnectWiseClient,
+    client: "ConnectWiseClient",
     agreement_id: int,
 ) -> tuple[int, str]:  # noqa: D401
     """Return ``(parent_agreement_id, agreement_type_name)`` for *agreement_id*.

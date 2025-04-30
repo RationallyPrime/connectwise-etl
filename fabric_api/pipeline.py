@@ -1,48 +1,36 @@
 from __future__ import annotations
-from fabric_api.models import ManageInvoiceError, ManageAgreement, ManageInvoiceHeader, ManageInvoiceLine, ManageTimeEntry, ManageInvoiceExpense, ManageProduct
-from fabric_api.transform import TransformResult
-from typing import cast
-"""fabric_api.pipeline – orchestration entry‑points
-
-This module supersedes the old *main.py* CLI script and is aligned with the
-**new extraction helpers** that follow the ``*_with_relations`` naming
-convention.  All public functions are import‑friendly so Fabric notebooks or
-pipelines can invoke them directly.
-
-Key points
-~~~~~~~~~~
-* Makes **zero** use of ``argparse`` or ``sys.argv`` – configuration is via
-  kwargs or env‑vars only.
-* Leverages :pyfunc:`fabric_api.extract.invoices.get_unposted_invoices_with_details`.
-* Derives agreement IDs from extracted models and fetches them via
-  :pyfunc:`fabric_api.extract.agreements.get_agreement_with_relations`.
-* Hands everything off to :pyfunc:`fabric_api.transform.transform_and_load` to
-  serialise into Delta tables under the configured lakehouse root.
-
-Public API
-----------
-``run_invoices_with_details``
-    Thin wrapper returning a ``dict`` with keys ``headers``, ``lines``,
-    ``time_entries``, ``expenses``, ``products`` and ``errors``.
-``run_agreements``
-    Bulk fetch agreement JSON for a given ID list.
-``run_daily``
-    One‑shot orchestration covering the typical daily fabrication run.
-"""
-
-from datetime import date, datetime
-import os
 from typing import Any, Mapping, Sequence
+import os
+from datetime import date, datetime, timedelta
+import logging
 
 from .client import ConnectWiseClient
-from .extract import invoices as extract_invoices, agreements as extract_agreements
-from .transform import transform_and_load
+from .models import (
+    ManageTimeEntry, 
+    ManageProduct, 
+    ManageInvoiceError,
+    ManageAgreement
+)
+from .extract import (
+    invoices as extract_invoices,
+    agreements as extract_agreements,
+    time as extract_time,
+    expenses as extract_expenses,
+    products as extract_products
+)
+from .transform import transform_and_load, TransformResult
 
 __all__: list[str] = [
     "run_invoices_with_details",
     "run_agreements",
+    "run_time_entries",
+    "run_expenses",
+    "run_products",
     "run_daily",
 ]
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Constants & helpers
@@ -63,7 +51,7 @@ def _date_window(
 ) -> tuple[date, date]:  # noqa: D401 – util
     """Return *(start, end)* ensuring ``start <= end``."""
     today: date = date.today()
-    start: date = _parse_date(text=start_date, default=today)
+    start: date = _parse_date(text=start_date, default=today - timedelta(days=30))  # Default to 30 days back
     end: date = _parse_date(text=end_date, default=today)
     if start > end:
         raise ValueError("start_date cannot be after end_date")
@@ -71,8 +59,10 @@ def _date_window(
 
 
 def _client(client: ConnectWiseClient | None) -> ConnectWiseClient:  # noqa: D401 – util
-    """Return *client* or instantiate from ``CW_*`` env‑vars."""
-    return client or ConnectWiseClient.from_env()  # type: ignore[attr-defined]
+    """Return *client* or instantiate from environment variables."""
+    if client:
+        return client
+    return ConnectWiseClient()  # Direct construction instead of from_env()
 
 # ---------------------------------------------------------------------------
 # Extraction wrappers
@@ -108,7 +98,6 @@ def run_invoices_with_details(
     }
 
 
-
 def run_agreements(
     *,
     client: ConnectWiseClient | None = None,
@@ -130,6 +119,65 @@ def run_agreements(
             agreements.append(agreement_model)
         errors.extend(err)
     return {"agreements": agreements, "errors": errors}
+
+
+def run_time_entries(
+    *,
+    client: ConnectWiseClient | None = None,
+    time_entry_ids: list[int],
+) -> Mapping[str, Sequence[Any]]:
+    """Extract time entries with full relationship data."""
+    client = _client(client)
+    time_entries: list[ManageTimeEntry] = []
+    errors: list[ManageInvoiceError] = []
+    
+    for time_id in time_entry_ids:
+        time_entry, err = extract_time.get_time_entry_with_relations(client, time_id)
+        if time_entry:
+            time_entries.append(time_entry)
+        errors.extend(err)
+    
+    return {"time_entries": time_entries, "errors": errors}
+
+
+def run_expenses(
+    *,
+    client: ConnectWiseClient | None = None,
+    invoice_id: int,
+    invoice_number: str,
+    max_pages: int | None = 50,
+) -> Mapping[str, Sequence[Any]]:
+    """Extract expenses for a given invoice with relationship data."""
+    client = _client(client)
+    expenses, errors = extract_expenses.get_expense_entries_with_relations(
+        client, invoice_id, invoice_number, max_pages=max_pages
+    )
+    
+    return {"expenses": expenses, "errors": errors}
+
+
+def run_products(
+    *,
+    client: ConnectWiseClient | None = None,
+    product_ids: list[int],
+    invoice_number: str,
+) -> Mapping[str, Sequence[Any]]:
+    """Extract products with full relationship data."""
+    client = _client(client)
+    products: list[ManageProduct] = []
+    errors: list[ManageInvoiceError] = []
+    
+    for product_id in product_ids:
+        product, err = extract_products.get_product_with_relations(
+            client, product_id, invoice_number
+        )
+        if product:
+            products.append(product)
+        errors.extend(err)
+    
+    return {"products": products, "errors": errors}
+
+
 # Full daily orchestration
 # ---------------------------------------------------------------------------
 
@@ -143,19 +191,23 @@ def run_daily(
     mode: str = os.getenv("CW_WRITE_MODE", _DEFAULT_WRITE_MODE),
 ) -> dict[str, str]:
     """End‑to‑end orchestration for one day (or specified window)."""
-
     client = _client(client)
+    logger.info("Starting ConnectWise daily extraction process")
 
-    # ---------------- filter for invoice extractor -----------------------
+    # ---------------- Filter for invoice extractor -----------------------
     d_from, d_to = _date_window(start_date, end_date)
+    logger.info(f"Extracting data from {d_from} to {d_to}")
+    
     cw_filter: dict[str, Any] = {
         "conditions": f"invoiceDate >= [{d_from}] and invoiceDate <= [{d_to}]",
         "pageSize": 1000,
     }
 
+    # Extract invoices with all related details
+    logger.info("Extracting invoices with details")
     inv: Mapping[str, Sequence[Any]] = run_invoices_with_details(client=client, **cw_filter)
-
-    # Derive agreement IDs appearing anywhere in extracted models
+    
+    # Derive agreement IDs from all extracted entities
     agreement_ids: set[int] = set()
     for model in (
         *inv["headers"],
@@ -167,24 +219,48 @@ def run_daily(
         agr_id = getattr(model, "agreement_id", None)
         if agr_id:
             agreement_ids.add(int(agr_id))
+    
+    logger.info(f"Found {len(agreement_ids)} unique agreement IDs")
 
-    # Optionally pull agreement metadata – not passed to transform yet but
-    # returned so notebooks can persist elsewhere if needed.
-    agr = run_agreements(client=client, agreement_ids=list(agreement_ids))
+    # Extract additional time entries not included in invoices
+    # This can be customized with specific filtering logic in v0.3.0
+    time_entry_ids: list[int] = []
+    for te in inv["time_entries"]:
+        if te.time_entry_id not in time_entry_ids:
+            time_entry_ids.append(te.time_entry_id)
+    
+    logger.info(f"Found {len(time_entry_ids)} time entries to extract")
+    additional_time_entries: Mapping[str, Sequence[Any]] = run_time_entries(
+        client=client, time_entry_ids=time_entry_ids
+    )
+    
+    # Extract agreement data
+    logger.info(f"Extracting {len(agreement_ids)} agreements")
+    agr: Mapping[str, Sequence[Any]] = run_agreements(
+        client=client, agreement_ids=list(agreement_ids)
+    )
 
-    # ---------------- transform + load ----------------------------------
+    # ---------------- Transform + Load ----------------------------------
+    logger.info("Transforming and loading data to Delta tables")
     delta_paths: TransformResult = transform_and_load(
         invoice_headers=list(inv["headers"]),
         invoice_lines=list(inv["lines"]),
-        time_entries=list(inv["time_entries"]),
+        time_entries=list(inv["time_entries"]) + list(additional_time_entries["time_entries"]),
         expenses=list(inv["expenses"]),
         products=list(inv["products"]),
-        errors=list(inv["errors"]),
+        errors=list(inv["errors"]) + list(additional_time_entries["errors"]) + list(agr["errors"]),
         lakehouse_root=lakehouse_root,
         mode=mode,
     )
 
+    # Also transform and store agreements separately
+    # This would need additional transform support in the future
+    if agr["agreements"]:
+        logger.info(f"Processed {len(agr['agreements'])} agreements")
+    
+    logger.info("Daily extraction process completed successfully")
     return {
         **delta_paths,
-        "agreements_extracted": str(len(agr["agreements"]))
+        "agreements_extracted": str(len(agr["agreements"])),
+        "time_entries_extracted": str(len(additional_time_entries["time_entries"])),
     }
