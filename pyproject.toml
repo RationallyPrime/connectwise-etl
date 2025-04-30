@@ -7,11 +7,12 @@ readme = "README.md"
 packages = [{ include = "fabric_api" }]
 
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = ">=3.10"
 requests = "*"
 pandas = ">=1.5.0"
 pyarrow = ">=10.0.0"
 python-dotenv = "*"
+pydantic = ">=2.11.4"
 
 [tool.poetry.extras]
 fabric = ["pyspark"]
@@ -23,19 +24,17 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 100
-select = ["E", "F", "W", "I", "N"]
 exclude = [".venv", "venv", "build", "dist"]
 # Optionally, add more rules or ignore patterns here
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N"]
 
 [tool.basedpyright]
 typeCheckingMode = "basic"
 reportMissingImports = true
 reportMissingTypeStubs = false
 exclude = [".venv", "venv", "build", "dist"]
-# Explicitly set python version and executable
-pythonVersion = "3.11"
-pythonPlatform = "Windows"
-pythonPath = "C:/Python311/python.exe"
 
 [tool.uv]
 # uv-specific settings can be added here

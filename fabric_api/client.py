@@ -1,9 +1,9 @@
-from __future__ import annotations
+from __future__ import annotations  # noqa: I001
 
 import base64
 import importlib
 import os
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -38,6 +38,7 @@ Secrets expected in Key Vault (override names via env‑vars if you like):
 If both username/password **and** key‑pair are present the client will
 prefer username/password.
 """
+
 
 def _pull_from_key_vault() -> None:  # pragma: no cover
     """Populate missing CW_ env‑vars from Azure Key Vault if configured."""
@@ -89,7 +90,7 @@ def _pull_from_key_vault() -> None:  # pragma: no cover
 # ----------------------------------------------------------------------
 
 
-class ConnectWiseClient:  # pylint: disable=too-few-public-methods
+class ConnectWiseClient:
     """Thin, resilient wrapper around the ConnectWise Manage REST API."""
 
     BASE_URL: str = os.getenv("CW_BASE_URL", "https://verk.thekking.is/v4_6_release/apis/3.0")
@@ -115,8 +116,8 @@ class ConnectWiseClient:  # pylint: disable=too-few-public-methods
         _pull_from_key_vault()
 
         # Prefer explicit kwargs over environment variables.
-        self.basic_username: Optional[str] = basic_username or os.getenv("CW_AUTH_USERNAME")
-        self.basic_password: Optional[str] = basic_password or os.getenv("CW_AUTH_PASSWORD")
+        self.basic_username: str | None = basic_username or os.getenv("CW_AUTH_USERNAME")
+        self.basic_password: str | None = basic_password or os.getenv("CW_AUTH_PASSWORD")
 
         self.company: str = company or os.getenv("CW_COMPANY", "")
         self.public_key: str = public_key or os.getenv("CW_PUBLIC_KEY", "")
@@ -151,7 +152,7 @@ class ConnectWiseClient:  # pylint: disable=too-few-public-methods
             token = f"{self.company}+{self.public_key}:{self.private_key}"
         return base64.b64encode(token.encode()).decode()
 
-    def _headers(self) -> Dict[str, str]:  # noqa: D401
+    def _headers(self) -> dict[str, str]:  # noqa: D401
         return {
             "Authorization": f"Basic {self._basic_token()}",
             "clientId": self.client_id,
@@ -163,47 +164,80 @@ class ConnectWiseClient:  # pylint: disable=too-few-public-methods
     # Low‑level request wrappers ---------------------------------------
     # ------------------------------------------------------------------
 
-    def _get(self, endpoint: str, params: Dict[str, Any] | None = None) -> requests.Response:
+    def get(self, endpoint: str, params: dict[str, Any] | None = None) -> requests.Response:
+        """Make a GET request to the API."""
         url = f"{self.BASE_URL}{endpoint}"
         resp = self.session.get(url, headers=self._headers(), params=params or {})
         resp.raise_for_status()
         return resp
 
-    def _paginate(
+    def post(
+        self, endpoint: str, data: dict[str, Any], params: dict[str, Any] | None = None
+    ) -> requests.Response:
+        """Make a POST request to the API."""
+        url = f"{self.BASE_URL}{endpoint}"
+        resp = self.session.post(url, headers=self._headers(), json=data, params=params or {})
+        resp.raise_for_status()
+        return resp
+
+    def put(
+        self, endpoint: str, data: dict[str, Any], params: dict[str, Any] | None = None
+    ) -> requests.Response:
+        """Make a PUT request to the API."""
+        url = f"{self.BASE_URL}{endpoint}"
+        resp = self.session.put(url, headers=self._headers(), json=data, params=params or {})
+        resp.raise_for_status()
+        return resp
+
+    def delete(self, endpoint: str, params: dict[str, Any] | None = None) -> requests.Response:
+        """Make a DELETE request to the API."""
+        url = f"{self.BASE_URL}{endpoint}"
+        resp = self.session.delete(url, headers=self._headers(), params=params or {})
+        resp.raise_for_status()
+        return resp
+
+    def get_entity_data(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
-        page_size: int = 100,
-    ) -> Generator[Dict[str, Any], None, None]:
+        params: dict[str, Any] | None = None,
+        entity_name: str = "items",
+        max_pages: int | None = 50,
+    ) -> list[dict[str, Any]]:
+        """Generic function to get paginated data from any ConnectWise endpoint."""
+        items = []
         page = 1
+        page_size = 100
+
         while True:
-            query = {"page": page, "pageSize": page_size, **(params or {})}
-            chunk: List[Dict[str, Any]] = self._get(endpoint, query).json()
-            if not chunk:
+            # Check if we've reached max pages limit
+            if max_pages is not None and page > max_pages:
+                print(f"Reached maximum page limit of {max_pages}. Stopping.")
                 break
-            yield from chunk
-            if len(chunk) < page_size:
+
+            url = f"{self.BASE_URL}{endpoint}"
+            print(f"Requesting {entity_name} page {page}: {url}")
+
+            try:
+                query = {"page": page, "pageSize": page_size, **(params or {})}
+                response = self.get(endpoint, query)
+
+                if response.status_code == 200:
+                    data = response.json()
+                    items.extend(data)
+                    print(f"Retrieved {len(data)} {entity_name} on page {page}")
+
+                    # Check if we've retrieved all data
+                    if len(data) < page_size:
+                        break
+
+                    page += 1
+                else:
+                    print(f"Error: {response.status_code}")
+                    print(response.text)
+                    break
+            except Exception as e:
+                print(f"Request failed: {e}")
                 break
-            page += 1
 
-    # ------------------------------------------------------------------
-    # Domain‑level convenience methods ---------------------------------
-    # ------------------------------------------------------------------
-
-    def list_time_entries(self, date_from: str, date_to: str, **filters: Any):
-        cond = filters.pop("conditions", "")
-        date_cond = (
-            f"timeStart>='{date_from}' and timeEnd<='{date_to}'" if date_from and date_to else ""
-        )
-        full_cond = f"{date_cond} and {cond}" if date_cond and cond else (cond or date_cond)
-        params: Dict[str, Any] = {"conditions": full_cond} if full_cond else {}
-        params.update(filters)
-        return list(self._paginate("/time/entries", params))
-
-    def list_invoices(self, **params: Any):
-        return list(self._paginate("/finance/invoices", params))
-
-    def list_reports(self, report_id: str | None = None, **params: Any):
-        if report_id:
-            return self._get(f"/system/reports/{report_id}", params).json()
-        return list(self._paginate("/system/reports", params))
+        print(f"Total {entity_name} retrieved: {len(items)}")
+        return items

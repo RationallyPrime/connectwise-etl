@@ -26,7 +26,7 @@ def process_fabric_data(data, entity_name="reports"):
     file_name = f"connectwise_{entity_name}_{ts}.parquet"
 
     # In Fabric, we can directly save to the Files folder in the lakehouse
-    lakehouse_path = f"Files/raw/connectwise/{file_name}"
+    lakehouse_path = f"/lakehouse/default/Files/raw/connectwise/{file_name}"
 
     # Write directly to the lakehouse
     print(f"Saving data to lakehouse: {lakehouse_path}")

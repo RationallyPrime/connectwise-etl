@@ -111,3 +111,5 @@ compiled/
 
 # Pyre type checker
 .pyre/
+PSA_OpenAPI_schema.json
+.vscode/settings.json
