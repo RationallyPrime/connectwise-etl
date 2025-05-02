@@ -91,8 +91,8 @@ def _apply_agreement_rules(df: pd.DataFrame) -> pd.DataFrame:  # noqa: D401
 def _sparkify(spark: SparkSession, pdf: pd.DataFrame) -> SparkDataFrame:  # noqa: D401
     """Convert a *pandas* DataFrame into Spark DataFrame preserving schema."""
     if pdf.empty:
-        # Create empty DF with no columns but valid schema
-        return spark.createDataFrame(spark.sparkContext.emptyRDD(), schema=pd.DataFrame().schema)
+        # Create a simple empty DataFrame with minimal schema
+        return spark.createDataFrame([], "string")
     return spark.createDataFrame(pdf)
 
 
@@ -107,15 +107,15 @@ def _write_delta(
         return  # nothing to write
 
     (  # noqa: WPS323 – valid chain
-        sdf.write.format("delta")
-        .mode(mode)
+        sdf.write.format(source="delta")
+        .mode(saveMode=mode)
         .option("overwriteSchema", "true")
         .save(path)
     )
 
-    table_name: str = path.rstrip("/").split("/")[-1]
+    table_name: str = path.rstrip("/").split(sep="/")[-1]
     sdf.sparkSession.sql(
-        f"CREATE TABLE IF NOT EXISTS {table_name} USING DELTA LOCATION '{path}'"
+        sqlQuery=f"CREATE TABLE IF NOT EXISTS {table_name} USING DELTA LOCATION '{path}'"
     )
 
 

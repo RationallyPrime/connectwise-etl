@@ -118,17 +118,13 @@ def _pull_from_key_vault() -> None:  # pragma: no cover – env dep.
 # Main client class
 ###############################################################################
 
-class ConnectWiseClient:  # noqa: WPS110 – past FF naming convention
-    """Thin, resilient wrapper around the ConnectWise Manage REST API."""
+class ConnectWiseClient:
+    """Thin, resilient wrapper around the ConnectWise Manage REST API."""
 
     BASE_URL: str = os.getenv(
         "CW_BASE_URL",
         "https://verk.thekking.is/v4_6_release/apis/3.0",  # sensible default for Wise
     )
-
-    # ---------------------------------------------------------------------
-    # Construction
-    # ---------------------------------------------------------------------
 
     def __init__(
         self,
@@ -136,59 +132,62 @@ class ConnectWiseClient:  # noqa: WPS110 – past FF naming convention
         # Username/password mode ------------------------------------------------
         basic_username: str | None = None,
         basic_password: str | None = None,
-        # Key‑pair mode ---------------------------------------------------------
+        # API key mode ----------------------------------------------------------
         company: str | None = None,
         public_key: str | None = None,
         private_key: str | None = None,
         # Shared ----------------------------------------------------------------
         client_id: str | None = None,
-    ) -> None:
-        _pull_from_key_vault()
-
-        # Prefer explicit kwargs over environment variables
+    ):
+        """Initialise with either username/password OR company + API keys."""
+        # Username/password mode
         self.basic_username = basic_username or os.getenv("CW_AUTH_USERNAME")
         self.basic_password = basic_password or os.getenv("CW_AUTH_PASSWORD")
 
-        self.company = company or os.getenv("CW_COMPANY", "")
-        self.public_key = public_key or os.getenv("CW_PUBLIC_KEY", "")
-        self.private_key = private_key or os.getenv("CW_PRIVATE_KEY", "")
-        self.client_id = client_id or os.getenv("CW_CLIENTID", "")
+        # API key mode
+        self.company = company or os.getenv("CW_COMPANY")
+        self.public_key = public_key or os.getenv("CW_PUBLIC_KEY")
+        self.private_key = private_key or os.getenv("CW_PRIVATE_KEY")
 
-        if not self.client_id:
-            raise RuntimeError("ConnectWiseClient — missing CW_CLIENTID (or secret 'cw-client-id')")
+        # Shared
+        self.client_id = client_id or os.getenv("CW_CLIENTID")
 
-        if not (self.basic_username and self.basic_password) and not (
-            self.company and self.public_key and self.private_key
-        ):
-            raise RuntimeError(
-                "ConnectWiseClient — supply either username/password (CW_AUTH_*) "
-                "or company/public/private key triplet (CW_*).  Secrets can live in "
-                "Azure Key Vault; set CW_KEYVAULT_URL to enable auto‑bootstrap."
-            )
-
-        # HTTP session with automatic retry/back‑off
-        retry: Retry = Retry(total=5, backoff_factor=1, status_forcelist=(429, 500, 502, 503, 504))
+        # Set up a session with retry logic
         self.session = requests.Session()
-        self.session.mount(prefix="https://", adapter=HTTPAdapter(max_retries=retry))
+        retry_strategy = Retry(
+            total=5,
+            backoff_factor=0.5,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+        self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
 
-    # ---------------------------------------------------------------------
-    # Helpers — auth & headers
-    # ---------------------------------------------------------------------
+    def _basic_token(self) -> str:
+        """Return the base64-encoded basic auth token."""
+        if not self.basic_username or not self.basic_password:
+            raise ValueError("Basic auth credentials not configured")
+        return base64.b64encode(f"{self.basic_username}:{self.basic_password}".encode()).decode()
 
-    def _basic_token(self) -> str:  # noqa: D401
-        if self.basic_username and self.basic_password:
-            token = f"{self.basic_username}:{self.basic_password}"
-        else:
-            token = f"{self.company}+{self.public_key}:{self.private_key}"
-        return base64.b64encode(token.encode()).decode()
+    def _headers(self) -> dict[str, str]:
+        """Return the headers needed for API requests."""
+        if not self.client_id:
+            raise ValueError("Client ID not configured")
 
-    def _headers(self) -> dict[str, str]:  # noqa: D401
-        return {
-            "Authorization": f"Basic {self._basic_token()}",
+        headers = {
             "clientId": self.client_id,
             "Accept": "application/vnd.connectwise.com+json; version=2025.1",
             "Content-Type": "application/json",
         }
+
+        # Use basic auth if available
+        if self.basic_username and self.basic_password:
+            return headers
+
+        # Fall back to API key auth
+        if not all([self.company, self.public_key, self.private_key]):
+            raise ValueError("Neither basic auth nor API key auth is fully configured")
+
+        headers["Authorization"] = f"Basic {self._basic_token()}"
+        return headers
 
     # ---------------------------------------------------------------------
     # Public utility helpers (re‑exported from utils)
@@ -204,45 +203,85 @@ class ConnectWiseClient:  # noqa: WPS110 – past FF naming convention
     # Core request wrappers
     # ---------------------------------------------------------------------
 
-    def get(self, endpoint: str, params: dict[str, Any] | None = None) -> requests.Response:
-        """Make a **GET** request with automatic retry/back‑off."""
-
-        url: str = f"{self.BASE_URL}{endpoint}"
-        logger.debug("GET %s", url)
-        resp: Response = self.session.get(url, headers=self._headers(), params=params or {})
+    def get(
+        self,
+        endpoint: str,
+        *,
+        params: dict[str, Any] | None = None,
+    ) -> Response:
+        """Perform a GET request to the ConnectWise API."""
+        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        headers = self._headers()
+        
+        # Use auth tuple for requests instead of Authorization header
+        auth = None
+        if self.basic_username and self.basic_password:
+            auth = (self.basic_username, self.basic_password)
+            
+        logger.debug(f"GET {url}")
+        resp = self.session.get(url, headers=headers, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 
     def post(
         self,
         endpoint: str,
-        data: dict[str, Any],
+        *,
+        json_data: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
-    ) -> requests.Response:
-        url: str = f"{self.BASE_URL}{endpoint}"
-        logger.debug("POST %s", url)
-        resp: Response = self.session.post(url, headers=self._headers(), json=data, params=params or {})
+    ) -> Response:
+        """Perform a POST request to the ConnectWise API."""
+        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        headers = self._headers()
+        
+        # Use auth tuple for requests instead of Authorization header
+        auth = None
+        if self.basic_username and self.basic_password:
+            auth = (self.basic_username, self.basic_password)
+            
+        logger.debug(f"POST {url}")
+        resp = self.session.post(url, headers=headers, json=json_data, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 
     def put(
         self,
         endpoint: str,
-        data: dict[str, Any],
+        *,
+        json_data: dict[str, Any],
         params: dict[str, Any] | None = None,
-    ) -> requests.Response:
-        url = f"{self.BASE_URL}{endpoint}"
-        logger.debug("PUT %s", url)
-        resp: Response = self.session.put(url, headers=self._headers(), json=data, params=params or {})
+    ) -> Response:
+        """Perform a PUT request to the ConnectWise API."""
+        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        headers = self._headers()
+        
+        # Use auth tuple for requests instead of Authorization header
+        auth = None
+        if self.basic_username and self.basic_password:
+            auth = (self.basic_username, self.basic_password)
+            
+        logger.debug(f"PUT {url}")
+        resp = self.session.put(url, headers=headers, json=json_data, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 
     def delete(
-        self, endpoint: str, params: dict[str, Any] | None = None
-    ) -> requests.Response:
-        url: str = f"{self.BASE_URL}{endpoint}"
-        logger.debug("DELETE %s", url)
-        resp: Response = self.session.delete(url, headers=self._headers(), params=params or {})
+        self, 
+        endpoint: str, 
+        *, 
+        params: dict[str, Any] | None = None
+    ) -> Response:
+        """Perform a DELETE request to the ConnectWise API."""
+        url: str = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        headers = self._headers()
+        
+        # Use auth tuple for requests instead of Authorization header
+        auth = None
+        if self.basic_username and self.basic_password:
+            auth = (self.basic_username, self.basic_password)
+            
+        logger.debug(f"DELETE {url}")
+        resp = self.session.delete(url, headers=headers, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 
@@ -250,86 +289,56 @@ class ConnectWiseClient:  # noqa: WPS110 – past FF naming convention
     # Pagination helpers
     # ---------------------------------------------------------------------
 
-    def get_entity_data(
+    def paginate(
         self,
         endpoint: str,
-        params: dict[str, Any] | None = None,
+        entity_name: str,
         *,
-        entity_name: str = "items",
-        max_pages: int | None = 50,
-        page_size: int = 100,
+        params: dict[str, Any] | None = None,
+        max_pages: int | None = None,
     ) -> list[dict[str, Any]]:
-        """Iterate through paginated GET responses and return **items** only."""
-
-        items, _ = self.get_entity_data_with_detailed_logging(
-            endpoint,
-            params=params,
-            entity_name=entity_name,
-            max_pages=max_pages,
-            page_size=page_size,
-            error_tracking=False,
-        )
-        return items
-
-    def get_entity_data_with_detailed_logging(
-        self,
-        endpoint: str,
-        params: dict[str, Any] | None = None,
-        *,
-        entity_name: str = "items",
-        max_pages: int | None = 50,
-        page_size: int = 100,
-        error_tracking: bool = True,
-    ) -> tuple[list[dict[str, Any]], list[ApiErrorRecord]]:
-        """Paginate **GET** requests and capture API‑level failures.
-
-        Returns a tuple ``(items, errors)`` where *errors* is a list of
-        :class:`ApiErrorRecord` — callers can decide whether to persist or
-        ignore.
-        """
-
+        """Get all pages of data from a paginated endpoint."""
+        if params is None:
+            params = {}
+            
+        items = []
         page = 1
-        items: list[dict[str, Any]] = []
-        errors: list[ApiErrorRecord] = []
-        params = params or {}
-
+        page_size = params.get("pageSize", 100)
+        
         while True:
+            # Check if we've reached max pages limit
             if max_pages is not None and page > max_pages:
-                logger.warning(
-                    "Aborting pagination after %s pages for endpoint %s", max_pages, endpoint
-                )
+                logger.info(f"Reached maximum page limit of {max_pages}. Stopping.")
                 break
-
-            query: dict[str, Any] = {"page": page, "pageSize": page_size, **params}
-            url: str = f"{self.BASE_URL}{endpoint}"
-            logger.debug("Requesting %s page %s: %s", entity_name, page, url)
-
+                
+            query = {"page": page, "pageSize": page_size}
+            query.update(params)
+            
+            url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+            logger.debug(f"Requesting {entity_name} page {page}: {url}")
+            
+            # Use auth tuple for requests
+            auth = None
+            if self.basic_username and self.basic_password:
+                auth = (self.basic_username, self.basic_password)
+            
             try:
-                response: Response = self.get(endpoint, params=query)
+                headers = self._headers()
+                response = self.session.get(url, headers=headers, params=query, auth=auth)
+                response.raise_for_status()
+                
                 data = response.json()
-                if not isinstance(data, list):
-                    logger.error("Unexpected JSON shape for %s page %s: %s", entity_name, page, data)
-                    raise ValueError("Expected list response from ConnectWise API")
-
                 items.extend(data)
-                logger.debug("Retrieved %s %s on page %s", len(data), entity_name, page)
-
-                if len(data) < page_size:  # last page
+                logger.debug(f"Retrieved {len(data)} {entity_name} on page {page}")
+                
+                # Check if we've retrieved all data
+                if len(data) < page_size:
                     break
+                
                 page += 1
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception("Error fetching %s page %s: %s", entity_name, page, exc)
-                if error_tracking:
-                    errors.append(
-                        ApiErrorRecord(
-                            invoice_number=params.get("invoiceNumber", ""),
-                            error_table_id=0,
-                            error_type="PaginationError",
-                            error_message=str(exc),
-                            table_name=entity_name,
-                        )
-                    )
-                break  # bail on consistent failures to avoid infinite loop
-
-        logger.info("Total %s retrieved from %s: %s", entity_name, endpoint, len(items))
-        return items, errors
+            except Exception as e:
+                logger.error(f"Error fetching {entity_name} page {page}: {str(e)}")
+                break
+        
+        logger.info(f"Total {entity_name} retrieved from {endpoint}: {len(items)}")
+        return items

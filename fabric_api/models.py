@@ -124,7 +124,7 @@ class ManageProduct(BaseModel):  # Table 62005
 class ManageInvoiceHeader(BaseModel):  # Table 62001
     """Top‑level invoice metadata."""
 
-    billing_log_id: int = Field(default=..., description="Internal ConnectWise billingLogId.")
+    billing_log_id: int = Field(default=0, description="Internal ConnectWise billingLogId.")
     invoice_number: str = Field(default="", description="Unique invoice number – primary key.")
 
     invoice_type: str = Field(default="", description="'Agreement' or 'Standard'.")

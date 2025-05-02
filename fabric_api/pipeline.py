@@ -194,18 +194,22 @@ def run_daily(
     client = _client(client)
     logger.info("Starting ConnectWise daily extraction process")
 
-    # ---------------- Filter for invoice extractor -----------------------
-    d_from, d_to = _date_window(start_date, end_date)
-    logger.info(f"Extracting data from {d_from} to {d_to}")
+    # Extract invoices with all related details - without date filtering
+    logger.info("Extracting invoices with details (both posted and unposted)")
     
-    cw_filter: dict[str, Any] = {
-        "conditions": f"invoiceDate >= [{d_from}] and invoiceDate <= [{d_to}]",
-        "pageSize": 1000,
-    }
-
-    # Extract invoices with all related details
-    logger.info("Extracting invoices with details")
-    inv: Mapping[str, Sequence[Any]] = run_invoices_with_details(client=client, **cw_filter)
+    # Use empty filter to get all available invoices, limited by max_pages
+    inv: Mapping[str, Sequence[Any]] = run_invoices_with_details(client=client, max_pages=50)
+    
+    # Log the number of items extracted for debugging
+    logger.info(f"Extracted {len(inv['headers'])} invoice headers")
+    logger.info(f"Extracted {len(inv['lines'])} invoice lines")
+    logger.info(f"Extracted {len(inv['time_entries'])} time entries from invoices")
+    logger.info(f"Extracted {len(inv['expenses'])} expenses")
+    logger.info(f"Extracted {len(inv['products'])} products")
+    logger.info(f"Encountered {len(inv['errors'])} errors during extraction")
+    
+    if len(inv['headers']) == 0:
+        logger.warning(f"No invoices found. Check your API connection and permissions.")
     
     # Derive agreement IDs from all extracted entities
     agreement_ids: set[int] = set()

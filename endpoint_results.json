@@ -1,0 +1,1032 @@
+[
+  {
+    "endpoint": "system/info",
+    "description": "System Info",
+    "status": "success",
+    "status_code": 200,
+    "count": 1,
+    "sample": {
+      "version": "v2025.1.10333",
+      "isCloud": false,
+      "serverTimeZone": "GMT Standard Time",
+      "licenseBits": [
+        {
+          "name": "PocketPC",
+          "activeFlag": true
+        },
+        {
+          "name": "EmailConnector",
+          "activeFlag": true
+        },
+        {
+          "name": "ADPInterface",
+          "activeFlag": true
+        },
+        {
+          "name": "GLInterface",
+          "activeFlag": true
+        },
+        {
+          "name": "PremiumPortal",
+          "activeFlag": true
+        },
+        {
+          "name": "ManagedServices",
+          "activeFlag": true
+        },
+        {
+          "name": "SpamStats",
+          "activeFlag": false
+        },
+        {
+          "name": "AuditTrail",
+          "activeFlag": false
+        },
+        {
+          "name": "QuoteWerks",
+          "activeFlag": false
+        },
+        {
+          "name": "ConnectWiseView",
+          "activeFlag": false
+        },
+        {
+          "name": "Inventory",
+          "activeFlag": false
+        },
+        {
+          "name": "Purchasing",
+          "activeFlag": false
+        },
+        {
+          "name": "IzendaReports",
+          "activeFlag": true
+        },
+        {
+          "name": "SalesManagement",
+          "activeFlag": true
+        },
+        {
+          "name": "KnowledgeBase",
+          "activeFlag": true
+        },
+        {
+          "name": "Agreement",
+          "activeFlag": true
+        },
+        {
+          "name": "AgileBoard",
+          "activeFlag": true
+        },
+        {
+          "name": "Marketing",
+          "activeFlag": true
+        },
+        {
+          "name": "StreamlineIT",
+          "activeFlag": true
+        },
+        {
+          "name": "Subcontractor",
+          "activeFlag": true
+        },
+        {
+          "name": "CustomFields",
+          "activeFlag": true
+        },
+        {
+          "name": "ManageLogin",
+          "activeFlag": true
+        },
+        {
+          "name": "SessionLockout",
+          "activeFlag": true
+        },
+        {
+          "name": "MobileSessionLockout",
+          "activeFlag": true
+        }
+      ],
+      "cloudRegion": "EU",
+      "maxWorkFlowRecordsAllowed": 1000
+    }
+  },
+  {
+    "endpoint": "system/reports",
+    "description": "Reports",
+    "status": "success",
+    "status_code": 200,
+    "count": 264,
+    "sample": {
+      "name": "SalesOrder"
+    }
+  },
+  {
+    "endpoint": "company/companies",
+    "description": "Companies",
+    "status": "success",
+    "status_code": 200,
+    "count": 10,
+    "sample": {
+      "id": 250,
+      "identifier": "THE",
+      "name": "\u00deekking",
+      "status": {
+        "id": 1,
+        "name": "Active",
+        "_info": {
+          "status_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/statuses/1"
+        }
+      },
+      "addressLine1": "Hafnarstr\u00e6ti 93-95",
+      "city": "Akureyri",
+      "zip": "600",
+      "country": {
+        "id": 50,
+        "identifier": "IS",
+        "name": "\u00cdsland",
+        "_info": {
+          "country_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/countries/50"
+        }
+      },
+      "phoneNumber": "4603100",
+      "faxNumber": "",
+      "website": "www.thekking.is",
+      "territory": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+      },
+      "accountNumber": "",
+      "defaultContact": {
+        "id": 500,
+        "name": "Stef\u00e1n J\u00f3hannesson",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/500"
+        }
+      },
+      "dateAcquired": "2006-06-21T04:00:00Z",
+      "sicCode": {
+        "id": 1209,
+        "name": "5734 - Computer and software stores"
+      },
+      "annualRevenue": 0.0,
+      "timeZoneSetup": {
+        "id": 1,
+        "name": "GMT-5/Eastern Time: US & Canada",
+        "_info": {
+          "timeZoneSetup_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/timeZoneSetups/1"
+        }
+      },
+      "leadFlag": false,
+      "unsubscribeFlag": false,
+      "userDefinedField5": "1",
+      "vendorIdentifier": "",
+      "taxIdentifier": "",
+      "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+          "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+      },
+      "billingTerms": {
+        "id": 12,
+        "name": "20dagar"
+      },
+      "billToCompany": {
+        "id": 250,
+        "identifier": "THE",
+        "name": "\u00deekking",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250"
+        }
+      },
+      "billingSite": {
+        "id": 1000,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250/sites/1000"
+        }
+      },
+      "billingContact": {
+        "id": 460,
+        "name": "Bjarni \u00c1skelsson",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/460"
+        }
+      },
+      "invoiceDeliveryMethod": {
+        "id": 1,
+        "name": "Mail"
+      },
+      "invoiceToEmailAddress": "Bjarni@thekking.is",
+      "deletedFlag": false,
+      "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211",
+      "facebookUrl": "https://www.facebook.com/thekkingis/",
+      "linkedInUrl": "https://www.linkedin.com/company/-ekking-hf-/",
+      "currency": {
+        "id": 27,
+        "symbol": " kr.",
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+          "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+      },
+      "isVendorFlag": false,
+      "types": [
+        {
+          "id": 1,
+          "name": "Client",
+          "_info": {
+            "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/types/1"
+          }
+        }
+      ],
+      "site": {
+        "id": 1000,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250/sites/1000"
+        }
+      },
+      "_info": {
+        "lastUpdated": "2020-10-15T14:09:53Z",
+        "updatedBy": "labtech",
+        "dateEntered": "2006-06-21T16:04:59Z",
+        "enteredBy": "CONVERSION",
+        "contacts_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts?conditions=company/id=250",
+        "agreements_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements?conditions=company/id=250",
+        "tickets_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets?conditions=company/id=250",
+        "opportunities_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/opportunities?conditions=company/id=250",
+        "activities_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/activities?conditions=company/id=250",
+        "projects_href": "https://verk.thekking.is/v4_6_release/apis/3.0/project/projects?conditions=company/id=250",
+        "configurations_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/configurations?conditions=company/id=250",
+        "orders_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/orders?conditions=company/id=250",
+        "documents_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/documents?recordType=Company&recordId=250",
+        "sites_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250/sites",
+        "teams_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250/teams",
+        "reports_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250/managementSummaryReports",
+        "notes_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250/notes"
+      },
+      "customFields": [
+        {
+          "id": 9,
+          "caption": "ITGlue",
+          "type": "Hyperlink",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "a442924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 10,
+          "caption": "Brightgauge",
+          "type": "Hyperlink",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "a542924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 11,
+          "caption": "Automate",
+          "type": "Hyperlink",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "a642924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 26,
+          "caption": "Microsoft - TenantID",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "22698134-b5ee-ef11-9189-005056aeec2b"
+        },
+        {
+          "id": 27,
+          "caption": "AFI.AI - TenantID",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "81f74473-b5ee-ef11-9189-005056aeec2b"
+        }
+      ]
+    }
+  },
+  {
+    "endpoint": "company/contacts",
+    "description": "Contacts",
+    "status": "success",
+    "status_code": 200,
+    "count": 10,
+    "sample": {
+      "id": 1,
+      "firstName": "Jorge",
+      "lastName": "Smith",
+      "company": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297",
+          "mobileGuid": "2685633f-6375-4375-9df2-9ae518232583"
+        }
+      },
+      "site": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002",
+          "mobileGuid": "30d37403-711a-42ee-9069-d41c71be25ae"
+        }
+      },
+      "relationshipOverride": "",
+      "inactiveFlag": false,
+      "title": "President",
+      "marriedFlag": false,
+      "childrenFlag": false,
+      "unsubscribeFlag": false,
+      "mobileGuid": "a6ef5023-5d8e-4609-bdfe-de2e3a4d634d",
+      "defaultPhoneType": "Direct",
+      "defaultPhoneNbr": "8135555555",
+      "defaultBillingFlag": true,
+      "defaultFlag": false,
+      "companyLocation": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+      },
+      "communicationItems": [
+        {
+          "id": 44102,
+          "type": {
+            "id": 2,
+            "name": "Direct",
+            "_info": {
+              "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/communicationTypes/2"
+            }
+          },
+          "value": "8135555555",
+          "defaultFlag": true,
+          "communicationType": "Phone"
+        }
+      ],
+      "types": [
+        {
+          "id": 2,
+          "name": "Stj\u00f3rnandi",
+          "_info": {
+            "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/types/2"
+          }
+        }
+      ],
+      "ignoreDuplicates": false,
+      "_info": {
+        "lastUpdated": "2015-12-18T14:51:26Z",
+        "updatedBy": "zAdmin",
+        "communications_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1/communications",
+        "notes_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1/notes",
+        "tracks_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1/tracks",
+        "portalSecurity_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1/portalSecurity",
+        "activities_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/activities?conditions=contact/id=1",
+        "documents_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/documents?recordType=Contact&recordId=1",
+        "configurations_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/configurations?conditions=contact/id=1",
+        "tickets_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets?conditions=contact/id=1",
+        "opportunities_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/opportunities?conditions=contact/id=1",
+        "projects_href": "https://verk.thekking.is/v4_6_release/apis/3.0/project/projects?conditions=contact/id=1",
+        "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1/image?lastModified=2015-12-18T14:51:26Z"
+      }
+    }
+  },
+  {
+    "endpoint": "service/tickets",
+    "description": "Service Tickets",
+    "status": "success",
+    "status_code": 200,
+    "count": 10,
+    "sample": {
+      "id": 100,
+      "summary": "\u00fea\u00f0 er gaman a\u00f0 leika s\u00e9r",
+      "recordType": "ServiceTicket",
+      "board": {
+        "id": 1,
+        "name": "01 - Help Desk",
+        "_info": {
+          "board_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/boards/1"
+        }
+      },
+      "status": {
+        "id": 17,
+        "name": ">Closed",
+        "Sort": 30,
+        "_info": {
+          "status_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/boards/1/statuses/17"
+        }
+      },
+      "company": {
+        "id": 250,
+        "identifier": "THE",
+        "name": "\u00deekking",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250",
+          "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211"
+        }
+      },
+      "addressLine1": "Hafnarstr\u00e6ti 93-95",
+      "city": "Akureyri",
+      "zip": "IS-600",
+      "country": {
+        "id": 50,
+        "identifier": "IS",
+        "name": "\u00cdsland",
+        "_info": {
+          "country_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/countries/50"
+        }
+      },
+      "contact": {
+        "id": 11,
+        "name": "Tryggvi R. J\u00f3nsson",
+        "_info": {
+          "mobileGuid": "d24adc11-7251-45f5-94ad-cb1c04fe8d7e",
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/11"
+        }
+      },
+      "contactName": "Tryggvi R. J\u00f3nsson (Inactive)",
+      "contactPhoneNumber": "+3544603177",
+      "contactEmailAddress": "trigger@thekking.is",
+      "type": {
+        "id": 192,
+        "name": "MUST CHANGE",
+        "_info": {
+          "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/boards/1/types/192"
+        }
+      },
+      "team": {
+        "id": 1,
+        "name": "01 - Helpdesk Service Team",
+        "_info": {
+          "team_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/boards/1/teams/1"
+        }
+      },
+      "owner": {
+        "id": 160,
+        "identifier": "peturOLD",
+        "name": "P\u00e9tur \u00d3lafsson",
+        "_info": {
+          "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/160",
+          "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/160/image?lm=2025-04-10T09:21:01Z"
+        }
+      },
+      "priority": {
+        "id": 12,
+        "name": "P5 - Planned",
+        "sort": 50,
+        "_info": {
+          "priority_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/priorities/12",
+          "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/priorities/12/image?lm=2018-06-20T13:08:15Z"
+        }
+      },
+      "serviceLocation": {
+        "id": 1,
+        "name": "On-Site",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/locations/1"
+        }
+      },
+      "source": {
+        "id": 3,
+        "name": "Internal",
+        "_info": {
+          "source_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/sources/3"
+        }
+      },
+      "budgetHours": 2.0,
+      "severity": "Medium",
+      "impact": "Medium",
+      "allowAllClientsPortalView": false,
+      "customerUpdatedFlag": false,
+      "automaticEmailContactFlag": false,
+      "automaticEmailResourceFlag": false,
+      "automaticEmailCcFlag": false,
+      "closedDate": "2018-05-07T13:56:48Z",
+      "closedBy": "petur",
+      "closedFlag": true,
+      "actualHours": 1.0,
+      "approved": true,
+      "estimatedExpenseCost": 0.0,
+      "estimatedExpenseRevenue": 0.0,
+      "estimatedProductCost": 0.0,
+      "estimatedProductRevenue": 0.0,
+      "estimatedTimeCost": 0.0,
+      "estimatedTimeRevenue": 0.0,
+      "billingMethod": "ActualRates",
+      "subBillingMethod": "ActualRates",
+      "dateResolved": "2018-05-07T13:56:49Z",
+      "dateResplan": "2018-05-07T13:36:24Z",
+      "dateResponded": "2018-05-07T13:36:24Z",
+      "resolveMinutes": 17,
+      "resPlanMinutes": 0,
+      "respondMinutes": 0,
+      "isInSla": true,
+      "resources": "peturOLD",
+      "hasChildTicket": false,
+      "hasMergedChildTicketFlag": false,
+      "billTime": "NoDefault",
+      "billExpenses": "NoDefault",
+      "billProducts": "Billable",
+      "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+      },
+      "department": {
+        "id": 1,
+        "identifier": "Service",
+        "name": "Service",
+        "_info": {
+          "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+        }
+      },
+      "mobileGuid": "890235bf-bd9c-4da0-8b32-17ddade1cc2e",
+      "sla": {
+        "id": 6,
+        "name": "No SLA",
+        "_info": {
+          "sla_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/SLAs/6"
+        }
+      },
+      "slaStatus": "Resolved",
+      "requestForChangeFlag": false,
+      "currency": {
+        "id": 7,
+        "symbol": "$",
+        "currencyCode": "USD",
+        "decimalSeparator": ".",
+        "numberOfDecimals": 2,
+        "thousandsSeparator": ",",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "USD",
+        "displayIdFlag": true,
+        "rightAlign": false,
+        "name": "US Dollars",
+        "_info": {
+          "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/7"
+        }
+      },
+      "_info": {
+        "lastUpdated": "2018-05-07T13:56:48Z",
+        "updatedBy": "petur",
+        "dateEntered": "2018-05-04T16:06:39Z",
+        "enteredBy": "petur",
+        "activities_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/activities?conditions=ticket/id=100",
+        "scheduleentries_href": "https://verk.thekking.is/v4_6_release/apis/3.0/schedule/entries?conditions=type/id=4 AND objectId=100",
+        "documents_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/documents?recordType=Ticket&recordId=100",
+        "configurations_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/100/configurations",
+        "tasks_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/100/tasks",
+        "notes_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/100/notes",
+        "products_href": "https://verk.thekking.is/v4_6_release/apis/3.0/procurement/products?conditions=ticket/id=100",
+        "timeentries_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/entries?conditions=(chargeToType='ServiceTicket' OR chargeToType='ProjectTicket') AND chargeToId=100",
+        "expenseEntries_href": "https://verk.thekking.is/v4_6_release/apis/3.0/expense/entries?conditions=(chargeToType='ServiceTicket' OR chargeToType='ProjectTicket') AND chargeToId=100"
+      },
+      "escalationStartDateUTC": "2018-05-07T13:56:49Z",
+      "escalationLevel": 15,
+      "minutesBeforeWaiting": 0,
+      "respondedSkippedMinutes": 0,
+      "resplanSkippedMinutes": 0,
+      "respondedHours": 999.0,
+      "respondedBy": "petur",
+      "resplanHours": 999.0,
+      "resplanBy": "petur",
+      "resolutionHours": 999.0,
+      "resolvedBy": "petur",
+      "minutesWaiting": 0,
+      "customFields": [
+        {
+          "id": 12,
+          "caption": "Ext support ticket no",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "aa42924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 13,
+          "caption": "External support",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "ab42924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 16,
+          "caption": "Device Details",
+          "type": "Hyperlink",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "ac42924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 17,
+          "caption": "cwSecurity",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "d296a46a-b419-ef11-9171-005056aeec2b"
+        },
+        {
+          "id": 24,
+          "caption": "Innvidir Verkefni",
+          "type": "Checkbox",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "6100242d-bcea-ef11-9187-005056aeec2b"
+        },
+        {
+          "id": 29,
+          "caption": "Category",
+          "type": "Text",
+          "entryMethod": "List",
+          "numberOfDecimals": 0,
+          "connectWiseId": "c90ce021-96f2-ef11-9189-005056aeec2b"
+        },
+        {
+          "id": 30,
+          "caption": "Regulatory Compliance",
+          "type": "Checkbox",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "61135f28-6810-f011-918b-005056aeec2b"
+        }
+      ]
+    }
+  },
+  {
+    "endpoint": "finance/invoices",
+    "description": "Posted Invoices",
+    "status": "success",
+    "status_code": 200,
+    "count": 10,
+    "sample": {
+      "id": 2,
+      "invoiceNumber": "1001",
+      "type": "Standard",
+      "status": {
+        "id": 13,
+        "name": "Closed",
+        "isClosed": true
+      },
+      "company": {
+        "id": 19303,
+        "identifier": "BGR",
+        "name": "B\u00e6jarsj\u00f3\u00f0ur Gar\u00f0ab\u00e6jar",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19303"
+        }
+      },
+      "billToCompany": {
+        "id": 19303,
+        "identifier": "BGR",
+        "name": "B\u00e6jarsj\u00f3\u00f0ur Gar\u00f0ab\u00e6jar",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19303"
+        }
+      },
+      "shipToCompany": {
+        "id": 19303,
+        "identifier": "BGR",
+        "name": "B\u00e6jarsj\u00f3\u00f0ur Gar\u00f0ab\u00e6jar",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19303"
+        }
+      },
+      "accountNumber": "5701696109",
+      "attention": "Vala Hauksd\u00f3ttir",
+      "billingSite": {
+        "id": 1009,
+        "name": "Gar\u00f0ab\u00e6r",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19303/sites/1009"
+        }
+      },
+      "billingSiteAddressLine1": "Gar\u00f0atorgi 7",
+      "billingSiteCity": "Gar\u00f0ab\u00e6",
+      "billingSiteZip": "210",
+      "billingSiteCountry": "\u00cdsland",
+      "shippingSite": {
+        "id": 1009,
+        "name": "Gar\u00f0ab\u00e6r",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19303/sites/1009"
+        }
+      },
+      "shippingSiteAddressLine1": "Gar\u00f0atorgi 7",
+      "shippingSiteCity": "Gar\u00f0ab\u00e6",
+      "shippingSiteZip": "210",
+      "shippingSiteCountry": "\u00cdsland",
+      "billingTerms": {
+        "id": 12,
+        "name": "20dagar"
+      },
+      "reference": "",
+      "templateSetupId": 9,
+      "emailTemplateId": 1,
+      "addToBatchEmailList": true,
+      "date": "2018-07-12T00:00:00Z",
+      "restrictDownpaymentFlag": false,
+      "locationId": 11,
+      "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+      },
+      "departmentId": 1,
+      "department": {
+        "id": 1,
+        "name": "Service",
+        "_info": {
+          "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+        }
+      },
+      "territoryId": 2,
+      "territory": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+      },
+      "topComment": "",
+      "bottomComment": "",
+      "taxableFlag": true,
+      "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+          "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+      },
+      "downpaymentPreviouslyTaxedFlag": false,
+      "serviceTotal": 147350.0,
+      "overrideDownPaymentAmountFlag": false,
+      "currency": {
+        "id": 27,
+        "symbol": " kr.",
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+          "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+      },
+      "dueDate": "2018-08-01T00:00:00Z",
+      "expenseTotal": 0.0,
+      "productTotal": 0.0,
+      "previousProgressApplied": 0.0,
+      "serviceAdjustmentAmount": 0.0,
+      "agreementAmount": 0.0,
+      "downpaymentApplied": 0.0,
+      "subtotal": 147350.0,
+      "total": 182714.0,
+      "remainingDownpayment": 0.0,
+      "salesTax": 35364.0,
+      "closedBy": "the-rmm",
+      "payments": 0.0,
+      "credits": 0.0,
+      "balance": 182714.0,
+      "specialInvoiceFlag": false,
+      "billingSetupReference": {
+        "id": 2,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "billingSetup_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/billingsetups/2"
+        }
+      },
+      "glBatch": {
+        "id": 2,
+        "name": "test-ignore",
+        "_info": {
+          "batch_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/accounting/batches/2"
+        }
+      },
+      "_info": {
+        "lastUpdated": "2018-09-13T11:58:27Z",
+        "updatedBy": "the-rmm",
+        "dateEntered": "2018-07-12T13:32:02Z",
+        "enteredBy": "trigger",
+        "products_href": "https://verk.thekking.is/v4_6_release/apis/3.0/procurement/products?conditions=invoice/id=2",
+        "timeEntries_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/entries?conditions=invoice/id=2",
+        "expenseEntries_href": "https://verk.thekking.is/v4_6_release/apis/3.0/expense/entries?conditions=invoice/id=2"
+      }
+    }
+  },
+  {
+    "endpoint": "finance/accounting/unpostedinvoices",
+    "description": "Unposted Invoices",
+    "status": "success",
+    "status_code": 200,
+    "count": 0,
+    "sample": null
+  },
+  {
+    "endpoint": "finance/invoices/2/timeentries",
+    "description": "Time Entries for Invoice 1001",
+    "status": "error",
+    "error": "403 Client Error: Forbidden for url: https://verk.thekking.is/v4_6_release/apis/3.0/finance/invoices/2/timeentries"
+  },
+  {
+    "endpoint": "finance/invoices/2/expenses",
+    "description": "Expenses for Invoice 1001",
+    "status": "error",
+    "error": "403 Client Error: Forbidden for url: https://verk.thekking.is/v4_6_release/apis/3.0/finance/invoices/2/expenses"
+  },
+  {
+    "endpoint": "finance/invoices/2/products",
+    "description": "Products for Invoice 1001",
+    "status": "error",
+    "error": "403 Client Error: Forbidden for url: https://verk.thekking.is/v4_6_release/apis/3.0/finance/invoices/2/products"
+  },
+  {
+    "endpoint": "time/entries",
+    "description": "Time Entries filtered by Invoice 1001",
+    "status": "success",
+    "status_code": 200,
+    "count": 5,
+    "sample": {
+      "id": 1612,
+      "company": {
+        "id": 19303,
+        "identifier": "BGR",
+        "name": "B\u00e6jarsj\u00f3\u00f0ur Gar\u00f0ab\u00e6jar",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19303",
+          "mobileGuid": "570c5016-113f-4a88-b944-33a9812857bb"
+        }
+      },
+      "companyType": "Client, Vi\u00f0skiptavinur - S\u00e9rferli, A+",
+      "chargeToId": 3874,
+      "chargeToType": "ServiceTicket",
+      "member": {
+        "id": 156,
+        "identifier": "trigger",
+        "name": "Tryggvi R. J\u00f3nsson",
+        "dailyCapacity": 0.0,
+        "_info": {
+          "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/156",
+          "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/156/image?lm=2025-04-10T09:21:01Z"
+        }
+      },
+      "locationId": 11,
+      "businessUnitId": 1,
+      "businessGroupDesc": "Service",
+      "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+      },
+      "department": {
+        "id": 1,
+        "name": "Service",
+        "_info": {
+          "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+        }
+      },
+      "workType": {
+        "id": 29,
+        "name": "Inhouse/Remote Work",
+        "utilizationFlag": true,
+        "_info": {
+          "workType_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workTypes/29"
+        }
+      },
+      "workRole": {
+        "id": 10,
+        "name": "Consulting",
+        "_info": {
+          "workRole_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workRoles/10"
+        }
+      },
+      "agreement": {
+        "id": 11,
+        "name": "Rekstrar\u00fej\u00f3nusta",
+        "type": "Rekstrar\u00fej\u00f3nusta net\u00fej\u00f3na",
+        "chargeFirmFlag": false,
+        "_info": {
+          "agreement_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements/11",
+          "typeId": "46"
+        }
+      },
+      "agreementType": "Rekstrar\u00fej\u00f3nusta net\u00fej\u00f3na",
+      "territory": "My Company",
+      "timeStart": "2018-07-10T14:11:00Z",
+      "timeEnd": "2018-07-10T14:51:00Z",
+      "hoursDeduct": 0.0,
+      "actualHours": 0.67,
+      "billableOption": "Billable",
+      "notes": "Reyndi a\u00f0 endursetja lykilor\u00f0i\u00f0 \u00ed AD en \u00fea\u00f0 vir\u00f0ist ekki virka \u00fearf a\u00f0 sko\u00f0a au\u00f0kenningar\u00fej\u00f3nustuna \u00e1 AD \u00fej\u00f3ninum \u00feeirra.",
+      "addToDetailDescriptionFlag": false,
+      "addToInternalAnalysisFlag": true,
+      "addToResolutionFlag": false,
+      "emailResourceFlag": false,
+      "emailContactFlag": false,
+      "emailCcFlag": false,
+      "hoursBilled": 1.0,
+      "invoiceHours": 1.0,
+      "hourlyCost": "0.00",
+      "enteredBy": "trigger",
+      "dateEntered": "2018-07-10T14:52:19Z",
+      "invoice": {
+        "id": 2,
+        "identifier": "1001",
+        "invoiceDate": "2018-07-12T00:00:00Z",
+        "chargeFirmFlag": false,
+        "_info": {
+          "invoice_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/invoices/2"
+        }
+      },
+      "mobileGuid": "60b001b7-7d6c-48ee-a272-f4311f9b0b16",
+      "hourlyRate": 23900.0,
+      "agreementHours": 0.0,
+      "agreementAmount": 0.0,
+      "agreementAdjustment": 0.0,
+      "adjustment": 0.0,
+      "invoiceReady": 0,
+      "timeSheet": {
+        "id": 53,
+        "name": "2018-07-09 to 2018-07-15",
+        "_info": {
+          "timeSheet_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/sheets/53"
+        }
+      },
+      "status": "Billed",
+      "ticket": {
+        "id": 3874,
+        "summary": "Endursetja VPN a\u00f0gang",
+        "_info": {
+          "ticket_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/3874",
+          "billingMethod": "A",
+          "status": ">Closed"
+        }
+      },
+      "ticketBoard": "02 - Request Board",
+      "ticketStatus": ">Closed",
+      "invoiceFlag": true,
+      "extendedInvoiceAmount": 23900.0,
+      "locationName": "\u00deekking Tristan hf",
+      "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+          "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+      },
+      "_info": {
+        "lastUpdated": "2018-07-12T13:15:25Z",
+        "updatedBy": "trigger",
+        "chargeToMobileGuid": "03746417-51a4-47ca-9980-de31064f58a7"
+      }
+    }
+  },
+  {
+    "endpoint": "expense/entries",
+    "description": "Expenses filtered by Invoice 1001",
+    "status": "success",
+    "status_code": 200,
+    "count": 0,
+    "sample": null
+  },
+  {
+    "endpoint": "procurement/products",
+    "description": "Products filtered by Invoice 1001",
+    "status": "success",
+    "status_code": 200,
+    "count": 0,
+    "sample": null
+  }
+]

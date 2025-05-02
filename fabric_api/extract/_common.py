@@ -53,8 +53,7 @@ def paginate(
     params: dict[str, Any] | None = None,
     max_pages: int | None = 50,
 ) -> list[dict[str, Any]]:
-    """Thin wrapper around ``get_entity_data_with_detailed_logging`` with sane defaults."""
-    items, _ = client.get_entity_data_with_detailed_logging(
-        endpoint, params or {}, entity_name=entity_name, max_pages=max_pages
+    """Thin wrapper around client.paginate with sane defaults."""
+    return client.paginate(
+        endpoint, entity_name, params=params, max_pages=max_pages
     )
-    return items
