@@ -3,11 +3,6 @@
 Spark utility functions for table operations and safe data access.
 """
 
-from pyspark.sql.dataframe import DataFrame
-
-
-from typing import Optional
-
 from pyspark.sql import DataFrame, SparkSession
 import logging
 

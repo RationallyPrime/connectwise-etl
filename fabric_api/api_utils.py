@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Type
 import re
+from typing import Type
+
+from pydantic import BaseModel
 
 
 def get_fields_for_api_call(model_class: Type[BaseModel], max_depth: int = 1) -> str:

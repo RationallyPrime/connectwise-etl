@@ -1,10 +1,27 @@
 from __future__ import annotations
 
+import logging
+import os
+from typing import Any, Callable, TypeAlias
+
+import pandas as pd
+
+from .models import (
+    ManageInvoiceError,
+    ManageInvoiceExpense,
+    ManageInvoiceHeader,
+    ManageInvoiceLine,
+    ManageProduct,
+    ManageTimeEntry,
+)
+
 """fabric_api.transform
 
-Transform layer – turns validated Pydantic domain objects from *fabric_api.extract* into Spark DataFrames and persists them as Delta tables inside the Microsoft Fabric lakehouse.
+Transform layer – turns validated Pydantic domain objects from *fabric_api.extract* into Spark
+DataFrames and persists them as Delta tables inside the Microsoft Fabric lakehouse.
 
-Public surface mirrors the legacy AL design: callers pass plain Python lists of model instances. Internally we:
+Public surface mirrors the legacy AL design: callers pass plain Python lists of model instances.
+Internally we:
 
 1. Serialise the models into *pandas* DataFrames.
 2. Apply business rules (skip/flag “Tímapottur”, convert VAT decimals to %).
@@ -14,39 +31,18 @@ Public surface mirrors the legacy AL design: callers pass plain Python lists of 
 All helpers are side‑effect‑free except ``_write_delta`` which performs I/O.
 """
 
-from typing import Any, Callable, TypeAlias
-from datetime import datetime
-import logging
-import os
 
-import pandas as pd
 
 try:
-    from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
-
-    # Add type annotation for builder to help IDE understand the pattern
-    from pyspark.sql.session import SparkSession
+    from pyspark.sql import DataFrame as SparkDataFrame
+    from pyspark.sql import SparkSession
 except ImportError as exc:  # noqa: D401 – raise helpful error
     raise RuntimeError(
         "pyspark is required for fabric_api.transform – install with "
         "`pip install pyspark` or include the 'fabric' extra."
     ) from exc
 
-from .models import (
-    ManageInvoiceHeader,
-    ManageInvoiceLine,
-    ManageTimeEntry,
-    ManageInvoiceExpense,
-    ManageProduct,
-    ManageInvoiceError,
-)
-from .utils import (
-    is_timapottur_agreement,
-)
-from .spark_utils import (
-    table_exists,
-    create_empty_table_if_not_exists,
-)
+
 
 __all__: list[str] = [
     "transform_and_load",
@@ -352,7 +348,7 @@ def _write_delta(
         # Step 2: Read back from Parquet and write to Delta
         try:
             # Read back from Parquet - this step normalizes the schema
-            logger.info(f"Reading back from Parquet to normalize schema")
+            logger.info("Reading back from Parquet to normalize schema")
             normalized_df = spark.read.format("parquet").load(parquet_path)
 
             # Write to Delta with the normalized schema
@@ -368,29 +364,6 @@ def _write_delta(
         # Provide detailed error information
         error_msg = f"Error in write process for {clean_path}: {str(e)}"
         logger.error(f"ERROR: {error_msg}")
-
-        # Add diagnostic information for common OneLake errors
-        if "400" in str(e) or "401" in str(e) or "403" in str(e):
-            logger.error("\nThis appears to be an OneLake permissions or configuration issue.")
-            logger.error("Check the following:")
-            logger.error("1. Your lakehouse path is correctly configured")
-            logger.error("2. You have write permissions to this location")
-            logger.error("3. The table name follows OneLake naming conventions")
-            logger.error("4. Try using a fully qualified path like 'abfss://...' if needed")
-        elif "from cannot be less than 0" in str(e):
-            logger.error(
-                "\nThis appears to be a Livy pagination issue with empty DataFrames or lineage."
-            )
-            logger.error("Try the following:")
-            logger.error("1. Make sure you're not using negative indices")
-            logger.error("2. Verify that table schemas match between read and write operations")
-        elif "DELTA_COMPLEX_TYPE_COLUMN_CONTAINS_NULL_TYPE" in str(e):
-            logger.error("\nThis is a Delta schema validation error.")
-            logger.error("Try the following:")
-            logger.error("1. Data has been preserved in Parquet format for inspection")
-            logger.error(
-                "2. You can query the Parquet data directly using: spark.read.parquet('{parquet_path}')"
-            )
 
         # Re-raise the exception for handling by the caller
         raise
