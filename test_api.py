@@ -17,7 +17,7 @@ from typing import Any
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger: Logger = logging.getLogger("cw_test")
@@ -228,6 +228,104 @@ def test_invoice_extraction() -> None:
             logger.error(msg=f"Error during invoice extraction for date range {start_date} to {end_date}: {str(e)}")
 
 
+def test_batch_invoice_extraction(max_pages: int = 5) -> None:
+    """Test the batch invoice extraction with less verbosity."""
+    print("\n--- TESTING BATCH INVOICE EXTRACTION ---")
+    start_time = datetime.now()
+    client = setup_client()
+    
+    try:
+        from fabric_api.extract.invoices import get_invoices_with_details
+        
+        # Run the batch extraction
+        print(f"Fetching invoices with max_pages={max_pages}...")
+        invoice_headers, invoice_lines, time_entries, expenses, products, errors = get_invoices_with_details(
+            client=client,
+            max_pages=max_pages
+        )
+        
+        # Calculate execution time
+        execution_time = (datetime.now() - start_time).total_seconds()
+        
+        print("\n" + "="*60)
+        print(f"EXTRACTION RESULTS | Completed in {execution_time:.2f} seconds")
+        print("="*60)
+        print(f"{'Data Type':<20} | {'Count':<8} | {'Sample ID'}")
+        print("-"*60)
+        
+        sample_header_id = getattr(invoice_headers[0], "invoice_number", "N/A") if invoice_headers else "N/A"
+        print(f"{'Invoice Headers':<20} | {len(invoice_headers):<8} | {sample_header_id}")
+        
+        sample_line_id = f"{getattr(invoice_lines[0], 'invoice_number', 'N/A')}:{getattr(invoice_lines[0], 'line_no', 'N/A')}" if invoice_lines else "N/A"
+        print(f"{'Invoice Lines':<20} | {len(invoice_lines):<8} | {sample_line_id}")
+        
+        sample_time_id = getattr(time_entries[0], "time_entry_id", "N/A") if time_entries else "N/A"
+        print(f"{'Time Entries':<20} | {len(time_entries):<8} | {sample_time_id}")
+        
+        sample_expense_id = getattr(expenses[0], "expense_id", "N/A") if expenses else "N/A"
+        print(f"{'Expenses':<20} | {len(expenses):<8} | {sample_expense_id}")
+        
+        sample_product_id = getattr(products[0], "product_id", "N/A") if products else "N/A"
+        print(f"{'Products':<20} | {len(products):<8} | {sample_product_id}")
+        
+        # Make errors stand out
+        error_style = "*** " if errors else ""
+        print(f"{error_style}{'Errors':<20} | {len(errors):<8} | {'-'}")
+        
+        # ERROR ANALYSIS - only if errors exist
+        if errors:
+            print("\n" + "="*60)
+            print(f"ERROR ANALYSIS | {len(errors)} errors found")
+            print("="*60)
+            
+            # Group errors by table
+            table_errors = {}
+            for error in errors:
+                table = getattr(error, "table_name", "Unknown")
+                table_errors[table] = table_errors.get(table, 0) + 1
+            
+            print("ERRORS BY TABLE:")
+            for table, count in sorted(table_errors.items(), key=lambda x: x[1], reverse=True):
+                print(f"  {table:<25}: {count}")
+            
+            # Group errors by message pattern
+            error_types = {}
+            for error in errors:
+                # Use just the first part of the error message to group similar errors
+                msg = str(error.error_message)
+                msg_start = msg.split(" (")[0] if " (" in msg else (msg[:50] + "..." if len(msg) > 50 else msg)
+                error_types[msg_start] = error_types.get(msg_start, 0) + 1
+            
+            print("\nTOP ERROR TYPES:")
+            for i, (msg, count) in enumerate(sorted(error_types.items(), key=lambda x: x[1], reverse=True)[:3]):
+                print(f"  {i+1}. {count} errors: {msg}")
+            
+            # Show sample of most common error
+            most_common_msg = max(error_types.items(), key=lambda x: x[1])[0]
+            sample_error = next((e for e in errors if most_common_msg in str(e.error_message)), errors[0])
+            
+            print("\nSAMPLE ERROR DETAILS:")
+            print(f"  Table:         {getattr(sample_error, 'table_name', 'Unknown')}")
+            print(f"  Invoice:       {getattr(sample_error, 'invoice_number', 'Unknown')}")
+            print(f"  Error Type:    {getattr(sample_error, 'error_type', 'Unknown')}")
+            print(f"  Message:       {getattr(sample_error, 'error_message', 'Unknown')}")
+        
+        # Sample data validation check
+        if invoice_lines:
+            print("\n" + "="*60)
+            print("INVOICE LINE VALIDATION CHECK")
+            print("="*60)
+            sample_line = invoice_lines[0]
+            sample_dict = sample_line.model_dump()
+            for field in ["invoice_number", "line_no", "description", "time_entry_id", "quantity", "line_amount"]:
+                print(f"{field+':':<20} {sample_dict.get(field, 'None')}")
+                
+        print("\nBATCH EXTRACTION TEST COMPLETE")
+        
+    except Exception as e:
+        print(f"\nERROR: {str(e)}")
+
+
 def test_all_extraction_methods(max_pages: int = 50) -> None:
     """Test all extraction methods with the specified max_pages limit."""
     logger.info(f"Testing all extraction methods with max_pages={max_pages}")
@@ -291,6 +389,47 @@ def test_all_extraction_methods(max_pages: int = 50) -> None:
             logger.warning(f"Encountered {len(agreement_errors)} errors during agreement extraction")
 
 
+def save_sample_invoice_to_json():
+    """Save a raw invoice response to a JSON file for inspection."""
+    logger.info("Saving sample invoice to JSON file...")
+    client = setup_client()
+    
+    try:
+        # Get raw unposted invoices
+        raw_invoices = client.paginate(
+            endpoint="/finance/accounting/unpostedinvoices",
+            entity_name="unposted invoices",
+            params={"pageSize": 5},
+            max_pages=1
+        )
+        
+        if not raw_invoices:
+            logger.warning("No unposted invoices found")
+            
+            # Try posted invoices as backup
+            raw_invoices = client.paginate(
+                endpoint="/finance/invoices",
+                entity_name="posted invoices",
+                params={"pageSize": 5},
+                max_pages=1
+            )
+            
+            if not raw_invoices:
+                logger.error("No invoices found at all")
+                return
+        
+        # Save the first invoice to a JSON file
+        sample_invoice = raw_invoices[0]
+        
+        with open("sample_invoice.json", "w") as f:
+            json.dump(sample_invoice, f, indent=2, default=str)
+        
+        logger.info(f"Saved sample invoice {sample_invoice.get('invoiceNumber', 'Unknown')} to sample_invoice.json")
+        
+    except Exception as e:
+        logger.error(f"Error saving sample invoice: {str(e)}")
+
+
 def main() -> None:
     """Run all tests."""
     logger.info("Starting ConnectWise API tests")
@@ -311,39 +450,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="ConnectWise API Test Tool")
-    parser.add_argument("--test", choices=["connection", "endpoints", "invoices", "all"], 
-                        default="all", help="Test to run")
-    parser.add_argument("--max-pages", type=int, default=50, 
-                        help="Maximum number of pages to retrieve")
-    parser.add_argument("--debug", action="store_true", 
-                        help="Enable debug logging")
-    
-    args = parser.parse_args()
-    
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-    
-    logger.info(f"Starting ConnectWise API test: {args.test}")
-    
     try:
-        if args.test == "connection" or args.test == "all":
-            test_api_connection()
-        
-        if args.test == "endpoints" or args.test == "all":
-            test_endpoints()
-        
-        if args.test == "invoices" or args.test == "all":
-            test_invoice_extraction()
-        
-        if args.test == "all":
-            test_all_extraction_methods(max_pages=args.max_pages)
-        
-        logger.info("Tests completed successfully")
+        test_batch_invoice_extraction(max_pages=5)
     except Exception as e:
-        logger.error(f"Test failed: {str(e)}", exc_info=True)
-        exit(1)
+        print(f"Test failed: {str(e)}")

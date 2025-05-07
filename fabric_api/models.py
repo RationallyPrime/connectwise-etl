@@ -86,25 +86,28 @@ class ManageInvoiceLine(BaseModel):  # Table 62002
     document_date: date | None = None
 
 
-class ManageInvoiceExpense(BaseModel):  # Table 62004
-    """Expense line associated with an invoice."""
+class ManageInvoiceExpense(BaseModel):  # Table 62004
+    """Expense billed on an invoice."""
 
-    invoice_number: str = Field(default="", description="Parent invoice header number.")
-    line_no: int = Field(default=..., description="Sequential line number within the invoice header.")
-
-    type: str | None = None  # Mileage, Meal, etc.
+    invoice_id: int = Field(default=0, description="Invoice ID from ConnectWise.")
+    line_no: int = Field(default=..., description="Sequential line number within the invoice.")
+    type: str | None = Field(default=None, description="Expense type.")
+    
     quantity: float = 0.0
     amount: float = 0.0
-    employee: str | None = None  # Employee identifier
-
-    work_date: date | None = None
-
+    
+    employee: str | None = Field(default=None, description="Employee code (up to 10 characters).")
+    job_journal_line_no: int | None = None
+    work_date: date | None = None  # Notice this is a DATE not a datetime
+    
     agreement_id: int | None = None
     agreement_number: str | None = None
     parent_agreement_id: int | None = None
+    invoice_number: str = Field(default="", description="Foreign key to ManageInvoiceHeader.invoice_number.")
     agreement_type: str | None = None
-
-    job_journal_line_no: int | None = None
+    
+    # Additional fields for tracking (not in AL table)
+    expense_id: int | None = None
 
 
 class ManageProduct(BaseModel):  # Table 62005

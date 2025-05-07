@@ -44,18 +44,34 @@ def get_parent_agreement_data(
     """Return ``(parent_agreement_id, agreement_type_name)`` for *agreement_id*.
 
     If the agreement has no parent, the *parent_agreement_id* will be ``0``.
-    Internally performs **one** GET request to
-    ``/finance/agreements/{agreement_id}`` and extracts the relevant fields –
-    this mirrors AL **GetParentAgreementIdAndType**.
+    Uses the cached agreement data if available, otherwise falls back to a direct API call.
+    This mirrors AL **GetParentAgreementIdAndType**.
     """
 
     if not agreement_id:
         return 0, ""
 
-    agreement: dict[str, Any] = client.get(endpoint=f"/finance/agreements/{agreement_id}").json()
+    agreement_data: dict[str, Any] = {}
+    
+    try:
+        # First try to use the cached version
+        from .extract.agreements import get_cached_agreement
+        
+        cached_agreement = get_cached_agreement(client, agreement_id)
+        
+        if cached_agreement:
+            agreement_data = cached_agreement
+        else:
+            # Fall back to the direct API call if not in cache
+            response = client.get(endpoint=f"/finance/agreements/{agreement_id}")
+            agreement_data = response.json()
+    except ImportError:
+        # Fall back to the direct API call if module not available
+        response = client.get(endpoint=f"/finance/agreements/{agreement_id}")
+        agreement_data = response.json()
 
-    parent_id: int = agreement.get("parentAgreement", {}).get("id", 0) or 0
-    agreement_type: str = get_nested_value(data=agreement, dotted_path="type.name", default="")
+    parent_id: int = agreement_data.get("parentAgreement", {}).get("id", 0) or 0
+    agreement_type: str = get_nested_value(data=agreement_data, dotted_path="type.name", default="")
 
     return parent_id, agreement_type
 

@@ -54,6 +54,85 @@ This will create a `.whl` file in the `dist/` directory.
 2. **Transform**: Convert to DataFrame and add extraction timestamp
 3. **Load**: Write directly to OneLake via abfss:// URLs
 
+## ConnectWise API Workarounds
+
+This package now includes workarounds for relationship endpoint permission issues in the ConnectWise API. Instead of using direct relationship endpoints (which may require additional permissions), it uses filtered queries to standard endpoints to retrieve related data.
+
+### Key Improvements:
+
+1. **Time Entries**: Uses `/time/entries` with `invoice/id` filter instead of `/finance/invoices/{id}/timeentries`
+2. **Expenses**: Uses `/expense/entries` with `invoice/id` filter instead of `/finance/invoices/{id}/expenses`
+3. **Products**: Uses `/procurement/products` with `invoice/id` filter instead of `/finance/invoices/{id}/products`
+
+These workarounds maintain full functionality while requiring fewer API permissions.
+
+## JSON Export Tool
+
+A production-ready export script is included to extract invoice data to JSON files:
+
+```bash
+# Basic usage (exports last 30 days of invoices)
+python production_export.py
+
+# Specify date range
+python production_export.py --start_date 2025-04-01 --end_date 2025-04-30
+
+# Specify output directory
+python production_export.py --output_dir invoice_data_april
+
+# Limit number of invoices
+python production_export.py --limit 50
+
+# Use credentials file instead of environment variables
+python production_export.py --credentials config.json
+```
+
+### Credentials
+
+Set up credentials using either:
+
+1. **Environment variables**:
+   ```
+   CW_AUTH_USERNAME=your_username
+   CW_AUTH_PASSWORD=your_password
+   CW_CLIENTID=your_client_id
+   ```
+
+2. **JSON config file** (see `config.sample.json`):
+   ```json
+   {
+       "username": "your_cw_username",
+       "password": "your_cw_password",
+       "client_id": "your_cw_client_id"
+   }
+   ```
+
+### Output Format
+
+The export script creates a JSON file for each invoice with this structure:
+
+```json
+{
+    "header": {
+        "id": 1001,
+        "invoice_number": "1001",
+        ...
+    },
+    "lines": [
+        {
+            "invoice_number": "1001",
+            "line_no": 1,
+            "description": "Time entry",
+            "time_entry_id": 1631,
+            ...
+        },
+        ...
+    ]
+}
+```
+
+It also generates a summary file with export statistics.
+
 ## Architecture Notes
 
 - `fabric_helpers.py`: Utilities for OneLake path resolution

@@ -208,8 +208,45 @@ class ConnectWiseClient:
         endpoint: str,
         *,
         params: dict[str, Any] | None = None,
+        fields: str | None = None,
+        conditions: str | None = None,
+        child_conditions: str | None = None,
+        order_by: str | None = None,
     ) -> Response:
-        """Perform a GET request to the ConnectWise API."""
+        """Perform a GET request to the ConnectWise API.
+        
+        Args:
+            endpoint: API endpoint to call (e.g. "/finance/agreements")
+            params: Dictionary of query parameters
+            fields: Comma-separated list of fields to return (e.g. "id,name,type")
+            conditions: Query conditions using ConnectWise syntax.
+                Examples:
+                - Basic comparison: "id=123" or "total>1000"
+                - Date filtering: "date>now-30d"
+                - Complex logic: "(status/name='Open' OR status/name='Closed') AND date>now-90d"
+            child_conditions: Conditions for child objects/relationships
+            order_by: Field(s) to sort results by (e.g. "id desc" or "name asc")
+            
+        Returns:
+            Response object from the API call
+        """
+        # Combine params with fields and conditions
+        all_params = params.copy() if params else {}
+        
+        # Add standard filtering parameters if provided
+        if fields:
+            all_params["fields"] = fields
+            
+        if conditions:
+            all_params["conditions"] = conditions
+            
+        if child_conditions:
+            all_params["childconditions"] = child_conditions
+            
+        if order_by:
+            all_params["orderBy"] = order_by
+        
+        # Build request URL and headers
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
         
@@ -218,8 +255,8 @@ class ConnectWiseClient:
         if self.basic_username and self.basic_password:
             auth = (self.basic_username, self.basic_password)
             
-        logger.debug(f"GET {url}")
-        resp = self.session.get(url, headers=headers, params=params, auth=auth)
+        logger.debug(f"GET {url} with params={all_params}")
+        resp = self.session.get(url, headers=headers, params=all_params, auth=auth)
         resp.raise_for_status()
         return resp
 
@@ -240,7 +277,7 @@ class ConnectWiseClient:
             auth = (self.basic_username, self.basic_password)
             
         logger.debug(f"POST {url}")
-        resp = self.session.post(url, headers=headers, json=json_data, params=params, auth=auth)
+        resp: Response = self.session.post(url, headers=headers, json=json_data, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 
@@ -295,15 +332,62 @@ class ConnectWiseClient:
         entity_name: str,
         *,
         params: dict[str, Any] | None = None,
+        fields: str | None = None,
+        conditions: str | None = None,
+        child_conditions: str | None = None,
+        order_by: str | None = None,
         max_pages: int | None = None,
+        page_size: int = 100,
     ) -> list[dict[str, Any]]:
-        """Get all pages of data from a paginated endpoint."""
-        if params is None:
-            params = {}
+        """Get all pages of data from a paginated endpoint.
+        
+        Args:
+            endpoint: API endpoint to call (e.g. "/finance/agreements")
+            entity_name: Name of the entity being fetched (for logging)
+            params: Dictionary of query parameters
+            fields: Comma-separated list of fields to return (e.g. "id,name,type")
+            conditions: Query conditions using ConnectWise syntax.
+                Examples:
+                - Basic comparison: "id=123" or "total>1000"
+                - Date filtering: "date>now-30d"
+                - Complex logic: "(status/name='Open' OR status/name='Closed') AND date>now-90d"
+            child_conditions: Conditions for child objects/relationships
+            order_by: Field(s) to sort results by (e.g. "id desc" or "name asc")
+            max_pages: Maximum number of pages to fetch
+            page_size: Number of records per page (default 100, max typically 1000)
+            
+        Returns:
+            List of entity dictionaries from the API
+        """
+        # Combine params with fields and conditions
+        all_params = params.copy() if params else {}
+        
+        # Set page size from the parameter (or use the one in params if provided)
+        if "pageSize" not in all_params:
+            all_params["pageSize"] = page_size
+        else:
+            # If pageSize was in params, use that value for our variable
+            page_size = all_params["pageSize"]
+        
+        # Add standard filtering parameters if provided
+        if fields:
+            all_params["fields"] = fields
+            logger.debug(f"Using fields filter: {fields}")
+            
+        if conditions:
+            all_params["conditions"] = conditions
+            logger.debug(f"Using conditions filter: {conditions}")
+            
+        if child_conditions:
+            all_params["childconditions"] = child_conditions
+            logger.debug(f"Using child conditions filter: {child_conditions}")
+            
+        if order_by:
+            all_params["orderBy"] = order_by
+            logger.debug(f"Using order by: {order_by}")
             
         items = []
         page = 1
-        page_size = params.get("pageSize", 100)
         
         while True:
             # Check if we've reached max pages limit
@@ -311,11 +395,16 @@ class ConnectWiseClient:
                 logger.info(f"Reached maximum page limit of {max_pages}. Stopping.")
                 break
                 
-            query = {"page": page, "pageSize": page_size}
-            query.update(params)
+            # Create a copy of params for this page
+            query = all_params.copy()
+            query.update({"page": page, "pageSize": page_size})
             
             url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
             logger.debug(f"Requesting {entity_name} page {page}: {url}")
+            if fields:
+                logger.debug(f"With fields: {fields}")
+            if conditions:
+                logger.debug(f"With conditions: {conditions}")
             
             # Use auth tuple for requests
             auth = None

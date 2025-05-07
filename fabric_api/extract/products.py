@@ -66,53 +66,72 @@ def get_products_for_invoice(
     *,
     max_pages: int | None = 50,
 ) -> tuple[list[ManageProduct], list[ManageInvoiceError]]:
-    """Get products for a specific invoice using the direct relationship endpoint."""
+    """Get products for an invoice using filtered queries."""
     logger: logging.Logger = logging.getLogger(name=__name__)
     logger.debug(f"Getting products for invoice {invoice_number} (ID: {invoice_id})")
     
     products: list[ManageProduct] = []
     errors: list[ManageInvoiceError] = []
     
-    # Use the direct relationship endpoint for products
-    endpoint = f"/finance/invoices/{invoice_id}/products"
-    
     try:
-        # Get products directly related to this invoice
-        products_raw: list[dict[str, Any]] = client.paginate(
-            endpoint=endpoint,
-            entity_name=f"products for invoice {invoice_number}",
+        # Use the standard products endpoint with a filter for this invoice
+        conditions = f"invoice/id={invoice_id}"
+        
+        # Get products for this invoice
+        entries = client.paginate(
+            endpoint="/procurement/products",
+            entity_name=f"products for invoice {invoice_id}",
+            params={"conditions": conditions},
             max_pages=max_pages,
         )
         
-        logger.debug(f"Found {len(products_raw)} products for invoice {invoice_number}")
-        
-        # Validate and convert to Pydantic models
-        for product_raw in products_raw:
-            # Add invoice number for reference
-            product_raw["invoiceNumber"] = invoice_number
-            
-            # Validate against our model
-            product = safe_validate(
-                ManageProduct, 
-                product_raw, 
-                errors=errors, 
-                invoice_number=invoice_number
-            )
-            
-            if product:
-                products.append(product)
+        # Transform the entries into ManageProduct objects
+        for entry in entries:
+            try:
+                # Map 'id' to 'product_id' which is required by our model
+                if "id" in entry:
+                    entry["product_id"] = entry["id"]
+                
+                # Add the invoice_number to the entry
+                entry["invoice_number"] = invoice_number
+                
+                # Validate and create a ManageProduct object
+                product = safe_validate(
+                    model_cls=ManageProduct, 
+                    raw=entry, 
+                    errors=errors,
+                    invoice_number=invoice_number
+                )
+                
+                if product:
+                    # Ensure the invoice_number is set on the model
+                    product.invoice_number = invoice_number
+                    products.append(product)
+                
+            except Exception as e:
+                logger.error(f"Error processing product: {str(e)}")
+                errors.append(
+                    ManageInvoiceError(
+                        error_message=f"Error processing product: {str(e)}",
+                        invoice_number=invoice_number,
+                        error_table_id=ManageProduct.__name__,
+                        table_name=ManageProduct.__name__,
+                    )
+                )
+                
+        logger.info(f"Retrieved {len(products)} products for invoice {invoice_number}")
     
     except Exception as e:
-        logger.error(f"Error fetching products for invoice {invoice_number}: {str(e)}")
+        error_msg = f"Error fetching products for invoice {invoice_number}: {str(e)}"
+        logger.error(error_msg)
         errors.append(
             ManageInvoiceError(
                 invoice_number=invoice_number,
                 error_table_id="0",
                 error_type="ProductExtractionError",
-                error_message=str(e),
+                error_message=error_msg,
                 table_name="ManageProduct",
             )
         )
     
-    logger.info(f"Retrieved {len(products)} products for invoice {invoice_number}")
     return products, errors
