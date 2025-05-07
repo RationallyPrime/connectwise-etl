@@ -1,0 +1,545 @@
+[
+  {
+    "id": 1,
+    "company": {
+      "id": 250,
+      "identifier": "THE",
+      "name": "\u00deekking",
+      "_info": {
+        "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250",
+        "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211"
+      }
+    },
+    "companyType": "Client",
+    "chargeToId": 106,
+    "chargeToType": "ProjectTicket",
+    "member": {
+      "id": 159,
+      "identifier": "jonr",
+      "name": "J\u00f3n Kristinn Ragnarsson",
+      "dailyCapacity": 0.0,
+      "_info": {
+        "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/159",
+        "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/159/image?lm=2025-04-10T09:21:01Z"
+      }
+    },
+    "locationId": 11,
+    "businessUnitId": 1,
+    "businessGroupDesc": "Service",
+    "location": {
+      "id": 11,
+      "name": "\u00deekking Tristan hf",
+      "_info": {
+        "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+      }
+    },
+    "department": {
+      "id": 1,
+      "name": "Service",
+      "_info": {
+        "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+      }
+    },
+    "workType": {
+      "id": 3,
+      "name": "Regular",
+      "utilizationFlag": true,
+      "_info": {
+        "workType_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workTypes/3"
+      }
+    },
+    "workRole": {
+      "id": 11,
+      "name": "Management",
+      "_info": {
+        "workRole_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workRoles/11"
+      }
+    },
+    "projectActivity": "Setja upp verkefni",
+    "territory": "My Company",
+    "timeStart": "2018-05-05T14:00:00Z",
+    "timeEnd": "2018-05-05T14:44:00Z",
+    "hoursDeduct": 0.0,
+    "actualHours": 0.73,
+    "billableOption": "DoNotBill",
+    "addToDetailDescriptionFlag": true,
+    "addToInternalAnalysisFlag": false,
+    "addToResolutionFlag": false,
+    "emailResourceFlag": false,
+    "emailContactFlag": false,
+    "emailCcFlag": false,
+    "hoursBilled": 1.0,
+    "invoiceHours": 1.0,
+    "hourlyCost": "10800.00",
+    "enteredBy": "jonr",
+    "dateEntered": "2018-05-05T14:44:45Z",
+    "mobileGuid": "c5596c66-8dc3-484d-860b-7bb4eebc4b42",
+    "hourlyRate": 23800.0,
+    "agreementHours": 0.0,
+    "agreementAmount": 0.0,
+    "agreementAdjustment": 0.0,
+    "adjustment": 0.0,
+    "invoiceReady": 0,
+    "timeSheet": {
+      "id": 37,
+      "name": "2018-04-30 to 2018-05-06",
+      "_info": {
+        "timeSheet_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/sheets/37"
+      }
+    },
+    "status": "WrittenOff",
+    "ticket": {
+      "id": 106,
+      "summary": "Setja upp verkefni",
+      "_info": {
+        "ticket_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/106",
+        "billingMethod": "A",
+        "status": ">Closed"
+      }
+    },
+    "project": {
+      "id": 1,
+      "name": "Losun vefh\u00fdsingarvi\u00f0skiptavina",
+      "_info": {
+        "project_href": "https://verk.thekking.is/v4_6_release/apis/3.0/project/projects/1",
+        "billingMethod": "A",
+        "status": "05 - Closed"
+      }
+    },
+    "phase": {
+      "id": 3,
+      "name": "Verkefnast\u00fdring",
+      "_info": {
+        "phase_href": "https://verk.thekking.is/v4_6_release/apis/3.0/project/projects/1/phases/3",
+        "billingMethod": "A"
+      }
+    },
+    "ticketBoard": "Internal Projects",
+    "ticketStatus": ">Closed",
+    "invoiceFlag": false,
+    "extendedInvoiceAmount": 23800.0,
+    "locationName": "\u00deekking Tristan hf",
+    "taxCode": {
+      "id": 16,
+      "name": "Vir\u00f0isaukaskattur",
+      "_info": {
+        "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+      }
+    }
+  },
+  {
+    "id": 2,
+    "company": {
+      "id": 250,
+      "identifier": "THE",
+      "name": "\u00deekking",
+      "_info": {
+        "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250",
+        "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211"
+      }
+    },
+    "companyType": "Client",
+    "chargeToId": 111,
+    "chargeToType": "ServiceTicket",
+    "member": {
+      "id": 159,
+      "identifier": "jonr",
+      "name": "J\u00f3n Kristinn Ragnarsson",
+      "dailyCapacity": 0.0,
+      "_info": {
+        "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/159",
+        "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/159/image?lm=2025-04-10T09:21:01Z"
+      }
+    },
+    "locationId": 11,
+    "businessUnitId": 1,
+    "businessGroupDesc": "Service",
+    "location": {
+      "id": 11,
+      "name": "\u00deekking Tristan hf",
+      "_info": {
+        "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+      }
+    },
+    "department": {
+      "id": 1,
+      "name": "Service",
+      "_info": {
+        "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+      }
+    },
+    "workType": {
+      "id": 3,
+      "name": "Regular",
+      "utilizationFlag": true,
+      "_info": {
+        "workType_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workTypes/3"
+      }
+    },
+    "workRole": {
+      "id": 10,
+      "name": "Consulting",
+      "_info": {
+        "workRole_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workRoles/10"
+      }
+    },
+    "territory": "My Company",
+    "timeStart": "2018-05-06T16:00:00Z",
+    "timeEnd": "2018-05-06T16:32:00Z",
+    "hoursDeduct": 0.0,
+    "actualHours": 0.53,
+    "billableOption": "DoNotBill",
+    "addToDetailDescriptionFlag": true,
+    "addToInternalAnalysisFlag": false,
+    "addToResolutionFlag": false,
+    "emailResourceFlag": true,
+    "emailContactFlag": true,
+    "emailCcFlag": false,
+    "hoursBilled": 1.0,
+    "invoiceHours": 1.0,
+    "hourlyCost": "10800.00",
+    "enteredBy": "jonr",
+    "dateEntered": "2018-05-06T16:33:19Z",
+    "mobileGuid": "c10cd370-4a26-424b-972e-e8037294651e",
+    "hourlyRate": 23800.0,
+    "agreementHours": 0.0,
+    "agreementAmount": 0.0,
+    "agreementAdjustment": 0.0,
+    "adjustment": 0.0,
+    "invoiceReady": 0,
+    "timeSheet": {
+      "id": 37,
+      "name": "2018-04-30 to 2018-05-06",
+      "_info": {
+        "timeSheet_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/sheets/37"
+      }
+    },
+    "status": "WrittenOff",
+    "ticket": {
+      "id": 111,
+      "summary": "Laga stillingar \u00ed IIS \u00e1 gru-msman01.grunn.it",
+      "_info": {
+        "ticket_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/111",
+        "billingMethod": "A",
+        "status": ">Closed"
+      }
+    },
+    "ticketBoard": "01 - Help Desk",
+    "ticketStatus": ">Closed",
+    "ticketType": "MUST CHANGE",
+    "invoiceFlag": false,
+    "extendedInvoiceAmount": 23800.0,
+    "locationName": "\u00deekking Tristan hf",
+    "taxCode": {
+      "id": 16,
+      "name": "Vir\u00f0isaukaskattur",
+      "_info": {
+        "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+      }
+    }
+  },
+  {
+    "id": 4,
+    "company": {
+      "id": 250,
+      "identifier": "THE",
+      "name": "\u00deekking",
+      "_info": {
+        "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250",
+        "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211"
+      }
+    },
+    "companyType": "Client",
+    "chargeToId": 4,
+    "chargeToType": "ChargeCode",
+    "member": {
+      "id": 153,
+      "identifier": "hallur",
+      "name": "Hallur Gunnarsson",
+      "dailyCapacity": 0.0,
+      "_info": {
+        "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/153",
+        "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/153/image?lm=2025-04-10T09:21:01Z"
+      }
+    },
+    "locationId": 11,
+    "businessUnitId": 2,
+    "businessGroupDesc": "Sales",
+    "location": {
+      "id": 11,
+      "name": "\u00deekking Tristan hf",
+      "_info": {
+        "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+      }
+    },
+    "department": {
+      "id": 2,
+      "name": "Sales",
+      "_info": {
+        "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/2"
+      }
+    },
+    "workType": {
+      "id": 4,
+      "name": "zLaunalaust leyfi",
+      "utilizationFlag": false,
+      "_info": {
+        "workType_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workTypes/4"
+      }
+    },
+    "workRole": {
+      "id": 5,
+      "name": "Technical Expert",
+      "_info": {
+        "workRole_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workRoles/5"
+      }
+    },
+    "territory": "My Company",
+    "timeStart": "2018-05-07T10:30:00Z",
+    "timeEnd": "2018-05-07T11:30:00Z",
+    "hoursDeduct": 0.0,
+    "actualHours": 1.0,
+    "billableOption": "NoCharge",
+    "addToDetailDescriptionFlag": false,
+    "addToInternalAnalysisFlag": false,
+    "addToResolutionFlag": false,
+    "hoursBilled": 1.0,
+    "invoiceHours": 1.0,
+    "hourlyCost": "10800.00",
+    "enteredBy": "Hallur",
+    "dateEntered": "2018-05-07T09:41:22Z",
+    "mobileGuid": "17df9a67-52c4-4feb-9e67-862cf3a600d5",
+    "hourlyRate": 23900.0,
+    "agreementHours": 0.0,
+    "agreementAmount": 0.0,
+    "agreementAdjustment": 0.0,
+    "adjustment": 0.0,
+    "invoiceReady": 0,
+    "timeSheet": {
+      "id": 4,
+      "name": "2018-05-07 to 2018-05-13",
+      "_info": {
+        "timeSheet_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/sheets/4"
+      }
+    },
+    "status": "WrittenOff",
+    "invoiceFlag": true,
+    "extendedInvoiceAmount": 23900.0,
+    "locationName": "\u00deekking Tristan hf",
+    "taxCode": {
+      "id": 16,
+      "name": "Vir\u00f0isaukaskattur",
+      "_info": {
+        "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+      }
+    }
+  },
+  {
+    "id": 5,
+    "company": {
+      "id": 250,
+      "identifier": "THE",
+      "name": "\u00deekking",
+      "_info": {
+        "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250",
+        "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211"
+      }
+    },
+    "companyType": "Client",
+    "chargeToId": 4,
+    "chargeToType": "ChargeCode",
+    "member": {
+      "id": 153,
+      "identifier": "hallur",
+      "name": "Hallur Gunnarsson",
+      "dailyCapacity": 0.0,
+      "_info": {
+        "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/153",
+        "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/153/image?lm=2025-04-10T09:21:01Z"
+      }
+    },
+    "locationId": 11,
+    "businessUnitId": 2,
+    "businessGroupDesc": "Sales",
+    "location": {
+      "id": 11,
+      "name": "\u00deekking Tristan hf",
+      "_info": {
+        "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+      }
+    },
+    "department": {
+      "id": 2,
+      "name": "Sales",
+      "_info": {
+        "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/2"
+      }
+    },
+    "workType": {
+      "id": 4,
+      "name": "zLaunalaust leyfi",
+      "utilizationFlag": false,
+      "_info": {
+        "workType_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workTypes/4"
+      }
+    },
+    "workRole": {
+      "id": 5,
+      "name": "Technical Expert",
+      "_info": {
+        "workRole_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workRoles/5"
+      }
+    },
+    "territory": "My Company",
+    "timeStart": "2018-05-07T11:30:00Z",
+    "timeEnd": "2018-05-07T14:00:00Z",
+    "hoursDeduct": 0.0,
+    "actualHours": 2.5,
+    "billableOption": "NoCharge",
+    "addToDetailDescriptionFlag": false,
+    "addToInternalAnalysisFlag": false,
+    "addToResolutionFlag": false,
+    "hoursBilled": 2.5,
+    "invoiceHours": 2.5,
+    "hourlyCost": "10800.00",
+    "enteredBy": "Hallur",
+    "dateEntered": "2018-05-07T09:43:35Z",
+    "mobileGuid": "d7c1421b-3bf6-42e8-8c8c-da2218a62395",
+    "hourlyRate": 23900.0,
+    "agreementHours": 0.0,
+    "agreementAmount": 0.0,
+    "agreementAdjustment": 0.0,
+    "adjustment": 0.0,
+    "invoiceReady": 0,
+    "timeSheet": {
+      "id": 4,
+      "name": "2018-05-07 to 2018-05-13",
+      "_info": {
+        "timeSheet_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/sheets/4"
+      }
+    },
+    "status": "WrittenOff",
+    "invoiceFlag": true,
+    "extendedInvoiceAmount": 59750.0,
+    "locationName": "\u00deekking Tristan hf",
+    "taxCode": {
+      "id": 16,
+      "name": "Vir\u00f0isaukaskattur",
+      "_info": {
+        "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+      }
+    }
+  },
+  {
+    "id": 6,
+    "company": {
+      "id": 250,
+      "identifier": "THE",
+      "name": "\u00deekking",
+      "_info": {
+        "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/250",
+        "mobileGuid": "1df91371-6d7a-4778-ab81-f3e7761f5211"
+      }
+    },
+    "companyType": "Client",
+    "chargeToId": 100,
+    "chargeToType": "ServiceTicket",
+    "member": {
+      "id": 160,
+      "identifier": "peturOLD",
+      "name": "P\u00e9tur \u00d3lafsson",
+      "dailyCapacity": 0.0,
+      "_info": {
+        "member_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/160",
+        "image_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/members/160/image?lm=2025-04-10T09:21:01Z"
+      }
+    },
+    "locationId": 11,
+    "businessUnitId": 1,
+    "businessGroupDesc": "Service",
+    "location": {
+      "id": 11,
+      "name": "\u00deekking Tristan hf",
+      "_info": {
+        "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+      }
+    },
+    "department": {
+      "id": 1,
+      "name": "Service",
+      "_info": {
+        "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+      }
+    },
+    "workType": {
+      "id": 24,
+      "name": "Onsite Work",
+      "utilizationFlag": true,
+      "_info": {
+        "workType_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workTypes/24"
+      }
+    },
+    "workRole": {
+      "id": 9,
+      "name": "Operations",
+      "_info": {
+        "workRole_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/workRoles/9"
+      }
+    },
+    "territory": "My Company",
+    "timeStart": "2018-05-07T13:53:00Z",
+    "timeEnd": "2018-05-07T14:53:00Z",
+    "hoursDeduct": 0.0,
+    "actualHours": 1.0,
+    "billableOption": "Billable",
+    "notes": "P\u00e9tur \u00d3lafsson Mon 07/05/2018 13:56 UTC+00 \n\nPrufa prufa prufa prufa \u00fea\u00f0 er svo gaman a\u00f0 prufa",
+    "addToDetailDescriptionFlag": true,
+    "addToInternalAnalysisFlag": false,
+    "addToResolutionFlag": false,
+    "emailResourceFlag": false,
+    "emailContactFlag": false,
+    "emailCcFlag": false,
+    "hoursBilled": 1.0,
+    "invoiceHours": 1.0,
+    "hourlyCost": "0.00",
+    "enteredBy": "petur",
+    "dateEntered": "2018-05-07T13:56:25Z",
+    "mobileGuid": "9faa1b36-d727-4270-ae06-13bc0789b937",
+    "hourlyRate": 0.0,
+    "agreementHours": 0.0,
+    "agreementAmount": 0.0,
+    "agreementAdjustment": 0.0,
+    "adjustment": 0.0,
+    "invoiceReady": 0,
+    "timeSheet": {
+      "id": 29,
+      "name": "2018-05-07 to 2018-05-13",
+      "_info": {
+        "timeSheet_href": "https://verk.thekking.is/v4_6_release/apis/3.0/time/sheets/29"
+      }
+    },
+    "status": "WrittenOff",
+    "ticket": {
+      "id": 100,
+      "summary": "\u00fea\u00f0 er gaman a\u00f0 leika s\u00e9r",
+      "_info": {
+        "ticket_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/tickets/100",
+        "billingMethod": "A",
+        "status": ">Closed"
+      }
+    },
+    "ticketBoard": "01 - Help Desk",
+    "ticketStatus": ">Closed",
+    "ticketType": "MUST CHANGE",
+    "invoiceFlag": true,
+    "extendedInvoiceAmount": 0.0,
+    "locationName": "\u00deekking Tristan hf",
+    "taxCode": {
+      "id": 16,
+      "name": "Vir\u00f0isaukaskattur",
+      "_info": {
+        "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+      }
+    }
+  }
+]

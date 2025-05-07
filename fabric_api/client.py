@@ -53,6 +53,7 @@ logger.addHandler(hdlr=logging.NullHandler())
 # Data‑shapes
 ###############################################################################
 
+
 class ApiErrorRecord(dict):
     """Dictionary sub‑class that captures structured API‑level errors.
 
@@ -69,9 +70,11 @@ class ApiErrorRecord(dict):
 
     # No custom behaviour — we simply like the self‑documenting type alias.
 
+
 ###############################################################################
 # Optional Azure Key Vault secret bootstrap
 ###############################################################################
+
 
 def _pull_from_key_vault() -> None:  # pragma: no cover – env dep.
     """Populate missing CW_ env‑vars from Azure Key Vault if configured."""
@@ -114,9 +117,11 @@ def _pull_from_key_vault() -> None:  # pragma: no cover – env dep.
             # auth mode to engage based on what *is* available.
             pass
 
+
 ###############################################################################
 # Main client class
 ###############################################################################
+
 
 class ConnectWiseClient:
     """Thin, resilient wrapper around the ConnectWise Manage REST API."""
@@ -214,7 +219,7 @@ class ConnectWiseClient:
         order_by: str | None = None,
     ) -> Response:
         """Perform a GET request to the ConnectWise API.
-        
+
         Args:
             endpoint: API endpoint to call (e.g. "/finance/agreements")
             params: Dictionary of query parameters
@@ -226,35 +231,35 @@ class ConnectWiseClient:
                 - Complex logic: "(status/name='Open' OR status/name='Closed') AND date>now-90d"
             child_conditions: Conditions for child objects/relationships
             order_by: Field(s) to sort results by (e.g. "id desc" or "name asc")
-            
+
         Returns:
             Response object from the API call
         """
         # Combine params with fields and conditions
         all_params = params.copy() if params else {}
-        
+
         # Add standard filtering parameters if provided
         if fields:
             all_params["fields"] = fields
-            
+
         if conditions:
             all_params["conditions"] = conditions
-            
+
         if child_conditions:
             all_params["childconditions"] = child_conditions
-            
+
         if order_by:
             all_params["orderBy"] = order_by
-        
+
         # Build request URL and headers
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # Use auth tuple for requests instead of Authorization header
         auth = None
         if self.basic_username and self.basic_password:
             auth = (self.basic_username, self.basic_password)
-            
+
         logger.debug(f"GET {url} with params={all_params}")
         resp = self.session.get(url, headers=headers, params=all_params, auth=auth)
         resp.raise_for_status()
@@ -270,14 +275,16 @@ class ConnectWiseClient:
         """Perform a POST request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # Use auth tuple for requests instead of Authorization header
         auth = None
         if self.basic_username and self.basic_password:
             auth = (self.basic_username, self.basic_password)
-            
+
         logger.debug(f"POST {url}")
-        resp: Response = self.session.post(url, headers=headers, json=json_data, params=params, auth=auth)
+        resp: Response = self.session.post(
+            url, headers=headers, json=json_data, params=params, auth=auth
+        )
         resp.raise_for_status()
         return resp
 
@@ -291,32 +298,27 @@ class ConnectWiseClient:
         """Perform a PUT request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # Use auth tuple for requests instead of Authorization header
         auth = None
         if self.basic_username and self.basic_password:
             auth = (self.basic_username, self.basic_password)
-            
+
         logger.debug(f"PUT {url}")
         resp = self.session.put(url, headers=headers, json=json_data, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 
-    def delete(
-        self, 
-        endpoint: str, 
-        *, 
-        params: dict[str, Any] | None = None
-    ) -> Response:
+    def delete(self, endpoint: str, *, params: dict[str, Any] | None = None) -> Response:
         """Perform a DELETE request to the ConnectWise API."""
         url: str = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # Use auth tuple for requests instead of Authorization header
         auth = None
         if self.basic_username and self.basic_password:
             auth = (self.basic_username, self.basic_password)
-            
+
         logger.debug(f"DELETE {url}")
         resp = self.session.delete(url, headers=headers, params=params, auth=auth)
         resp.raise_for_status()
@@ -340,7 +342,7 @@ class ConnectWiseClient:
         page_size: int = 100,
     ) -> list[dict[str, Any]]:
         """Get all pages of data from a paginated endpoint.
-        
+
         Args:
             endpoint: API endpoint to call (e.g. "/finance/agreements")
             entity_name: Name of the entity being fetched (for logging)
@@ -355,79 +357,79 @@ class ConnectWiseClient:
             order_by: Field(s) to sort results by (e.g. "id desc" or "name asc")
             max_pages: Maximum number of pages to fetch
             page_size: Number of records per page (default 100, max typically 1000)
-            
+
         Returns:
             List of entity dictionaries from the API
         """
         # Combine params with fields and conditions
         all_params = params.copy() if params else {}
-        
+
         # Set page size from the parameter (or use the one in params if provided)
         if "pageSize" not in all_params:
             all_params["pageSize"] = page_size
         else:
             # If pageSize was in params, use that value for our variable
             page_size = all_params["pageSize"]
-        
+
         # Add standard filtering parameters if provided
         if fields:
             all_params["fields"] = fields
             logger.debug(f"Using fields filter: {fields}")
-            
+
         if conditions:
             all_params["conditions"] = conditions
             logger.debug(f"Using conditions filter: {conditions}")
-            
+
         if child_conditions:
             all_params["childconditions"] = child_conditions
             logger.debug(f"Using child conditions filter: {child_conditions}")
-            
+
         if order_by:
             all_params["orderBy"] = order_by
             logger.debug(f"Using order by: {order_by}")
-            
+
         items = []
         page = 1
-        
+
         while True:
             # Check if we've reached max pages limit
             if max_pages is not None and page > max_pages:
                 logger.info(f"Reached maximum page limit of {max_pages}. Stopping.")
                 break
-                
+
             # Create a copy of params for this page
             query = all_params.copy()
             query.update({"page": page, "pageSize": page_size})
-            
+
             url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
             logger.debug(f"Requesting {entity_name} page {page}: {url}")
             if fields:
                 logger.debug(f"With fields: {fields}")
             if conditions:
                 logger.debug(f"With conditions: {conditions}")
-            
+
             # Use auth tuple for requests
             auth = None
             if self.basic_username and self.basic_password:
                 auth = (self.basic_username, self.basic_password)
-            
+
             try:
                 headers = self._headers()
                 response = self.session.get(url, headers=headers, params=query, auth=auth)
                 response.raise_for_status()
-                
+
                 data = response.json()
                 items.extend(data)
                 logger.debug(f"Retrieved {len(data)} {entity_name} on page {page}")
-                
+
                 # Check if we've retrieved all data
                 if len(data) < page_size:
                     break
-                
+
                 page += 1
             except Exception as e:
                 logger.error(f"Error fetching {entity_name} page {page}: {str(e)}")
                 break
-        
+
         logger.info(f"Total {entity_name} retrieved from {endpoint}: {len(items)}")
         return items

@@ -23,6 +23,7 @@ import pandas as pd
 
 try:
     from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
+
     # Add type annotation for builder to help IDE understand the pattern
     from pyspark.sql.session import SparkSession
 except ImportError as exc:  # noqa: D401 – raise helpful error
@@ -62,6 +63,7 @@ TransformResult: TypeAlias = dict[str, str]  # entity → delta path
 # Internal helpers
 # ----------------------------------------------------------------------------
 
+
 def _models_to_pandas(models: list[Any]) -> pd.DataFrame:
     """Serialise a list of Pydantic models into a *pandas* DataFrame."""
     if not models:
@@ -90,28 +92,28 @@ def _apply_agreement_rules(df: pd.DataFrame) -> pd.DataFrame:  # noqa: D401
     """Apply data transformation rules to agreements dataframe."""
     if df.empty:
         return df
-        
+
     # Make a copy to avoid modifying the original
     result = df.copy()
-    
+
     # Filter out Tímapottur agreements if needed
     if "agreementType" in result.columns:
         # Use DataFrame indexing to ensure we return a DataFrame, not a Series
         mask = ~result["agreementType"].str.contains("Tímapottur", na=False)
         result = result.loc[mask, :]
-    
+
     # Ensure all required columns exist
     required_columns = ["id", "name", "type", "agreementType", "parentAgreementId"]
     for col in required_columns:
         if col not in result.columns:
             result[col] = None
-    
+
     # Ensure id column is an integer
     if "id" in result.columns:
         result["id"] = pd.to_numeric(result["id"], errors="coerce")
-    
+
     # Other agreement-specific transformations can be added here
-    
+
     return result
 
 
@@ -120,18 +122,18 @@ def _sparkify(spark: SparkSession, pdf: pd.DataFrame) -> SparkDataFrame:  # noqa
     if pdf.empty:
         # Create a simple empty DataFrame with minimal schema
         return spark.createDataFrame([], "string")
-    
+
     logger = logging.getLogger(__name__)
-    
+
     # Define explicit schema for known array columns to avoid ARRAY<VOID> errors
     array_column_schemas = {
         "invoice_lines": "array<struct<invoice_number:string, line_no:int, quantity:double, amount:double>>",
         "time_entries": "array<struct<time_entry_id:int, invoice_number:string, employee:string, agreement_id:int>>",
         "expenses": "array<struct<invoice_id:int, line_no:int, type:string, quantity:double, amount:double>>",
         "products": "array<struct<product_id:int, invoice_number:string, description:string>>",
-        "errors": "array<struct<invoice_number:string, error_message:string, table_name:string>>"
+        "errors": "array<struct<invoice_number:string, error_message:string, table_name:string>>",
     }
-    
+
     # Check and fix array columns with empty values
     for col, schema in array_column_schemas.items():
         if col in pdf.columns:
@@ -141,25 +143,25 @@ def _sparkify(spark: SparkSession, pdf: pd.DataFrame) -> SparkDataFrame:  # noqa
                 if val and (isinstance(val, list) and len(val) > 0):
                     all_empty = False
                     break
-            
+
             if all_empty:
                 logger.info(f"Column {col} contains only empty arrays - fixing type")
                 pdf[col] = pdf[col].apply(lambda x: [] if pd.isna(x) else x)
-    
+
     # Fix complex nested structures with potential null types
     # This is necessary to prevent Delta's DELTA_COMPLEX_TYPE_COLUMN_CONTAINS_NULL_TYPE error
     for col in pdf.columns:
         # Handle list/array columns that might contain nulls or nested data
-        if pdf[col].dtype == 'object':
+        if pdf[col].dtype == "object":
             # Convert None values in object columns to empty lists or strings to avoid null type issues
             null_indices = pdf[pdf[col].isnull()].index.tolist()
-            
+
             if null_indices:
                 # Check if this is likely an array column by examining non-null values
                 non_null_indices = pdf[~pdf[col].isnull()].index.tolist()
                 if non_null_indices:
                     sample_value = pdf.loc[non_null_indices[0], col]
-                    
+
                     # Replace nulls with appropriate empty values based on sample type
                     for idx in null_indices:
                         if isinstance(sample_value, list):
@@ -173,15 +175,24 @@ def _sparkify(spark: SparkSession, pdf: pd.DataFrame) -> SparkDataFrame:  # noqa
                     # If ALL values are null, explicitly set column type to string
                     logger.info(f"Column {col} has all NULL values - setting as empty strings")
                     pdf[col] = pdf[col].fillna("")
-    
+
     # Handle specific known string columns that might be all-null
     # These are columns that we know should be strings based on the model definitions
     string_columns = [
-        "customer_name", "social_security_no", "site", "project", 
-        "gl_entry_ids", "sales_invoice_no", "agreement_number", "invoice_number",
-        "invoice_type", "type", "agreement_type", "employee"
+        "customer_name",
+        "social_security_no",
+        "site",
+        "project",
+        "gl_entry_ids",
+        "sales_invoice_no",
+        "agreement_number",
+        "invoice_number",
+        "invoice_type",
+        "type",
+        "agreement_type",
+        "employee",
     ]
-    
+
     for col in string_columns:
         if col in pdf.columns:
             # Explicitly check if all values are null without using Series boolean operations
@@ -189,84 +200,72 @@ def _sparkify(spark: SparkSession, pdf: pd.DataFrame) -> SparkDataFrame:  # noqa
             if is_all_null:  # Now checking a scalar boolean, not a Series
                 logger.info(f"Explicitly converting all-null column {col} to empty strings")
                 pdf[col] = pdf[col].fillna("")
-    
+
     # Option 1: For dataframes WITHOUT complex array columns
     simple_columns = [col for col in pdf.columns if col not in array_column_schemas]
     if len(pdf.columns) == len(simple_columns):
         # If we don't have any array columns, use the simple approach
         return spark.createDataFrame(pdf)
-    
+
     # Option 2: For dataframes WITH complex array columns, use schema inference
     try:
         # Convert to JSON and back to infer schema properly
-        pdf_json = pdf.to_json(orient='records')
+        pdf_json = pdf.to_json(orient="records")
         schema_df = spark.read.json(spark.sparkContext.parallelize([pdf_json]))
-        
+
         # Create an RDD of Row objects
-        pandas_df_collected = pdf.to_dict('records')
+        pandas_df_collected = pdf.to_dict("records")
         rdd = spark.sparkContext.parallelize(pandas_df_collected)
-        
+
         # Create DataFrame with JSON-inferred schema
         return spark.createDataFrame(rdd, schema_df.schema)
     except Exception as e:
         logger.warning(f"Error creating DataFrame with schema inference: {str(e)}")
         logger.warning("Falling back to direct DataFrame creation")
-        
+
         # Fallback: Try direct creation with explicit schema handling
         return spark.createDataFrame(pdf)
 
 
-def _write_to_parquet(
-    sdf: SparkDataFrame,
-    path: str,
-    *,
-    mode: str = "overwrite"
-) -> str:
+def _write_to_parquet(sdf: SparkDataFrame, path: str, *, mode: str = "overwrite") -> str:
     """
     Write a DataFrame to Parquet format.
-    
+
     Args:
         sdf: Spark DataFrame to write
         path: Path to write to
         mode: Write mode (default: overwrite)
-        
+
     Returns:
         The path where the Parquet data was written
     """
     logger = logging.getLogger(__name__)
-    
+
     if sdf.isEmpty():
         logger.warning(f"Skipping write to {path} - DataFrame is empty")
         return path  # nothing to write
-    
+
     # Cache to materialize
     cached_df = sdf.cache()
     cached_df.count()  # Force materialization
-    
+
     logger.info(f"Writing {cached_df.count()} rows to Parquet at {path}")
-    
+
     # Write the DataFrame to Parquet
-    (
-        cached_df.write.format(source="parquet")
-        .mode(saveMode=mode)
-        .save(path)
-    )
-    
+    (cached_df.write.format(source="parquet").mode(saveMode=mode).save(path))
+
     # Clean up
     cached_df.unpersist()
-    
+
     return path
 
+
 def _write_to_delta(
-    sdf: SparkDataFrame,
-    path: str,
-    *,
-    mode: str = "append",
-    table_name: str = ""
+    sdf: SparkDataFrame, path: str, *, mode: str = "append", table_name: str = ""
 ) -> None:
     """
     Write a DataFrame to Delta format and register as a table.
-    
+
     Args:
         sdf: Spark DataFrame to write
         path: Path to write to
@@ -274,19 +273,19 @@ def _write_to_delta(
         table_name: Table name to register (optional)
     """
     logger = logging.getLogger(__name__)
-    
+
     if sdf.isEmpty():
         logger.warning(f"Skipping write to {path} - DataFrame is empty")
         return  # nothing to write
-    
+
     spark = sdf.sparkSession
-    
+
     # Cache to materialize
     cached_df = sdf.cache()
     cached_df.count()  # Force materialization
-    
+
     logger.info(f"Writing {cached_df.count()} rows to Delta at {path}")
-    
+
     # Write the DataFrame to Delta
     (
         cached_df.write.format(source="delta")
@@ -295,14 +294,15 @@ def _write_to_delta(
         .option("mergeSchema", "true")
         .save(path)
     )
-    
+
     # Register the table if a table_name was provided
     if table_name:
         spark.sql(f"REFRESH TABLE {table_name}")
         logger.info(f"Refreshed table {table_name}")
-    
+
     # Clean up
     cached_df.unpersist()
+
 
 def _write_delta(
     sdf: SparkDataFrame,
@@ -328,7 +328,7 @@ def _write_delta(
         # This is a shortened path - convert to fully qualified abfss path if possible
         storage_account = os.getenv("FABRIC_STORAGE_ACCOUNT")
         tenant_id = os.getenv("FABRIC_TENANT_ID")
-        
+
         if storage_account and tenant_id:
             # Convert to fully qualified path
             abfss_path = f"abfss://lakehouse@{storage_account}.dfs.fabric.microsoft.com{clean_path}"
@@ -345,25 +345,25 @@ def _write_delta(
         # Step 1: Write to Parquet first to avoid Delta schema issues
         # This is particularly helpful for complex nested types with nulls
         parquet_path = f"{clean_path}_parquet"
-        
+
         # Write to Parquet (which can handle complex types with nulls)
         _write_to_parquet(sdf, parquet_path, mode="overwrite")
-        
+
         # Step 2: Read back from Parquet and write to Delta
         try:
             # Read back from Parquet - this step normalizes the schema
             logger.info(f"Reading back from Parquet to normalize schema")
             normalized_df = spark.read.format("parquet").load(parquet_path)
-            
+
             # Write to Delta with the normalized schema
             _write_to_delta(normalized_df, clean_path, mode=mode, table_name=full_table_name)
-            
+
         except Exception as delta_err:
             logger.error(f"Error writing from Parquet to Delta: {str(delta_err)}")
             # If Delta write fails, at least we have the Parquet data as backup
             logger.warning(f"Data is preserved in Parquet format at: {parquet_path}")
             raise
-            
+
     except Exception as e:
         # Provide detailed error information
         error_msg = f"Error in write process for {clean_path}: {str(e)}"
@@ -378,7 +378,9 @@ def _write_delta(
             logger.error("3. The table name follows OneLake naming conventions")
             logger.error("4. Try using a fully qualified path like 'abfss://...' if needed")
         elif "from cannot be less than 0" in str(e):
-            logger.error("\nThis appears to be a Livy pagination issue with empty DataFrames or lineage.")
+            logger.error(
+                "\nThis appears to be a Livy pagination issue with empty DataFrames or lineage."
+            )
             logger.error("Try the following:")
             logger.error("1. Make sure you're not using negative indices")
             logger.error("2. Verify that table schemas match between read and write operations")
@@ -386,7 +388,9 @@ def _write_delta(
             logger.error("\nThis is a Delta schema validation error.")
             logger.error("Try the following:")
             logger.error("1. Data has been preserved in Parquet format for inspection")
-            logger.error("2. You can query the Parquet data directly using: spark.read.parquet('{parquet_path}')")
+            logger.error(
+                "2. You can query the Parquet data directly using: spark.read.parquet('{parquet_path}')"
+            )
 
         # Re-raise the exception for handling by the caller
         raise
@@ -408,9 +412,11 @@ def _process_entity(
     _write_delta(sdf, path=delta_path, mode=mode)
     return delta_path
 
+
 # ----------------------------------------------------------------------------
 # Public orchestration helper
 # ----------------------------------------------------------------------------
+
 
 def transform_and_load(
     *,
@@ -495,6 +501,7 @@ def transform_and_load(
     )
 
     return results
+
 
 # ----------------------------------------------------------------------------
 # CLI – developer convenience only

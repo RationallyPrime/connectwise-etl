@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 # Agreement helpers
 ###############################################################################
 
+
 def is_timapottur_agreement(agreement_type: str) -> bool:  # noqa: D401
     """Return *True* when *agreement_type* is exactly ``"Tímapottur"``.
 
@@ -52,13 +53,13 @@ def get_parent_agreement_data(
         return 0, ""
 
     agreement_data: dict[str, Any] = {}
-    
+
     try:
         # First try to use the cached version
         from .extract.agreements import get_cached_agreement
-        
+
         cached_agreement = get_cached_agreement(client, agreement_id)
-        
+
         if cached_agreement:
             agreement_data = cached_agreement
         else:
@@ -75,9 +76,11 @@ def get_parent_agreement_data(
 
     return parent_id, agreement_type
 
+
 ###############################################################################
 # Value conversions
 ###############################################################################
+
 
 def convert_vat_to_percent(vat_decimal: float | int | None) -> float:  # noqa: D401
     """Convert decimal VAT (e.g. ``0.245``) to a percentage (``24.5``).
@@ -91,11 +94,15 @@ def convert_vat_to_percent(vat_decimal: float | int | None) -> float:  # noqa: D
 
     return float(vat_decimal) * 100
 
+
 ###############################################################################
 # Misc generic helpers – frequently used across layers
 ###############################################################################
 
-def get_nested_value(data: dict[str, Any] | list[Any] | None, dotted_path: str, default: Any = None) -> Any:  # noqa: E501
+
+def get_nested_value(
+    data: dict[str, Any] | list[Any] | None, dotted_path: str, default: Any = None
+) -> Any:  # noqa: E501
     """Safely retrieve *dotted_path* (e.g. ``"member.identifier"``) from *data*.
 
     Works with dictionaries and lists; numeric path segments are interpreted
@@ -138,6 +145,7 @@ def get_first_day_next_month(reference: date | None = None) -> str:  # noqa: D40
     year: int = ref.year + (1 if ref.month == 12 else 0)
     month: int = 1 if ref.month == 12 else ref.month + 1
     return date(year, month, day=1).isoformat()
+
 
 ###############################################################################
 # Public re‑exports

@@ -14,7 +14,7 @@ pyarrow = ">=10.0.0"
 python-dotenv = "*"
 pydantic = ">=2.11.4"
 pyspark = "*"
-
+pyright = "*"
 [tool.poetry.extras]
 fabric = ["pyspark"]
 azure = ["azure-identity", "azure-keyvault-secrets"]
@@ -31,10 +31,11 @@ exclude = [".venv", "venv", "build", "dist"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N"]
 
-[tool.basedpyright]
+[tool.windsurfPyright]
 typeCheckingMode = "basic"
 reportMissingImports = true
 reportMissingTypeStubs = false
+languageServer = "windsurfPyright"
 exclude = [".venv", "venv", "build", "dist"]
 
 [tool.uv]

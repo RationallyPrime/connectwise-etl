@@ -43,12 +43,18 @@ __all__ = [
 class ManageApiSetup(BaseModel):  # Table 62000
     """ConnectWise authentication & integration settings."""
 
-    company: str = Field(default="", description="ConnectWise company identifier – e.g. 'thekking'.")
+    company: str = Field(
+        default="", description="ConnectWise company identifier – e.g. 'thekking'."
+    )
     client_id: str = Field(default="", description="ConnectWise *clientId* header value.")
     username: str | None = Field(default=None, description="Basic‑auth username.")
     password: str | None = Field(default=None, description="Basic‑auth password (stored securely).")
-    public_key: str | None = Field(default=None, description="Public integration key (legacy auth).")
-    private_key: str | None = Field(default=None, description="Private integration key (legacy auth).")
+    public_key: str | None = Field(
+        default=None, description="Public integration key (legacy auth)."
+    )
+    private_key: str | None = Field(
+        default=None, description="Private integration key (legacy auth)."
+    )
     base_url: str = Field(
         default="https://verk.thekking.is/v4_6_release/apis/3.0",
         description="Base REST URL – overridable per environment.",
@@ -64,8 +70,12 @@ class ManageApiSetup(BaseModel):  # Table 62000
 class ManageInvoiceLine(BaseModel):  # Table 62002
     """Line‑item details for a ConnectWise invoice."""
 
-    invoice_number: str = Field(default="", description="Foreign‑key to *ManageInvoiceHeader.invoice_number*.")
-    line_no: int = Field(default=..., description="Sequential line number within the invoice header.")
+    invoice_number: str = Field(
+        default="", description="Foreign‑key to *ManageInvoiceHeader.invoice_number*."
+    )
+    line_no: int = Field(
+        default=..., description="Sequential line number within the invoice header."
+    )
 
     memo: str | None = Field(default=None)
     quantity: float = 0.0
@@ -75,7 +85,9 @@ class ManageInvoiceLine(BaseModel):  # Table 62002
     cost: float | None = None
     price: float | None = None
 
-    product_id: int | None = Field(default=None, description="ConnectWise product/id if this line represents a product.")
+    product_id: int | None = Field(
+        default=None, description="ConnectWise product/id if this line represents a product."
+    )
     item_identifier: str | None = None
 
     time_entry_id: int | None = Field(
@@ -92,20 +104,22 @@ class ManageInvoiceExpense(BaseModel):  # Table 62004
     invoice_id: int = Field(default=0, description="Invoice ID from ConnectWise.")
     line_no: int = Field(default=..., description="Sequential line number within the invoice.")
     type: str | None = Field(default=None, description="Expense type.")
-    
+
     quantity: float = 0.0
     amount: float = 0.0
-    
+
     employee: str | None = Field(default=None, description="Employee code (up to 10 characters).")
     job_journal_line_no: int | None = None
     work_date: date | None = None  # Notice this is a DATE not a datetime
-    
+
     agreement_id: int | None = None
     agreement_number: str | None = None
     parent_agreement_id: int | None = None
-    invoice_number: str = Field(default="", description="Foreign key to ManageInvoiceHeader.invoice_number.")
+    invoice_number: str = Field(
+        default="", description="Foreign key to ManageInvoiceHeader.invoice_number."
+    )
     agreement_type: str | None = None
-    
+
     # Additional fields for tracking (not in AL table)
     expense_id: int | None = None
 
@@ -113,8 +127,12 @@ class ManageInvoiceExpense(BaseModel):  # Table 62004
 class ManageProduct(BaseModel):  # Table 62005
     """Product billed on an invoice."""
 
-    product_id: int = Field(default=..., description="ConnectWise product/id if this line represents a product.")
-    invoice_number: str = Field(default="", description="Foreign key to *ManageInvoiceHeader.invoice_number*.")
+    product_id: int = Field(
+        default=..., description="ConnectWise product/id if this line represents a product."
+    )
+    invoice_number: str = Field(
+        default="", description="Foreign key to *ManageInvoiceHeader.invoice_number*."
+    )
 
     description: str | None = None
     discount_percentage: float = 0.0
@@ -144,7 +162,9 @@ class ManageInvoiceHeader(BaseModel):  # Table 62001
     gl_entry_ids: str | None = None  # Comma‑separated list – mirrors AL design
 
     closed: bool = False
-    sales_invoice_no: str | None = Field(default=None, description="Corresponding BC sales invoice.")
+    sales_invoice_no: str | None = Field(
+        default=None, description="Corresponding BC sales invoice."
+    )
     invoice_date: date | None = None
 
     agreement_number: str | None = None
@@ -211,7 +231,9 @@ class ManageInvoiceError(BaseModel):  # Table 62006
     """Structured record of data issues detected during ETL."""
 
     invoice_number: str = Field(default="")
-    error_table_id: str = Field(default=..., description="Identifier of the table where the error occurred.")
+    error_table_id: str = Field(
+        default=..., description="Identifier of the table where the error occurred."
+    )
 
     missing_value: str | None = None
     error_message: str | None = None
@@ -239,7 +261,7 @@ class ManageAgreement(BaseModel):
     end_date: date | None = None
     parent_agreement_id: int | None = None
     agreement_type: str | None = None
-    
+
 
 # ---------------------------------------------------------------------------
 # Pydantic forward‑reference resolution --------------------------------------

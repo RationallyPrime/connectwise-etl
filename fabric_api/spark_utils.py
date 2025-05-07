@@ -11,6 +11,7 @@ from typing import Optional
 from pyspark.sql import DataFrame, SparkSession
 import logging
 
+
 def table_exists(spark: SparkSession, full_table_path: str) -> bool:
     """
     Check if a table exists in the Spark catalog.
@@ -43,18 +44,16 @@ def table_exists(spark: SparkSession, full_table_path: str) -> bool:
 
 
 def read_table_safely(
-    spark: SparkSession, 
-    full_table_path: str,
-    default_value: DataFrame | None = None
+    spark: SparkSession, full_table_path: str, default_value: DataFrame | None = None
 ) -> DataFrame | None:
     """
     Read a table safely, returning default_value if the table doesn't exist.
-    
+
     Args:
         spark: SparkSession to use
         full_table_path: Fully qualified table name (e.g., 'database.table')
         default_value: Value to return if table doesn't exist (None or empty DataFrame)
-        
+
     Returns:
         DataFrame if table exists, default_value otherwise
     """

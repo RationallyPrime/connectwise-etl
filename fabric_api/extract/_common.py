@@ -25,7 +25,14 @@ _LOGGER: Logger = getLogger(name=__name__)
 # Validation wrapper --------------------------------------------------------
 # ---------------------------------------------------------------------------
 
-def safe_validate(model_cls, raw: dict[str, Any], *, errors: list[ManageInvoiceError], invoice_number: str | None = None) -> Any | None:
+
+def safe_validate(
+    model_cls,
+    raw: dict[str, Any],
+    *,
+    errors: list[ManageInvoiceError],
+    invoice_number: str | None = None,
+) -> Any | None:
     """Validate *raw* against *model_cls* or capture ``ManageInvoiceError``."""
     try:
         return model_cls.model_validate(raw)
@@ -41,9 +48,11 @@ def safe_validate(model_cls, raw: dict[str, Any], *, errors: list[ManageInvoiceE
         )
         return None
 
+
 # ---------------------------------------------------------------------------
 # Pagination wrapper --------------------------------------------------------
 # ---------------------------------------------------------------------------
+
 
 def paginate(
     client: ConnectWiseClient,
@@ -54,6 +63,4 @@ def paginate(
     max_pages: int | None = 50,
 ) -> list[dict[str, Any]]:
     """Thin wrapper around client.paginate with sane defaults."""
-    return client.paginate(
-        endpoint, entity_name, params=params, max_pages=max_pages
-    )
+    return client.paginate(endpoint, entity_name, params=params, max_pages=max_pages)

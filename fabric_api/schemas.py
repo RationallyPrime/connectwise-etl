@@ -1,52 +1,101 @@
-from typing import List, Optional, Any, Dict, Union
+from typing import List, Optional, Any, Dict, Union, Callable, get_type_hints
 from datetime import datetime
-from pydantic import BaseModel, Field
+import re
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 
-class InfoObject(BaseModel):
+def to_camel(string: str) -> str:
+    """Convert a snake_case string to camelCase."""
+    if not string or "_" not in string:
+        return string
+    # First part stays as is, rest gets capitalized
+    return re.sub(r'_([a-z])', lambda m: m.group(1).upper(), string)
+
+
+def to_snake(string: str) -> str:
+    """Convert a camelCase string to snake_case."""
+    if not string:
+        return string
+    # Insert underscore before lowercase to uppercase transitions
+    # and lowercase the uppercase letters
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', string).lower()
+
+
+class CamelCaseBaseModel(BaseModel):
+    """Base model that handles automatic conversion between camelCase and snake_case.
+    
+    This model configures Pydantic to:
+    1. Accept input in camelCase (from API) and convert to snake_case (for Python code)
+    2. Output in camelCase when serializing to JSON (for API)
+    """
+    
+    class Config:
+        alias_generator = to_camel     # Convert field names to camelCase for serialization
+        populate_by_name = True         # Allow populating fields by snake_case name
+        populate_by_alias = True        # Allow populating fields by camelCase alias
+    
+    @model_validator(mode='before')
+    @classmethod
+    def convert_camel_to_snake(cls, data):
+        """Convert camelCase keys to snake_case before validation."""
+        if not isinstance(data, dict):
+            return data
+            
+        # Create a new dict with snake_case keys
+        return {to_snake(k): v for k, v in data.items()}
+
+
+class InfoObject(CamelCaseBaseModel):
     """Common _info object in ConnectWise responses"""
+
     additional_properties: Dict[str, str] = Field(default_factory=dict)
 
 
-class IdentifierNameInfo(BaseModel):
+class IdentifierNameInfo(CamelCaseBaseModel):
     """Common pattern for resources with id, name, and _info"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class CompanyReference(BaseModel):
+class CompanyReference(CamelCaseBaseModel):
     """Company reference object"""
+
     id: Optional[int] = None
     identifier: Optional[str] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class LocationReference(BaseModel):
+class LocationReference(CamelCaseBaseModel):
     """Location reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class DepartmentReference(BaseModel):
+class DepartmentReference(CamelCaseBaseModel):
     """Department reference object"""
+
     id: Optional[int] = None
     identifier: Optional[str] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class SiteReference(BaseModel):
+class SiteReference(CamelCaseBaseModel):
     """Site reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class CurrencyReference(BaseModel):
+class CurrencyReference(CamelCaseBaseModel):
     """Currency reference object"""
+
     id: Optional[int] = None
     symbol: Optional[str] = None
     currency_code: Optional[str] = None
@@ -62,30 +111,34 @@ class CurrencyReference(BaseModel):
     _info: Optional[InfoObject] = None
 
 
-class TaxCodeReference(BaseModel):
+class TaxCodeReference(CamelCaseBaseModel):
     """Tax code reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class WorkTypeReference(BaseModel):
+class WorkTypeReference(CamelCaseBaseModel):
     """Work type reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     utilization_flag: Optional[bool] = None
     _info: Optional[InfoObject] = None
 
 
-class WorkRoleReference(BaseModel):
+class WorkRoleReference(CamelCaseBaseModel):
     """Work role reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class AgreementReference(BaseModel):
+class AgreementReference(CamelCaseBaseModel):
     """Agreement reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     type: Optional[str] = None
@@ -93,8 +146,9 @@ class AgreementReference(BaseModel):
     _info: Optional[InfoObject] = None
 
 
-class InvoiceReference(BaseModel):
+class InvoiceReference(CamelCaseBaseModel):
     """Invoice reference object"""
+
     id: Optional[int] = None
     identifier: Optional[str] = None
     billing_type: Optional[str] = None
@@ -104,36 +158,41 @@ class InvoiceReference(BaseModel):
     _info: Optional[InfoObject] = None
 
 
-class TicketReference(BaseModel):
+class TicketReference(CamelCaseBaseModel):
     """Ticket reference object"""
+
     id: Optional[int] = None
     summary: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class ProjectReference(BaseModel):
+class ProjectReference(CamelCaseBaseModel):
     """Project reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class PhaseReference(BaseModel):
+class PhaseReference(CamelCaseBaseModel):
     """Phase reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class SalesOrderReference(BaseModel):
+class SalesOrderReference(CamelCaseBaseModel):
     """Sales order reference object"""
+
     id: Optional[int] = None
     identifier: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class MemberReference(BaseModel):
+class MemberReference(CamelCaseBaseModel):
     """Member reference object"""
+
     id: Optional[int] = None
     identifier: Optional[str] = None
     name: Optional[str] = None
@@ -141,15 +200,17 @@ class MemberReference(BaseModel):
     _info: Optional[InfoObject] = None
 
 
-class ContactReference(BaseModel):
+class ContactReference(CamelCaseBaseModel):
     """Contact reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class CustomField(BaseModel):
+class CustomField(CamelCaseBaseModel):
     """Custom field object"""
+
     id: Optional[int] = None
     caption: Optional[str] = None
     type: Optional[str] = None
@@ -159,116 +220,132 @@ class CustomField(BaseModel):
     connectwise_id: Optional[str] = None
 
 
-class BillingTermsReference(BaseModel):
+class BillingTermsReference(CamelCaseBaseModel):
     """Billing terms reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class StatusReference(BaseModel):
+class StatusReference(CamelCaseBaseModel):
     """Status reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     is_closed: Optional[bool] = None
     _info: Optional[InfoObject] = None
 
 
-class BillingCycleReference(BaseModel):
+class BillingCycleReference(CamelCaseBaseModel):
     """Billing cycle reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class InvoiceTemplateReference(BaseModel):
+class InvoiceTemplateReference(CamelCaseBaseModel):
     """Invoice template reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class TypeReference(BaseModel):
+class TypeReference(CamelCaseBaseModel):
     """Type reference object"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class AgreementTypeReference(BaseModel):
+class AgreementTypeReference(CamelCaseBaseModel):
     """Agreement type reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class SLAReference(BaseModel):
+class SLAReference(CamelCaseBaseModel):
     """SLA reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class ProductTypeReference(BaseModel):
+class ProductTypeReference(CamelCaseBaseModel):
     """Product type reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class UnitOfMeasureReference(BaseModel):
+class UnitOfMeasureReference(CamelCaseBaseModel):
     """Unit of measure reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class VendorReference(BaseModel):
+class VendorReference(CamelCaseBaseModel):
     """Vendor reference"""
+
     id: Optional[int] = None
     identifier: Optional[str] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class WarehouseReference(BaseModel):
+class WarehouseReference(CamelCaseBaseModel):
     """Warehouse reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     locked_flag: Optional[bool] = None
     _info: Optional[InfoObject] = None
 
 
-class WarehouseBinReference(BaseModel):
+class WarehouseBinReference(CamelCaseBaseModel):
     """Warehouse bin reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class PaymentMethodReference(BaseModel):
+class PaymentMethodReference(CamelCaseBaseModel):
     """Payment method reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class ClassificationReference(BaseModel):
+class ClassificationReference(CamelCaseBaseModel):
     """Classification reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class ExpenseTax(BaseModel):
+class ExpenseTax(CamelCaseBaseModel):
     """Expense tax object"""
+
     id: Optional[int] = None
     amount: Optional[float] = None
     type: Optional[TypeReference] = None
 
 
-class RecurringInfo(BaseModel):
+class RecurringInfo(CamelCaseBaseModel):
     """Recurring information for products"""
+
     recurring_revenue: Optional[float] = None
     recurring_cost: Optional[float] = None
     start_date: Optional[str] = None
@@ -280,8 +357,9 @@ class RecurringInfo(BaseModel):
     agreement_type: Optional[AgreementTypeReference] = None
 
 
-class InvoiceGroupingReference(BaseModel):
+class InvoiceGroupingReference(CamelCaseBaseModel):
     """Invoice grouping reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     description: Optional[str] = None
@@ -291,15 +369,17 @@ class InvoiceGroupingReference(BaseModel):
     _info: Optional[InfoObject] = None
 
 
-class EntityTypeReference(BaseModel):
+class EntityTypeReference(CamelCaseBaseModel):
     """Entity type reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
 
 
-class ForecastStatusReference(BaseModel):
+class ForecastStatusReference(CamelCaseBaseModel):
     """Forecast status reference"""
+
     id: Optional[int] = None
     name: Optional[str] = None
     _info: Optional[InfoObject] = None
@@ -307,8 +387,10 @@ class ForecastStatusReference(BaseModel):
 
 # Main API Response Models
 
-class UnpostedInvoice(BaseModel):
+
+class UnpostedInvoice(CamelCaseBaseModel):
     """Model for unposted invoice response"""
+
     id: Optional[int] = None
     billing_log_id: Optional[int] = None
     location_id: Optional[int] = None
@@ -362,8 +444,9 @@ class UnpostedInvoice(BaseModel):
     _info: Optional[InfoObject] = None
 
 
-class Invoice(BaseModel):
+class Invoice(CamelCaseBaseModel):
     """Model for invoice response"""
+
     id: Optional[int] = None
     invoice_number: Optional[str] = None
     type: str
@@ -444,8 +527,9 @@ class Invoice(BaseModel):
     custom_fields: Optional[List[CustomField]] = None
 
 
-class Agreement(BaseModel):
+class Agreement(CamelCaseBaseModel):
     """Model for agreement response"""
+
     id: Optional[int] = None
     name: str
     type: AgreementTypeReference
@@ -530,8 +614,9 @@ class Agreement(BaseModel):
     custom_fields: Optional[List[CustomField]] = None
 
 
-class TimeEntry(BaseModel):
+class TimeEntry(CamelCaseBaseModel):
     """Model for time entry response"""
+
     id: Optional[int] = None
     company: Optional[CompanyReference] = None
     company_type: Optional[str] = None
@@ -596,8 +681,9 @@ class TimeEntry(BaseModel):
     custom_fields: Optional[List[CustomField]] = None
 
 
-class ExpenseEntry(BaseModel):
+class ExpenseEntry(CamelCaseBaseModel):
     """Model for expense entry response"""
+
     id: Optional[int] = None
     expense_report: Optional[IdentifierNameInfo] = None
     company: Optional[CompanyReference] = None
@@ -631,8 +717,9 @@ class ExpenseEntry(BaseModel):
     custom_fields: Optional[List[CustomField]] = None
 
 
-class ProductItem(BaseModel):
+class ProductItem(CamelCaseBaseModel):
     """Model for product item response"""
+
     id: Optional[int] = None
     catalog_item: IdentifierNameInfo
     description: Optional[str] = None
@@ -714,31 +801,37 @@ class ProductItem(BaseModel):
 
 
 # Lists for API responses
-class UnpostedInvoiceList(BaseModel):
+class UnpostedInvoiceList(CamelCaseBaseModel):
     """List of unposted invoices response"""
+
     items: List[UnpostedInvoice]
 
 
-class InvoiceList(BaseModel):
+class InvoiceList(CamelCaseBaseModel):
     """List of invoices response"""
+
     items: List[Invoice]
 
 
-class AgreementList(BaseModel):
+class AgreementList(CamelCaseBaseModel):
     """List of agreements response"""
+
     items: List[Agreement]
 
 
-class TimeEntryList(BaseModel):
+class TimeEntryList(CamelCaseBaseModel):
     """List of time entries response"""
+
     items: List[TimeEntry]
 
 
-class ExpenseEntryList(BaseModel):
+class ExpenseEntryList(CamelCaseBaseModel):
     """List of expense entries response"""
+
     items: List[ExpenseEntry]
 
 
-class ProductItemList(BaseModel):
+class ProductItemList(CamelCaseBaseModel):
     """List of product items response"""
+
     items: List[ProductItem]
