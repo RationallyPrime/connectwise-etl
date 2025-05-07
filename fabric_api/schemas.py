@@ -216,7 +216,7 @@ class CustomField(CamelCaseBaseModel):
     type: Optional[str] = None
     entry_method: Optional[str] = None
     number_of_decimals: Optional[int] = None
-    value: Optional[Any] = None
+    value: Optional[str] = None  # Changed from Any to str to make sparkdantic happy
     connectwise_id: Optional[str] = None
 
 

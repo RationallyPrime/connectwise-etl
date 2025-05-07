@@ -32,7 +32,7 @@ ENTITY_CONFIG: dict[str, dict[str, Any]] = {
     "Agreement": {
         "fetch_func": fetch_agreements_raw,
         "schema": schemas.Agreement,
-        "partition_cols": ["type_id"]
+        "partition_cols": ["type"]
     },
     "PostedInvoice": {
         "fetch_func": fetch_posted_invoices_raw,
@@ -42,7 +42,7 @@ ENTITY_CONFIG: dict[str, dict[str, Any]] = {
     "UnpostedInvoice": {
         "fetch_func": fetch_unposted_invoices_raw,
         "schema": schemas.UnpostedInvoice,
-        "partition_cols": ["status_id"]
+        "partition_cols": ["status"]
     },
     "TimeEntry": {
         "fetch_func": fetch_time_entries_raw,
@@ -52,7 +52,7 @@ ENTITY_CONFIG: dict[str, dict[str, Any]] = {
     "ExpenseEntry": {
         "fetch_func": fetch_expense_entries_raw,
         "schema": schemas.ExpenseEntry,
-        "partition_cols": ["company_type"]
+        "partition_cols": ["type"]
     },
     "ProductItem": {
         "fetch_func": fetch_product_items_raw,
