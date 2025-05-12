@@ -109,7 +109,7 @@ class ProductItem(SparkModel):
     cancelledReason: str = Field(default="")  # Made optional with default value to fix validation errors
     customerDescription: str
     productSuppliedFlag: bool
-    subContractorAmountLimit: float
+    subContractorAmountLimit: float = Field(default=0.0)  # Made optional with default value to fix validation errors
     opportunity: Optional[Opportunity] = None
     calculatedPriceFlag: bool = Field(default=False)
     calculatedCostFlag: bool = Field(default=False)

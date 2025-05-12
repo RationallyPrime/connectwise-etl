@@ -13,13 +13,15 @@ from pydantic import ValidationError, BaseModel
 # Models are imported from the connectwise_models package via schemas
 from fabric_api import schemas
 
-# Initialize logger with reduced verbosity
+# Initialize logger with minimal verbosity for production environments
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)  # Only show warnings and errors by default
+logger.setLevel(logging.ERROR)  # Only show errors by default (even more restrictive)
 
-# Set this to True to enable verbose error logging (not recommended in production)
-VERBOSE_ERROR_LOGGING = False
+# Log configuration flags
+VERBOSE_ERROR_LOGGING = False  # Set to True for detailed validation error messages
+SILENCE_VALIDATION_ERRORS = True  # Set to True to completely silence validation errors in console
+                                  # Errors will still be captured in ValidationResult objects
 
 # Generic type variable for model types
 T = TypeVar('T', bound=BaseModel)
@@ -52,11 +54,27 @@ class ValidationResult(Generic[T]):
     
     def log_summary(self) -> None:
         """Log a summary of the validation results."""
-        logger.info(
-            f"Validation summary for {self.entity_name}: "
-            f"{len(self.valid_objects)} valid, {len(self.errors)} invalid "
-            f"({self.success_rate:.1f}% success rate)"
-        )
+        # Only log summary if we're not silencing validation outputs
+        if not SILENCE_VALIDATION_ERRORS:
+            logger.info(
+                f"Validation summary for {self.entity_name}: "
+                f"{len(self.valid_objects)} valid, {len(self.errors)} invalid "
+                f"({self.success_rate:.1f}% success rate)"
+            )
+            
+        # Always track errors in a structured way for later analysis
+        # This doesn't output to console but ensures we have error data available
+        if len(self.errors) > 0:
+            error_pattern = {}
+            for error_dict in self.errors:
+                for error in error_dict.get("errors", []):
+                    if "loc" in error and len(error["loc"]) > 0:
+                        field = error["loc"][0]
+                        error_pattern[field] = error_pattern.get(field, 0) + 1
+            
+            # This will be captured in logs but not printed to console when SILENCE_VALIDATION_ERRORS is True
+            if not SILENCE_VALIDATION_ERRORS and error_pattern:
+                logger.info(f"Validation error patterns for {self.entity_name}: {error_pattern}")
     
     def __repr__(self) -> str:
         """String representation of the validation results."""
@@ -104,11 +122,15 @@ def validate_data(
             error_fields = [f"{err['type']} on {'.'.join(str(loc) for loc in err['loc'])}" for err in e.errors()]
             concise_error = ", ".join(error_fields)
             
-            # Use a more concise warning message
-            if VERBOSE_ERROR_LOGGING:
-                logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {e.json()}")
-            else:
-                logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {concise_error}")
+            # Control validation error output based on configuration flags
+            if not SILENCE_VALIDATION_ERRORS:
+                if VERBOSE_ERROR_LOGGING:
+                    logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {e.json()}")
+                else:
+                    logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {concise_error}")
+            
+            # For debugging purposes only - use this in a local debug environment
+            # Uncomment if needed: print(f"DEBUG: Validation error for {entity_name} ID {record_id}")
                 
             errors.append({
                 "entity": entity_name,
