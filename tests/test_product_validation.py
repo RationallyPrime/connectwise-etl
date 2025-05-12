@@ -92,18 +92,22 @@ def test_product_validation():
     
     logger.info(f"Dumped raw products to {product_dump_path} for inspection")
     
-    # Validate each product item
+    # Track validation success/failure
     valid_count = 0
     invalid_count = 0
     
-    for i, raw_product in enumerate(raw_products):
-        product_id = raw_product.get("id", f"Unknown-{i}")
-        product_name = raw_product.get("description", f"Unknown-{i}")
+    # Skip field logging as it's not needed
+    logger.info("Validating product items...")
+    
+    # Validate each product item
+    for i, item in enumerate(raw_products):
+        product_id = item.get("id", f"Unknown-{i}")
+        product_name = item.get("description", f"Unknown-{i}")
         logger.info(f"Validating product item {product_id} ({i+1}/{len(raw_products)})")
         
         try:
-            # Attempt to validate using the Pydantic model
-            validated_product = schemas.ProductItem.model_validate(raw_product)
+            # Validate against the schema
+            validated_product = schemas.ProductItem.model_validate(item)
             valid_count += 1
             logger.info(f"✅ SUCCESS: Product item {product_id} ({product_name}) validated successfully")
             
@@ -117,6 +121,14 @@ def test_product_validation():
                 logger.error(f"  - Field: {location}")
                 logger.error(f"    Error: {error['msg']}")
                 logger.error(f"    Type: {error['type']}")
+            
+            # Print more specific error details for debugging
+            try:
+                if 'id' in item:
+                    logger.error(f"  Detailed error for Product ID {item['id']}")
+                logger.error(f"  Raw error: {str(e)}")
+            except Exception as debug_error:
+                logger.error(f"  Error during debug: {debug_error}")
     
     # Print summary
     logger.info(f"Validation complete: {valid_count} valid, {invalid_count} invalid product items")

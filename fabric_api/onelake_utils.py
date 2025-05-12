@@ -13,14 +13,18 @@ from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, to_date, date_format, col
 
-# Initialize logger
+# Initialize logger with reduced verbosity for Fabric notebooks
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)  # Only show warnings and errors by default
 
 # Constants for OneLake paths and configuration
-DEFAULT_LAKEHOUSE_ROOT = "/lakehouse/default"
-DEFAULT_TABLES_PATH = f"{DEFAULT_LAKEHOUSE_ROOT}/Tables"
-DEFAULT_STORAGE_PATH = f"{DEFAULT_LAKEHOUSE_ROOT}/Files"
-DEFAULT_DATABASE = "connectwise"  # The default database name for tables
+# Base ABFSS path for Microsoft Fabric OneLake
+ABFSS_BASE_PATH = "abfss://Wise_Fabric_PROD@onelake.dfs.fabric.microsoft.com/Lakehouse.Lakehouse/Tables/bronze"
+
+# Derived paths from the ABFSS base path
+DEFAULT_LAKEHOUSE_ROOT = ABFSS_BASE_PATH
+DEFAULT_TABLES_PATH = ABFSS_BASE_PATH
+DEFAULT_STORAGE_PATH = ABFSS_BASE_PATH.replace("/Tables/", "/Files/")
 DEFAULT_TABLE_PREFIX = ""  # Optional prefix for all tables (e.g., "cw_")
 
 # Standard partition columns for different entity types
@@ -31,7 +35,7 @@ PARTITION_CONFIG = {
     "time_entry": ["dateEntered"],  # Changed from workDate to dateEntered per schema
     "expense_entry": ["date"],  # Changed from expenseDate to date per schema
     "product_item": [], # No natural partition
-    "validation_errors": ["entity", "timestamp_date"],
+    "validation_errors": ["entity"],  # Only partition by entity to avoid schema conflicts
 }
 
 
@@ -88,10 +92,10 @@ def get_table_path(entity_name: str, table_type: str = "delta") -> str:
     # Build the table path
     if table_type == "delta":
         # For Delta tables, use the Tables directory
-        table_path = f"{DEFAULT_TABLES_PATH}/{DEFAULT_DATABASE}/{prefixed_name}"
+        table_path = f"{DEFAULT_TABLES_PATH}/{prefixed_name}"
     else:
         # For Parquet files, use the Files directory
-        table_path = f"{DEFAULT_STORAGE_PATH}/{DEFAULT_DATABASE}/{prefixed_name}"
+        table_path = f"{DEFAULT_STORAGE_PATH}/{prefixed_name}"
     
     # Convert to ABFSS path
     return build_abfss_path(table_path)
@@ -105,7 +109,7 @@ def get_table_name(entity_name: str) -> str:
         entity_name: Name of the entity (e.g., "Agreement", "TimeEntry")
         
     Returns:
-        Fully qualified table name (e.g., "connectwise.agreement")
+        Table name in the bronze schema (e.g., "bronze.agreement")
     """
     # Normalize entity name (lowercase, snake_case)
     normalized_name = entity_name.lower().replace(" ", "_")
@@ -113,8 +117,8 @@ def get_table_name(entity_name: str) -> str:
     # Add prefix if configured
     prefixed_name = f"{DEFAULT_TABLE_PREFIX}{normalized_name}"
     
-    # Return fully qualified name
-    return f"{DEFAULT_DATABASE}.{prefixed_name}"
+    # Return bronze-qualified name
+    return f"bronze.{prefixed_name}"
 
 
 def get_partition_columns(entity_name: str) -> List[str]:
@@ -202,7 +206,8 @@ def write_to_onelake(
     mode: str = "append",
     create_table: bool = True,
     table_properties: Optional[Dict[str, str]] = None,
-    direct_write: bool = True
+    direct_write: bool = True,
+    enable_auto_merge: bool = True
 ) -> Tuple[str, str, int]:
     """
     Write a DataFrame directly to OneLake with proper table creation.
@@ -215,6 +220,7 @@ def write_to_onelake(
         create_table: Whether to create the table using SQL (recommended for Fabric)
         table_properties: Optional Delta table properties
         direct_write: Whether to write directly without intermediate steps
+        enable_auto_merge: Whether to enable schema merging
 
     Returns:
         Tuple of (table_path, table_name, row_count)
@@ -258,14 +264,18 @@ def write_to_onelake(
             view_name = f"temp_{entity_name.lower()}"
             cached_df.createOrReplaceTempView(view_name)
 
+            # Set schema auto-merge configuration if enabled
+            if enable_auto_merge:
+                spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
+
             # Build the CREATE TABLE statement
             create_sql = f"""
             CREATE TABLE IF NOT EXISTS {table_name}
             USING DELTA
             """
 
-            # Add partitioning if specified
-            if partition_cols:
+            # Add partitioning if specified - but be careful with validation_errors table
+            if partition_cols and entity_name.lower() != "validation_errors":
                 partition_cols_str = ", ".join(partition_cols)
                 create_sql += f"\nPARTITIONED BY ({partition_cols_str})"
 
@@ -298,13 +308,20 @@ def write_to_onelake(
 
         except Exception as e:
             logger.error(f"Error creating table with SQL: {str(e)}")
-            logger.warning("Falling back to direct DataFrame write")
+            logger.warning(f"Falling back to direct DataFrame write: {str(e)}")
 
             # Fallback to direct DataFrame write
             writer = cached_df.write.format("delta").mode(mode)
+            
+            # Enable schema merging for append mode
+            if mode.lower() != "overwrite" and enable_auto_merge:
+                writer = writer.option("mergeSchema", "true")
 
-            # Add partitioning if specified
-            if partition_cols:
+            # For validation_errors table, use only the entity column for partitioning
+            if entity_name.lower() == "validation_errors":
+                writer = writer.partitionBy("entity")
+            # Add normal partitioning if specified for other tables
+            elif partition_cols:
                 writer = writer.partitionBy(*partition_cols)
 
             # Add table properties
@@ -317,9 +334,16 @@ def write_to_onelake(
     else:
         # Use direct DataFrame write
         writer = cached_df.write.format("delta").mode(mode)
+        
+        # Enable schema merging for append mode
+        if mode.lower() != "overwrite" and enable_auto_merge:
+            writer = writer.option("mergeSchema", "true")
 
-        # Add partitioning if specified
-        if partition_cols:
+        # For validation_errors table, use only the entity column for partitioning
+        if entity_name.lower() == "validation_errors":
+            writer = writer.partitionBy("entity")
+        # Add normal partitioning if specified for other tables
+        elif partition_cols:
             writer = writer.partitionBy(*partition_cols)
 
         # Add table properties
@@ -429,21 +453,21 @@ def direct_etl_to_onelake(
 
 def create_database_if_not_exists(spark: SparkSession) -> None:
     """
-    Create the connectwise database if it doesn't already exist.
+    Verify the bronze schema exists since we're working with a schema-enabled lakehouse.
     
     Args:
         spark: SparkSession instance
     """
     try:
-        # Check if database exists
-        databases = [row.databaseName for row in spark.sql("SHOW DATABASES").collect()]
+        # Check if schema exists
+        schemas = [row.databaseName for row in spark.sql("SHOW DATABASES").collect()]
         
-        if DEFAULT_DATABASE not in databases:
-            # Create the database
-            logger.info(f"Creating database {DEFAULT_DATABASE}")
-            spark.sql(f"CREATE DATABASE IF NOT EXISTS {DEFAULT_DATABASE}")
+        if "bronze" not in schemas:
+            # Log a warning but don't try to create it - in a schema-enabled lakehouse this should already exist
+            logger.warning("The 'bronze' schema was not found. Make sure you're using a properly configured Fabric lakehouse.")
         else:
-            logger.info(f"Database {DEFAULT_DATABASE} already exists")
+            logger.info("Using existing 'bronze' schema in the Fabric lakehouse")
             
     except Exception as e:
-        logger.warning(f"Error creating database: {str(e)}")
+        logger.warning(f"Error checking for bronze schema: {str(e)}")
+        logger.info("Continuing anyway, assuming schema-enabled lakehouse setup")

@@ -26,9 +26,10 @@ from fabric_api.extract import (
     products,
 )
 
-# Initialize logger
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# Initialize logger with reduced verbosity for Fabric notebooks
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)  # Only show warnings and errors by default
 
 # Default values for ETL parameters
 DEFAULT_LAKEHOUSE_ROOT = "/lakehouse/default/Tables/connectwise"
@@ -172,7 +173,18 @@ class ETLOrchestrator:
 
         # Transform: Validate data with Pydantic models
         logger.info(f"Validating {entity_name} data...")
+        
+        # Temporarily reduce validation logger verbosity in production environment
+        from fabric_api.validation import logger as validation_logger
+        original_level = validation_logger.level
+        # Set to WARNING to reduce console output in Fabric notebooks
+        validation_logger.setLevel(logging.WARNING)
+        
+        # Perform validation
         validation_result = validate_func(raw_data)
+        
+        # Restore original logger level
+        validation_logger.setLevel(original_level)
 
         # Determine path - use OneLake utilities if enabled
         if self.use_onelake:

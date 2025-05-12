@@ -195,12 +195,12 @@ class Agreement(SparkModel):
     restrictLocationFlag: bool
     restrictDepartmentFlag: bool
     startDate: str
-    endDate: str
+    endDate: str = Field(default="")  # Made optional for agreements without end dates
     noEndingDateFlag: bool
     cancelledFlag: bool
-    applicationUnits: str
+    applicationUnits: str = Field(default="Hours")  # Made optional with default value to fix validation errors
     applicationLimit: float
-    applicationCycle: str
+    applicationCycle: str = Field(default="None")  # Made optional with default value to fix validation errors
     applicationUnlimitedFlag: bool
     oneTimeFlag: bool
     coverAgreementTime: bool

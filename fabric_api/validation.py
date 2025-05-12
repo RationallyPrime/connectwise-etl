@@ -13,9 +13,13 @@ from pydantic import ValidationError, BaseModel
 # Models are imported from the connectwise_models package via schemas
 from fabric_api import schemas
 
-# Initialize logger
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# Initialize logger with reduced verbosity
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)  # Only show warnings and errors by default
+
+# Set this to True to enable verbose error logging (not recommended in production)
+VERBOSE_ERROR_LOGGING = False
 
 # Generic type variable for model types
 T = TypeVar('T', bound=BaseModel)
@@ -96,7 +100,16 @@ def validate_data(
             validated_obj = model_class.model_validate(raw_dict)
             valid_objects.append(validated_obj)
         except ValidationError as e:
-            logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {e.json()}")
+            # Extract just the essential error information to avoid huge outputs
+            error_fields = [f"{err['type']} on {'.'.join(str(loc) for loc in err['loc'])}" for err in e.errors()]
+            concise_error = ", ".join(error_fields)
+            
+            # Use a more concise warning message
+            if VERBOSE_ERROR_LOGGING:
+                logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {e.json()}")
+            else:
+                logger.warning(f"❌ Validation failed for {entity_name} ID {record_id}: {concise_error}")
+                
             errors.append({
                 "entity": entity_name,
                 "raw_data_id": record_id,

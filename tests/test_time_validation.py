@@ -114,15 +114,28 @@ def test_time_validation():
             logger.info(f"✅ SUCCESS: Time entry {time_entry_id} validated successfully")
             
         except ValidationError as e:
-            invalid_count += 1
-            logger.error(f"❌ ERROR: Time entry {time_entry_id} validation failed")
+            # Log validation errors with detailed info
+            logger.error(f"❌ VALIDATION ERROR: Time entry ID {time_entry_id} (index {i+1}) validation failed")
             
-            # Print detailed validation errors
+            # Print the actual data that failed validation to help diagnose the issue
+            logger.error(f"Raw data fields: {', '.join(raw_time_entry.keys())}")
+            
+            # Print detailed error information
             for error in e.errors():
-                location = ".".join(str(loc) for loc in error["loc"])
-                logger.error(f"  - Field: {location}")
+                field_path = '.'.join(str(loc) for loc in error['loc'])
+                logger.error(f"  - Field: {field_path}")
                 logger.error(f"    Error: {error['msg']}")
                 logger.error(f"    Type: {error['type']}")
+                
+            # If the field is in the raw data, show its value
+            for error in e.errors():
+                if len(error['loc']) == 1 and error['loc'][0] in raw_time_entry:
+                    field_name = error['loc'][0]
+                    logger.error(f"    Value in raw data: {repr(raw_time_entry[field_name])}")
+                elif len(error['loc']) == 1:
+                    logger.error(f"    Field not present in raw data")
+            invalid_count += 1
+            logger.error(f"❌ ERROR: Time entry {time_entry_id} validation failed")
     
     # Print summary
     logger.info(f"Validation complete: {valid_count} valid, {invalid_count} invalid time entries")

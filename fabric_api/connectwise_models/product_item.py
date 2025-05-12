@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from pydantic import Field
 from sparkdantic import SparkModel
-
+from typing import Optional
 
 class FieldInfo(SparkModel):
     typeId: str
@@ -93,29 +93,29 @@ class ProductItem(SparkModel):
     extCost: float
     margin: float
     agreementAmount: float
-    priceMethod: str
+    priceMethod: str = Field(default="")  # Made optional with default value to fix validation errors
     billableOption: str
     locationId: int
     location: Location
     businessUnitId: int
     businessUnit: BusinessUnit
-    vendorSku: str
+    vendorSku: str = Field(default="")  # Made optional with default value to fix validation errors
     taxableFlag: bool
     dropshipFlag: bool
     specialOrderFlag: bool
     phaseProductFlag: bool
     cancelledFlag: bool
     quantityCancelled: float
-    cancelledReason: str
+    cancelledReason: str = Field(default="")  # Made optional with default value to fix validation errors
     customerDescription: str
     productSuppliedFlag: bool
     subContractorAmountLimit: float
-    opportunity: Opportunity
-    calculatedPriceFlag: bool
-    calculatedCostFlag: bool
-    forecastDetailId: int
-    cancelledBy: int
-    cancelledDate: str
+    opportunity: Optional[Opportunity] = None
+    calculatedPriceFlag: bool = Field(default=False)
+    calculatedCostFlag: bool = Field(default=False)
+    forecastDetailId: int = Field(default=0)
+    cancelledBy: int = Field(default=0)  # Made optional with default value to fix validation errors
+    cancelledDate: str = Field(default="")  # Made optional with default value to fix validation errors
     taxCode: TaxCode
     listPrice: float
     company: Company

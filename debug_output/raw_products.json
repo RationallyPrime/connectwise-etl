@@ -112,19 +112,9 @@
     "cost": 3180000.0,
     "extPrice": 3180000.0,
     "extCost": 3180000.0,
-    "discount": 0.0,
     "margin": 0.0,
     "agreementAmount": 0.0,
     "billableOption": "Billable",
-    "agreement": {
-      "id": 8,
-      "name": "T\u00edmapottur - Innri kerfi",
-      "type": "T\u00edmapottur ",
-      "_info": {
-        "agreement_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements/8",
-        "typeId": "31"
-      }
-    },
     "locationId": 11,
     "location": {
       "id": 11,
@@ -150,23 +140,8 @@
     "customerDescription": "V\u00e9lb\u00fana\u00f0arsala - n\u00fdr Veeam Repo \u00ed K\u00f3pavog.",
     "productSuppliedFlag": false,
     "subContractorAmountLimit": 0.0,
-    "sla": {
-      "id": 2,
-      "name": "Standard SLA",
-      "_info": {
-        "sla_href": "https://verk.thekking.is/v4_6_release/apis/3.0/service/SLAs/2"
-      }
-    },
-    "salesOrder": {
-      "id": 1,
-      "identifier": "Sales Order #1",
-      "_info": {
-        "so_href": "https://verk.thekking.is/v4_6_release/apis/3.0/sales/orders/1"
-      }
-    },
     "calculatedPriceFlag": false,
     "calculatedCostFlag": false,
-    "purchaseDate": "2018-07-10T00:00:00Z",
     "taxCode": {
       "id": 16,
       "name": "Vir\u00f0isaukaskattur",
@@ -259,7 +234,6 @@
         "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
       }
     },
-    "integrationXRef": "BACK1027",
     "listPrice": 4907.58,
     "company": {
       "id": 19596,

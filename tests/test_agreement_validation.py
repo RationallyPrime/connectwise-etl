@@ -23,12 +23,16 @@ from fabric_api.client import ConnectWiseClient
 from fabric_api.extract.agreements import fetch_agreements_raw
 from fabric_api import schemas
 
-# Set up logging
+# Set up logging - more concise for testing
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.WARNING,  # Only show warnings and errors
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+# Configure the validation module to be less verbose
+from fabric_api.validation import logger as validation_logger
+validation_logger.setLevel(logging.WARNING)  # Reduce verbosity of validation
 
 def test_agreement_validation():
     """
@@ -81,30 +85,58 @@ def test_agreement_validation():
     
     logger.info(f"Retrieved {len(raw_agreements)} agreements")
     
-    # Validate each agreement
-    valid_count = 0
-    invalid_count = 0
+    # Validate agreements using the new validation module
+    from fabric_api.validation import validate_agreements
     
-    for i, raw_agreement in enumerate(raw_agreements):
-        agreement_id = raw_agreement.get("id", f"Unknown-{i}")
-        logger.info(f"Validating agreement {agreement_id} ({i+1}/{len(raw_agreements)})")
+    # Track missing applicationCycle field specifically
+    missing_application_cycle = []
+    
+    # First check for applicationCycle issue
+    for agreement in raw_agreements:
+        if "applicationCycle" not in agreement and "id" in agreement:
+            missing_application_cycle.append(agreement["id"])
+    
+    if missing_application_cycle:
+        logger.warning(f"Found {len(missing_application_cycle)} agreements missing 'applicationCycle' field: {missing_application_cycle[:5]}" + 
+                     (" ...and more" if len(missing_application_cycle) > 5 else ""))
+    
+    # Use the validation module to validate
+    validation_result = validate_agreements(raw_agreements)
+    valid_count = len(validation_result.valid_objects)
+    invalid_count = len(validation_result.errors)
+    
+    # Analyze error patterns
+    if validation_result.errors:
+        error_fields = {}
+        for error in validation_result.errors:
+            for err in error["errors"]:
+                field = ".".join(str(loc) for loc in err["loc"]) if "loc" in err else "unknown"
+                error_type = err.get("type", "unknown")
+                if field not in error_fields:
+                    error_fields[field] = {}
+                if error_type not in error_fields[field]:
+                    error_fields[field][error_type] = 0
+                error_fields[field][error_type] += 1
         
-        try:
-            # Attempt to validate using the Pydantic model
-            validated_agreement = schemas.Agreement.model_validate(raw_agreement)
-            valid_count += 1
-            logger.info(f"✅ SUCCESS: Agreement {agreement_id} validated successfully")
+        # Print a concise summary of error patterns
+        logger.warning("Validation error patterns:")
+        for field, types in error_fields.items():
+            error_counts = ", ".join([f"{t}: {c}" for t, c in types.items()])
+            logger.warning(f"  - {field}: {error_counts}")
             
-        except ValidationError as e:
-            invalid_count += 1
-            logger.error(f"❌ ERROR: Agreement {agreement_id} validation failed")
-            
-            # Print detailed validation errors
-            for error in e.errors():
-                location = ".".join(str(loc) for loc in error["loc"])
-                logger.error(f"  - Field: {location}")
-                logger.error(f"    Error: {error['msg']}")
-                logger.error(f"    Type: {error['type']}")
+        # Show a sample error
+        if validation_result.errors:
+            sample_error = validation_result.errors[0]
+            logger.warning(f"Sample error for Agreement ID {sample_error['raw_data_id']}:")
+            for err in sample_error["errors"][:3]:  # Show at most 3 errors
+                field = ".".join(str(loc) for loc in err["loc"]) if "loc" in err else "unknown"
+                logger.warning(f"  - {field}: {err.get('msg', 'unknown error')}")
+                
+        if "applicationCycle" in error_fields:
+            logger.warning("RECOMMENDATION: The 'applicationCycle' field is required but missing in several records.")
+            logger.warning("Consider updating the Agreement model or preprocessing the data.")
+    else:
+        logger.info("All agreements validated successfully. No errors found!")
     
     # Print summary
     logger.info(f"Validation complete: {valid_count} valid, {invalid_count} invalid agreements")

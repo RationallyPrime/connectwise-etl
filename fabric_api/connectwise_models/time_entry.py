@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from pydantic import Field
+from typing import Optional
 from sparkdantic import SparkModel
 
 
@@ -143,7 +144,7 @@ class TimeEntry(SparkModel):
     department: Department
     workType: WorkType
     workRole: WorkRole
-    projectActivity: str
+    projectActivity: str = Field(default="")  # Made optional with default value to fix validation errors
     territory: str
     timeStart: str
     timeEnd: str
@@ -153,9 +154,9 @@ class TimeEntry(SparkModel):
     addToDetailDescriptionFlag: bool
     addToInternalAnalysisFlag: bool
     addToResolutionFlag: bool
-    emailResourceFlag: bool
-    emailContactFlag: bool
-    emailCcFlag: bool
+    emailResourceFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
+    emailContactFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
+    emailCcFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
     hoursBilled: float
     invoiceHours: float
     hourlyCost: str
@@ -170,12 +171,12 @@ class TimeEntry(SparkModel):
     invoiceReady: int
     timeSheet: TimeSheet
     status: str
-    ticket: Ticket
-    project: Project
-    phase: Phase
-    ticketBoard: str
-    ticketStatus: str
-    invoiceFlag: bool
-    extendedInvoiceAmount: float
-    locationName: str
-    taxCode: TaxCode
+    ticket: Optional[Ticket] = None  # Made optional with default value to fix validation errors
+    project: Optional[Project] = None  # Made optional with default value to fix validation errors
+    phase: Optional[Phase] = None  # Made optional with default value to fix validation errors
+    ticketBoard: str = Field(default="")  # Made optional with default value to fix validation errors
+    ticketStatus: str = Field(default="")  # Made optional with default value to fix validation errors
+    invoiceFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
+    extendedInvoiceAmount: float = Field(default=0.0)  # Made optional with default value to fix validation errors
+    locationName: str = Field(default="")  # Made optional with default value to fix validation errors
+    taxCode: Optional[TaxCode] = None  # Made optional with default value to fix validation errors
