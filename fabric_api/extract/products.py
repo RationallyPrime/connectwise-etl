@@ -154,9 +154,9 @@ def fetch_product_items_raw(  # Renamed to ProductItem to match schema model
     _LOGGER.info("Fetching raw product items using schema-based field selection")
 
     fields_str = (
-        fields_override if fields_override else get_fields_for_api_call(schemas.ProductItem)
+        fields_override if fields_override else get_fields_for_api_call(schemas.ProductItem, max_depth=2)
     )
-    _LOGGER.debug(f"Using fields for product items: {fields_str}")
+    _LOGGER.debug(f"Using fields for product items (with nested objects): {fields_str}")
 
     # NOTE: The endpoint for "general products/catalog items" might be different from
     # "products on an invoice/order". Adjust endpoint as needed.

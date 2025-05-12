@@ -617,9 +617,9 @@ def fetch_unposted_invoices_raw(
     logger.info("Fetching raw unposted invoices using schema-based field selection")
 
     fields_str = (
-        fields_override if fields_override else get_fields_for_api_call(schemas.UnpostedInvoice)
+        fields_override if fields_override else get_fields_for_api_call(schemas.UnpostedInvoice, max_depth=2)
     )
-    logger.debug(f"Using fields for unposted invoices: {fields_str}")
+    logger.debug(f"Using fields for unposted invoices (with nested objects): {fields_str}")
 
     raw_unposted_invoices = client.paginate(
         endpoint="/finance/accounting/unpostedinvoices",
@@ -652,8 +652,8 @@ def fetch_posted_invoices_raw(
     """
     logger.info("Fetching raw posted invoices using schema-based field selection")
 
-    fields_str = fields_override if fields_override else get_fields_for_api_call(PostedInvoice)
-    logger.debug(f"Using fields for posted invoices: {fields_str}")
+    fields_str = fields_override if fields_override else get_fields_for_api_call(schemas.PostedInvoice, max_depth=2)
+    logger.debug(f"Using fields for posted invoices (with nested objects): {fields_str}")
 
     raw_posted_invoices = client.paginate(
         endpoint="/finance/invoices",

@@ -150,9 +150,9 @@ def fetch_expense_entries_raw(
     _LOGGER.info("Fetching raw expense entries using schema-based field selection")
 
     fields_str = (
-        fields_override if fields_override else get_fields_for_api_call(schemas.ExpenseEntry)
+        fields_override if fields_override else get_fields_for_api_call(schemas.ExpenseEntry, max_depth=2)
     )
-    _LOGGER.debug(f"Using fields for expense entries: {fields_str}")
+    _LOGGER.debug(f"Using fields for expense entries (with nested objects): {fields_str}")
 
     raw_expense_entries = client.paginate(
         endpoint="/expense/entries",

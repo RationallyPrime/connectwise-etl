@@ -136,8 +136,8 @@ def fetch_time_entries_raw(
     """
     _LOGGER.info("Fetching raw time entries using schema-based field selection")
 
-    fields_str = fields_override if fields_override else get_fields_for_api_call(schemas.TimeEntry)
-    _LOGGER.debug(f"Using fields for time entries: {fields_str}")
+    fields_str = fields_override if fields_override else get_fields_for_api_call(schemas.TimeEntry, max_depth=2)
+    _LOGGER.debug(f"Using fields for time entries (with nested objects): {fields_str}")
 
     raw_time_entries = client.paginate(
         endpoint="/time/entries",

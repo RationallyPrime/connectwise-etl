@@ -68,6 +68,78 @@ ENTITY_CONFIG: dict[str, dict[str, Any]] = {
     }
 }
 
+def _flatten_nested_structures(data, parent_key='', separator='_'):
+    """
+    Recursively flatten nested dictionaries and lists into a flat dictionary 
+    with keys indicating the path to the value.
+    
+    Args:
+        data: Data structure to flatten (dict, list, or primitive)
+        parent_key: The parent key prefix (used in recursion)
+        separator: Character to use between keys when flattening
+        
+    Returns:
+        Flattened dictionary with only primitive values
+    """
+    items = {}
+    
+    # Handle dictionaries
+    if isinstance(data, dict):
+        for key, value in list(data.items()):
+            # Skip _info fields as they often contain duplicative or unnecessary info
+            if key == '_info':
+                continue
+                
+            new_key = f"{parent_key}{separator}{key}" if parent_key else key
+            
+            # Keep the id and name directly from the object, as they're the most important identifiers
+            if key == 'id' and parent_key:
+                items[f"{parent_key}{separator}id"] = value
+            elif key == 'name' and parent_key:
+                items[f"{parent_key}{separator}name"] = value
+                
+            # Recursively process the value
+            if isinstance(value, (dict, list)):
+                nested_items = _flatten_nested_structures(value, new_key, separator)
+                items.update(nested_items)
+            else:
+                items[new_key] = value
+    
+    # Handle lists
+    elif isinstance(data, list):
+        # Convert to a string list like: id1,id2,id3 or name1,name2,name3
+        id_list = []
+        name_list = []
+        
+        # Process each item in the list
+        for i, item in enumerate(data):
+            if isinstance(item, dict):
+                # Extract id and name if available
+                if 'id' in item:
+                    id_list.append(str(item['id']))
+                if 'name' in item:
+                    name_list.append(str(item['name']))
+                    
+                # Also recurse on each item for completeness
+                item_key = f"{parent_key}{separator}{i}"
+                nested_items = _flatten_nested_structures(item, item_key, separator)
+                items.update(nested_items)
+            else:
+                # For primitive lists, just convert to string and add to name_list
+                name_list.append(str(item))
+        
+        # Add the aggregated lists if they have content
+        if id_list:
+            items[f"{parent_key}{separator}ids"] = ','.join(id_list)
+        if name_list:
+            items[f"{parent_key}{separator}names"] = ','.join(name_list)
+    
+    # Handle primitive values
+    elif parent_key:  # Only add primitives if they have a key
+        items[parent_key] = data
+        
+    return items
+
 def process_entity(
     entity_name: str,
     spark: SparkSession,
@@ -146,22 +218,14 @@ def process_entity(
             logger.warning(f"Error creating DataFrame with schema: {str(e)}")
             logger.info(f"Falling back to schema inference for {entity_name}")
             
-            # Try with simplified data - flatten complex objects to strings
+            # Try with simplified data - flatten complex objects to primitive types
             simplified_data = []
             for obj in validated_objects:
-                # Get the dictionary but handle complex objects
+                # Get the dictionary
                 data_dict = obj.model_dump()
-                # Convert all complex types to their string representation
-                for key, value in list(data_dict.items()):
-                    if isinstance(value, dict):
-                        # Replace nested objects with their ID or name if available
-                        if 'id' in value:
-                            data_dict[key + "_id"] = value.get('id')
-                        if 'name' in value:
-                            data_dict[key + "_name"] = value.get('name')
-                        # Remove the complex object
-                        data_dict.pop(key)
-                simplified_data.append(data_dict)
+                # Process the dictionary with our recursive flattening function
+                flattened_dict = _flatten_nested_structures(data_dict)
+                simplified_data.append(flattened_dict)
             
             # Create DataFrame with inferred schema
             df = spark.createDataFrame(simplified_data)

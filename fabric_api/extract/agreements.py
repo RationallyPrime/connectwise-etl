@@ -223,9 +223,9 @@ def fetch_agreements_raw(
     """
     _LOGGER.info("Fetching raw agreements using schema-based field selection")
 
-    # Use get_fields_for_api_call utility with schemas.Agreement model
-    fields_str = get_fields_for_api_call(schemas.Agreement)
-    _LOGGER.debug(f"Using fields: {fields_str}")
+    # Use enhanced get_fields_for_api_call utility with nested field support
+    fields_str = get_fields_for_api_call(schemas.Agreement, max_depth=2)
+    _LOGGER.debug(f"Using fields for agreements (with nested objects): {fields_str}")
 
     # Prepare parameters for the API call
     params = {"pageSize": page_size, "fields": fields_str}
