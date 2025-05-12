@@ -15,10 +15,10 @@ python-dotenv = "*"
 pydantic = ">=2.11.4"
 pyspark = "*"
 pyright = "*"
+sparkdantic = "*"
 [tool.poetry.extras]
 fabric = ["pyspark"]
 azure = ["azure-identity", "azure-keyvault-secrets"]
-sparkdantic = ["sparkdantic"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

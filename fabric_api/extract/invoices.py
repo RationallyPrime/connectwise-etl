@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fabric_api import schemas
+from fabric_api.connectwise_models import PostedInvoice, UnpostedInvoice
 from fabric_api.api_utils import get_fields_for_api_call
 
 """fabric_api.extract.invoices - Invoice‑centric extraction routines."""
@@ -651,7 +652,7 @@ def fetch_posted_invoices_raw(
     """
     logger.info("Fetching raw posted invoices using schema-based field selection")
 
-    fields_str = fields_override if fields_override else get_fields_for_api_call(schemas.Invoice)
+    fields_str = fields_override if fields_override else get_fields_for_api_call(PostedInvoice)
     logger.debug(f"Using fields for posted invoices: {fields_str}")
 
     raw_posted_invoices = client.paginate(

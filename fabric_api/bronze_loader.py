@@ -9,14 +9,21 @@ converting it to Spark DataFrames, and writing it to the Bronze layer.
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple, Any, Union
 
-from pydantic import ValidationError
 from pyspark.sql import SparkSession, DataFrame
-from sparkdantic import create_spark_schema
+from pydantic import ValidationError
 
 from fabric_api.client import ConnectWiseClient
-from fabric_api import schemas
+# Updated to use the new connectwise_models package
+from fabric_api.connectwise_models import (
+    Agreement,
+    PostedInvoice,  # renamed from Invoice for clarity
+    UnpostedInvoice,
+    TimeEntry,
+    ExpenseEntry,
+    ProductItem
+)
 from fabric_api.extract.agreements import fetch_agreements_raw
 from fabric_api.extract.invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
 from fabric_api.extract.time import fetch_time_entries_raw
@@ -31,32 +38,32 @@ logger = logging.getLogger(__name__)
 ENTITY_CONFIG: dict[str, dict[str, Any]] = {
     "Agreement": {
         "fetch_func": fetch_agreements_raw,
-        "schema": schemas.Agreement,
-        "partition_cols": ["type"]
+        "schema": Agreement,
+        "partition_cols": []
     },
     "PostedInvoice": {
         "fetch_func": fetch_posted_invoices_raw,
-        "schema": schemas.Invoice,
-        "partition_cols": ["type"]
+        "schema": PostedInvoice,
+        "partition_cols": []
     },
     "UnpostedInvoice": {
         "fetch_func": fetch_unposted_invoices_raw,
-        "schema": schemas.UnpostedInvoice,
-        "partition_cols": ["status"]
+        "schema": UnpostedInvoice,
+        "partition_cols": []
     },
     "TimeEntry": {
         "fetch_func": fetch_time_entries_raw,
-        "schema": schemas.TimeEntry,
-        "partition_cols": ["company_type"]
+        "schema": TimeEntry,
+        "partition_cols": []
     },
     "ExpenseEntry": {
         "fetch_func": fetch_expense_entries_raw,
-        "schema": schemas.ExpenseEntry,
-        "partition_cols": ["type"]
+        "schema": ExpenseEntry,
+        "partition_cols": []
     },
     "ProductItem": {
         "fetch_func": fetch_product_items_raw,
-        "schema": schemas.ProductItem,
+        "schema": ProductItem,
         "partition_cols": []
     }
 }
@@ -127,15 +134,41 @@ def process_entity(
     
     # 3. Convert to Spark DataFrame
     if validated_objects:
-        # Convert Pydantic objects to dictionaries
-        dict_data = [obj.model_dump() for obj in validated_objects]
-        # Create Spark schema from Pydantic model
-        schema = create_spark_schema(schema_class, by_alias=True)
-        # Create DataFrame
-        df = spark.createDataFrame(dict_data, schema)
+        try:
+            # First convert Pydantic objects to dictionaries
+            dict_data = [obj.model_dump() for obj in validated_objects]
+            
+            # Use the model_spark_schema() method directly from our SparkModel-derived class
+            # This leverages the full capability of sparkdantic
+            schema = schema_class.model_spark_schema(by_alias=True)
+            df = spark.createDataFrame(dict_data, schema, verifySchema=False)
+        except Exception as e:
+            logger.warning(f"Error creating DataFrame with schema: {str(e)}")
+            logger.info(f"Falling back to schema inference for {entity_name}")
+            
+            # Try with simplified data - flatten complex objects to strings
+            simplified_data = []
+            for obj in validated_objects:
+                # Get the dictionary but handle complex objects
+                data_dict = obj.model_dump()
+                # Convert all complex types to their string representation
+                for key, value in list(data_dict.items()):
+                    if isinstance(value, dict):
+                        # Replace nested objects with their ID or name if available
+                        if 'id' in value:
+                            data_dict[key + "_id"] = value.get('id')
+                        if 'name' in value:
+                            data_dict[key + "_name"] = value.get('name')
+                        # Remove the complex object
+                        data_dict.pop(key)
+                simplified_data.append(data_dict)
+            
+            # Create DataFrame with inferred schema
+            df = spark.createDataFrame(simplified_data)
+            logger.info(f"Created DataFrame with inferred schema for {entity_name}")
     else:
-        # Create empty DataFrame with correct schema
-        schema = create_spark_schema(schema_class, by_alias=True)
+        # Create empty DataFrame with correct schema using model_spark_schema() method
+        schema = schema_class.model_spark_schema(by_alias=True)
         df = spark.createDataFrame([], schema)
         logger.info(f"No valid {entity_name} records to process, created empty DataFrame")
     

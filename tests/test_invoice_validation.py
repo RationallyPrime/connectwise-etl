@@ -22,6 +22,7 @@ sys.path.append('..')
 from fabric_api.client import ConnectWiseClient
 from fabric_api.extract.invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
 from fabric_api import schemas
+from fabric_api.connectwise_models import PostedInvoice
 
 # Set up logging
 logging.basicConfig(
@@ -88,7 +89,7 @@ def test_posted_invoice_validation():
         
         try:
             # Attempt to validate using the Pydantic model
-            validated_invoice = schemas.Invoice.model_validate(raw_invoice)
+            validated_invoice = PostedInvoice.model_validate(raw_invoice)
             valid_count += 1
             logger.info(f"✅ SUCCESS: Posted invoice {invoice_number} validated successfully")
             

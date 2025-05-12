@@ -1,0 +1,182 @@
+{
+    "id": 3,
+    "name": "Any name",
+    "type": {
+        "id": 31,
+        "name": "T\u00edmapottur ",
+        "_info": {
+            "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements/types/31"
+        }
+    },
+    "company": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+            "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297"
+        }
+    },
+    "contact": {
+        "id": 7,
+        "name": "Fred Stone",
+        "_info": {
+            "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/7"
+        }
+    },
+    "site": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+            "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002"
+        }
+    },
+    "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+            "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+    },
+    "department": {
+        "id": 1,
+        "identifier": "Service",
+        "name": "Service",
+        "_info": {
+            "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+        }
+    },
+    "restrictLocationFlag": false,
+    "restrictDepartmentFlag": false,
+    "startDate": "2018-05-17T00:00:00Z",
+    "endDate": "2018-08-31T00:00:00Z",
+    "noEndingDateFlag": false,
+    "cancelledFlag": false,
+    "applicationUnits": "Hours",
+    "applicationLimit": 1.0,
+    "applicationCycle": "CalendarMonth",
+    "applicationUnlimitedFlag": false,
+    "oneTimeFlag": false,
+    "coverAgreementTime": true,
+    "coverAgreementProduct": false,
+    "coverAgreementExpense": false,
+    "coverSalesTax": false,
+    "carryOverUnused": true,
+    "allowOverruns": true,
+    "expireWhenZero": false,
+    "chargeToFirm": false,
+    "employeeCompRate": "Actual",
+    "employeeCompNotExceed": "Billing",
+    "compHourlyRate": 0.0,
+    "compLimitAmount": 0.0,
+    "billingCycle": {
+        "id": 2,
+        "name": "Monthly",
+        "_info": {
+            "billingCycle_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/billingCycles/2"
+        }
+    },
+    "billOneTimeFlag": false,
+    "invoicingCycle": "CalendarYear",
+    "billToCompany": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+            "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297"
+        }
+    },
+    "billToContact": {
+        "id": 1,
+        "name": "Jorge Smith",
+        "_info": {
+            "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1"
+        }
+    },
+    "billToSite": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+            "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002"
+        }
+    },
+    "billAmount": 0.0,
+    "taxable": false,
+    "billStartDate": "2018-05-17T00:00:00Z",
+    "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+            "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+    },
+    "restrictDownPayment": false,
+    "prorateFlag": false,
+    "invoiceProratedAdditionsFlag": false,
+    "topComment": false,
+    "bottomComment": false,
+    "billTime": "NoDefault",
+    "billExpenses": "NoDefault",
+    "billProducts": "NoDefault",
+    "billableTimeInvoice": false,
+    "billableExpenseInvoice": false,
+    "billableProductInvoice": false,
+    "currency": {
+        "id": 27,
+        "symbol": " kr.",
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+            "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+    },
+    "autoInvoiceFlag": false,
+    "companyLocation": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+            "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+    },
+    "shipToCompany": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+            "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297"
+        }
+    },
+    "shipToSite": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+            "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002"
+        }
+    },
+    "agreementStatus": "Expired",
+    "customFields": [
+        {
+            "id": 4,
+            "caption": "S Number",
+            "type": "Text",
+            "entryMethod": "EntryField",
+            "numberOfDecimals": 0,
+            "connectWiseId": "a342924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+            "id": 20,
+            "caption": "365 Tenant",
+            "type": "Text",
+            "entryMethod": "EntryField",
+            "numberOfDecimals": 0,
+            "connectWiseId": "1ce6e2fb-9ed9-ef11-9187-005056aeec2b"
+        }
+    ]
+}

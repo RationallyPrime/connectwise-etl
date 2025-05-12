@@ -12,6 +12,14 @@ from pyspark.sql import SparkSession
 
 from fabric_api.bronze_loader import process_entities
 from fabric_api.client import ConnectWiseClient
+from fabric_api.connectwise_models import (
+    Agreement,
+    PostedInvoice,  # renamed from Invoice for clarity
+    UnpostedInvoice,
+    TimeEntry,
+    ExpenseEntry,
+    ProductItem
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -29,11 +37,10 @@ def main():
     """
     Main function to test the bronze_loader.
     """
-    # Create a local SparkSession for testing
-    spark = SparkSession.builder \
-        .master("local[*]") \
-        .appName("BronzeLoaderTest") \
-        .getOrCreate()
+    # Create a local SparkSession for testing with a direct approach
+    # to avoid builder attribute access issues
+    import pyspark
+    spark = SparkSession(pyspark.SparkContext("local[*]", "BronzeLoaderTest"))
     
     logger.info("Created SparkSession for testing")
     

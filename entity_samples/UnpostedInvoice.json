@@ -1,0 +1,107 @@
+{
+    "id": 871429,
+    "billingLogId": 39005,
+    "locationId": 11,
+    "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+            "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+    },
+    "company": {
+        "id": 19604,
+        "identifier": "SMK",
+        "name": "Samkaup hf",
+        "_info": {
+            "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19604"
+        }
+    },
+    "accountNumber": "5712983769",
+    "billToCompany": {
+        "id": 19604,
+        "identifier": "SMK",
+        "name": "Samkaup hf",
+        "_info": {
+            "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19604"
+        }
+    },
+    "billToSite": {
+        "id": 1310,
+        "name": "Reykjanesb\u00e6r Skrifstofa",
+        "_info": {
+            "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19604/sites/1310"
+        }
+    },
+    "shipToCompany": {
+        "id": 19604,
+        "identifier": "SMK",
+        "name": "Samkaup hf",
+        "_info": {
+            "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19604"
+        }
+    },
+    "shipToSite": {
+        "id": 1310,
+        "name": "Reykjanesb\u00e6r Skrifstofa",
+        "_info": {
+            "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19604/sites/1310"
+        }
+    },
+    "invoiceNumber": "40005",
+    "invoiceDate": "2025-04-25T00:00:00Z",
+    "invoiceType": "Standard",
+    "description": "Accounts Receivable",
+    "billingTerms": {
+        "id": 12,
+        "name": "20dagar"
+    },
+    "dueDays": "20",
+    "dueDate": "2025-05-15T00:00:00Z",
+    "currency": {
+        "id": 27,
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+            "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+    },
+    "subTotal": 3666636.0,
+    "total": 4546628.64,
+    "hasTime": true,
+    "hasExpenses": true,
+    "hasProducts": false,
+    "invoiceTaxableFlag": true,
+    "taxCode": {
+        "id": 18,
+        "name": "VSK001",
+        "_info": {
+            "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/18"
+        }
+    },
+    "avalaraTaxFlag": false,
+    "itemTaxableFlag": true,
+    "salesTaxAmount": 879992.64,
+    "stateTaxFlag": false,
+    "stateTaxAmount": 879992.64,
+    "countyTaxFlag": false,
+    "countyTaxAmount": 0.0,
+    "cityTaxFlag": false,
+    "cityTaxAmount": 0.0,
+    "countryTaxFlag": false,
+    "countryTaxAmount": 0.0,
+    "compositeTaxFlag": false,
+    "compositeTaxAmount": 0.0,
+    "levelSixTaxFlag": false,
+    "levelSixTaxAmount": 0.0,
+    "createdBy": "Axel A\u00f0algeirsson",
+    "dateClosed": "2025-05-06T09:39:56Z"
+}
