@@ -87,8 +87,7 @@ def create_deployment_instructions():
      
      # Print results
      print("ETL Results:")
-     for entity_name, path in table_paths.items():
-         print(f"  {entity_name}: {path}")
+     print(f"  [Entity]: [Path]")
      ```
 
 6. **Schedule Refreshes** (Optional)
