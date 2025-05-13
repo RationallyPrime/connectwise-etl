@@ -2,34 +2,41 @@ from __future__ import annotations
 
 """fabric_api.extract
 
-Extraction layer ‑ converts raw JSON from ConnectWise into strongly‑typed
-Pydantic domain objects that mirror the original AL tables.
+Extraction layer for fetching raw data from the ConnectWise API.
+Each module provides functions to fetch data for different entity types.
 
 Public API
 ----------
-* ``get_invoices_with_details`` – pulls both posted and unposted invoices + every related
-  entity and returns ``tuple[lists]`` of models.
-* ``get_time_entries_for_invoice`` – get time entries for a specific invoice.
-* ``get_agreement_with_relations`` – fetch agreement incl. parent data.
-* ``get_expense_entries_with_relations`` – expenses for an invoice.
-* ``get_products_for_invoice`` – get products for a specific invoice.
+* Raw data fetching functions - return lists of raw JSON dictionaries:
+  - fetch_posted_invoices_raw - fetch posted invoices
+  - fetch_unposted_invoices_raw - fetch unposted invoices
+  - fetch_time_entries_raw - fetch time entries
+  - fetch_agreements_raw - fetch agreements
+  - fetch_expense_entries_raw - fetch expense entries
+  - fetch_product_items_raw - fetch product items
 
-All helpers are stateless and side‑effect‑free; they leverage ``fabric_api
-.utils`` for common patterns and the enhanced ``ConnectWiseClient`` for
-request/response plumbing.
+All helpers are stateless and side‑effect‑free; they leverage ``fabric_api.api_utils``
+for field selection and filtering, and the enhanced ``ConnectWiseClient`` for
+request/response handling.
 """
 
-from .products import get_products_for_invoice
-from .time import get_time_entries_for_invoice
-from .agreements import get_agreement_with_relations
-from .expenses import get_expense_entries_with_relations
-from .invoices import get_invoices_with_details, get_unposted_invoices_with_details
+from .products import fetch_product_items_raw, fetch_products_by_catalog_id, fetch_products_by_type
+from .time import fetch_time_entries_raw, fetch_time_entries_by_date_range, fetch_billable_time_entries
+from .agreements import fetch_agreements_raw, fetch_active_agreements, fetch_agreement_by_id
+from .expenses import fetch_expense_entries_raw
+from .invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
 
 __all__ = [
-    "get_invoices_with_details",
-    "get_unposted_invoices_with_details",  # Kept for backward compatibility
-    "get_time_entries_for_invoice",
-    "get_agreement_with_relations",
-    "get_expense_entries_with_relations",
-    "get_products_for_invoice",
+    "fetch_posted_invoices_raw",
+    "fetch_unposted_invoices_raw",
+    "fetch_time_entries_raw",
+    "fetch_time_entries_by_date_range",
+    "fetch_billable_time_entries",
+    "fetch_agreements_raw",
+    "fetch_active_agreements",
+    "fetch_agreement_by_id",
+    "fetch_expense_entries_raw",
+    "fetch_product_items_raw",
+    "fetch_products_by_catalog_id",
+    "fetch_products_by_type",
 ]

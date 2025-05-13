@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fabric-api"
-version = "0.2.0"
+version = "0.2.2"
 description = "ConnectWise PSA to Microsoft Fabric OneLake integration."
 authors = ["Hákon Freyr Gunnarsson <hakonf@wise.is>"]
 readme = "README.md"

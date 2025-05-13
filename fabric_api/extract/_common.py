@@ -1,66 +1,120 @@
 from __future__ import annotations
 
-"""fabric_api.extract._common
+"""
+fabric_api.extract._common
 
-Shared helpers used by the extraction sub‑modules.
-All utilities are side‑effect‑free so they can be mocked in unit tests.
+Shared utilities for extraction modules
 """
 
-from typing import Any
-from logging import Logger, getLogger
+from typing import Any, Dict, List, Optional, TypeVar, Type, Callable
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, date
 
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from ..client import ConnectWiseClient
-from ..models import ManageInvoiceError
 
-__all__ = [
-    "safe_validate",
-    "paginate",
-]
+logger = logging.getLogger(__name__)
 
-_LOGGER: Logger = getLogger(name=__name__)
+T = TypeVar('T', bound=BaseModel)
 
-# ---------------------------------------------------------------------------
-# Validation wrapper --------------------------------------------------------
-# ---------------------------------------------------------------------------
+def validate_batch(
+    data: List[Dict[str, Any]], 
+    model_class: Type[T]
+) -> tuple[List[T], List[Dict[str, Any]]]:
+    """
+    Validate a batch of raw data against a Pydantic model.
+    
+    Args:
+        data: List of dictionaries with raw data
+        model_class: Pydantic model class to validate against
+        
+    Returns:
+        Tuple of (valid_models, validation_errors)
+    """
+    valid_models: List[T] = []
+    validation_errors: List[Dict[str, Any]] = []
+    
+    for i, item in enumerate(data):
+        record_id = item.get("id", f"Unknown-{i}")
+        try:
+            model = model_class.model_validate(item)
+            valid_models.append(model)
+        except ValidationError as e:
+            logger.warning(f"Validation failed for {model_class.__name__} ID {record_id}")
+            validation_errors.append({
+                "entity": model_class.__name__,
+                "raw_data_id": record_id,
+                "errors": e.errors(),
+                "raw_data": item,
+                "timestamp": datetime.utcnow().isoformat()
+            })
+            
+    logger.info(f"Validated {len(valid_models)} of {len(data)} {model_class.__name__} records")
+    if validation_errors:
+        logger.warning(f"Found {len(validation_errors)} validation errors in {model_class.__name__} data")
+        
+    return valid_models, validation_errors
 
 
-def safe_validate(
-    model_cls,
-    raw: dict[str, Any],
-    *,
-    errors: list[ManageInvoiceError],
-    invoice_number: str | None = None,
-) -> Any | None:
-    """Validate *raw* against *model_cls* or capture ``ManageInvoiceError``."""
-    try:
-        return model_cls.model_validate(raw)
-    except ValidationError as exc:  # noqa: BLE001
-        _LOGGER.warning("Validation failed for %s – %s", model_cls.__name__, exc)
-        errors.append(
-            ManageInvoiceError(
-                invoice_number=invoice_number or str(raw.get("invoiceNumber", "")),
-                error_table_id=model_cls.__name__,
-                table_name=model_cls.__name__,
-                error_message=str(exc),
-            )
-        )
-        return None
-
-
-# ---------------------------------------------------------------------------
-# Pagination wrapper --------------------------------------------------------
-# ---------------------------------------------------------------------------
-
-
-def paginate(
+def fetch_parallel(
     client: ConnectWiseClient,
-    endpoint: str,
-    *,
-    entity_name: str,
-    params: dict[str, Any] | None = None,
-    max_pages: int | None = 50,
-) -> list[dict[str, Any]]:
-    """Thin wrapper around client.paginate with sane defaults."""
-    return client.paginate(endpoint, entity_name, params=params, max_pages=max_pages)
+    endpoint_formatter: Callable[[Any], str],
+    items: List[Any],
+    max_workers: int = 5,
+    **params: Any
+) -> List[Dict[str, Any]]:
+    """
+    Fetch data from multiple endpoints in parallel using a thread pool.
+    
+    Args:
+        client: ConnectWiseClient instance
+        endpoint_formatter: Function that takes an item and returns an endpoint path
+        items: List of items to fetch data for
+        max_workers: Maximum number of parallel workers
+        **params: Additional parameters to pass to the client.get method
+        
+    Returns:
+        List of response data dictionaries
+    """
+    results = []
+    
+    def fetch_item(item):
+        endpoint = endpoint_formatter(item)
+        try:
+            response = client.get(endpoint=endpoint, **params)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                logger.error(f"Error fetching {endpoint}: {response.status_code}")
+                return None
+        except Exception as e:
+            logger.error(f"Exception fetching {endpoint}: {str(e)}")
+            return None
+    
+    # Use ThreadPoolExecutor to fetch items in parallel
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_item = {executor.submit(fetch_item, item): item for item in items}
+        for future in as_completed(future_to_item):
+            result = future.result()
+            if result:
+                results.append(result)
+    
+    return results
+
+
+def format_date_filter(start_date: date, end_date: date) -> str:
+    """
+    Format a date range filter for ConnectWise API conditions.
+    
+    Args:
+        start_date: Start date (inclusive)
+        end_date: End date (exclusive)
+        
+    Returns:
+        Formatted condition string
+    """
+    start_str = start_date.strftime("%Y-%m-%d")
+    end_str = end_date.strftime("%Y-%m-%d")
+    return f"date>=[{start_str}] AND date<[{end_str}]"

@@ -4,7 +4,6 @@ from typing import Type, Dict, Any, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
-
 def get_fields_for_api_call(model_class: Type[BaseModel], max_depth: int = 1, include_all_nested: bool = False) -> str:
     """
     Generates a ConnectWise API 'fields' string from a Pydantic model.
@@ -21,7 +20,7 @@ def get_fields_for_api_call(model_class: Type[BaseModel], max_depth: int = 1, in
         Comma-separated list of fields formatted for the ConnectWise API
     """
     field_list = _get_field_list(model_class, max_depth, '', set(), include_all_nested)
-    return ",".join(field_list)
+    return ",".join(sorted(field_list))  # Sort for consistency and cache-friendliness
 
 
 def _get_field_list(
@@ -57,8 +56,8 @@ def _get_field_list(
     model_fields = getattr(model_class, "model_fields", {})
 
     for field_name, field_info in model_fields.items():
-        # Skip _info fields
-        if field_name == "_info" or field_name == "field_info":
+        # Skip excluded fields
+        if field_name == "_info" or field_name == "field_info" or field_name.startswith("_"):
             continue
 
         # Check if the field should be aliased
@@ -66,7 +65,7 @@ def _get_field_list(
         if hasattr(field_info, "alias") and field_info.alias:
             field_alias = field_info.alias
 
-        # Convert field name to camelCase
+        # Convert field name to camelCase for the API
         api_field_name = _to_camel_case(field_name)
 
         # Use alias if provided
@@ -101,14 +100,6 @@ def _get_field_list(
                     if subfield in getattr(field_type, "model_fields", {}):
                         field_list.append(f"{full_path}/{subfield}")
 
-        # Handle list of models
-        elif origin is list and hasattr(field_type, "__args__") and field_type.__args__:
-            item_type = field_type.__args__[0]
-            if inspect.isclass(item_type) and issubclass(item_type, BaseModel) and max_depth > 1:
-                # We don't typically need to expand lists in the field selection
-                # But we can mark it for potential array handling
-                pass
-
     return field_list
 
 
@@ -136,3 +127,105 @@ def _to_camel_case(snake_str: str) -> str:
 
     # Convert snake_case to camelCase
     return re.sub(r'_([a-z])', lambda x: x.group(1).upper(), snake_str)
+
+
+def build_condition_string(**conditions: Any) -> str:
+    """
+    Builds a condition string for ConnectWise API calls from keyword arguments.
+    
+    For example:
+    build_condition_string(
+        id=123, 
+        date_entered_gt="2023-01-01", 
+        status_id_in=[1, 2, 3]
+    )
+    
+    Will produce:
+    "id=123 AND dateEntered>[2023-01-01] AND status/id in (1,2,3)"
+    
+    Supports operators:
+    - _eq: =
+    - _gt: >
+    - _gte: >=
+    - _lt: <
+    - _lte: <=
+    - _ne: !=
+    - _contains: contains
+    - _like: like
+    - _in: in
+    - _not_in: not in
+    
+    Args:
+        **conditions: Keyword arguments for conditions
+        
+    Returns:
+        Formatted condition string for ConnectWise API
+    """
+    if not conditions:
+        return ""
+        
+    condition_parts = []
+    
+    for key, value in conditions.items():
+        # Skip None values
+        if value is None:
+            continue
+            
+        # Check for operators in the key
+        operator_map = {
+            "_eq": "=",
+            "_gt": ">",
+            "_gte": ">=",
+            "_lt": "<",
+            "_lte": "<=",
+            "_ne": "!=",
+            "_contains": "contains",
+            "_like": "like",
+            "_in": "in",
+            "_not_in": "not in"
+        }
+        
+        operator = "="  # Default operator
+        field_name = key
+        
+        # Check if key contains an operator
+        for op_suffix, op_symbol in operator_map.items():
+            if key.endswith(op_suffix):
+                operator = op_symbol
+                field_name = key[:-len(op_suffix)]
+                break
+                
+        # Convert field name to camelCase
+        field_name = _to_camel_case(field_name)
+        
+        # Format value based on type
+        if isinstance(value, str):
+            # Add brackets for date values
+            if (operator in [">", ">=", "<", "<="] and 
+                (re.match(r'^\d{4}-\d{2}-\d{2}', value) or 
+                 re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', value))):
+                formatted_value = f"[{value}]"
+            else:
+                formatted_value = f'"{value}"'
+        elif isinstance(value, bool):
+            formatted_value = str(value).lower()
+        elif isinstance(value, (list, tuple)):
+            # Format lists for IN operators
+            if operator in ["in", "not in"]:
+                values_str = ','.join(str(v) if isinstance(v, (int, float)) else f'"{v}"' for v in value)
+                formatted_value = f"({values_str})"
+            else:
+                # Default list representation
+                formatted_value = str(value)
+        else:
+            formatted_value = str(value)
+            
+        # Handle field paths (e.g., "company/id")
+        if "/" in field_name:
+            condition = f"{field_name} {operator} {formatted_value}"
+        else:
+            condition = f"{field_name}{operator}{formatted_value}"
+            
+        condition_parts.append(condition)
+        
+    return " AND ".join(condition_parts)

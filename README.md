@@ -1,141 +1,71 @@
-# ConnectWise PSA to Microsoft Fabric Integration
+# PSA ETL Pipeline Modernization Plan for Fabric Lakehouse
 
-This package extracts company data from ConnectWise PSA API and loads it directly into Microsoft Fabric OneLake.
+## Phase 1: Remove Legacy Code and Fallbacks ✅
 
-## Key Features
+**Goal:** Clean out any outdated or redundant code paths so the pipeline has no unnecessary complexity from earlier implementations. This includes eliminating old compatibility layers, defensive hacks, and dead code introduced in previous iterations (e.g. by Claude) that are no longer needed.
 
-- Optimized for Microsoft Fabric execution environment
-- Secure credential handling via Fabric Key Vault
-- Direct writing to OneLake using native Fabric paths
+* **Retire Legacy Pydantic Models:** ✅ Removed all legacy `Manage*` Pydantic models and associated validation logic from `models.py`. The pipeline now exclusively uses the new schema-derived models from `connectwise_models`.
 
-## Setup
+* **Remove "Safe Validate" Wrappers and Excess Error Handling:** ✅ Eliminated the custom validation helper `safe_validate` and similar defensive patterns. Validation is now centralized in a single workflow, with standardized error handling and logging.
 
-### Building the Package
+* **Drop Dynamic Schema Fallbacks:** ✅ Removed code that attempted to dynamically adjust or fall back when schema mismatches occurred, such as `_flatten_nested_structures` in the bronze loader. The pipeline now has a single, clear path for data loading without branching for special cases.
 
-Build a wheel distribution for deployment to Fabric:
+* **Clean Up Unused or Duplicative Utilities:** ✅ Deleted helper functions and modules that were supporting the old pipeline structure, including legacy extractors and transformers. All remaining code directly supports the new, intended flow.
 
-```bash
-# Using the provided build script
-python build_wheel.py
+## Phase 2: Schema-Driven Model Generation and Field Selection ✅
 
-# Or manually with Python build
-python -m pip install build
-python -m build --wheel
-```
+**Goal:** Shift to a fully schema-defined process. Automatically generate Pydantic models from the official ConnectWise API schema, and use those models to drive what data we request and process. This eliminates manual model coding and hard-coded field lists, making the pipeline easier to maintain and adapt to API changes.
 
-This will create a `.whl` file in the `dist/` directory.
+* **Generate Pydantic Models from OpenAPI 3 Schema:** ✅ Created new script `generate_models_from_openapi.py` that leverages ConnectWise's OpenAPI specifications to generate Pydantic models inheriting from `sparkdantic.SparkModel`. All models now have Spark-compatible methods like `model_spark_schema()`.
 
-### Deploying to Microsoft Fabric
+* **Avoid Manual Edits to Models:** ✅ Established workflow treats the OpenAPI spec as the single input for models. When ConnectWise schema changes, we update the spec and re-run the generator without manual tweaking.
 
-1. **Create a Lakehouse** in your workspace
-2. **Add secrets** to your workspace Key Vault:
-   - `CW_COMPANY`
-   - `CW_PUBLIC_KEY`
-   - `CW_PRIVATE_KEY`
-   - `CW_CLIENTID`
-3. **Upload the wheel file** to your lakehouse
-4. **Create a Notebook** and attach your Lakehouse
-5. Install the wheel in the first cell:
-   ```python
-   %pip install /lakehouse/Files/dist/fabric_api-0.1.0-py3-none-any.whl
-   ```
-6. Run the ETL code in the next cell:
-   ```python
-   from fabric_api.main import main
-   main(
-       workspace_name="YourWorkspaceName",  # Your actual workspace name
-       lakehouse_name="YourLakehouseName"   # Your actual lakehouse name
-   )
-   ```
+* **Filter Out Unneeded Schema Elements:** ✅ Configured model generation to exclude fields we don't need, such as the `_info` field with metadata links. The resulting models contain only the business fields and IDs relevant for analytics.
 
-## Data Flow
+* **Schema-Driven API Field Selection:** ✅ Updated `get_fields_for_api_call()` in `api_utils.py` to dynamically determine which fields to request from the ConnectWise API by introspecting the Pydantic models. Field lists are now derived from the schema instead of being hardcoded.
 
-1. **Extract**: Pull company data from ConnectWise PSA API
-2. **Transform**: Convert to DataFrame and add extraction timestamp
-3. **Load**: Write directly to OneLake via abfss:// URLs
+* **Apply Field Selection in Extractors:** ✅ Refactored all extraction modules in `fabric_api/extract/` to use schema-driven field selection. Each extractor now dynamically builds API requests based on the corresponding Pydantic model.
 
-## ConnectWise API Workarounds
+## Phase 3: Streamlined Validation and Loading ✅
 
-This package now includes workarounds for relationship endpoint permission issues in the ConnectWise API. Instead of using direct relationship endpoints (which may require additional permissions), it uses filtered queries to standard endpoints to retrieve related data.
+**Goal:** Refactor the ETL process into a clear, linear flow: **extract raw data → validate against Pydantic schema → convert to Spark DataFrame → write to Delta**. All validation and transformation logic will be driven by the schema, with no ad-hoc conversions.
 
-### Key Improvements:
+* **Simplify Data Extraction Functions:** ✅ Each extractor function now solely pulls data from the API and returns it without validation or transformations. The output is a clean list of dictionaries from the API.
 
-1. **Time Entries**: Uses `/time/entries` with `invoice/id` filter instead of `/finance/invoices/{id}/timeentries`
-2. **Expenses**: Uses `/expense/entries` with `invoice/id` filter instead of `/finance/invoices/{id}/expenses`
-3. **Products**: Uses `/procurement/products` with `invoice/id` filter instead of `/finance/invoices/{id}/products`
+* **Centralize Pydantic Validation:** ✅ Implemented `validate_batch()` in `extract/_common.py` that handles validation uniformly across all entity types. It processes raw JSON records and produces validated Pydantic models or error records for failures.
 
-These workarounds maintain full functionality while requiring fewer API permissions.
+* **Direct Schema-Based DataFrame Conversion:** ✅ Implemented direct conversion from validated Pydantic objects to Spark DataFrames using the schema provided by the models. Removed all fallback mechanisms and schema inference.
 
-## JSON Export Tool
+* **Consistent Delta Lake Writing:** ✅ Standardized Delta Lake writing with a uniform approach for all entities. Partitioning is applied based on configuration in `ENTITY_CONFIG`, with no entity-specific special cases.
 
-A production-ready export script is included to extract invoice data to JSON files:
+* **Logging and Error Tracking:** ✅ Added comprehensive logging through `log_utils.py` that tracks validation statistics, records errors without excessive verbosity, and provides clear summaries of issues encountered.
 
-```bash
-# Basic usage (exports last 30 days of invoices)
-python production_export.py
+## Phase 4: Fabric-Native Lakehouse Integration ✅
 
-# Specify date range
-python production_export.py --start_date 2025-04-01 --end_date 2025-04-30
+**Goal:** Align the output of the ETL with Microsoft Fabric's Lakehouse conventions, ensuring that data lands in Delta tables that are immediately usable in Fabric (e.g. for Power BI Direct Lake). This phase involves configuring paths and table names, and removing any extraneous steps so that the pipeline output is the single source of truth in OneLake.
 
-# Specify output directory
-python production_export.py --output_dir invoice_data_april
+* **Direct Write to OneLake Tables:** ✅ Implemented `ensure_fabric_path()` function in `bronze_loader.py` that automatically formats paths for Fabric OneLake. This allows writing directly to the Lakehouse's `Tables` directory with proper ABFSS URL construction (e.g., `abfss://lakehouse@account.dfs.fabric.microsoft.com/path`). When running in a non-Fabric environment, paths are still properly handled as local filesystem paths. This eliminates any need for intermediate storage or post-processing steps.
 
-# Limit number of invoices
-python production_export.py --limit 50
+* **Consistent Naming and Partitioning:** ✅ Standardized table naming with the `cw_` prefix in `ENTITY_CONFIG` and applied consistent partitioning strategies for each entity type (time-related entities partitioned by date, agreements by type, etc.). All table definitions are now centralized in a single configuration dictionary, ensuring uniform handling across entities. 
 
-# Use credentials file instead of environment variables
-python production_export.py --credentials config.json
-```
+* **Fabric Compatibility:** ✅ Added Fabric-optimized Delta write options including `mergeSchema`, `delta.autoOptimize.optimizeWrite`, and `delta.autoOptimize.autoCompact`. Updated path handling to use `os.path.join()` for consistent cross-platform compatibility. Leveraged Fabric's table registration system to automatically create catalog tables for each entity via `register_table_metadata()` function.
 
-### Credentials
+* **Enhanced Metadata:** ✅ Added function `add_fabric_metadata()` to enrich DataFrames with standardized tracking columns like `etl_entity_name`, `etl_entity_type`, `etl_timestamp`, and `etl_version`. This enables better data lineage tracking and filtering in Fabric.
 
-Set up credentials using either:
+* **Validation Error Tracking:** ✅ Updated `write_validation_errors()` function to write validation errors to a dedicated `cw_validation_errors` Delta table in the Lakehouse, partitioned by entity for efficient querying. Error records include the full context (entity type, field, error message) to assist with troubleshooting.
 
-1. **Environment variables**:
-   ```
-   CW_AUTH_USERNAME=your_username
-   CW_AUTH_PASSWORD=your_password
-   CW_CLIENTID=your_client_id
-   ```
+* **Documentation and Configuration:** ✅ Updated example notebook usage with comprehensive patterns for incremental loading with date filtering, configuring Fabric storage paths, and querying the resulting tables with SQL. Added documentation comments throughout the code to explain Fabric-specific optimizations.
 
-2. **JSON config file** (see `config.sample.json`):
-   ```json
-   {
-       "username": "your_cw_username",
-       "password": "your_cw_password",
-       "client_id": "your_cw_client_id"
-   }
-   ```
+## Phase 5: Implementation Strategy and Next Steps
 
-### Output Format
+**Goal:** Outline how to execute the above changes in a controlled, stepwise manner and ensure the system remains reliable. This phase is about planning the rollout of the improvements and making sure future contributors (or AI assistants) can work with this pipeline without confusion.
 
-The export script creates a JSON file for each invoice with this structure:
+* **Incremental Implementation in Phases:** Implement and test each phase sequentially to isolate issues. For example, start with Phase 1 by cleaning up the code (remove old models, functions, etc.) and run existing tests to ensure nothing fundamental broke. Next, do Phase 2 by generating new models and updating extractors to use them; verify that the models can parse some sample data and that the API calls return the expected fields. Proceed to Phase 3 by refactoring the validation/loading logic; here, running an end-to-end test for one entity (say Agreements) to confirm that records go from API to Delta correctly will be important. Then do Phase 4 adjustments for paths and actually run it in a Fabric environment to confirm tables appear. By tackling these in order, we reduce the risk of introducing errors and can more easily pinpoint any issues that arise at each step.
 
-```json
-{
-    "header": {
-        "id": 1001,
-        "invoice_number": "1001",
-        ...
-    },
-    "lines": [
-        {
-            "invoice_number": "1001",
-            "line_no": 1,
-            "description": "Time entry",
-            "time_entry_id": 1631,
-            ...
-        },
-        ...
-    ]
-}
-```
+* **Update Tests and Add New Ones:** As we remove and change code, update the test suite. Legacy tests for removed functions (e.g. tests for `safe_validate` or for Manage models) can be deleted. Add tests for the new core functions: e.g., a test for the model generation script (if feasible, at least ensure it creates classes with SparkModel), a test for `get_fields_for_api_call` covering a couple of models to ensure it produces correct field strings, a test for the validation utility with both a valid record and an invalid record to see that it returns the expected outputs, and perhaps an integration test that mocks the API client and runs `process_entity` end-to-end. Given this pipeline will be used in production, having solid tests will catch regressions and also document expected behavior for future maintainers. Ensure tests use the Pydantic models (maybe with some sample JSON from `entity_samples` or synthetic data) to simulate real conditions.
 
-It also generates a summary file with export statistics.
+* **Maintain Clear Documentation:** Rewrite any parts of the documentation that referred to the old pipeline or complexities we removed. The README should now describe a simple flow: "We generate models from OpenAPI, use them to fetch and validate data, and load to Fabric." Include instructions on how to update models when the API changes (e.g. "run `generate_models_from_openapi.py` with the latest schema"). Document the configuration, such as how to set the Lakehouse path or any filtering (like using `conditions` for incremental loads if applicable in future). Also, provide guidance on debugging: for example, "if a particular entity's data isn't appearing, check the `validation_errors` table to see if records were dropped due to schema mismatch." This helps others understand the system without needing to dig through now-removed dead code.
 
-## Architecture Notes
+* **Ensure No Legacy Baggage Remains:** Do a final pass through the repository to remove or refactor anything that doesn't fit the new model. This might include deleting obsolete modules, renaming things for clarity (for instance, if `bronze_loader.py` now effectively handles the core pipeline, maybe that name is fine, or we integrate it into `pipeline.py` and simplify the structure). The end state should be that someone reading the code sees a coherent, singular approach to the ETL, with no hints of older alternate approaches. This reduces confusion significantly and lowers the learning curve for new developers or AI agents working on the project.
 
-- `fabric_helpers.py`: Utilities for OneLake path resolution
-- `transform.py`: Processes data and writes directly to OneLake
-- `upload.py`: No-op function for compatibility (data is already in OneLake)
-- Package-based deployment for clean integration with Fabric
+* **Future Considerations (for context, not implementation now):** With the pipeline now in a clean state, future enhancements like incremental loading or a refined Silver layer can be added on top without much complication. For example, adding an incremental filter would involve injecting a `conditions` parameter (ConnectWise API supports conditions like `lastUpdated>...`) and is straightforward now that extraction is modular. Similarly, creating a Silver (cleaned/flattened) layer or syncing to a relational warehouse could read from these Delta tables. These are outside the scope of the current modernization, but the work done above will make such enhancements easier, as we won't be fighting through legacy code to implement them.

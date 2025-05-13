@@ -11,7 +11,7 @@ from datetime import datetime
 
 # Configuration
 PACKAGE_NAME = "fabric_api"
-VERSION = "0.2.0"  # Increment as needed
+VERSION = "0.2.2"  # Increment for sparkdantic schema conversion fix
 OUTPUT_DIR = "dist"
 
 def main():
