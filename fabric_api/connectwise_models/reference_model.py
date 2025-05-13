@@ -5,7 +5,7 @@ These models handle the reference types like Company, Site, etc. that appear in 
 import json
 from typing import Dict, Any, Optional, ClassVar, Dict, Type, Union
 from pydantic import Field, model_validator
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType
 from sparkdantic import SparkModel
 
 
@@ -213,4 +213,9 @@ class BillingTermsReference(ReferenceModel):
 
 class SiteReference(ReferenceModel):
     """Reference to a Site in ConnectWise"""
+    pass
+
+
+class CompanyReference(ReferenceModel):
+    """Reference to a Company in ConnectWise"""
     pass
