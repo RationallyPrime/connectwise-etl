@@ -4,7 +4,6 @@ Spark utilities optimized for Microsoft Fabric.
 """
 
 import logging
-from typing import Optional, Union
 
 from pyspark.sql import DataFrame, SparkSession
 
@@ -24,7 +23,7 @@ def get_spark_session() -> SparkSession:
         raise RuntimeError("No active Spark session found. This code must run in a Microsoft Fabric environment.")
     return spark
 
-def table_exists(table_name: str, schema: Optional[str] = None) -> bool:
+def table_exists(table_name: str, schema: str | None = None) -> bool:
     """
     Check if a table exists in the Fabric catalog.
 
@@ -39,7 +38,7 @@ def table_exists(table_name: str, schema: Optional[str] = None) -> bool:
     try:
         # Construct the full table path if schema is provided
         full_table_path = f"{schema}.{table_name}" if schema else table_name
-        
+
         # Use Spark catalog API - more reliable than SQL
         if schema:
             return spark.catalog.tableExists(tableName=table_name, dbName=schema)

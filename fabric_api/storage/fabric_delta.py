@@ -4,10 +4,10 @@ Delta table operations optimized for Microsoft Fabric.
 This module provides streamlined functionality for writing data to Delta tables in OneLake.
 """
 
+import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
-import json
+from typing import Any
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import lit
@@ -17,11 +17,10 @@ from pyspark.sql.types import (
     IntegerType,
     StringType,
     StructField,
-    StructType
+    StructType,
 )
 
-from ..core.config import DELTA_WRITE_OPTIONS
-from ..core.fabric_paths import get_entity_table_name, get_error_table_path, get_table_path
+from ..core.fabric_paths import get_error_table_path, get_table_path
 from ..core.spark_utils import get_spark_session
 
 # Initialize logger
@@ -30,12 +29,12 @@ logger = logging.getLogger(__name__)
 # Fabric-optimized Delta write options
 FABRIC_DELTA_OPTIONS = {
     "delta.autoOptimize.optimizeWrite": "true",
-    "delta.autoOptimize.autoCompact": "true", 
+    "delta.autoOptimize.autoCompact": "true",
     "mergeSchema": "true"
 }
 
 def add_metadata_columns(
-    df: DataFrame, 
+    df: DataFrame,
     entity_name: str,
     add_timestamp: bool = True
 ) -> DataFrame:
@@ -68,12 +67,12 @@ def add_metadata_columns(
 def write_to_delta(
     df: DataFrame,
     entity_name: str,
-    base_path: Optional[str] = None,
+    base_path: str | None = None,
     mode: str = "append",
-    partition_cols: Optional[List[str]] = None,
+    partition_cols: list[str] | None = None,
     add_timestamp: bool = True,
-    options: Optional[Dict[str, str]] = None
-) -> Tuple[str, int]:
+    options: dict[str, str] | None = None
+) -> tuple[str, int]:
     """
     Write a DataFrame to Delta with Fabric-optimized settings.
 
@@ -119,17 +118,17 @@ def write_to_delta(
 
     # Write the data - in Fabric this automatically registers the table
     writer.save(path)
-    
+
     # Clean up
     df_to_write.unpersist()
 
     return path, row_count
 
 def write_errors(
-    errors: List[Dict[str, Any]],
+    errors: list[dict[str, Any]],
     entity_name: str,
-    base_path: Optional[str] = None
-) -> Tuple[str, int]:
+    base_path: str | None = None
+) -> tuple[str, int]:
     """
     Write validation errors to a Delta table.
 
@@ -147,10 +146,10 @@ def write_errors(
 
     # Get the spark session
     spark = get_spark_session()
-    
+
     # Create a DataFrame from the errors
     # We need to provide a schema for empty DataFrames
-    
+
     # Create a minimal schema if errors list is empty
     if not errors:
         schema = StructType([
@@ -160,10 +159,10 @@ def write_errors(
         errors_df = spark.createDataFrame([], schema)
     else:
         # Create a simple schema from the first error to avoid type issues
-        
+
         # Infer the schema from the first record
         first_error = errors[0]
-        
+
         # Create fields list dynamically
         fields = []
         for key, value in first_error.items():
@@ -181,9 +180,9 @@ def write_errors(
             else:
                 # Default to string for other types
                 fields.append(StructField(key, StringType(), True))
-                
+
         error_schema = StructType(fields)
-        
+
         # Convert complex fields to strings if needed
         clean_errors = []
         for error in errors:
@@ -194,7 +193,7 @@ def write_errors(
                 else:
                     clean_error[key] = value
             clean_errors.append(clean_error)
-            
+
         errors_df = spark.createDataFrame(clean_errors, schema=error_schema)
 
     # Add entity column if not already present
@@ -203,7 +202,7 @@ def write_errors(
 
     # Get path for the error table
     error_path = get_error_table_path(base_path=base_path)
-    
+
     # Write to validation_errors table
     return write_to_delta(
         df=errors_df,
@@ -214,7 +213,7 @@ def write_errors(
     )
 
 def dataframe_from_models(
-    models: List[Any],
+    models: list[Any],
     entity_name: str
 ) -> DataFrame:
     """
@@ -228,7 +227,7 @@ def dataframe_from_models(
         Spark DataFrame
     """
     spark = get_spark_session()
-    
+
     if not models:
         logger.warning(f"No models provided for {entity_name}")
         # Create an empty DataFrame
@@ -240,7 +239,7 @@ def dataframe_from_models(
 
         # Convert models to dictionaries
         dict_data = [model.model_dump() for model in models]
-        
+
         # Create DataFrame with schema if possible
         if hasattr(model_class, "model_spark_schema"):
             schema = model_class.model_spark_schema()
@@ -258,6 +257,6 @@ def dataframe_from_models(
 
         # Create DataFrame with schema inference
         df = spark.createDataFrame(dict_data)
-        
+
         # Add metadata columns
         return add_metadata_columns(df, entity_name)

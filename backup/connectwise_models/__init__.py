@@ -3,8 +3,6 @@
 ConnectWise API models generated from actual API responses.
 """
 
-from typing import List
-
 from sparkdantic import SparkModel
 
 # Import only the main models to avoid namespace collisions

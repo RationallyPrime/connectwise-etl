@@ -13,6 +13,11 @@ from datetime import datetime, timedelta
 from logging import Logger
 from typing import Any
 
+# Import the necessary modules
+from fabric_api.client import ConnectWiseClient
+from fabric_api.extract._common import paginate
+from fabric_api.extract.invoices import get_unposted_invoices_with_details
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -25,11 +30,6 @@ os.environ["CW_AUTH_USERNAME"] = "thekking+yemGyHDPdJ1hpuqx"
 os.environ["CW_AUTH_PASSWORD"] = "yMqpe26Jcu55FbQk"
 os.environ["CW_CLIENTID"] = "c7ea92d2-eaf5-4bfb-a09c-58d7f9dd7b81"
 os.environ["CW_WRITE_MODE"] = "overwrite"
-
-# Import the necessary modules
-from fabric_api.client import ConnectWiseClient
-from fabric_api.extract._common import paginate
-from fabric_api.extract.invoices import get_unposted_invoices_with_details
 
 
 def pretty_print_json(data: Any) -> None:

@@ -4,7 +4,6 @@ Consolidated path handling utilities optimized for Microsoft Fabric.
 """
 
 import os
-from typing import Optional
 
 # Default Fabric paths
 DEFAULT_LAKEHOUSE_ROOT = "/lakehouse/default"
@@ -15,7 +14,7 @@ DEFAULT_ERROR_TABLE = "validation_errors"
 
 def get_table_path(
     entity_name: str,
-    base_path: Optional[str] = None,
+    base_path: str | None = None,
     prefix: str = DEFAULT_TABLE_PREFIX
 ) -> str:
     """
@@ -38,7 +37,7 @@ def get_table_path(
 
     return path
 
-def get_error_table_path(base_path: Optional[str] = None) -> str:
+def get_error_table_path(base_path: str | None = None) -> str:
     """
     Get the path for the validation errors table.
 
@@ -76,12 +75,12 @@ def normalize_lakehouse_path(path: str) -> str:
     """
     # Strip leading/trailing slashes and spaces
     clean_path = path.strip().strip("/")
-    
+
     # Ensure path starts with /lakehouse prefix if it doesn't already
     if not clean_path.startswith("lakehouse/"):
         if not clean_path.startswith("/lakehouse/"):
             clean_path = f"{DEFAULT_LAKEHOUSE_ROOT}/{clean_path}"
     else:
         clean_path = f"/{clean_path}"
-        
+
     return clean_path

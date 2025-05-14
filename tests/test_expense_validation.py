@@ -20,8 +20,9 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
-from fabric_api.connectwise_models import ExpenseEntry
+
 from fabric_api.client import ConnectWiseClient
+from fabric_api.connectwise_models import ExpenseEntry
 from fabric_api.extract.expenses import fetch_expense_entries_raw
 
 # Set up logging
@@ -43,6 +44,7 @@ def test_expense_validation():
     """
     # Create a client using environment variables loaded from .env
     logger.info("Creating ConnectWiseClient using environment variables from .env")
+
 
     # Set up authentication details
     # Default test credentials (these should be replaced with actual credentials)

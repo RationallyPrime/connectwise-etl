@@ -19,8 +19,11 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
+
 from fabric_api.client import ConnectWiseClient
 from fabric_api.extract.agreements import fetch_agreements_raw
+from fabric_api.validation import logger as validation_logger
+from fabric_api.validation import validate_agreements
 
 # Set up logging - more concise for testing
 logging.basicConfig(
@@ -30,8 +33,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Configure the validation module to be less verbose
-from fabric_api.validation import logger as validation_logger
-
 validation_logger.setLevel(logging.WARNING)  # Reduce verbosity of validation
 
 def test_agreement_validation():
@@ -85,8 +86,8 @@ def test_agreement_validation():
 
     logger.info(f"Retrieved {len(raw_agreements)} agreements")
 
-    # Validate agreements using the new validation module
-    from fabric_api.validation import validate_agreements
+    # Use the validation module to validate the agreements
+
 
     # Track missing applicationCycle field specifically
     missing_application_cycle = []

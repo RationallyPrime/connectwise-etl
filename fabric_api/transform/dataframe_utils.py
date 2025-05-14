@@ -5,7 +5,6 @@ Optimized for Microsoft Fabric Spark environment.
 """
 
 import logging
-from typing import List, Optional, Union
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode_outer, to_json
@@ -29,7 +28,7 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
     # Return early for empty DataFrames to optimize performance
     if df.isEmpty():
         return df
-        
+
     # Helper function to check if a column needs flattening
     def needs_flattening(field_dtype):
         return isinstance(field_dtype, StructType) or \
@@ -73,7 +72,7 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
     return flatten_dataframe(expanded_df, max_depth - 1)
 
 
-def convert_arrays_to_json(df: DataFrame, array_columns: Optional[List[str]] = None) -> DataFrame:
+def convert_arrays_to_json(df: DataFrame, array_columns: list[str] | None = None) -> DataFrame:
     """
     Convert array columns to JSON strings for easier handling.
 
@@ -86,14 +85,14 @@ def convert_arrays_to_json(df: DataFrame, array_columns: Optional[List[str]] = N
     """
     if df.isEmpty():
         return df
-        
+
     # If no array columns specified, detect automatically
     if array_columns is None:
         array_columns = [
             field.name for field in df.schema.fields
             if isinstance(field.dataType, ArrayType)
         ]
-        
+
     if not array_columns:
         return df
 
@@ -105,7 +104,7 @@ def convert_arrays_to_json(df: DataFrame, array_columns: Optional[List[str]] = N
     return result_df
 
 
-def explode_array_columns(df: DataFrame, array_columns: Optional[List[str]] = None) -> DataFrame:
+def explode_array_columns(df: DataFrame, array_columns: list[str] | None = None) -> DataFrame:
     """
     Explode array columns into multiple rows.
 
@@ -118,14 +117,14 @@ def explode_array_columns(df: DataFrame, array_columns: Optional[List[str]] = No
     """
     if df.isEmpty():
         return df
-        
+
     # If no array columns specified, detect automatically
     if array_columns is None:
         array_columns = [
             field.name for field in df.schema.fields
             if isinstance(field.dataType, ArrayType)
         ]
-        
+
     if not array_columns:
         return df
 
@@ -138,8 +137,8 @@ def explode_array_columns(df: DataFrame, array_columns: Optional[List[str]] = No
 
 
 def flatten_array_struct_columns(
-    df: DataFrame, 
-    array_struct_columns: Optional[List[str]] = None,
+    df: DataFrame,
+    array_struct_columns: list[str] | None = None,
     array_to_json: bool = True
 ) -> DataFrame:
     """
@@ -190,7 +189,7 @@ def flatten_all_nested_structures(df: DataFrame) -> DataFrame:
     """
     if df.isEmpty():
         return df
-        
+
     # First flatten all struct types
     flattened_df = flatten_dataframe(df)
 

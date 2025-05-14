@@ -20,6 +20,7 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
+
 from fabric_api.client import ConnectWiseClient
 from fabric_api.connectwise_models import PostedInvoice, UnpostedInvoice
 from fabric_api.extract.invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
@@ -127,6 +128,8 @@ def test_unposted_invoice_validation():
 
     # Set up authentication details, similar to the approach in test_api.py
     # Default test credentials (from test_api.py example - these should be replaced with actual credentials)
+
+
     default_auth_username = "thekking+yemGyHDPdJ1hpuqx"  # Replace with actual test username
     default_auth_password = "yMqpe26Jcu55FbQk"          # Replace with actual test password
     default_client_id = "c7ea92d2-eaf5-4bfb-a09c-58d7f9dd7b81"  # Replace with actual client ID

@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.12, pytest-8.3.5, pluggy-1.5.0 -- /home/rationallyprime/CascadeProjects/PSA/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rationallyprime/CascadeProjects/PSA
+configfile: pyproject.toml
+plugins: typeguard-4.4.2
+collecting ... collected 8 items
+
+tests/test_client_fields.py::test_fields_parameter PASSED                [ 12%]
+tests/test_client_fields.py::test_conditions_parameter PASSED            [ 25%]
+tests/test_client_fields.py::test_extract_entity_with_validation PASSED  [ 37%]
+tests/test_client_fields.py::test_time_entry_extraction PASSED           [ 50%]
+tests/test_client_fields.py::test_expense_entry_validation PASSED        [ 62%]
+tests/test_client_fields.py::test_invoice_validation PASSED              [ 75%]
+tests/test_client_fields.py::test_product_validation PASSED              [ 87%]
+tests/test_client_fields.py::test_combined_parameters PASSED             [100%]
+
+============================== 8 passed in 7.43s ===============================

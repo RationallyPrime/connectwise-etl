@@ -34,9 +34,9 @@ class TestFabricIntegration:
 
         # Set up DataFrame mock with chained attributes
         _jdf = MagicMock()
-        sqlContext = MagicMock()
-        sqlContext.sql = sql_context.sql
-        _jdf.sqlContext.return_value = sqlContext
+        sql_context_obj = MagicMock()
+        sql_context_obj.sql = sql_context.sql
+        _jdf.sqlContext.return_value = sql_context_obj
         self.df._jdf = _jdf
 
     def test_ensure_fabric_path_with_absolute_path(self):

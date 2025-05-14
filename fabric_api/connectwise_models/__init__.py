@@ -7,18 +7,17 @@ Compatible with Pydantic v2 and SparkDantic for Spark schema generation.
 from .models import (
     # Reference models
     ActivityReference,
+    # Entity models
+    Agreement,
     AgreementReference,
     AgreementTypeReference,
     BatchReference,
-    
-    # Entity models
-    Agreement,
-    TimeEntry,
     ExpenseEntry,
     Invoice,
     PostedInvoice,
-    UnpostedInvoice,
     ProductItem,
+    TimeEntry,
+    UnpostedInvoice,
 )
 
 __all__ = [
@@ -27,7 +26,7 @@ __all__ = [
     "AgreementReference",
     "AgreementTypeReference",
     "BatchReference",
-    
+
     # Entity models
     "Agreement",
     "TimeEntry",

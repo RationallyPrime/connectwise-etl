@@ -6,12 +6,11 @@ Optimized for Microsoft Fabric execution environment.
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from .client import ConnectWiseClient
 from .core.config import ENTITY_CONFIG
-from .core.spark_utils import get_spark_session
-from .extract.generic import extract_entity, get_model_class
+from .extract.generic import extract_entity
 from .storage.fabric_delta import dataframe_from_models, write_errors, write_to_delta
 from .transform.dataframe_utils import flatten_all_nested_structures
 
@@ -19,14 +18,14 @@ logger = logging.getLogger(__name__)
 
 def process_entity(
     entity_name: str,
-    client: Optional[ConnectWiseClient] = None,
-    conditions: Optional[str] = None,
+    client: ConnectWiseClient | None = None,
+    conditions: str | None = None,
     page_size: int = 100,
-    max_pages: Optional[int] = None,
-    base_path: Optional[str] = None,
+    max_pages: int | None = None,
+    base_path: str | None = None,
     mode: str = "append",
     flatten_structs: bool = True
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Process a single entity through the complete ETL pipeline.
 
@@ -115,15 +114,15 @@ def process_entity(
     }
 
 def process_all_entities(
-    entity_names: Optional[List[str]] = None,
-    client: Optional[ConnectWiseClient] = None,
-    conditions: Optional[Union[str, Dict[str, str]]] = None,
+    entity_names: list[str] | None = None,
+    client: ConnectWiseClient | None = None,
+    conditions: str | dict[str, str] | None = None,
     page_size: int = 100,
-    max_pages: Optional[int] = None,
-    base_path: Optional[str] = None,
+    max_pages: int | None = None,
+    base_path: str | None = None,
     mode: str = "append",
     flatten_structs: bool = True
-) -> Dict[str, Dict[str, Any]]:
+) -> dict[str, dict[str, Any]]:
     """
     Process multiple entity types.
 
@@ -172,16 +171,16 @@ def process_all_entities(
     return results
 
 def run_incremental_etl(
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    entity_names: Optional[List[str]] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    entity_names: list[str] | None = None,
     lookback_days: int = 30,
-    client: Optional[ConnectWiseClient] = None,
+    client: ConnectWiseClient | None = None,
     page_size: int = 100,
-    max_pages: Optional[int] = None,
-    base_path: Optional[str] = None,
+    max_pages: int | None = None,
+    base_path: str | None = None,
     flatten_structs: bool = True
-) -> Dict[str, Dict[str, Any]]:
+) -> dict[str, dict[str, Any]]:
     """
     Run an incremental ETL process based on date range.
 
@@ -226,14 +225,14 @@ def run_incremental_etl(
     )
 
 def run_daily_etl(
-    entity_names: Optional[List[str]] = None,
+    entity_names: list[str] | None = None,
     days_back: int = 1,
-    client: Optional[ConnectWiseClient] = None,
+    client: ConnectWiseClient | None = None,
     page_size: int = 100,
-    max_pages: Optional[int] = None,
-    base_path: Optional[str] = None,
+    max_pages: int | None = None,
+    base_path: str | None = None,
     flatten_structs: bool = True
-) -> Dict[str, Dict[str, Any]]:
+) -> dict[str, dict[str, Any]]:
     """
     Run daily ETL process for yesterday's data.
 

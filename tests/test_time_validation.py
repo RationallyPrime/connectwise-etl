@@ -21,8 +21,9 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
-from fabric_api.connectwise_models import TimeEntry
+
 from fabric_api.client import ConnectWiseClient
+from fabric_api.connectwise_models import TimeEntry
 from fabric_api.extract.time import fetch_time_entries_raw
 
 # Set up logging
@@ -102,6 +103,7 @@ def test_time_validation():
         logger.info(f"Validating time entry {time_entry_id} ({i+1}/{len(raw_time_entries)})")
 
         # Debug: Print raw keys to see what we're getting from the API
+
         logger.info(f"Raw time entry keys: {list(raw_time_entry.keys())}")
         if 'timeStart' in raw_time_entry:
             logger.info(f"timeStart value: {raw_time_entry['timeStart']}")

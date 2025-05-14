@@ -62,11 +62,11 @@ def find_references(schema_obj: dict[str, Any], refs: set[str]) -> set[str]:
                 # Extract the model name from the reference
                 ref_name = v.split("/")[-1]
                 refs.add(ref_name)
-            elif isinstance(v, (dict, list)):
+            elif isinstance(v, dict | list):
                 refs = refs.union(find_references(v, refs))
     elif isinstance(schema_obj, list):
         for item in schema_obj:
-            if isinstance(item, (dict, list)):
+            if isinstance(item, dict | list):
                 refs = refs.union(find_references(item, refs))
     return refs
 
@@ -265,6 +265,8 @@ def generate_models(entities: dict[str, dict[str, str]], schema_file: str, outpu
             model_lines = []
             skip_imports = True
             skip_refs = False
+            in_custom_field_value = False
+            fix_value_field = False
 
             # Process lines to remove imports and handle duplicated reference models
             for line in lines:
@@ -275,6 +277,20 @@ def generate_models(entities: dict[str, dict[str, str]], schema_file: str, outpu
                     continue
                 else:
                     skip_imports = False
+
+                # Check if we're in the CustomFieldValue class
+                if "class CustomFieldValue(" in line:
+                    in_custom_field_value = True
+                elif in_custom_field_value and line.strip() == "":
+                    in_custom_field_value = False
+
+                # Check if this is the value field in CustomFieldValue that needs fixing
+                if in_custom_field_value and "value:" in line and "dict[str, Any]" in line:
+                    # Fix the overly restrictive type
+                    line = line.replace("dict[str, Any]", "Any")
+                    # Add a comment explaining the change
+                    line += "  # API inconsistency: Sometimes returns strings or other non-dict values"
+                    fix_value_field = True
 
                 # Skip reference model definitions that we already added
                 if any(f"class {ref_model}(" in line for ref_model in REFERENCE_MODELS):
@@ -295,6 +311,9 @@ def generate_models(entities: dict[str, dict[str, str]], schema_file: str, outpu
                     # Skip duplicate import statements that might appear in the middle of the file
                     if not (line.startswith("from ") or line.startswith("import ")):
                         model_lines.append(line)
+
+            if fix_value_field:
+                logger.info("✅ Fixed overly restrictive type for CustomFieldValue.value field")
 
             # Add entity models section
             with open(models_file, "a", encoding="utf-8") as f:

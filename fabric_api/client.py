@@ -10,11 +10,10 @@ Key features:
 * **Clean logging** - Detailed logging of API interactions
 """
 
-import base64
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -40,9 +39,9 @@ class ApiErrorRecord(dict):
     """
     invoice_number: str  # type: ignore[assignment]
     error_table_id: int  # type: ignore[assignment]
-    error_type: Optional[str]
-    error_message: Optional[str]
-    table_name: Optional[str]
+    error_type: str | None
+    error_message: str | None
+    table_name: str | None
 
 
 class ConnectWiseClient:
@@ -66,7 +65,7 @@ class ConnectWiseClient:
         # Validate required credentials
         if not self.basic_username or not self.basic_password:
             raise ValueError("Basic auth credentials not configured in environment variables")
-            
+
         if not self.client_id:
             raise ValueError("Client ID not configured in environment variables")
 
@@ -79,11 +78,11 @@ class ConnectWiseClient:
         )
         self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         """Return the headers needed for API requests."""
         if not self.client_id:
             raise ValueError("Client ID is required")
-            
+
         return {
             "clientId": self.client_id,
             "Accept": "application/vnd.connectwise.com+json; version=2025.1",
@@ -91,7 +90,7 @@ class ConnectWiseClient:
         }
 
     @staticmethod
-    def create_batch_identifier(ts: Optional[datetime] = None) -> str:
+    def create_batch_identifier(ts: datetime | None = None) -> str:
         """Return UTC timestamp formatted as YYYYMMDD-HHMMSS."""
         return create_batch_identifier(timestamp=ts)
 
@@ -99,11 +98,11 @@ class ConnectWiseClient:
         self,
         endpoint: str,
         *,
-        params: Optional[Dict[str, Any]] = None,
-        fields: Optional[str] = None,
-        conditions: Optional[str] = None,
-        child_conditions: Optional[str] = None,
-        order_by: Optional[str] = None,
+        params: dict[str, Any] | None = None,
+        fields: str | None = None,
+        conditions: str | None = None,
+        child_conditions: str | None = None,
+        order_by: str | None = None,
     ) -> Response:
         """Perform a GET request to the ConnectWise API.
 
@@ -152,13 +151,13 @@ class ConnectWiseClient:
         self,
         endpoint: str,
         *,
-        json_data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        json_data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Response:
         """Perform a POST request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
         assert self.basic_password is not None
@@ -175,13 +174,13 @@ class ConnectWiseClient:
         self,
         endpoint: str,
         *,
-        json_data: Dict[str, Any],
-        params: Optional[Dict[str, Any]] = None,
+        json_data: dict[str, Any],
+        params: dict[str, Any] | None = None,
     ) -> Response:
         """Perform a PUT request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
         assert self.basic_password is not None
@@ -192,11 +191,11 @@ class ConnectWiseClient:
         resp.raise_for_status()
         return resp
 
-    def delete(self, endpoint: str, *, params: Optional[Dict[str, Any]] = None) -> Response:
+    def delete(self, endpoint: str, *, params: dict[str, Any] | None = None) -> Response:
         """Perform a DELETE request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
         headers = self._headers()
-        
+
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
         assert self.basic_password is not None
@@ -212,14 +211,14 @@ class ConnectWiseClient:
         endpoint: str,
         entity_name: str,
         *,
-        params: Optional[Dict[str, Any]] = None,
-        fields: Optional[str] = None,
-        conditions: Optional[str] = None,
-        child_conditions: Optional[str] = None,
-        order_by: Optional[str] = None,
-        max_pages: Optional[int] = None,
+        params: dict[str, Any] | None = None,
+        fields: str | None = None,
+        conditions: str | None = None,
+        child_conditions: str | None = None,
+        order_by: str | None = None,
+        max_pages: int | None = None,
         page_size: int = 100,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get all pages of data from a paginated endpoint.
 
         Args:
@@ -239,7 +238,7 @@ class ConnectWiseClient:
         # Combine params with fields and conditions
         all_params = params.copy() if params else {}
 
-        # Set page size 
+        # Set page size
         if "pageSize" not in all_params:
             all_params["pageSize"] = page_size
         else:
@@ -262,7 +261,7 @@ class ConnectWiseClient:
             all_params["orderBy"] = order_by
             logger.debug(f"Using order by: {order_by}")
 
-        items: List[Dict[str, Any]] = []
+        items: list[dict[str, Any]] = []
         page = 1
 
         while True:
@@ -280,12 +279,12 @@ class ConnectWiseClient:
 
             try:
                 headers = self._headers()
-                
+
                 # These values are validated in __init__, so they're guaranteed to be non-None
                 assert self.basic_username is not None
                 assert self.basic_password is not None
                 auth = (self.basic_username, self.basic_password)
-                
+
                 response = self.session.get(url, headers=headers, params=query, auth=auth)
                 response.raise_for_status()
 
