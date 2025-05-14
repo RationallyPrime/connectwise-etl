@@ -2,12 +2,12 @@ from __future__ import annotations
 
 """fabric_api.extract.invoices - Invoice-centric extraction routines."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any
 
 from ..client import ConnectWiseClient
 from ..connectwise_models import PostedInvoice, UnpostedInvoice
-from ..api_utils import get_fields_for_api_call, build_condition_string
+from ..core.api_utils import build_condition_string, get_fields_for_api_call
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ def fetch_posted_invoices_raw(
     child_conditions: str | None = None,
     order_by: str | None = None,
     fields_override: str | None = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch raw posted invoice data from ConnectWise API using schema-based field selection.
     Targets: /finance/invoices
@@ -54,7 +54,7 @@ def fetch_unposted_invoices_raw(
     child_conditions: str | None = None,
     order_by: str | None = None,
     fields_override: str | None = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch raw unposted invoice data from ConnectWise API using schema-based field selection.
     Targets: /finance/accounting/unpostedinvoices
@@ -86,26 +86,26 @@ def fetch_invoices_by_date_range(
     end_date: str,
     page_size: int = 100,
     max_pages: int | None = 50,
-) -> Dict[str, List[Dict[str, Any]]]:
+) -> dict[str, list[dict[str, Any]]]:
     """
     Fetch both posted and unposted invoices within a date range.
-    
+
     Args:
         client: ConnectWiseClient instance
         start_date: Start date in YYYY-MM-DD format
         end_date: End date in YYYY-MM-DD format
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        
+
     Returns:
         Dictionary with both types of invoices
     """
-    # Build date range condition 
+    # Build date range condition
     date_condition = build_condition_string(
         date_gte=start_date,
         date_lt=end_date
     )
-    
+
     # Fetch posted invoices
     posted = fetch_posted_invoices_raw(
         client=client,
@@ -113,7 +113,7 @@ def fetch_invoices_by_date_range(
         page_size=page_size,
         max_pages=max_pages
     )
-    
+
     # Fetch unposted invoices
     unposted = fetch_unposted_invoices_raw(
         client=client,
@@ -121,7 +121,7 @@ def fetch_invoices_by_date_range(
         page_size=page_size,
         max_pages=max_pages
     )
-    
+
     return {
         "posted_invoices": posted,
         "unposted_invoices": unposted

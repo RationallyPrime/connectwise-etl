@@ -1,58 +1,509 @@
-Perfect. I’ll now revise and enhance Gemini’s PSA pipeline improvement plan so it aligns with your Fabric-first ETL framework, prioritizing modularity, Spark runtime compatibility, Direct Lake readiness, and clear delegation for Claude Code implementation.
+  PSA Repository Restructuring Plan
 
-I’ll focus the improved plan on making the dynamic SparkModel inheritance robust and testable, enabling schema-driven field selection, and shaping the extract layer to feed into a clean bronze load—while laying scaffolding for downstream Silver/Gold workflows.
+  Core Principles and Insights
 
-I’ll let you know as soon as the revised version is ready for your review.
+  1. Spark Session Management: Microsoft Fabric notebooks automatically create and manage
+   Spark sessions. Our library should use SparkSession.getActiveSession() first, falling
+  back to creation only when needed.
+  2. Path Handling: We need a unified solution that works in local environments and
+  Microsoft Fabric, handling both local paths and ABFSS URLs consistently.
+  3. Generic Extraction: All entities share the same API pattern and can be extracted
+  with a single reusable framework that leverages Pydantic models.
+  4. Nested Structure Handling: We need consistent flattening utilities for complex
+  nested structs and arrays when converting to Spark DataFrames.
 
+  1. Unified Core Infrastructure
 
-# PSA Pipeline Modernization Plan for Fabric OneLake ETL
+  A. Path Handling Module (fabric_api/core/path_utils.py)
 
-## Phase 1: SparkModel Schema Compatibility (Pydantic + SparkDantic)
+  class PathManager:
+      def __init__(self, base_path=None, is_fabric=None):
+          self.base_path = base_path or self._detect_default_path()
+          self.is_fabric = is_fabric if is_fabric is not None else
+  self._detect_fabric_environment()
 
-**Goal:** Ensure all Pydantic models (e.g. `Agreement`, `Invoice`) that inherit from `sparkdantic.SparkModel` function correctly in Microsoft Fabric Spark Runtime 1.3. This guarantees that schema inference and DataFrame conversion work smoothly.
+      def _detect_fabric_environment(self):
+          """Detect if running in Microsoft Fabric environment"""
+          import os
+          # Check for Fabric environment indicators
+          return bool(os.getenv("FABRIC_STORAGE_ACCOUNT") or
+                     "fabric" in
+  str(SparkSession.getActiveSession().sparkContext.getConf().get("spark.app.name", "")))
 
-* **Verify Pydantic Model Inheritance:** Confirm that all auto-generated ConnectWise models (in `fabric_api/connectwise_models/`) subclass `SparkModel` as intended. Our codegen already uses `--base-class sparkdantic.SparkModel` when generating models, so each model (e.g. `Agreement`) inherits Spark capabilities. We should regenerate models with the latest `sparkdantic` version if needed and ensure no Pydantic v2 issues (e.g. update any deprecated field usage).
-* **Test Spark Schema Conversion:** Use SparkDantic’s utilities (e.g. `YourModel.model_spark_schema()` or equivalent) to generate PySpark `StructType` schemas and create DataFrames from sample objects. In particular, validate that nested fields and types are handled. If `SparkModel.model_spark_schema()` works, we can use it directly when writing data. If any incompatibility arises in Spark 1.3, adjust model configs (e.g. ensure `arbitrary_types_allowed=True` is set as in SparkModel’s config) or update `sparkdantic` to a compatible release. Add a small test to create a Spark DataFrame from a list of Pydantic objects for each core model in a Fabric notebook environment.
-* **Fallback Plan for Nested Fields:** If certain nested Pydantic fields cause schema issues at runtime, implement a safe fallback. For example, as done in our bronze loader, complex nested objects can be flattened to ID or name strings if direct schema conversion fails. This ensures compatibility while we fine-tune SparkDantic usage. Document this fallback in code comments so it’s clear why it’s there.
-* **Files Affected:** `fabric_api/connectwise_models/` (all model files, re-generated if necessary), `fabric_api/generate_models_from_json.py` (ensure it targets SparkModel base correctly), and `fabric_api/bronze_loader.py` (where we call `model_spark_schema` and might apply fallbacks).
+      def get_entity_path(self, entity_name, table_type="delta"):
+          """Build path for entity data with environment awareness"""
+          normalized_name = f"cw_{entity_name.lower().replace(' ', '_')}"
 
-## Phase 2: Schema-Driven Field Selection Utility
+          if self.is_fabric:
+              # Handle ABFSS paths for Fabric
+              storage_account = os.getenv("FABRIC_STORAGE_ACCOUNT", "onelake")
+              return f"abfss://lakehouse@{storage_account}.dfs.fabric.microsoft.com/Table
+  s/{normalized_name}"
 
-**Goal:** Minimize boilerplate in API calls by dynamically deriving ConnectWise API field lists from our Pydantic models. This leverages the schema to request only needed fields.
+          # Local path handling
+          return os.path.join(self.base_path, normalized_name)
 
-* **Enhance `get_fields_for_api_call`:** Our utility in `fabric_api/api_utils.py` already extracts top-level field names from a Pydantic model class and converts them to the API’s expected camelCase format. We should validate that this covers all required fields for each entity. If ConnectWise supports limited nesting (e.g. `"company/name"` style), consider extending the utility’s `max_depth` logic to include one level of nested fields for key relationships. Otherwise, continue using only top-level fields and skip internal `_info` or unsupported fields (the function already skips `_info` attributes).
-* **Apply Utility Across Extractors:** Ensure every extract function uses this utility instead of hardcoding field lists. For example, `fetch_agreements_raw()` already uses `fields = get_fields_for_api_call(schemas.Agreement)` to build its query. Do the same for invoices, time entries, expenses, and products: e.g., in `fabric_api/extract/invoices.py`, have `fields_str = get_fields_for_api_call(schemas.PostedInvoice)` and `schemas.UnpostedInvoice`. This way, the ConnectWiseClient `.paginate` calls only retrieve the schema-defined fields for efficiency and consistency.
-* **Reduce Boilerplate in Connectors:** By driving field selection off the schema, adding new fields to a model automatically reflects in API calls. This reduces custom code – no need to manually sync field lists with model attributes. It also makes connectors reusable: the same `get_fields_for_api_call` logic can serve any new entity model we add.
-* **Files Affected:** `fabric_api/api_utils.py` (possibly extending its logic for nested fields or additional filtering), each file in `fabric_api/extract/` that calls the ConnectWise API (apply the utility for Agreements, PostedInvoices, UnpostedInvoices, TimeEntries, ExpenseEntries, ProductItems). Update unit tests or add tests to verify that the returned field string covers expected keys for each model.
+  B. Spark Session Management (fabric_api/core/spark_utils.py)
 
-## Phase 3: Modular Extraction, Validation, and Loading Workflow
+  def get_spark_session(app_name="ConnectWise_ETL", configs=None):
+      """Get existing Spark session from Fabric notebook or create optimized one"""
+      # Try to get active session first (for Fabric notebooks)
+      try:
+          existing_session = SparkSession.getActiveSession()
+          if existing_session:
+              logger.info("Using existing Spark session from Fabric notebook")
+              return existing_session
+      except Exception as e:
+          logger.debug(f"Error getting active session: {str(e)}")
 
-**Goal:** Cleanly separate the ETL stages – **extract** (API fetch), **validate/transform** (Pydantic schema validation), and **load** (write to Delta) – into modular, testable units. This improves clarity and allows each stage to be independently tested or reused.
+      # Create a new session with optimized configs if needed
+      logger.info("Creating new Spark session")
+      builder = SparkSession.builder.appName(app_name)
 
-* **Dedicated Extract Functions:** Continue the pattern of small functions that fetch raw JSON data from the API for each entity. For example, `fetch_agreements_raw(client, ...) -> List[dict]` and similarly `fetch_posted_invoices_raw`, `fetch_unposted_invoices_raw`, etc. These should do nothing but call the API (via `client.get` or `client.paginate`) with appropriate parameters (including the fields string from Phase 2) and return the list of records. No validation or Spark logic here. This makes them easy to mock for testing and reuse in different pipelines (e.g., both daily full load and incremental updates can use the same fetchers).
-* **Pydantic Validation Layer:** Introduce a uniform way to validate raw records against Pydantic models. We have examples: in the agreements flow, after fetching, we call `ManageAgreement.model_validate(raw)` to get a typed object, or use a safe wrapper that catches `ValidationError`. We can generalize this. For instance, create a helper `validate_records(raw_list, model_class) -> Tuple[List[BaseModel], List[dict]]` that returns a list of valid model instances and a list of error info dicts. This encapsulates the loop of model validation and error capture (as seen in `bronze_loader.process_entity`) and can be unit-tested with contrived bad data. Use Pydantic’s `.model_validate` as it’s already in use and capture `e.errors()` for detailed error reporting.
-* **Isolate Loading to Delta:** Implement a generic writer utility that takes a list of Pydantic model instances (or their dicts) and writes to a Delta table. In our plan, `write_pydantic_to_delta(models: List[BaseModel], spark, target_path, mode)` can handle: converting models to a Spark DataFrame (using SparkDantic as in Phase 1) and performing the Delta `.write` call. We might not need a separate function if we integrate this in an orchestrator, but ensuring the logic is identical for all entities is key. The bronze loader’s `process_entity` essentially does this: it converts validated objects to a list of dicts and either uses `schema_class.model_spark_schema()` + `spark.createDataFrame` or falls back to inferring schema, then writes out. We should factor that out or at least use the same code path for all entities to avoid divergence.
-* **Orchestrator Structure:** With the above pieces, our pipeline runner (e.g. in `fabric_api/bronze_loader.py` or integrated into `pipeline.py`) can orchestrate the flow: call `fetch_<entity>_raw`, then `validate_records`, then `write_pydantic_to_delta`. The `bronze_loader.py` already defines an `ENTITY_CONFIG` mapping and a `process_entity()` for this purpose. We should refine this as needed (for example, ensure it’s easy to add partition columns or switch between overwrite/append). This modular approach means each stage can be tested (we have separate tests for validation and for the DataFrame writing logic).
-* **File Adjustments:** Most of the heavy lifting is in `fabric_api/bronze_loader.py`: finalize the `process_entity` function to implement the above clearly, and possibly add a `write_pydantic_to_delta` helper inside or in a utils module for clarity. The `fabric_api/extract/*.py` modules remain focused on extraction only (any validation in older code, like calls to `safe_validate` within extract, can be deprecated in favor of the centralized approach). Update `fabric_api/pipeline.py` to use these new modular functions – e.g., `run_daily` could iterate over entity list and call the new process functions instead of manually intertwining extraction and transformation. This separation makes the code easier to maintain and less ambiguous for an automated agent like Claude Code to implement or modify.
+      # Apply Fabric-optimized configs
+      default_configs = {
+          "spark.sql.adaptive.enabled": "true",
+          "spark.sql.adaptive.coalescePartitions.enabled": "true",
+          "spark.sql.catalog.spark_catalog":
+  "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+          "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
+          "spark.databricks.delta.schema.autoMerge.enabled": "true"
+      }
 
-## Phase 4: OneLake-Focused Data Output and Structure
+      # Apply all configs
+      all_configs = {**default_configs, **(configs or {})}
+      for key, value in all_configs.items():
+          builder = builder.config(key, value)
 
-**Goal:** Align the pipeline’s output and file structure with the Microsoft Fabric OneLake conventions. All data lands in Delta Lake tables in the Lakehouse, immediately queryable by Power BI via Direct Lake, with minimal intermediate steps.
+      return builder.getOrCreate()
 
-* **Direct Delta Writes to OneLake:** Ensure that every load stage writes to the Lakehouse’s `Tables` folder for the target dataset. We should parameterize the base path to OneLake (using an env var like `CW_LAKEHOUSE_ROOT` or a function argument) but default it to the Fabric default (e.g. `"/lakehouse/default/Tables/connectwise_bronze"` for Bronze stage tables). In our write logic, use `df.write.format("delta").mode(mode).save(path)` to land the Delta files. We already do this in the bronze loader. We should double-check that using the Lakehouse file path indeed registers the table (in Fabric, any subfolder under `Tables/` becomes a table named after the folder). For example, writing to `/lakehouse/default/Tables/connectwise_bronze/agreements` will populate the `connectwise_bronze.agreements` table that Direct Lake can read.
-* **Table Naming and Partitioning:** Adopt clear naming for tables. For Bronze (raw data), we might prefix with `connectwise_bronze` (or use a separate Lakehouse). Our current implementation writes each entity to a subfolder (`.../connectwise_bronze/<entity>`). This is fine; just ensure consistency (all lowercase folder names to avoid Spark confusion, as we do by `entity_name.lower()` in code). For large datasets, consider adding partition columns (e.g. by date) – the plan has a placeholder for `partition_cols` per entity. We can defer complex partitioning until the volume grows, but the structure is there to add it easily. The write mode for initial loads can be `"overwrite"`, but for daily append we’ll use `"append"` to accumulate history (with incremental filtering introduced later).
-* **Fabric Spark Compatibility:** Use Fabric best practices for Spark. For instance, when creating Spark sessions in notebooks or jobs, use the provided session or builder. (In Fabric notebooks, a Spark session is usually available; if not, we create one as shown in examples.) Avoid any incompatible Spark features – stick to Delta format which Fabric fully supports. The `.option("mergeSchema","true")` can be used on writes to allow schema evolution if our models change, ensuring we don’t break Direct Lake reads when new columns appear.
-* **Minimal Custom Post-Processing:** Since we write directly to OneLake Delta tables, we do not need any separate upload step or data movement. The `fabric_api.upload` module remains a no-op (can be removed or kept as stub for interface completeness). The pipeline should log the OneLake paths of outputs for traceability, but otherwise the data is immediately in place. This approach (often called *OneLake-first*) means the data lake is the source of truth – no in-memory aggregation needed to transfer data elsewhere.
-* **Files Affected:** `fabric_api/bronze_loader.py` (ensure the `bronze_path` defaults to a OneLake path and that writing uses Delta format with appropriate mode), `fabric_api/pipeline.py` (if integrating the bronze loader into daily runs, pass the Lakehouse root properly), `fabric_api/fabric_helpers.py` if present (as mentioned in README, may contain OneLake path utilities – ensure any such helper aligns with this approach). Also update documentation (README) to emphasize that the pipeline writes to Lakehouse tables and how to connect Power BI to those tables.
+  C. Configuration (fabric_api/core/config.py)
 
-## Phase 5: Implementation Phases and Next Steps
+  class EntityConfig:
+      """Centralized entity configuration"""
+      ENTITIES = {
+          "Agreement": {
+              "endpoint": "/finance/agreements",
+              "model_class": "Agreement",
+              "partition_cols": [],
+              "description": "ConnectWise agreements"
+          },
+          "TimeEntry": {
+              "endpoint": "/time/entries",
+              "model_class": "TimeEntry",
+              "partition_cols": [],
+              "description": "ConnectWise time entries"
+          },
+          # Other entities...
+      }
 
-**Goal:** Lay out the work in clear increments that can be tackled by an AI coding assistant (Claude Code) or developers without ambiguity. Each phase above corresponds to a coherent unit of work:
+      @classmethod
+      def get_entity_config(cls, entity_name):
+          """Get configuration for an entity"""
+          if entity_name not in cls.ENTITIES:
+              raise ValueError(f"Unknown entity: {entity_name}")
+          return cls.ENTITIES[entity_name]
 
-* **Phase 1 – SparkModel Validation:** *Scope:* Update model generation and test schema conversion. *Files:* `connectwise_models/*`, `generate_models_from_json.py`. *Rationale:* Needed to leverage Spark for DataFrame creation and ensure Pydantic v2 models work in Spark 1.3. After this phase, we should be able to call `model_spark_schema()` and `.model_validate()` without errors in the Fabric environment.
-* **Phase 2 – Field Selection Refactor:** *Scope:* Improve `get_fields_for_api_call` and apply it across all data extractors. *Files:* `api_utils.py`, `extract/*.py`. *Rationale:* Reduces hard-coded field lists and keeps API calls efficient. Success means all fetch functions are shorter and driven by schemas (verify by logging the `fields` param they use).
-* **Phase 3 – Modular ETL Functions:** *Scope:* Implement the structured flow (raw fetch → validate → DataFrame → Delta) in code, ideally via a reusable pattern. *Files:* `bronze_loader.py`, possibly `pipeline.py` (refactoring extraction calls). *Rationale:* Separation of concerns for easier testing and maintenance. After this, we can unit test each stage (e.g., feed dummy JSON to validation function and get a Pydantic object).
-* **Phase 4 – OneLake Integration:** *Scope:* Configure output paths and writing modes for Fabric. *Files:* `bronze_loader.py` (writing logic), `pipeline.py` (or whichever orchestrator calls the loader). *Rationale:* Ensures data lands in Fabric’s Lakehouse in Delta format, ready for consumption. We’ll verify in a Fabric workspace that tables appear and data is queryable via Spark SQL or Power BI.
-* **Phase 5 – Incremental & Future Enhancements:** *(Beyond the immediate scope)* Once the above is in place, plan to handle incremental loads and Silver transformations. For example, maintain a watermark of last processed timestamp and use ConnectWise conditions (e.g., `lastUpdated > ...`) to fetch only new/updated records. Also plan a Silver layer where Bronze JSON structures (or foreign keys) are flattened into relational tables (possibly using the existing `Manage*` models for schema). These would be separate phases (Phase 6: Incremental Load, Phase 7: Silver layer), ensuring the pipeline continues to meet the goals of modularity and minimal custom logic.
+  2. Generic Extract and Transform Framework
 
-Each phase is designed to be implemented and tested independently, aligning with priorities of **modularity, testability, and schema-driven design**. By tackling the improvements in these stages, the ConnectWise PSA ETL pipeline will be optimized for Microsoft Fabric, with clear code structure and reliable data flows from API to OneLake Delta tables.
+  A. Generic Extractor (fabric_api/extract/generic.py)
+
+  class EntityExtractor:
+      """Generic extractor for any ConnectWise entity type"""
+
+      def __init__(self, client, entity_name):
+          self.client = client
+          self.entity_name = entity_name
+          self.config = EntityConfig.get_entity_config(entity_name)
+          self.model_class = self._get_model_class()
+
+      def _get_model_class(self):
+          """Dynamically import the model class"""
+          from fabric_api.connectwise_models import Agreement, TimeEntry, ExpenseEntry,
+  ProductItem, PostedInvoice, UnpostedInvoice
+          return globals()[self.config["model_class"]]
+
+      def extract(self, conditions=None, page_size=100, max_pages=None):
+          """Extract entity data with dynamic field selection"""
+          # Get fields based on model structure
+          fields = get_fields_for_api_call(self.model_class)
+
+          # Fetch raw data
+          endpoint = self.config["endpoint"]
+          raw_data = self.client.paginate(
+              endpoint=endpoint,
+              fields=fields,
+              page_size=page_size,
+              max_pages=max_pages,
+              conditions=conditions
+          )
+
+          return raw_data
+
+      def validate(self, raw_data):
+          """Validate raw data against model schema"""
+          from fabric_api.extract._common import validate_batch
+          return validate_batch(raw_data, self.model_class)
+
+  B. Nested Structure Flattening (fabric_api/transform/struct_utils.py)
+
+  def flatten_nested_structs(df, max_depth=3, delimiter="_", handle_arrays="json"):
+      """
+      Recursively flatten nested struct fields in a DataFrame
+
+      Args:
+          df: Input DataFrame with nested structures
+          max_depth: Maximum recursion depth
+          delimiter: Character to use between field names
+          handle_arrays: How to handle arrays ("json", "explode", or "skip")
+
+      Returns:
+          Flattened DataFrame
+      """
+      from pyspark.sql.types import StructType, ArrayType
+      from pyspark.sql.functions import col, to_json, from_json, schema_of_json,
+  explode_outer
+
+      # Process each field in the schema
+      fields = []
+      nested_fields = []
+      array_fields = []
+
+      for field_name in df.schema.names:
+          field_type = df.schema[field_name].dataType
+
+          # Handle regular fields
+          if not isinstance(field_type, (StructType, ArrayType)):
+              fields.append(field_name)
+
+          # Handle nested structs
+          elif isinstance(field_type, StructType):
+              nested_fields.append(field_name)
+
+          # Handle arrays
+          elif isinstance(field_type, ArrayType):
+              array_fields.append(field_name)
+
+      # Start with non-nested fields
+      result = df.select([col(f) for f in fields])
+
+      # Process nested structs
+      if nested_fields and max_depth > 0:
+          for nested_field in nested_fields:
+              # Get all the subfields
+              nested_schema = df.schema[nested_field].dataType
+              for nested_name in nested_schema.names:
+                  field_path = f"{nested_field}.{nested_name}"
+                  alias = f"{nested_field}{delimiter}{nested_name}"
+                  result = result.withColumn(alias, col(field_path))
+
+      # Process arrays based on strategy
+      if array_fields:
+          for array_field in array_fields:
+              if handle_arrays == "json":
+                  # Convert arrays to JSON strings
+                  result = result.withColumn(array_field, to_json(col(array_field)))
+              elif handle_arrays == "explode":
+                  # Explode arrays (creates one row per array element)
+                  result = result.withColumn(array_field,
+  explode_outer(col(array_field)))
+
+      # If we processed nested fields and still have depth, recursively flatten more
+      if nested_fields and max_depth > 1:
+          result = flatten_nested_structs(
+              result,
+              max_depth=max_depth-1,
+              delimiter=delimiter,
+              handle_arrays=handle_arrays
+          )
+
+      return result
+
+  3. Delta Storage Module
+
+  A. Unified Delta Writer (fabric_api/storage/delta.py)
+
+  def write_to_delta(
+      df,
+      entity_name=None,
+      path=None,
+      mode="append",
+      partition_cols=None,
+      spark=None,
+      flatten_nested=True,
+      flatten_depth=3
+  ):
+      """
+      Write DataFrame to Delta with uniform handling for Fabric/non-Fabric environments
+
+      Args:
+          df: DataFrame to write
+          entity_name: Name of entity (used to derive path if not provided)
+          path: Explicit path to write to (overrides entity_name)
+          mode: Write mode (append, overwrite)
+          partition_cols: Columns to partition by
+          spark: SparkSession (obtained from active session if None)
+          flatten_nested: Whether to flatten nested structures
+          flatten_depth: Depth for flattening
+
+      Returns:
+          Tuple of (path, row_count)
+      """
+      from fabric_api.core.spark_utils import get_spark_session
+      from fabric_api.core.path_utils import PathManager
+      from fabric_api.transform.struct_utils import flatten_nested_structs
+
+      # Get SparkSession
+      spark = spark or get_spark_session()
+
+      # Determine path
+      if not path and not entity_name:
+          raise ValueError("Either path or entity_name must be provided")
+
+      if not path:
+          path_manager = PathManager()
+          path = path_manager.get_entity_path(entity_name)
+
+      # Handle empty DataFrame
+      if df.isEmpty():
+          logger.warning(f"DataFrame is empty, skipping write to {path}")
+          return path, 0
+
+      # Flatten nested structures if needed
+      if flatten_nested:
+          df = flatten_nested_structs(df, max_depth=flatten_depth)
+
+      # Add metadata columns
+      from pyspark.sql.functions import current_timestamp, lit
+      df = df.withColumn("etl_timestamp", current_timestamp())
+      if entity_name:
+          df = df.withColumn("etl_entity", lit(entity_name))
+
+      # Configure writer
+      writer = df.write.format("delta").mode(mode)
+
+      # Add partitioning if specified
+      if partition_cols and len(partition_cols) > 0:
+          writer = writer.partitionBy(*partition_cols)
+
+      # Add optimized options
+      writer = writer.option("mergeSchema", "true")
+      writer = writer.option("delta.autoOptimize.optimizeWrite", "true")
+      writer = writer.option("delta.autoOptimize.autoCompact", "true")
+
+      # Write data
+      row_count = df.count()
+      logger.info(f"Writing {row_count} rows to {path}")
+      writer.save(path)
+
+      # Register table if in Fabric
+      try:
+          table_name = path.split("/")[-1]
+          spark.sql(f"""
+          CREATE TABLE IF NOT EXISTS {table_name}
+          USING DELTA
+          LOCATION '{path}'
+          """)
+          logger.info(f"Registered table {table_name}")
+      except Exception as e:
+          logger.debug(f"Could not register table: {e}")
+
+      return path, row_count
+
+  4. Streamlined Orchestration
+
+  A. ETL Pipeline (fabric_api/pipeline.py)
+
+  def process_entity(
+      entity_name,
+      client=None,
+      spark=None,
+      conditions=None,
+      page_size=100,
+      max_pages=None,
+      mode="append",
+      output_path=None
+  ):
+      """
+      Process a single entity through the complete ETL pipeline
+
+      Args:
+          entity_name: Name of the entity to process
+          client: ConnectWiseClient (created if None)
+          spark: SparkSession (uses active session if None)
+          conditions: Filter conditions for API
+          page_size: Records per page
+          max_pages: Maximum pages to fetch
+          mode: Write mode for Delta
+          output_path: Custom output path (uses default if None)
+
+      Returns:
+          Dictionary with processing results
+      """
+      from fabric_api.core.spark_utils import get_spark_session
+      from fabric_api.client import ConnectWiseClient
+      from fabric_api.extract.generic import EntityExtractor
+      from fabric_api.storage.delta import write_to_delta
+      from fabric_api.core.config import EntityConfig
+
+      # Get dependencies
+      spark = spark or get_spark_session()
+      client = client or ConnectWiseClient()
+
+      # Get entity config
+      config = EntityConfig.get_entity_config(entity_name)
+
+      # 1. Extract raw data
+      extractor = EntityExtractor(client, entity_name)
+      raw_data = extractor.extract(
+          conditions=conditions,
+          page_size=page_size,
+          max_pages=max_pages
+      )
+
+      # 2. Validate against model
+      valid_models, errors = extractor.validate(raw_data)
+
+      # 3. Create DataFrame
+      if valid_models:
+          # Create dict data from models
+          dict_data = [model.model_dump() for model in valid_models]
+
+          # Create DataFrame
+          model_class = extractor.model_class
+          schema = model_class.model_spark_schema() if hasattr(model_class,
+  "model_spark_schema") else None
+
+          if schema:
+              df = spark.createDataFrame(dict_data, schema)
+          else:
+              df = spark.createDataFrame(dict_data)
+      else:
+          # Create empty DataFrame with schema if possible
+          model_class = extractor.model_class
+          if hasattr(model_class, "model_spark_schema"):
+              schema = model_class.model_spark_schema()
+              df = spark.createDataFrame([], schema)
+          else:
+              # Truly empty DataFrame as last resort
+              df = spark.createDataFrame([])
+
+      # 4. Write to Delta
+      path, row_count = write_to_delta(
+          df=df,
+          entity_name=entity_name,
+          path=output_path,
+          mode=mode,
+          partition_cols=config.get("partition_cols", []),
+          spark=spark
+      )
+
+      # 5. Write errors if any
+      if errors:
+          errors_df = spark.createDataFrame(errors)
+          write_to_delta(
+              df=errors_df,
+              entity_name="validation_errors",
+              mode="append",
+              spark=spark
+          )
+
+      # Return results
+      return {
+          "entity": entity_name,
+          "extracted": len(raw_data),
+          "validated": len(valid_models),
+          "errors": len(errors),
+          "rows_written": row_count,
+          "path": path
+      }
+
+  def run_etl(
+      entity_names=None,
+      start_date=None,
+      end_date=None,
+      lakehouse_root=None,
+      mode="append",
+      max_pages=None
+  ):
+      """
+      Run ETL process for multiple entities
+
+      Args:
+          entity_names: List of entities to process (all if None)
+          start_date: Start date for filtering (YYYY-MM-DD)
+          end_date: End date for filtering (YYYY-MM-DD)
+          lakehouse_root: Root path for output
+          mode: Write mode
+          max_pages: Maximum pages to fetch per entity
+
+      Returns:
+          Dictionary with results by entity
+      """
+      from fabric_api.core.config import EntityConfig
+      from fabric_api.client import ConnectWiseClient
+      import datetime
+
+      # Set defaults
+      if entity_names is None:
+          entity_names = list(EntityConfig.ENTITIES.keys())
+
+      # Create client
+      client = ConnectWiseClient()
+
+      # Create date conditions if specified
+      conditions = None
+      if start_date or end_date:
+          today = datetime.date.today()
+          start = datetime.datetime.strptime(start_date, "%Y-%m-%d").date() if start_date
+   else today - datetime.timedelta(days=30)
+          end = datetime.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else
+  today
+
+          conditions = f"lastUpdated>=[{start}] AND lastUpdated<[{end}]"
+
+      # Process each entity
+      results = {}
+      for entity_name in entity_names:
+          results[entity_name] = process_entity(
+              entity_name=entity_name,
+              client=client,
+              conditions=conditions,
+              max_pages=max_pages,
+              mode=mode,
+              output_path=lakehouse_root
+          )
+
+      return results
+
+  Implementation Plan
+
+  1. Phase 1: Core Infrastructure
+    - Create core modules (path_utils, spark_utils, config)
+    - Remove redundant code from existing modules
+    - Create comprehensive tests for core functionality
+  2. Phase 2: Generic Extraction Framework
+    - Implement generic extractor
+    - Update or replace entity-specific extractors
+    - Add field selection utility based on models
+    - Test with all entity types
+  3. Phase 3: Struct Flattening and Transformation
+    - Implement struct flattening utilities
+    - Test with complex nested data structures
+    - Address schema evolution issues
+  4. Phase 4: Unified Storage Layer
+    - Create unified Delta writer
+    - Implement environment-aware path handling
+    - Test in both local and Fabric environments
+  5. Phase 5: Streamlined Orchestration
+    - Implement simplified pipeline module
+    - Add incremental load functionality
+    - Create simplified notebook examples
+    - End-to-end testing
+
+  By following this implementation plan, we'll achieve:
+  - A streamlined, modular architecture with clear responsibilities
+  - Reusable utilities for common tasks
+  - Proper handling of nested structures
+  - Consistent behavior across environments
+  - Significantly reduced code redundancy

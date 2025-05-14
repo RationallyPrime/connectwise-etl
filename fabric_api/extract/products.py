@@ -2,12 +2,12 @@ from __future__ import annotations
 
 """fabric_api.extract.products - Product item extraction routines."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any
 
 from ..client import ConnectWiseClient
 from ..connectwise_models import ProductItem
-from ..api_utils import get_fields_for_api_call, build_condition_string
+from ..core.api_utils import get_fields_for_api_call
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ def fetch_product_items_raw(
     child_conditions: str | None = None,
     order_by: str | None = None,
     fields_override: str | None = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch raw product item data from ConnectWise API using schema-based field selection.
     Targets: /procurement/products
@@ -50,21 +50,21 @@ def fetch_products_by_catalog_id(
     catalog_id: str,
     page_size: int = 100,
     max_pages: int | None = 50,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch product items by catalog ID.
-    
+
     Args:
         client: ConnectWiseClient instance
         catalog_id: Catalog ID to filter by
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        
+
     Returns:
         List of product items
     """
     condition = f'catalogItem/identifier="{catalog_id}"'
-    
+
     return fetch_product_items_raw(
         client=client,
         conditions=condition,
@@ -78,21 +78,21 @@ def fetch_products_by_type(
     product_type: str,
     page_size: int = 100,
     max_pages: int | None = 50,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch product items by type.
-    
+
     Args:
         client: ConnectWiseClient instance
         product_type: Product type to filter by
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        
+
     Returns:
         List of product items
     """
     condition = f'type/name="{product_type}"'
-    
+
     return fetch_product_items_raw(
         client=client,
         conditions=condition,

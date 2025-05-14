@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from pydantic import Field
 from sparkdantic import SparkModel
-from typing import Optional
+
 
 class FieldInfo(SparkModel):
     typeId: str
@@ -110,7 +110,7 @@ class ProductItem(SparkModel):
     customerDescription: str
     productSuppliedFlag: bool
     subContractorAmountLimit: float = Field(default=0.0)  # Made optional with default value to fix validation errors
-    opportunity: Optional[Opportunity] = None
+    opportunity: Opportunity | None = None
     calculatedPriceFlag: bool = Field(default=False)
     calculatedCostFlag: bool = Field(default=False)
     forecastDetailId: int = Field(default=0)

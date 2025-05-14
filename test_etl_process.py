@@ -1,17 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Test script to simulate the ETL process in a simplified way.
 """
 import os
-import json
 import tempfile
-from typing import List, Dict, Any
+
 from pyspark.sql import SparkSession
 
 # Import from our fixed package
-from fabric_api.connectwise_models import Agreement, PostedInvoice
-from fabric_api.connectwise_models.reference_model import ReferenceModel
+from fabric_api.connectwise_models import Agreement
 
 print("=== Testing ETL Process with Fixed Models ===")
 
@@ -49,7 +46,7 @@ for item in sample_agreements:
         validated_agreements.append(model)
         print(f"✅ Validated: {model.name}")
     except Exception as e:
-        print(f"❌ Validation failed for {item['name']}: {str(e)}")
+        print(f"❌ Validation failed for {item['name']}: {e!s}")
 
 # Attempt to create a schema
 print("\nGenerating Spark schema from model...")
@@ -57,7 +54,7 @@ try:
     schema = Agreement.model_spark_schema()
     print(f"✅ Generated schema with {len(schema.fields)} fields")
 except Exception as e:
-    print(f"❌ Schema generation failed: {str(e)}")
+    print(f"❌ Schema generation failed: {e!s}")
 
 # Convert models to dictionaries for DataFrame creation
 print("\nConverting models to dictionaries...")
@@ -69,29 +66,29 @@ try:
     # Use the schema explicitly
     df = spark.createDataFrame(dict_data, schema)
     print(f"✅ Created DataFrame with {df.count()} rows")
-    
+
     # Show schema structure
     print("\nDataFrame schema:")
     df.printSchema()
-    
+
     # Create a temporary directory for testing Delta write
     with tempfile.TemporaryDirectory() as tmpdir:
         delta_path = os.path.join(tmpdir, "test_delta")
-        
+
         print(f"\nWriting to Delta table at {delta_path}...")
         try:
             # Use Delta format for writing
             df.write.format("delta").mode("overwrite").save(delta_path)
             print("✅ Successfully wrote to Delta table")
-            
+
             # Read it back
             df_read = spark.read.format("delta").load(delta_path)
             print(f"✅ Successfully read back {df_read.count()} rows from Delta table")
         except Exception as e:
-            print(f"❌ Delta write/read failed: {str(e)}")
-            
+            print(f"❌ Delta write/read failed: {e!s}")
+
 except Exception as e:
-    print(f"❌ DataFrame creation failed: {str(e)}")
+    print(f"❌ DataFrame creation failed: {e!s}")
 
 # Stop SparkSession
 spark.stop()

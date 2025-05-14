@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Simple test script to verify Pydantic warning filters work.
 """
@@ -9,7 +8,7 @@ print(f"Python version: {sys.version}")
 print("Testing imports for Pydantic v2 warning fix...")
 
 # This should now show no warnings
-from fabric_api.connectwise_models import Agreement, PostedInvoice, TimeEntry
+from fabric_api.connectwise_models import Agreement
 
 print("✅ Imports successful - Checking models...")
 

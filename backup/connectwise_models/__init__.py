@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 ConnectWise API models generated from actual API responses.
 """
 
 from typing import List
+
 from sparkdantic import SparkModel
 
 # Import only the main models to avoid namespace collisions
@@ -17,18 +17,18 @@ from .unposted_invoice import UnpostedInvoice
 
 __all__ = [
     "Agreement",
-    "ExpenseEntry",
-    "PostedInvoice",
-    "ProductItem",
-    "TimeEntry",
-    "UnpostedInvoice",
     # List container models
     "AgreementList",
-    "PostedInvoiceList",
-    "UnpostedInvoiceList",
-    "TimeEntryList",
+    "ExpenseEntry",
     "ExpenseEntryList",
+    "PostedInvoice",
+    "PostedInvoiceList",
+    "ProductItem",
     "ProductItemList",
+    "TimeEntry",
+    "TimeEntryList",
+    "UnpostedInvoice",
+    "UnpostedInvoiceList",
 ]
 
 # For backward compatibility
@@ -36,24 +36,24 @@ __all__ = [
 # List container models for API responses
 class AgreementList(SparkModel):
     """List of agreements response"""
-    items: List[Agreement]
+    items: list[Agreement]
 
 class PostedInvoiceList(SparkModel):
     """List of invoices response"""
-    items: List[PostedInvoice]
+    items: list[PostedInvoice]
 
 class UnpostedInvoiceList(SparkModel):
     """List of unposted invoices response"""
-    items: List[UnpostedInvoice]
+    items: list[UnpostedInvoice]
 
 class TimeEntryList(SparkModel):
     """List of time entries response"""
-    items: List[TimeEntry]
+    items: list[TimeEntry]
 
 class ExpenseEntryList(SparkModel):
     """List of expense entries response"""
-    items: List[ExpenseEntry]
+    items: list[ExpenseEntry]
 
 class ProductItemList(SparkModel):
     """List of product items response"""
-    items: List[ProductItem]
+    items: list[ProductItem]

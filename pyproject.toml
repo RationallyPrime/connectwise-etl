@@ -1,42 +1,122 @@
-[tool.poetry]
+[project]
 name = "fabric-api"
 version = "0.2.2"
 description = "ConnectWise PSA to Microsoft Fabric OneLake integration."
-authors = ["Hákon Freyr Gunnarsson <hakonf@wise.is>"]
+authors = [
+    {name = "Hákon Freyr Gunnarsson", email = "hakonf@wise.is"}
+]
 readme = "README.md"
-packages = [{ include = "fabric_api" }]
+requires-python = ">=3.11"
+dependencies = [
+    "requests",
+    "pandas>=1.5.0",
+    "pyarrow>=10.0.0",
+    "python-dotenv",
+    "pydantic>=2.11.4",
+    "pyspark",
+    "sparkdantic",
+    "ruff>=0.11.9",
+    "datamodel-code-generator>=0.30.1",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-requests = "*"
-pandas = ">=1.5.0"
-pyarrow = ">=10.0.0"
-python-dotenv = "*"
-pydantic = ">=2.11.4"
-pyspark = "*"
-pyright = "*"
-sparkdantic = "*"
-[tool.poetry.extras]
+[project.optional-dependencies]
 fabric = ["pyspark"]
 azure = ["azure-identity", "azure-keyvault-secrets"]
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-line-length = 100
-exclude = [".venv", "venv", "build", "dist"]
-# Optionally, add more rules or ignore patterns here
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "N"]
-
-[tool.windsurfPyright]
-typeCheckingMode = "basic"
-reportMissingImports = true
-reportMissingTypeStubs = false
-languageServer = "windsurfPyright"
-exclude = [".venv", "venv", "build", "dist"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.uv]
-# uv-specific settings can be added here
+managed = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = [
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "N",    # naming conventions
+    "RUF",  # ruff-specific rules
+]
+ignore = [
+    "E501",  # line too long, handled by formatter
+]
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.basedpyright]
+pythonVersion = "3.11"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"
+include = ["fabric_api"]
+exclude = [
+    "**/.venv/**",
+    "**/__pycache__/**",
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/dist/**",
+    "**/build/**",
+]
+enableTypeIgnoreComments = true
+useLibraryCodeForTypes = true
+reportMissingTypeStubs = "none"
+
+[tool.datamodel-codegen]
+target-python-version = "3.11"
+base-class = "sparkdantic.SparkModel"
+input-file-type = "openapi"
+output-model-type = "pydantic_v2.BaseModel"
+use-standard-collections = true
+use-schema-description = true
+use-field-description = true
+field-include-all-keys = true
+field-constraints = true
+strict-nullable = true
+collapse-root-models = true
+validate-configuration = true
+use-model-config = true
+capitalize-enum-members = true
+use-union-operator = true
+
+# Field handling settings
+snake-case-field = false
+aliased-fields = false
+use-annotated = false
+strip-default-none = false
+
+# Output formatting settings
+output-model-sorted = true
+wrap-string-literal = false
+reuse-model = true
+
+# Enums handling
+reuse-enum = true
+enum-field-as-literal = "all"
+use-subclass-enum = true
+
+# Regular class generation settings
+class-name = "JsonSchema"

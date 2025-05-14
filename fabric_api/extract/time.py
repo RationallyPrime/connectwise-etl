@@ -2,12 +2,12 @@ from __future__ import annotations
 
 """fabric_api.extract.time - Time entry extraction routines."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any
 
 from ..client import ConnectWiseClient
 from ..connectwise_models import TimeEntry
-from ..api_utils import get_fields_for_api_call, build_condition_string
+from ..core.api_utils import build_condition_string, get_fields_for_api_call
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ def fetch_time_entries_raw(
     child_conditions: str | None = None,
     order_by: str | None = None,
     fields_override: str | None = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch raw time entry data from ConnectWise API using schema-based field selection.
     Targets: /time/entries
@@ -51,17 +51,17 @@ def fetch_time_entries_by_date_range(
     end_date: str,
     page_size: int = 100,
     max_pages: int | None = 50,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch time entries within a date range.
-    
+
     Args:
         client: ConnectWiseClient instance
         start_date: Start date in YYYY-MM-DD format
         end_date: End date in YYYY-MM-DD format
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        
+
     Returns:
         List of time entries
     """
@@ -70,7 +70,7 @@ def fetch_time_entries_by_date_range(
         date_gte=start_date,
         date_lt=end_date
     )
-    
+
     return fetch_time_entries_raw(
         client=client,
         conditions=condition,
@@ -81,27 +81,27 @@ def fetch_time_entries_by_date_range(
 
 def fetch_billable_time_entries(
     client: ConnectWiseClient,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
     page_size: int = 100,
     max_pages: int | None = 50,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Fetch only billable time entries, optionally within a date range.
-    
+
     Args:
         client: ConnectWiseClient instance
         start_date: Optional start date in YYYY-MM-DD format
         end_date: Optional end date in YYYY-MM-DD format
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        
+
     Returns:
         List of billable time entries
     """
     # Start with billable condition
     conditions = "billableOption=Billable"
-    
+
     # Add date range if provided
     if start_date and end_date:
         date_condition = build_condition_string(
@@ -109,7 +109,7 @@ def fetch_billable_time_entries(
             date_lt=end_date
         )
         conditions = f"{conditions} AND {date_condition}"
-    
+
     return fetch_time_entries_raw(
         client=client,
         conditions=conditions,

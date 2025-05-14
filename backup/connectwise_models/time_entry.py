@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 from pydantic import Field
-from typing import Optional
 from sparkdantic import SparkModel
 
 
@@ -171,12 +170,12 @@ class TimeEntry(SparkModel):
     invoiceReady: int
     timeSheet: TimeSheet
     status: str
-    ticket: Optional[Ticket] = None  # Made optional with default value to fix validation errors
-    project: Optional[Project] = None  # Made optional with default value to fix validation errors
-    phase: Optional[Phase] = None  # Made optional with default value to fix validation errors
+    ticket: Ticket | None = None  # Made optional with default value to fix validation errors
+    project: Project | None = None  # Made optional with default value to fix validation errors
+    phase: Phase | None = None  # Made optional with default value to fix validation errors
     ticketBoard: str = Field(default="")  # Made optional with default value to fix validation errors
     ticketStatus: str = Field(default="")  # Made optional with default value to fix validation errors
     invoiceFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
     extendedInvoiceAmount: float = Field(default=0.0)  # Made optional with default value to fix validation errors
     locationName: str = Field(default="")  # Made optional with default value to fix validation errors
-    taxCode: Optional[TaxCode] = None  # Made optional with default value to fix validation errors
+    taxCode: TaxCode | None = None  # Made optional with default value to fix validation errors

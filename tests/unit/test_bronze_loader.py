@@ -1,25 +1,15 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Test script for bronze_loader functionality.
 """
 
-import os
 import logging
-from datetime import datetime
+import os
+
 from pyspark.sql import SparkSession
 
 from fabric_api.bronze_loader import process_entities
-from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import (
-    Agreement,
-    PostedInvoice,  # renamed from Invoice for clarity
-    UnpostedInvoice,
-    TimeEntry,
-    ExpenseEntry,
-    ProductItem
-)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -41,19 +31,19 @@ def main():
     # to avoid builder attribute access issues
     import pyspark
     spark = SparkSession(pyspark.SparkContext("local[*]", "BronzeLoaderTest"))
-    
+
     logger.info("Created SparkSession for testing")
-    
+
     # Set output directory for Delta tables
     output_dir = os.path.join(os.getcwd(), "delta_test")
     os.makedirs(output_dir, exist_ok=True)
     logger.info(f"Output directory: {output_dir}")
-    
+
     # Entities to test
     entities_to_test = ["TimeEntry", "ProductItem"]
-    
+
     logger.info(f"Testing bronze_loader for: {', '.join(entities_to_test)}")
-    
+
     # Process entities
     results = process_entities(
         spark=spark,
@@ -62,21 +52,21 @@ def main():
         page_size=10,
         max_pages=1,  # Limit for testing
     )
-    
+
     # Display results
     for entity_name, (df, errors) in results.items():
         logger.info(f"{entity_name}: {df.count()} records, {len(errors)} validation errors")
-        
+
         # Show sample of the data
         logger.info(f"Sample of {entity_name} data:")
         df.show(5, truncate=False)
-        
+
         # Show schema
         logger.info(f"Schema for {entity_name}:")
         df.printSchema()
-    
+
     logger.info(f"\nBronze loading complete. Data saved to: {output_dir}")
-    
+
     # Stop SparkSession
     spark.stop()
 

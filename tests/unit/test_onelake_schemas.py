@@ -1,63 +1,62 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Test Spark schema generation for OneLake in non-Fabric environment.
 This test ensures that our schemas are correctly structured without needing Fabric.
 """
 
 import unittest
-import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
 from fabric_api.connectwise_models import (
     Agreement,
-    PostedInvoice,
-    UnpostedInvoice,
-    TimeEntry,
     ExpenseEntry,
-    ProductItem
+    PostedInvoice,
+    ProductItem,
+    TimeEntry,
+    UnpostedInvoice,
 )
 from fabric_api.onelake_utils import get_partition_columns
 
 
 class TestOneLakeSchemas(unittest.TestCase):
     """Tests for OneLake schema structure."""
-    
+
     def setUp(self):
         """Set up test environment."""
         # Create a mock SparkSession
         self.spark = MagicMock()
-        
+
     def test_model_spark_schema(self):
         """Test schema generation for all entity models."""
-        
+
         # Test all main entity models
         models = [
-            (Agreement, "agreement"), 
+            (Agreement, "agreement"),
             (PostedInvoice, "posted_invoice"),
             (UnpostedInvoice, "unposted_invoice"),
             (TimeEntry, "time_entry"),
             (ExpenseEntry, "expense_entry"),
             (ProductItem, "product_item")
         ]
-        
+
         for model_class, entity_name in models:
             # Get schema from model
             schema = model_class.model_spark_schema()
-            
+
             # Schema should not be None
             self.assertIsNotNone(schema)
-            
+
             # Schema should have fields
             self.assertTrue(len(schema.fields) > 0)
-            
+
             # Print schema structure for inspection
             print(f"\n{entity_name.upper()} SCHEMA:")
             print(schema)
-            
+
             # Check field names
             field_names = [field.name for field in schema.fields]
             print(f"Fields: {field_names}")
-            
+
             # Verify partition columns exist in schema or can be derived
             partition_cols = get_partition_columns(entity_name)
             for col in partition_cols:
@@ -80,21 +79,21 @@ class TestOneLakeSchemas(unittest.TestCase):
                             any(name == base_col or name == col for name in field_names),
                             f"Partition column {col} not found in schema for {entity_name}"
                         )
-    
+
     def test_schema_compatibility(self):
         """Test compatibility between model schemas."""
         # Test that schemas with common fields have compatible types
         agreement_schema = Agreement.model_spark_schema()
         invoice_schema = PostedInvoice.model_spark_schema()
-        
+
         # Check common field types
         common_fields = {"id", "name", "type"}
-        
+
         for field in common_fields:
             # Get field from both schemas if it exists
             agreement_field = next((f for f in agreement_schema.fields if f.name == field), None)
             invoice_field = next((f for f in invoice_schema.fields if f.name == field), None)
-            
+
             # If both schemas have the field, they should have compatible types
             if agreement_field and invoice_field:
                 print(f"Field {field}: {agreement_field.dataType} vs {invoice_field.dataType}")

@@ -201,17 +201,34 @@ run_daily(
 )
 ```
 
-## JSON Export Tool
+## Optimization Guidelines
 
-A production-ready export script is included to extract invoice data to JSON files:
+1. **Environment Variables**: Lakehouse paths and other environmental variables should be set in the notebook that installs and runs the package, not hardcoded in the library.
 
-```bash
-# Basic usage (exports last 30 days of invoices)
-python production_export.py
+2. **PySpark Context**: The package should assume it's running in Microsoft Fabric schema-enabled lakehouses where PySpark is always available. The Spark session should be created in the notebook, not in the library.
 
-# Specify date range
-python production_export.py --start_date 2025-04-01 --end_date 2025-04-30
+3. **Use Existing Methods**: Don't reinvent methods already accessible through the PySpark runtime context; use them directly.
 
-# Specify output directory
-python production_export.py --output_dir invoice_data_april
-```
+4. **Model Generation**: Use the ConnectWise OpenAPI schema with datamodel-code-generator to autogenerate models.
+
+5. **Field Optionality**: Make all fields optional by default in generated models to handle API inconsistencies.
+
+6. **Pydantic V2**: Use Pydantic v2 for all models for better performance and compatibility.
+
+7. **Spark Schema Handling**: Use SparkModel interfaces consistently for schema conversion.
+
+8. **Minimize Redundancy**: Consolidate duplicate utilities and path handling logic.
+
+9. **Consistent Delta Writing**: Standardize Delta table operations with uniform conventions.
+
+10. **Centralized Configuration**: Use a central configuration approach for entity definitions.
+
+11. **Performance Optimization**: Apply Fabric-specific optimizations for Spark configuration and Delta operations.
+
+12. **Modular Architecture**: Maintain clear separation between extract, transform, and load stages.
+
+13. **Error Tracking**: Implement consistent error handling with proper logging and recovery strategies.
+
+14. **Schema Evolution**: Handle schema changes gracefully with appropriate validation and transformation.
+
+15. **Partitioning Strategy**: Implement proper partitioning for query optimization while ensuring schema compatibility.

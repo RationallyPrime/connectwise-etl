@@ -4,8 +4,6 @@
 
 from __future__ import annotations
 
-from typing import List
-
 from pydantic import Field
 from sparkdantic import SparkModel
 
@@ -242,4 +240,4 @@ class Agreement(SparkModel):
     shipToCompany: ShipToCompany
     shipToSite: ShipToSite
     agreementStatus: str
-    customFields: List[CustomField]
+    customFields: list[CustomField]

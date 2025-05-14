@@ -1,401 +1,278 @@
-from __future__ import annotations
-from pyspark.sql.session import classproperty
-from pyspark.sql.dataframe import DataFrame
-from typing import Any, LiteralString, Mapping, Sequence
-import os
-from datetime import date, datetime, timedelta
+#!/usr/bin/env python
+"""
+Streamlined orchestration pipeline for ConnectWise data ETL.
+"""
+
 import logging
+from datetime import datetime, timedelta
+from typing import Any
 
-from pyspark.sql import SparkSession, DataFrame
-from .spark_utils import read_table_safely
 from .client import ConnectWiseClient
-from .connectwise_models import Agreement, TimeEntry, ProductItem
-from .extract import (
-    invoices as extract_invoices,
-    agreements as extract_agreements,
-    time as extract_time,
-    expenses as extract_expenses,
-    products as extract_products,
-)
-from .transform import transform_and_load, TransformResult
+from .core.config import ENTITY_CONFIG
+from .core.spark_utils import get_spark_session
+from .extract.generic import extract_entity, get_model_class
+from .storage.delta import write_to_delta, write_validation_errors
+from .transform.flatten import flatten_dataframe
 
-__all__: list[str] = [
-    "run_daily",
-    "join_invoice_data",
-]
-
-# Configure logging
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Constants & helpers
-# ---------------------------------------------------------------------------
-
-_DEFAULT_LAKEHOUSE_ROOT = "/lakehouse/default/Tables/connectwise"
-_DEFAULT_WRITE_MODE = "append"
-
-
-def _parse_date(text: str | None, default: date) -> date:  # noqa: D401 – util
-    """Parse *text* (``YYYY‑MM‑DD``) or fall back to *default*."""
-    return datetime.strptime(text, "%Y-%m-%d").date() if text else default
-
-
-def _date_window(
-    start_date: str | None = None,
-    end_date: str | None = None,
-) -> tuple[date, date]:  # noqa: D401 – util
-    """Return *(start, end)* ensuring ``start <= end``."""
-    today: date = date.today()
-    start: date = _parse_date(
-        text=start_date, default=today - timedelta(days=30)
-    )  # Default to 30 days back
-    end: date = _parse_date(text=end_date, default=today)
-    if start > end:
-        raise ValueError("start_date cannot be after end_date")
-    return start, end
-
-
-def _client(client: ConnectWiseClient | None) -> ConnectWiseClient:  # noqa: D401 – util
-    """Return *client* or instantiate from environment variables."""
-    if client:
-        return client
-    return ConnectWiseClient()  # Direct construction instead of from_env()
-
-
-# ---------------------------------------------------------------------------
-# Extraction wrappers
-# ---------------------------------------------------------------------------
-
-def extract_daily_data(
-    *,
+def process_entity(
+    entity_name: str,
     client: ConnectWiseClient | None = None,
-    start_date: str | None = os.getenv("CW_START_DATE"),
-    end_date: str | None = os.getenv("CW_END_DATE"),
-    max_pages: int = int(os.getenv("CW_MAX_PAGES", "50")),
-) -> dict[str, list[Any]]:
-    """Extract ConnectWise data without writing to tables.
-
-    This function extracts all data from ConnectWise but does not write to tables.
-    It returns the raw data that can then be passed to write_daily_data.
+    conditions: str | None = None,
+    page_size: int = 100,
+    max_pages: int | None = None,
+    base_path: str | None = None,
+    mode: str = "append",
+    flatten_structs: bool = True
+) -> dict[str, Any]:
+    """
+    Process a single entity through the complete ETL pipeline.
 
     Args:
-        client: ConnectWiseClient instance to use (will create one if None)
-        start_date: Start date for extraction (format: YYYY-MM-DD)
-        end_date: End date for extraction (format: YYYY-MM-DD)
-        max_pages: Maximum number of pages to retrieve from each API endpoint
+        entity_name: Name of the entity to process
+        client: ConnectWiseClient instance (created if None)
+        conditions: API query conditions
+        page_size: Number of records per page
+        max_pages: Maximum number of pages to fetch
+        base_path: Base path for tables
+        mode: Write mode (append, overwrite)
+        flatten_structs: Whether to flatten nested structures
 
     Returns:
-        Dictionary containing all extracted data
+        Dictionary with processing results
     """
-    client = _client(client)
-    logger.info("Starting ConnectWise data extraction process")
+    # Create dependencies if needed
+    spark = get_spark_session()
+    client = client or ConnectWiseClient()
 
-    # Process date range if provided
-    start, end = _date_window(start_date, end_date)
-    date_range_str = f"from {start} to {end}"
-    logger.info(f"Extracting data {date_range_str}")
-
-    # Create date conditions for filtering API calls
-    date_condition = f"lastUpdated>=[{start}] AND lastUpdated<[{end}]"
-    
-    # Extract invoices
-    logger.info(f"Extracting posted invoices with date filter: {date_condition}")
-    posted_invoices = extract_invoices.fetch_posted_invoices_raw(
-        client=client, 
-        max_pages=max_pages,
-        conditions=date_condition
-    )
-    
-    logger.info(f"Extracting unposted invoices with date filter: {date_condition}")
-    unposted_invoices = extract_invoices.fetch_unposted_invoices_raw(
+    # Extract data with validation
+    logger.info(f"Extracting {entity_name} data...")
+    valid_models, errors = extract_entity(
         client=client,
+        entity_name=entity_name,
+        page_size=page_size,
         max_pages=max_pages,
-        conditions=date_condition
-    )
-    
-    # Extract time entries
-    logger.info(f"Extracting time entries with date filter: {date_condition}")
-    time_entries = extract_time.fetch_time_entries_raw(
-        client=client,
-        max_pages=max_pages,
-        conditions=date_condition
-    )
-    
-    # Extract expenses
-    logger.info(f"Extracting expense entries with date filter: {date_condition}")
-    expenses = extract_expenses.fetch_expense_entries_raw(
-        client=client,
-        max_pages=max_pages,
-        conditions=date_condition
-    )
-    
-    # Extract products
-    logger.info(f"Extracting product items with date filter: {date_condition}")
-    products = extract_products.fetch_product_items_raw(
-        client=client,
-        max_pages=max_pages,
-        conditions=date_condition
-    )
-    
-    # Extract agreements - these don't typically change as often
-    logger.info(f"Extracting agreements")
-    agreements = extract_agreements.fetch_agreements_raw(
-        client=client,
-        max_pages=max_pages
+        conditions=conditions,
+        return_validated=True
     )
 
-    # Collect all data into a single dictionary
-    all_data: dict[str, list[Any]] = {
-        "posted_invoices": posted_invoices,
-        "unposted_invoices": unposted_invoices,
-        "time_entries": time_entries,
-        "expenses": expenses,
-        "products": products,
-        "agreements": agreements,
+    # Check if we have valid data
+    if not valid_models:
+        logger.warning(f"No valid {entity_name} data extracted")
+
+        # Write errors if present
+        if errors:
+            logger.warning(f"Writing {len(errors)} validation errors")
+            write_validation_errors(spark, entity_name, errors, base_path)
+
+        return {
+            "entity": entity_name,
+            "extracted": len(errors),
+            "validated": 0,
+            "errors": len(errors),
+            "rows_written": 0,
+            "path": ""
+        }
+
+    # Convert models to dictionary data for DataFrame
+    logger.info(f"Converting {len(valid_models)} valid {entity_name} models to DataFrame")
+    dict_data = [model.model_dump() for model in valid_models]
+
+    # Get model schema if available
+    model_class = get_model_class(entity_name)
+    schema = None
+    if hasattr(model_class, "model_spark_schema"):
+        schema = model_class.model_spark_schema()
+
+    # Create DataFrame
+    if schema:
+        df = spark.createDataFrame(dict_data, schema)
+    else:
+        df = spark.createDataFrame(dict_data)
+
+    # Apply flattening if requested
+    if flatten_structs:
+        logger.info(f"Flattening nested structures in {entity_name} data")
+        df = flatten_dataframe(df)
+
+    # Write to Delta
+    logger.info(f"Writing {entity_name} data to Delta")
+    path, row_count = write_to_delta(
+        df=df,
+        entity_name=entity_name,
+        base_path=base_path,
+        mode=mode,
+    )
+
+    # Write errors if present
+    if errors:
+        logger.info(f"Writing {len(errors)} validation errors")
+        write_validation_errors(spark, entity_name, errors, base_path)
+
+    # Return results
+    return {
+        "entity": entity_name,
+        "extracted": len(valid_models) + len(errors),
+        "validated": len(valid_models),
+        "errors": len(errors),
+        "rows_written": row_count,
+        "path": path
     }
 
-    # Log summary of extracted data
-    logger.info("Data extraction completed. Summary:")
-    for key, value in all_data.items():
-        logger.info(f"- {key}: {len(value)} records")
-
-    return all_data
-
-
-def write_daily_data(
-    data: dict[str, list[Any]],
-    *,
-    lakehouse_root: str = os.getenv("CW_LAKEHOUSE_ROOT", _DEFAULT_LAKEHOUSE_ROOT),
-    mode: str = os.getenv("CW_WRITE_MODE", _DEFAULT_WRITE_MODE),
-) -> dict[str, str]:
-    """Write the extracted data to Delta tables.
-
-    Args:
-        data: Dictionary containing all extracted data (from extract_daily_data)
-        lakehouse_root: Path to the lakehouse root where tables are stored
-        mode: Delta write mode ('append', 'overwrite', etc.)
-
-    Returns:
-        Dictionary mapping table names to their OneLake paths
-    """
-    logger.info(f"Starting ConnectWise data write process to {lakehouse_root}")
-
-    # Transform and load all data to Delta
-    return transform_and_load(
-        posted_invoices=data["posted_invoices"],
-        unposted_invoices=data["unposted_invoices"],
-        time_entries=data["time_entries"],
-        expenses=data["expenses"],
-        products=data["products"],
-        agreements=data["agreements"],
-        lakehouse_root=lakehouse_root,
-        mode=mode,
-    )
-
-
-def run_daily(
-    *,
+def process_all_entities(
+    entity_names: list[str] | None = None,
     client: ConnectWiseClient | None = None,
-    start_date: str | None = os.getenv("CW_START_DATE"),
-    end_date: str | None = os.getenv("CW_END_DATE"),
-    lakehouse_root: str = os.getenv("CW_LAKEHOUSE_ROOT", _DEFAULT_LAKEHOUSE_ROOT),
-    mode: str = os.getenv("CW_WRITE_MODE", _DEFAULT_WRITE_MODE),
-    max_pages: int = int(os.getenv("CW_MAX_PAGES", "50")),
-) -> dict[str, str]:
-    """End‑to‑end orchestration for one day (or specified window).
-
-    This function combines extract_daily_data and write_daily_data for backward compatibility.
+    conditions: str | dict[str, str] | None = None,
+    page_size: int = 100,
+    max_pages: int | None = None,
+    base_path: str | None = None,
+    mode: str = "append",
+    flatten_structs: bool = True
+) -> dict[str, dict[str, Any]]:
+    """
+    Process multiple entity types.
 
     Args:
-        client: ConnectWiseClient instance to use (will create one if None)
-        start_date: Start date for extraction (format: YYYY-MM-DD)
-        end_date: End date for extraction (format: YYYY-MM-DD)
-        lakehouse_root: Path to the lakehouse root where tables are stored
-        mode: Delta write mode ('append', 'overwrite', etc.)
-        max_pages: Maximum number of pages to retrieve from each API endpoint
+        entity_names: List of entity names to process (all if None)
+        client: ConnectWiseClient instance (created if None)
+        conditions: API query conditions (string or dict mapping entity names to conditions)
+        page_size: Number of records per page
+        max_pages: Maximum number of pages to fetch
+        base_path: Base path for tables
+        mode: Write mode (append, overwrite)
+        flatten_structs: Whether to flatten nested structures
 
     Returns:
-        Dictionary mapping table names to their OneLake paths
+        Dictionary mapping entity names to result dictionaries
     """
-    # Extract all data
-    all_data = extract_daily_data(
-        client=client,
-        start_date=start_date,
-        end_date=end_date,
-        max_pages=max_pages,
-    )
+    # Create client if needed
+    client = client or ConnectWiseClient()
 
-    # Write data to tables
-    return write_daily_data(
-        data=all_data,
-        lakehouse_root=lakehouse_root,
-        mode=mode,
-    )
+    # Use all entities if none specified
+    if entity_names is None:
+        entity_names = list(ENTITY_CONFIG.keys())
 
+    # Process each entity
+    results = {}
+    for entity_name in entity_names:
+        # Get entity-specific conditions if provided as dict
+        entity_conditions = None
+        if isinstance(conditions, dict):
+            entity_conditions = conditions.get(entity_name)
+        else:
+            entity_conditions = conditions
 
-# SQL-based analysis of invoice data
-# ---------------------------------------------------------------------------
-
-
-def join_invoice_data(
-    *,
-    spark: SparkSession | None = None,
-    lakehouse_root: str = os.getenv("CW_LAKEHOUSE_ROOT", _DEFAULT_LAKEHOUSE_ROOT),
-) -> DataFrame:
-    """
-    Efficiently join invoice data using Spark SQL after it's been loaded into OneLake.
-
-    This approach is much more efficient than making multiple API calls to retrieve
-    relationship data. Instead, we load all entities into OneLake tables, then use
-    SQL joins to relate them.
-
-    Args:
-        spark: SparkSession to use (will create one if None)
-        lakehouse_root: Path to the lakehouse root where tables are stored
-
-    Returns:
-        A Spark DataFrame with joined invoice data
-    """
-
-    # Get or create a SparkSession
-    if spark is None:
-        # Import in function to help with type checking
-        from pyspark.sql import SparkSession as SS
-
-        try:
-            # Create a SparkSession explicitly
-            builder: classproperty = SS.builder  # type: ignore # PySpark's builder is a classproperty
-            spark = builder.appName("ConnectWiseInvoiceAnalysis").getOrCreate()  # type: ignore
-        except Exception as e:
-            logger.error(f"Failed to create SparkSession: {str(e)}")
-            # Re-raise for proper error handling
-            raise
-
-    # At this point, spark should not be None
-    assert spark is not None, "Failed to create SparkSession"
-
-    # Create table paths
-    posted_invoices_path: LiteralString = f"connectwise.postedinvoice"
-    unposted_invoices_path: LiteralString = f"connectwise.unpostedinvoice"
-    time_entries_path: LiteralString = f"connectwise.timeentry"
-    expenses_path: LiteralString = f"connectwise.expenseentry"
-    products_path: LiteralString = f"connectwise.productitem"
-
-    # Safely read tables, falling back to empty DataFrames if they don't exist
-    logger.info(f"Reading invoice data from OneLake tables")
-
-    # Create an empty DataFrame as a fallback
-    empty_df: DataFrame | Any = spark.createDataFrame([], "string")
-
-    # Read posted invoices - required table
-    posted_invoices_df: DataFrame | None = read_table_safely(
-        spark=spark, full_table_path=posted_invoices_path, default_value=empty_df
-    )
-    if posted_invoices_df is None or posted_invoices_df.count() == 0:
-        logger.warning(f"No posted invoices found in table {posted_invoices_path}")
-        return empty_df
-
-    # Register temporary views for SQL queries
-    posted_invoices_df.createOrReplaceTempView("posted_invoices")
-
-    # Read and register other tables - optional relationships
-    unposted_invoices_df: DataFrame | None = read_table_safely(
-        spark=spark, full_table_path=unposted_invoices_path, default_value=empty_df
-    )
-    if unposted_invoices_df is not None and unposted_invoices_df.count() > 0:
-        unposted_invoices_df.createOrReplaceTempView("unposted_invoices")
-    else:
-        # Create empty view to avoid SQL errors
-        empty_df.createOrReplaceTempView("unposted_invoices")
-        logger.warning(f"No unposted invoices found in table {unposted_invoices_path}")
-
-    times_df: DataFrame | None = read_table_safely(
-        spark=spark, full_table_path=time_entries_path, default_value=empty_df
-    )
-    if times_df is not None and times_df.count() > 0:
-        times_df.createOrReplaceTempView("time_entries")
-    else:
-        # Create empty view to avoid SQL errors
-        empty_df.createOrReplaceTempView("time_entries")
-        logger.warning(f"No time entries found in table {time_entries_path}")
-
-    expenses_df: DataFrame | None = read_table_safely(
-        spark=spark, full_table_path=expenses_path, default_value=empty_df
-    )
-    if expenses_df is not None and expenses_df.count() > 0:
-        expenses_df.createOrReplaceTempView("expenses")
-    else:
-        # Create empty view to avoid SQL errors
-        empty_df.createOrReplaceTempView("expenses")
-        logger.warning(f"No expenses found in table {expenses_path}")
-
-    products_df: DataFrame | None = read_table_safely(
-        spark=spark, full_table_path=products_path, default_value=empty_df
-    )
-    if products_df is not None and products_df.count() > 0:
-        products_df.createOrReplaceTempView("products")
-    else:
-        # Create empty view to avoid SQL errors
-        empty_df.createOrReplaceTempView("products")
-        logger.warning(f"No products found in table {products_path}")
-
-    # Create a comprehensive SQL query to join all invoice data
-    sql_query = """
-    SELECT 
-        p.invoiceNumber,
-        p.id as invoice_id,
-        p.date as invoice_date,
-        p.status.name as invoice_status,
-        p.total as invoice_total,
-        p.company.id as company_id,
-        
-        -- Time entry details (if present)
-        t.id as time_entry_id,
-        t.notes as time_entry_notes,
-        t.hours as hours_worked,
-        t.date as work_date,
-        
-        -- Expense details (if present)
-        e.id as expense_id,
-        e.date as expense_date,
-        e.amount as expense_amount,
-        
-        -- Product details (if present)
-        pr.id as product_id,
-        pr.description as product_name,
-        pr.price as product_price,
-        pr.quantity as product_quantity
-    FROM 
-        posted_invoices p
-    LEFT JOIN 
-        time_entries t ON p.id = t.invoice.id
-    LEFT JOIN 
-        expenses e ON p.id = e.invoice.id
-    LEFT JOIN 
-        products pr ON p.id = pr.invoice.id
-    """
-
-    # Execute SQL query to join all data
-    logger.info(f"Executing SQL join query on invoice data")
-
-    try:
-        result_df = spark.sql(sql_query)
-
-        # Testing if the result can be materialized without errors
-        # but limiting to a small number to avoid memory issues
-        test_count = min(result_df.limit(10).count(), 10)
-        logger.info(f"SQL join query test - retrieved {test_count} sample rows")
-
-        # Get actual row count once we know it works
-        row_count = result_df.count()
-        logger.info(f"SQL join query returned {row_count} total rows")
-
-        return result_df
-
-    except Exception as e:
-        logger.error(f"Error executing SQL join query: {str(e)}")
-        # Create a simple DataFrame with the error message
-        error_df = spark.createDataFrame(
-            [("Error executing SQL join", str(e))], ["error_type", "error_message"]
+        # Process entity
+        results[entity_name] = process_entity(
+            entity_name=entity_name,
+            client=client,
+            conditions=entity_conditions,
+            page_size=page_size,
+            max_pages=max_pages,
+            base_path=base_path,
+            mode=mode,
+            flatten_structs=flatten_structs
         )
-        return error_df
+
+    return results
+
+def run_incremental_etl(
+    start_date: str | None = None,
+    end_date: str | None = None,
+    entity_names: list[str] | None = None,
+    lookback_days: int = 30,
+    client: ConnectWiseClient | None = None,
+    page_size: int = 100,
+    max_pages: int | None = None,
+    base_path: str | None = None,
+    flatten_structs: bool = True
+) -> dict[str, dict[str, Any]]:
+    """
+    Run an incremental ETL process based on date range.
+
+    Args:
+        start_date: Start date for incremental load (YYYY-MM-DD)
+        end_date: End date for incremental load (YYYY-MM-DD)
+        entity_names: List of entity names to process (all if None)
+        lookback_days: Days to look back if no start_date
+        client: ConnectWiseClient instance (created if None)
+        page_size: Number of records per page
+        max_pages: Maximum number of pages to fetch
+        base_path: Base path for tables
+        flatten_structs: Whether to flatten nested structures
+
+    Returns:
+        Dictionary mapping entity names to result dictionaries
+    """
+    # Calculate date range
+    if not start_date:
+        start = datetime.now() - timedelta(days=lookback_days)
+        start_date = start.strftime("%Y-%m-%d")
+
+    if not end_date:
+        end = datetime.now()
+        end_date = end.strftime("%Y-%m-%d")
+
+    logger.info(f"Running incremental ETL from {start_date} to {end_date}")
+
+    # Build date-based condition
+    condition = f"lastUpdated>=[{start_date}] AND lastUpdated<[{end_date}]"
+
+    # Run process with date condition
+    return process_all_entities(
+        entity_names=entity_names,
+        client=client,
+        conditions=condition,
+        page_size=page_size,
+        max_pages=max_pages,
+        base_path=base_path,
+        mode="append",
+        flatten_structs=flatten_structs
+    )
+
+def run_daily_etl(
+    entity_names: list[str] | None = None,
+    days_back: int = 1,
+    client: ConnectWiseClient | None = None,
+    page_size: int = 100,
+    max_pages: int | None = None,
+    base_path: str | None = None,
+    flatten_structs: bool = True
+) -> dict[str, dict[str, Any]]:
+    """
+    Run daily ETL process for yesterday's data.
+
+    Args:
+        entity_names: List of entity names to process (all if None)
+        days_back: Number of days to look back
+        client: ConnectWiseClient instance (created if None)
+        page_size: Number of records per page
+        max_pages: Maximum number of pages to fetch
+        base_path: Base path for tables
+        flatten_structs: Whether to flatten nested structures
+
+    Returns:
+        Dictionary mapping entity names to result dictionaries
+    """
+    # Calculate yesterday's date
+    yesterday = datetime.now() - timedelta(days=days_back)
+    yesterday_str = yesterday.strftime("%Y-%m-%d")
+
+    # Today's date
+    today = datetime.now()
+    today_str = today.strftime("%Y-%m-%d")
+
+    logger.info(f"Running daily ETL for {yesterday_str}")
+
+    # Use incremental ETL with yesterday's date
+    return run_incremental_etl(
+        start_date=yesterday_str,
+        end_date=today_str,
+        entity_names=entity_names,
+        client=client,
+        page_size=page_size,
+        max_pages=max_pages,
+        base_path=base_path,
+        flatten_structs=flatten_structs
+    )

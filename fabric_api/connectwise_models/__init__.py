@@ -1,30 +1,27 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""ConnectWise API models generated from OpenAPI schema.
+
+Compatible with Pydantic v2 and SparkDantic for Spark schema generation.
 """
-ConnectWise API models generated directly from OpenAPI schema.
-"""
 
-import warnings
+from typing import Any, Dict, List, Optional
 
-# Filter Pydantic deprecation warnings for Config options
-warnings.filterwarnings("ignore", message="Valid config keys have changed in V2")
-
-from typing import List, Any
-from pydantic import RootModel
+from pydantic import Field, RootModel
 from sparkdantic import SparkModel
 
 from .agreement import Agreement
-from .time_entry import TimeEntry
 from .expense_entry import ExpenseEntry
+from .invoice import Invoice
 from .posted_invoice import PostedInvoice
-from .unposted_invoice import UnpostedInvoice
 from .product_item import ProductItem
+from .time_entry import TimeEntry
+from .unposted_invoice import UnpostedInvoice
 
 __all__ = [
     "Agreement",
-    "TimeEntry",
     "ExpenseEntry",
+    "Invoice",
     "PostedInvoice",
-    "UnpostedInvoice",
     "ProductItem",
+    "TimeEntry",
+    "UnpostedInvoice",
 ]

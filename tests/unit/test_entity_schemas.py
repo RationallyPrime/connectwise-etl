@@ -1,26 +1,16 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Test script that generates sample data for each entity based on the schema models
 and saves the responses as pretty-printed JSON files for review.
 """
 
 import json
-import os
 import logging
-from datetime import datetime, timedelta
+import os
 import random
-from typing import Dict, Any, Type, List, Optional
+from datetime import datetime, timedelta
 
 # Use the main entity models from fabric_api.connectwise_models
-from fabric_api.connectwise_models import (
-    Agreement,
-    PostedInvoice,  # renamed from Invoice for clarity
-    UnpostedInvoice,
-    TimeEntry,
-    ExpenseEntry,
-    ProductItem
-)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -283,13 +273,13 @@ def generate_product_item():
 def generate_entity_samples(output_dir: str = "entity_samples"):
     """
     Generate sample data for each entity and save to JSON files.
-    
+
     Args:
         output_dir: Directory to save output files
     """
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # Define entities and their generator functions
     entities = {
         "Agreement": generate_agreement,
@@ -299,25 +289,25 @@ def generate_entity_samples(output_dir: str = "entity_samples"):
         "ExpenseEntry": generate_expense_entry,
         "ProductItem": generate_product_item
     }
-    
+
     for entity_name, generate_func in entities.items():
         logger.info(f"Generating sample for {entity_name}...")
-        
+
         try:
             # Generate sample data
             sample_data = generate_func()
-            
+
             # Save to file
             file_path = os.path.join(output_dir, f"{entity_name}.json")
             with open(file_path, 'w', encoding='utf-8') as f:
                 # Pretty print with 4 space indentation
                 json.dump(sample_data, f, indent=4)
-                
+
             logger.info(f"✅ Saved {entity_name} sample to {file_path}")
-                
+
         except Exception as e:
-            logger.error(f"❌ Error generating {entity_name}: {str(e)}")
-    
+            logger.error(f"❌ Error generating {entity_name}: {e!s}")
+
     logger.info(f"Completed generating samples for {len(entities)} entities")
 
 def main():

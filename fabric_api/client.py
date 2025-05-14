@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import logging
-from requests.models import Response
 from types import ModuleType
+
+from requests.models import Response
 
 """fabric_api.client
 
@@ -24,22 +26,22 @@ The public surface remains 100 % compatible with previous notebooks: calls
 that don’t care about error records can continue to use *get_entity_data()*.
 """
 
-from datetime import datetime
 import base64
 import importlib
 import os
-from typing import Any
+from datetime import datetime
 from logging import Logger
+from typing import Any
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from .utils import create_batch_identifier  # noqa: WPS433 – internal import
+from .core.utils import create_batch_identifier
 
 __all__ = [
-    "ConnectWiseClient",
     "ApiErrorRecord",
+    "ConnectWiseClient",
 ]
 
 ###############################################################################
@@ -86,7 +88,7 @@ def _pull_from_key_vault() -> None:  # pragma: no cover – env dep.
     try:
         azure_identity: ModuleType = importlib.import_module(name="azure.identity")
         azure_kv: ModuleType = importlib.import_module(name="azure.keyvault.secrets")
-    except ModuleNotFoundError as exc:  # noqa: B904
+    except ModuleNotFoundError as exc:
         raise RuntimeError(
             "Azure Key Vault integration requested (CW_KEYVAULT_URL set) "
             "but packages 'azure-identity' and 'azure-keyvault-secrets' "
@@ -94,8 +96,8 @@ def _pull_from_key_vault() -> None:  # pragma: no cover – env dep.
             "azure-keyvault-secrets`."
         ) from exc
 
-    DefaultAzureCredential = getattr(azure_identity, "DefaultAzureCredential")  # noqa: N806
-    SecretClient = getattr(azure_kv, "SecretClient")  # noqa: N806
+    DefaultAzureCredential = azure_identity.DefaultAzureCredential  # noqa: N806
+    SecretClient = azure_kv.SecretClient  # noqa: N806
 
     kv = SecretClient(vault_url=vault_url, credential=DefaultAzureCredential())
     mapping: dict[str, str] = {
@@ -199,7 +201,7 @@ class ConnectWiseClient:
     # ---------------------------------------------------------------------
 
     @staticmethod
-    def create_batch_identifier(ts: datetime | None = None) -> str:  # noqa: D401
+    def create_batch_identifier(ts: datetime | None = None) -> str:
         """Return UTC timestamp formatted as ``YYYYMMDD-HHMMSS`` — AL‑style."""
 
         return create_batch_identifier(timestamp=ts)
@@ -428,7 +430,7 @@ class ConnectWiseClient:
 
                 page += 1
             except Exception as e:
-                logger.error(f"Error fetching {entity_name} page {page}: {str(e)}")
+                logger.error(f"Error fetching {entity_name} page {page}: {e!s}")
                 break
 
         logger.info(f"Total {entity_name} retrieved from {endpoint}: {len(items)}")
