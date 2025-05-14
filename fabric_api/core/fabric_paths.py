@@ -30,7 +30,12 @@ def get_table_path(
     """
     # Normalize entity name
     normalized_name = entity_name.lower().replace(" ", "_")
-    table_name = f"{prefix}{normalized_name}"
+    
+    # Don't add prefix if it's already there
+    if normalized_name.startswith(prefix):
+        table_name = normalized_name
+    else:
+        table_name = f"{prefix}{normalized_name}"
 
     # Use provided base path or default to Tables in lakehouse
     path = os.path.join(base_path or DEFAULT_TABLES_PATH, table_name)

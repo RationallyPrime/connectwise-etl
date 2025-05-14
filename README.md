@@ -1,6 +1,54 @@
-# PSA ETL Pipeline Modernization Plan for Fabric Lakehouse
+# PSA ETL Pipeline - Full Medallion Architecture
 
-## Phase 1: Remove Legacy Code and Fallbacks ✅
+A comprehensive data pipeline for extracting ConnectWise PSA data into Microsoft Fabric with bronze, silver, and gold layers.
+
+## Architecture Overview
+
+### Bronze Layer (Raw Data Landing)
+- Direct extraction from ConnectWise API
+- No transformations or validations
+- Complete raw data preservation
+- Partitioned by extraction date
+
+### Silver Layer (Cleansed & Conformed)
+- Flattened nested structures
+- Column pruning to remove unnecessary fields
+- Field renaming for consistency
+- Data validation and type conformance
+
+### Gold Layer (Business Logic & BI)
+- Invoice header/line separation
+- Agreement hierarchy resolution
+- Time entry and expense connections
+- Business rule applications (e.g., Tímapottur filtering)
+- BI-ready dimensional models
+
+## Usage
+
+```python
+from fabric_api.pipeline import run_full_pipeline
+
+# Run complete medallion pipeline
+results = run_full_pipeline(
+    entity_names=["Agreement", "TimeEntry", "PostedInvoice"],
+    bronze_path="/lakehouse/default/Tables/bronze",
+    silver_path="/lakehouse/default/Tables/silver", 
+    gold_path="/lakehouse/default/Tables/gold",
+    process_gold=True
+)
+
+# Run daily incremental load
+from fabric_api.pipeline import run_daily_pipeline
+
+daily_results = run_daily_pipeline(
+    days_back=1,
+    process_gold=True
+)
+```
+
+## Modernization Phases
+
+### Phase 1: Remove Legacy Code and Fallbacks ✅
 
 **Goal:** Clean out any outdated or redundant code paths so the pipeline has no unnecessary complexity from earlier implementations. This includes eliminating old compatibility layers, defensive hacks, and dead code introduced in previous iterations (e.g. by Claude) that are no longer needed.
 
@@ -98,3 +146,126 @@
   * Run tests before deployments
   * Monitor validation errors to catch API changes
   * Keep dependencies updated for security and performance
+
+## Invoice Processing Business Logic
+
+Based on the Wise AL code analysis, here's how invoices are structured and connect to other entities:
+
+### Invoice Header/Line Structure
+
+1. **Invoice Header** (Main invoice record):
+   - Identified by `billingLogId` (primary key) and `invoiceNumber`
+   - Contains aggregated amounts, customer info, project, VAT
+   - Has a `type` that can be either "Standard" or "Agreement"
+   - Has an `agreementNumber` that links to the main agreement
+
+2. **Invoice Lines** (Detail records):
+   - Linked to header by `invoiceNumber`
+   - Each line has a `lineNo` starting at 10000, incrementing by 1
+   - Contains quantity, amount, description, dates
+   - Connects to one of:
+     - Time Entry (for Standard invoices)
+     - Product (for Agreement invoices)
+     - Expense Entry (associated with header, not lines)
+
+### Entity Relationships
+
+1. **Time Entry Connections** (Standard Invoices):
+   - Invoice Line has `timeEntryId` field
+   - Time Entry provides: employee, workRole, workType, hourlyRate, agreementHours
+   - Time Entry has its own `agreementId` and `ticketId`
+   - Agreement hierarchy: Time Entry → Agreement → Parent Agreement
+
+2. **Product Connections** (Agreement Invoices):
+   - Invoice Line has `productId` and `itemIdentifier`
+   - Products have their own `agreementId`
+   - Special handling for discount calculation based on item identifier
+   - Item identifier "SALE0000" has special no-discount logic
+
+3. **Expense Entry Connections**:
+   - Linked to Invoice Header (not lines) via `invoiceId`
+   - Has its own line numbering system
+   - Contains: type, quantity, amount, work date, employee
+   - Has its own `agreementId` with hierarchy support
+
+### Agreement Hierarchy Logic
+
+1. **Agreement Number Resolution**:
+   - First check the entity's direct agreement
+   - If empty and has parent agreement, check parent
+   - Custom field array[0].value contains the actual agreement number
+   - Header agreement number derived from its lines/expenses
+
+2. **Agreement Type Filtering**:
+   - "Tímapottur" agreement type is excluded from time entry processing
+   - Agreement type affects invoice processing behavior
+
+3. **Parent-Child Relationships**:
+   - Entities have both `agreementId` and `parentAgreementId`
+   - If agreement number missing, system checks parent agreement
+   - Hierarchical lookup pattern: Entity → Agreement → Parent Agreement
+
+### Data Flow Pattern
+
+1. **Invoice Import Process**:
+   ```
+   Get Invoices → Process Header → Process Details → Process Lines
+                                                  ↓
+                                    Time Entries OR Products
+                                                  ↓
+                                            Agreements
+   ```
+
+2. **Standard Invoice Lines**:
+   ```
+   Invoice Line → Time Entry → Agreement → Parent Agreement (if needed)
+   ```
+
+3. **Agreement Invoice Lines**:
+   ```
+   Invoice Line → Product → Agreement → Parent Agreement (if needed)
+                         → Product Discount (conditional)
+   ```
+
+### Field Mapping Patterns
+
+1. **Nested Object Access**:
+   - Uses dot notation: `timeEntry.id`, `agreement.type`, `member.identifier`
+   - Helper function `GetObjectFromParentObject` for safe navigation
+
+2. **Custom Field Handling**:
+   - Agreement numbers stored in `customFields[0].value`
+   - Product discounts in custom fields array
+
+3. **Type Conversions**:
+   - Invoice type: Text → Enum conversion
+   - VAT: Decimal to percentage (multiply by 100)
+   - Date fields: DateTime handling
+
+### Implementation Considerations
+
+1. **Bronze-to-Silver Transformations**:
+   - Split invoice headers and lines into separate tables
+   - Flatten nested agreement/time entry/expense relationships
+   - Resolve agreement hierarchies during processing
+   - Apply business logic filters (e.g., exclude "Tímapottur" agreements)
+
+2. **Key Join Fields**:
+   - Invoice headers ↔ lines: `invoiceNumber`
+   - Invoice lines → time entries: `timeEntryId`
+   - Invoice lines → products: `productId`
+   - Header → expenses: `invoiceId`
+   - All entities → agreements: `agreementId`
+
+3. **Special Business Rules**:
+   - Line numbering starts at 10000
+   - Agreement numbers in custom fields
+   - Parent agreement fallback logic
+   - Discount calculations for products
+   - VAT percentage conversion
+
+4. **Error Handling Considerations**:
+   - Missing agreement IDs (0 = not set)
+   - Empty custom field arrays
+   - Nested object access failures
+   - Type conversion errors

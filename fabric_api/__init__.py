@@ -31,7 +31,12 @@ from .core import (
 from .extract.generic import extract_entity
 
 # Import the pipeline
-from .pipeline import process_all_entities, process_entity, run_daily_etl, run_incremental_etl
+from .pipeline import (
+    process_entity_to_bronze, 
+    process_bronze_to_silver, 
+    run_full_pipeline, 
+    run_daily_pipeline
+)
 
 # Import storage utilities
 from .storage import dataframe_from_models, write_errors, write_to_delta
@@ -57,12 +62,12 @@ __all__ = [
     "get_spark_session",
     # Core utilities
     "get_table_path",
-    "process_all_entities",
     # Pipeline
-    "process_entity",
+    "process_entity_to_bronze",
+    "process_bronze_to_silver",
+    "run_full_pipeline",
+    "run_daily_pipeline",
     "read_delta_table",
-    "run_daily_etl",
-    "run_incremental_etl",
     "table_exists",
     # Storage
     "write_to_delta",

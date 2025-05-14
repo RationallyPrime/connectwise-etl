@@ -18,7 +18,7 @@ ENTITY_CONFIG = {
         "description": "ConnectWise posted (finalized) invoices"
     },
     "UnpostedInvoice": {
-        "endpoint": "/finance/invoices/search",  # Special endpoint for unposted
+        "endpoint": "/finance/accounting/unpostedinvoices",
         "output_table": "cw_unposted_invoice",
         "description": "ConnectWise unposted (draft) invoices"
     },

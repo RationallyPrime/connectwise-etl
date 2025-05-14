@@ -71,7 +71,8 @@ def write_to_delta(
     mode: str = "append",
     partition_cols: list[str] | None = None,
     add_timestamp: bool = True,
-    options: dict[str, str] | None = None
+    options: dict[str, str] | None = None,
+    use_prefix: bool = False
 ) -> tuple[str, int]:
     """
     Write a DataFrame to Delta with Fabric-optimized settings.

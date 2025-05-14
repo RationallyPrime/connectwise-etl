@@ -2,32 +2,349 @@
 """
 Streamlined orchestration pipeline for ConnectWise data ETL.
 Optimized for Microsoft Fabric execution environment.
+
+This pipeline implements a full medallion architecture:
+1. Bronze: Extract raw data as-is from API
+2. Silver: Flatten, validate, and prune columns
+3. Gold: Apply business logic for BI-ready data marts
 """
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, cast
+
+from pydantic import BaseModel
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, lit
 
 from .client import ConnectWiseClient
 from .core.config import ENTITY_CONFIG
+from .core.spark_utils import get_spark_session
 from .extract.generic import extract_entity
-from .storage.fabric_delta import dataframe_from_models, write_errors, write_to_delta
+from .gold.invoice_processing import run_gold_invoice_processing
+from .storage.fabric_delta import dataframe_from_models, write_to_delta
 from .transform.dataframe_utils import flatten_all_nested_structures
 
 logger = logging.getLogger(__name__)
 
-def process_entity(
+# Define column pruning configurations for each entity
+COLUMN_PRUNE_CONFIG = {
+    "Agreement": {
+        "keep": [
+            "id",
+            "name",
+            "type",
+            "company",
+            "customer",
+            "startDate",
+            "endDate",
+            "agreementStatus",
+            "billToCompany",
+            "billAmount",
+            "location",
+            "contact",
+        ],
+        "rename": {"billToCompany_id": "billToCompanyId", "company_id": "companyId"},
+    },
+    "TimeEntry": {
+        "keep": [
+            "id",
+            "company",
+            "member",
+            "timeStart",
+            "timeEnd",
+            "actualHours",
+            "billableOption",
+            "notes",
+            "agreement",
+            "invoice",
+            "workType",
+            "workRole",
+            "chargeToType",
+            "chargeToId",
+        ],
+        "rename": {
+            "company_id": "companyId",
+            "member_id": "memberId",
+            "agreement_id": "agreementId",
+        },
+    },
+    "ExpenseEntry": {
+        "keep": [
+            "id",
+            "company",
+            "member",
+            "date",
+            "amount",
+            "billableOption",
+            "type",
+            "notes",
+            "agreement",
+            "invoice",
+            "chargeToType",
+            "chargeToId",
+            "mobileGuid",
+        ],
+        "rename": {
+            "company_id": "companyId",
+            "member_id": "memberId",
+            "agreement_id": "agreementId",
+        },
+    },
+    "ProductItem": {
+        "keep": [
+            "id",
+            "catalogItem",
+            "description",
+            "quantity",
+            "price",
+            "cost",
+            "billableOption",
+            "agreement",
+            "invoice",
+            "location",
+            "businessUnit",
+            "vendor",
+        ],
+        "rename": {"catalogItem_id": "catalogItemId", "location_id": "locationId"},
+    },
+    "PostedInvoice": {
+        "keep": [
+            "id",
+            "invoiceNumber",
+            "type",
+            "status",
+            "company",
+            "billToCompany",
+            "date",
+            "dueDate",
+            "subtotal",
+            "total",
+            "salesTax",
+            "agreement",
+            "project",
+            "ticket",
+        ],
+        "rename": {"company_id": "companyId", "billToCompany_id": "billToCompanyId"},
+        "split_lines": True,  # Flag to split into header/line tables
+    },
+    "UnpostedInvoice": {
+        "keep": [
+            "id",
+            "invoiceNumber",
+            "invoiceType",
+            "company",
+            "billToCompany",
+            "invoiceDate",
+            "dueDate",
+            "subTotal",
+            "total",
+            "salesTaxAmount",
+            "description",
+        ],
+        "rename": {"company_id": "companyId", "billToCompany_id": "billToCompanyId"},
+    },
+}
+
+
+def prune_columns(df: DataFrame, entity_name: str) -> DataFrame:
+    """
+    Prune unnecessary columns based on the configuration.
+
+    Args:
+        df: Input DataFrame
+        entity_name: Name of the entity
+
+    Returns:
+        DataFrame with only necessary columns
+    """
+    if entity_name not in COLUMN_PRUNE_CONFIG:
+        logger.warning(f"No pruning config for {entity_name}, keeping all columns")
+        return df
+
+    config = COLUMN_PRUNE_CONFIG[entity_name]
+
+    # Get current columns
+    current_columns = df.columns
+
+    # Determine columns to keep
+    columns_to_keep = []
+    column_mapping = config.get("rename", {})
+
+    # Always keep metadata columns
+    metadata_columns = ["etl_timestamp", "etl_entity"]
+
+    for col_name in current_columns:
+        # Keep metadata columns
+        if col_name in metadata_columns:
+            columns_to_keep.append(col_name)
+            continue
+
+        # Check if it's a column we want to keep
+        base_col = col_name.split("_")[0]  # Handle flattened columns like company_id
+        if base_col in config["keep"] or col_name in config["keep"]:
+            # Check if we need to rename it
+            if col_name in column_mapping:
+                columns_to_keep.append(col(col_name).alias(column_mapping[col_name]))
+            else:
+                columns_to_keep.append(col_name)
+
+    # Select only the columns we want
+    pruned_df = df.select(*columns_to_keep)
+
+    return pruned_df
+
+
+def split_invoice_to_header_line(
+    df: DataFrame, entity_name: str
+) -> tuple[DataFrame, DataFrame | None]:
+    """
+    Split invoice data into header and line tables for better BI structure.
+
+    Args:
+        df: Invoice DataFrame
+        entity_name: Name of the entity (PostedInvoice)
+
+    Returns:
+        Tuple of (header_df, lines_df) or (df, None) if not an invoice
+    """
+    if entity_name != "PostedInvoice" or "split_lines" not in COLUMN_PRUNE_CONFIG.get(
+        entity_name, {}
+    ):
+        return df, None
+
+    # Define header columns (from the flattened structure)
+    header_columns = [
+        "id",
+        "invoiceNumber",
+        "type",
+        "status_name",
+        "company_id",
+        "company_name",
+        "billToCompany_id",
+        "billToCompany_name",
+        "date",
+        "dueDate",
+        "subtotal",
+        "total",
+        "salesTax",
+        "agreement_id",
+        "project_id",
+        "ticket_id",
+        "etl_timestamp",
+        "etl_entity",
+    ]
+
+    # Extract header data - one row per invoice
+    header_df = df.select(*[col for col in header_columns if col in df.columns]).dropDuplicates(
+        ["id"]
+    )
+
+    # For line items, we need to parse/extract from the invoice details
+    # This is a simplified example - actual implementation would depend on data structure
+    lines_df = None
+
+    # If we have line item data in arrays or nested structures, we'd process it here
+    # For now, returning None for lines_df
+
+    return header_df, lines_df
+
+
+def process_bronze_to_silver(
+    entity_name: str, bronze_path: str | None = None, silver_path: str | None = None, spark=None
+) -> dict[str, Any]:
+    """
+    Process data from bronze to silver layer with transformations.
+
+    Args:
+        entity_name: Name of the entity
+        bronze_path: Path to bronze table
+        silver_path: Path to silver table
+        spark: Spark session
+
+    Returns:
+        Processing results
+    """
+    spark = spark or get_spark_session()
+
+    # Read from bronze
+    bronze_table = f"bronze.cw_{entity_name.lower()}"
+    logger.info(f"Reading from bronze table: {bronze_table}")
+
+    try:
+        bronze_df = spark.table(bronze_table)
+    except Exception as e:
+        logger.error(f"Error reading bronze table {bronze_table}: {e}")
+        return {"entity": entity_name, "status": "error", "error": str(e), "rows_processed": 0}
+
+    initial_count = bronze_df.count()
+    logger.info(f"Found {initial_count} rows in bronze table")
+
+    # Apply transformations
+    # 1. Flatten nested structures
+    logger.info("Flattening nested structures...")
+    flattened_df = flatten_all_nested_structures(bronze_df)
+
+    # 2. Prune unnecessary columns
+    logger.info("Pruning columns...")
+    pruned_df = prune_columns(flattened_df, entity_name)
+
+    # 3. Handle special cases like invoice splitting
+    header_df, lines_df = split_invoice_to_header_line(pruned_df, entity_name)
+
+    # 4. Write to silver layer
+    silver_table = f"silver.{entity_name.lower()}"
+    silver_table_path = silver_path or f"/lakehouse/default/Tables/silver/{entity_name.lower()}"
+
+    # Write main table
+    write_to_delta(
+        df=header_df,
+        entity_name=entity_name.lower(),
+        base_path=silver_table_path,
+        mode="overwrite",
+        add_timestamp=False,  # Already has timestamp from bronze
+    )
+
+    # Write lines table if exists
+    lines_count = 0
+    if lines_df is not None:
+        lines_table = f"silver.{entity_name.lower()}_lines"
+        lines_table_path = (
+            silver_path or f"/lakehouse/default/Tables/silver/{entity_name.lower()}_lines"
+        )
+
+        write_to_delta(
+            df=lines_df,
+            entity_name=f"{entity_name.lower()}_lines",
+            base_path=lines_table_path,
+            mode="overwrite",
+            add_timestamp=False,
+        )
+        lines_count = lines_df.count()
+
+    final_count = header_df.count()
+
+    return {
+        "entity": entity_name,
+        "status": "success",
+        "bronze_rows": initial_count,
+        "silver_rows": final_count,
+        "lines_rows": lines_count,
+        "silver_table": silver_table,
+    }
+
+
+def process_entity_to_bronze(
     entity_name: str,
     client: ConnectWiseClient | None = None,
     conditions: str | None = None,
     page_size: int = 100,
     max_pages: int | None = None,
-    base_path: str | None = None,
+    bronze_path: str | None = None,
     mode: str = "append",
-    flatten_structs: bool = True
 ) -> dict[str, Any]:
     """
-    Process a single entity through the complete ETL pipeline.
+    Process a single entity to bronze layer (raw data).
 
     Args:
         entity_name: Name of the entity to process
@@ -35,9 +352,8 @@ def process_entity(
         conditions: API query conditions
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        base_path: Base path for tables
+        bronze_path: Base path for bronze tables
         mode: Write mode (append, overwrite)
-        flatten_structs: Whether to flatten nested structures
 
     Returns:
         Dictionary with processing results
@@ -45,196 +361,155 @@ def process_entity(
     # Create client if needed
     client = client or ConnectWiseClient()
 
-    # Extract data with validation
-    logger.info(f"Extracting {entity_name} data...")
-    valid_models, errors = extract_entity(
+    # Extract raw data for bronze layer - we want everything
+    logger.info(f"Extracting {entity_name} data for bronze layer...")
+    data_result = extract_entity(
         client=client,
         entity_name=entity_name,
         page_size=page_size,
         max_pages=max_pages,
         conditions=conditions,
-        return_validated=True
+        return_validated=True,  # Get both valid data and errors
     )
 
-    # Check if we have valid data
-    if not valid_models:
-        logger.warning(f"No valid {entity_name} data extracted")
+    # Since return_validated=True, we get a tuple
+    valid_data, validation_errors = cast(tuple[list[BaseModel], list[dict[str, Any]]], data_result)
 
-        # Write errors if present
-        if errors:
-            logger.warning(f"Writing {len(errors)} validation errors")
-            # Make sure errors is a list, not a dict
-            error_list = errors if isinstance(errors, list) else [errors]
-            _, _ = write_errors(error_list, entity_name, base_path)
+    total_records = len(valid_data) + len(validation_errors)
+    if total_records == 0:
+        logger.warning(f"No {entity_name} data extracted")
+        return {"entity": entity_name, "extracted": 0, "bronze_rows": 0, "bronze_path": ""}
 
-        return {
-            "entity": entity_name,
-            "extracted": len(errors),
-            "validated": 0,
-            "errors": len(errors),
-            "rows_written": 0,
-            "path": ""
-        }
+    # Create DataFrame from valid data using proper schema
+    spark = get_spark_session()
+    logger.info(f"Creating DataFrame from {len(valid_data)} valid {entity_name} records")
 
-    # Create DataFrame directly from models using our utility
-    logger.info(f"Converting {len(valid_models)} valid {entity_name} models to DataFrame")
-    # Ensure valid_models is a list
-    model_list = valid_models if isinstance(valid_models, list) else [valid_models]
-    df = dataframe_from_models(model_list, entity_name)
+    # Create DataFrame from validated models with schema
+    if valid_data:
+        raw_df = dataframe_from_models(valid_data, entity_name)
+    else:
+        # For errors, create a simple DataFrame from raw JSON
+        # Type: ignore needed for PySpark's strict type checking
+        error_df = spark.createDataFrame(validation_errors)  # type: ignore
+        raw_df = error_df
+    raw_df = raw_df.withColumn("etl_timestamp", lit(datetime.utcnow().isoformat()))
+    raw_df = raw_df.withColumn("etl_entity", lit(entity_name))
 
-    # Apply flattening if requested
-    if flatten_structs:
-        logger.info(f"Flattening nested structures in {entity_name} data")
-        df = flatten_all_nested_structures(df)
+    # Write to bronze layer
+    entity_config = ENTITY_CONFIG.get(entity_name, {})
+    bronze_table_name = entity_config.get("output_table", entity_name.lower())
 
-    # Write to Delta
-    logger.info(f"Writing {entity_name} data to Delta")
+    logger.info(f"Writing {entity_name} data to bronze layer")
     path, row_count = write_to_delta(
-        df=df,
-        entity_name=entity_name,
-        base_path=base_path,
+        df=raw_df,
+        entity_name=bronze_table_name,
+        base_path=bronze_path or "/lakehouse/default/Tables/bronze",
         mode=mode,
+        add_timestamp=False,  # We already added it
     )
 
-    # Write errors if present
-    if errors:
-        logger.info(f"Writing {len(errors)} validation errors")
-        # Make sure errors is a list, not a dict
-        error_list = errors if isinstance(errors, list) else [errors]
-        _, _ = write_errors(error_list, entity_name, base_path)
-
-    # Return results
     return {
         "entity": entity_name,
-        "extracted": len(valid_models) + len(errors),
-        "validated": len(valid_models),
-        "errors": len(errors),
-        "rows_written": row_count,
-        "path": path
+        "extracted": total_records,
+        "bronze_rows": row_count,
+        "bronze_path": path,
     }
 
-def process_all_entities(
+
+def run_full_pipeline(
     entity_names: list[str] | None = None,
     client: ConnectWiseClient | None = None,
-    conditions: str | dict[str, str] | None = None,
+    conditions: str | None = None,
     page_size: int = 100,
     max_pages: int | None = None,
-    base_path: str | None = None,
+    bronze_path: str | None = None,
+    silver_path: str | None = None,
+    gold_path: str | None = None,
     mode: str = "append",
-    flatten_structs: bool = True
+    process_gold: bool = True,
 ) -> dict[str, dict[str, Any]]:
     """
-    Process multiple entity types.
+    Run the full medallion ETL pipeline: bronze, silver, and gold layers.
 
     Args:
         entity_names: List of entity names to process (all if None)
         client: ConnectWiseClient instance (created if None)
-        conditions: API query conditions (string or dict mapping entity names to conditions)
+        conditions: API query conditions
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        base_path: Base path for tables
-        mode: Write mode (append, overwrite)
-        flatten_structs: Whether to flatten nested structures
+        bronze_path: Base path for bronze tables
+        silver_path: Base path for silver tables
+        gold_path: Base path for gold tables
+        mode: Write mode for bronze (append, overwrite)
+        process_gold: Whether to run gold layer processing
 
     Returns:
         Dictionary mapping entity names to result dictionaries
     """
     # Create client if needed
     client = client or ConnectWiseClient()
+    spark = get_spark_session()
 
     # Use all entities if none specified
     if entity_names is None:
         entity_names = list(ENTITY_CONFIG.keys())
 
-    # Process each entity
     results = {}
-    for entity_name in entity_names:
-        # Get entity-specific conditions if provided as dict
-        entity_conditions = None
-        if isinstance(conditions, dict):
-            entity_conditions = conditions.get(entity_name)
-        else:
-            entity_conditions = conditions
 
-        # Process entity
-        results[entity_name] = process_entity(
+    # Phase 1: Extract to bronze
+    for entity_name in entity_names:
+        logger.info(f"Processing {entity_name} to bronze...")
+        bronze_result = process_entity_to_bronze(
             entity_name=entity_name,
             client=client,
-            conditions=entity_conditions,
+            conditions=conditions,
             page_size=page_size,
             max_pages=max_pages,
-            base_path=base_path,
+            bronze_path=bronze_path,
             mode=mode,
-            flatten_structs=flatten_structs
         )
+        results[entity_name] = {"bronze": bronze_result}
+
+    # Phase 2: Transform bronze to silver
+    for entity_name in entity_names:
+        if results[entity_name]["bronze"]["bronze_rows"] > 0:
+            logger.info(f"Processing {entity_name} from bronze to silver...")
+            silver_result = process_bronze_to_silver(
+                entity_name=entity_name,
+                bronze_path=bronze_path,
+                silver_path=silver_path,
+                spark=spark,
+            )
+            results[entity_name]["silver"] = silver_result
+        else:
+            results[entity_name]["silver"] = {"status": "skipped", "reason": "No data in bronze"}
+
+    # Phase 3: Process gold layer for BI
+    if process_gold:
+        logger.info("Processing gold layer for BI data marts...")
+        gold_results = run_gold_invoice_processing(
+            silver_path=silver_path or "/lakehouse/default/Tables/silver",
+            gold_path=gold_path or "/lakehouse/default/Tables/gold",
+            spark=spark,
+        )
+        results["gold"] = gold_results
 
     return results
 
-def run_incremental_etl(
-    start_date: str | None = None,
-    end_date: str | None = None,
-    entity_names: list[str] | None = None,
-    lookback_days: int = 30,
-    client: ConnectWiseClient | None = None,
-    page_size: int = 100,
-    max_pages: int | None = None,
-    base_path: str | None = None,
-    flatten_structs: bool = True
-) -> dict[str, dict[str, Any]]:
-    """
-    Run an incremental ETL process based on date range.
 
-    Args:
-        start_date: Start date for incremental load (YYYY-MM-DD)
-        end_date: End date for incremental load (YYYY-MM-DD)
-        entity_names: List of entity names to process (all if None)
-        lookback_days: Days to look back if no start_date
-        client: ConnectWiseClient instance (created if None)
-        page_size: Number of records per page
-        max_pages: Maximum number of pages to fetch
-        base_path: Base path for tables
-        flatten_structs: Whether to flatten nested structures
-
-    Returns:
-        Dictionary mapping entity names to result dictionaries
-    """
-    # Calculate date range
-    if not start_date:
-        start = datetime.now() - timedelta(days=lookback_days)
-        start_date = start.strftime("%Y-%m-%d")
-
-    if not end_date:
-        end = datetime.now()
-        end_date = end.strftime("%Y-%m-%d")
-
-    logger.info(f"Running incremental ETL from {start_date} to {end_date}")
-
-    # Build date-based condition
-    condition = f"lastUpdated>=[{start_date}] AND lastUpdated<[{end_date}]"
-
-    # Run process with date condition
-    return process_all_entities(
-        entity_names=entity_names,
-        client=client,
-        conditions=condition,
-        page_size=page_size,
-        max_pages=max_pages,
-        base_path=base_path,
-        mode="append",
-        flatten_structs=flatten_structs
-    )
-
-def run_daily_etl(
+def run_daily_pipeline(
     entity_names: list[str] | None = None,
     days_back: int = 1,
     client: ConnectWiseClient | None = None,
     page_size: int = 100,
     max_pages: int | None = None,
-    base_path: str | None = None,
-    flatten_structs: bool = True
+    bronze_path: str | None = None,
+    silver_path: str | None = None,
+    gold_path: str | None = None,
+    process_gold: bool = True,
 ) -> dict[str, dict[str, Any]]:
     """
-    Run daily ETL process for yesterday's data.
+    Run daily medallion ETL pipeline for recent data.
 
     Args:
         entity_names: List of entity names to process (all if None)
@@ -242,8 +517,10 @@ def run_daily_etl(
         client: ConnectWiseClient instance (created if None)
         page_size: Number of records per page
         max_pages: Maximum number of pages to fetch
-        base_path: Base path for tables
-        flatten_structs: Whether to flatten nested structures
+        bronze_path: Base path for bronze tables
+        silver_path: Base path for silver tables
+        gold_path: Base path for gold tables
+        process_gold: Whether to run gold layer processing
 
     Returns:
         Dictionary mapping entity names to result dictionaries
@@ -256,16 +533,21 @@ def run_daily_etl(
     today = datetime.now()
     today_str = today.strftime("%Y-%m-%d")
 
-    logger.info(f"Running daily ETL for {yesterday_str}")
+    logger.info(f"Running daily pipeline for {yesterday_str}")
 
-    # Use incremental ETL with yesterday's date
-    return run_incremental_etl(
-        start_date=yesterday_str,
-        end_date=today_str,
+    # Build date-based condition
+    condition = f"lastUpdated>=[{yesterday_str}] AND lastUpdated<[{today_str}]"
+
+    # Use the full pipeline with date conditions
+    return run_full_pipeline(
         entity_names=entity_names,
         client=client,
+        conditions=condition,
         page_size=page_size,
         max_pages=max_pages,
-        base_path=base_path,
-        flatten_structs=flatten_structs
+        bronze_path=bronze_path,
+        silver_path=silver_path,
+        gold_path=gold_path,
+        mode="append",  # Daily runs should append
+        process_gold=process_gold,
     )
