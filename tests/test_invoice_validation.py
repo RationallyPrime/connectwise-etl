@@ -20,9 +20,8 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
-from fabric_api import schemas
 from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import PostedInvoice
+from fabric_api.connectwise_models import PostedInvoice, UnpostedInvoice
 from fabric_api.extract.invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
 
 # Set up logging
@@ -171,7 +170,7 @@ def test_unposted_invoice_validation():
 
         try:
             # Attempt to validate using the Pydantic model
-            schemas.UnpostedInvoice.model_validate(raw_invoice)
+            UnpostedInvoice.model_validate(raw_invoice)
             valid_count += 1
             logger.info(f"✅ SUCCESS: Unposted invoice {invoice_number} validated successfully")
 

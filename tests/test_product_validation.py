@@ -21,7 +21,7 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
-from fabric_api import schemas
+from fabric_api.connectwise_models import ProductItem
 from fabric_api.client import ConnectWiseClient
 from fabric_api.extract.products import fetch_product_items_raw
 
@@ -108,7 +108,7 @@ def test_product_validation():
 
         try:
             # Validate against the schema
-            schemas.ProductItem.model_validate(item)
+            ProductItem.model_validate(item)
             valid_count += 1
             logger.info(f"✅ SUCCESS: Product item {product_id} ({product_name}) validated successfully")
 

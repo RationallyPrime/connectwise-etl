@@ -21,7 +21,7 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
-from fabric_api import schemas
+from fabric_api.connectwise_models import TimeEntry
 from fabric_api.client import ConnectWiseClient
 from fabric_api.extract.time import fetch_time_entries_raw
 
@@ -110,7 +110,7 @@ def test_time_validation():
 
         try:
             # Attempt to validate using the Pydantic model
-            schemas.TimeEntry.model_validate(raw_time_entry)
+            TimeEntry.model_validate(raw_time_entry)
             valid_count += 1
             logger.info(f"✅ SUCCESS: Time entry {time_entry_id} validated successfully")
 

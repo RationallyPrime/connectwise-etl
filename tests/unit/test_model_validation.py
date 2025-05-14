@@ -6,8 +6,7 @@ import traceback
 from pathlib import Path
 from typing import Any
 
-from fabric_api.connectwise_models.agreement import Agreement
-from fabric_api.connectwise_models.posted_invoice import PostedInvoice
+from fabric_api.connectwise_models import Agreement, PostedInvoice
 
 
 def load_sample(entity_name: str) -> dict[str, Any]:

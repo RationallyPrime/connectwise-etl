@@ -20,7 +20,7 @@ load_dotenv()
 
 # Import from parent directory
 sys.path.append('..')
-from fabric_api import schemas
+from fabric_api.connectwise_models import ExpenseEntry
 from fabric_api.client import ConnectWiseClient
 from fabric_api.extract.expenses import fetch_expense_entries_raw
 
@@ -92,7 +92,7 @@ def test_expense_validation():
 
         try:
             # Attempt to validate using the Pydantic model
-            schemas.ExpenseEntry.model_validate(raw_expense)
+            ExpenseEntry.model_validate(raw_expense)
             valid_count += 1
             logger.info(f"✅ SUCCESS: Expense entry {expense_id} validated successfully")
 
