@@ -23,18 +23,18 @@ from .core import (
     get_spark_session,
     # Path utilities
     get_table_path,
-    read_table_safely,
+    read_delta_table,
     table_exists,
 )
 
 # Import extract utilities
 from .extract.generic import extract_entity
 
-# Import the new pipeline
-from .pipeline_new import process_all_entities, process_entity, run_daily_etl, run_incremental_etl
+# Import the pipeline
+from .pipeline import process_all_entities, process_entity, run_daily_etl, run_incremental_etl
 
 # Import storage utilities
-from .storage import dataframe_from_models, write_to_delta, write_validation_errors
+from .storage import dataframe_from_models, write_to_delta, write_errors
 
 # Import transform utilities
 from .transform import flatten_all_nested_structures, flatten_dataframe
@@ -60,11 +60,11 @@ __all__ = [
     "process_all_entities",
     # Pipeline
     "process_entity",
-    "read_table_safely",
+    "read_delta_table",
     "run_daily_etl",
     "run_incremental_etl",
     "table_exists",
     # Storage
     "write_to_delta",
-    "write_validation_errors"
+    "write_errors"
 ]

@@ -1,103 +1,80 @@
 #!/usr/bin/env python
 """
-Spark utilities for Microsoft Fabric.
+Spark utilities optimized for Microsoft Fabric.
 """
 
 import logging
+from typing import Optional, Union
 
 from pyspark.sql import DataFrame, SparkSession
 
+logger = logging.getLogger(__name__)
 
-def get_spark_session():
+def get_spark_session() -> SparkSession:
     """
-    Get the active Spark session from the notebook.
-
+    Get the active Spark session already initialized in Microsoft Fabric.
+    
+    In Fabric, the Spark session is always available and pre-configured.
+    
     Returns:
-        Active SparkSession
+        The active SparkSession
     """
-    return SparkSession.getActiveSession()
+    spark = SparkSession.getActiveSession()
+    if not spark:
+        raise RuntimeError("No active Spark session found. This code must run in a Microsoft Fabric environment.")
+    return spark
 
-def table_exists(spark: SparkSession, full_table_path: str) -> bool:
+def table_exists(table_name: str, schema: Optional[str] = None) -> bool:
     """
-    Check if a table exists in the Spark catalog.
+    Check if a table exists in the Fabric catalog.
 
     Args:
-        spark: SparkSession to use
-        full_table_path: Fully qualified table name (e.g., 'connectwise.table')
-                        NOTE: Use 'connectwise' schema for all tables, not 'dbo'
+        table_name: Name of the table
+        schema: Optional schema name (database)
 
     Returns:
         True if the table exists, False otherwise
     """
+    spark = get_spark_session()
     try:
-        # Parse the table name
-        parts = full_table_path.split(".")
-        if len(parts) == 2:
-            database, table = parts
-            tables = spark.sql(f"SHOW TABLES IN {database}").collect()
-            return any(row.tableName == table for row in tables)
-        elif len(parts) == 3:
-            catalog, database, table = parts
-            tables = spark.sql(f"SHOW TABLES IN {catalog}.{database}").collect()
-            return any(row.tableName == table for row in tables)
+        # Construct the full table path if schema is provided
+        full_table_path = f"{schema}.{table_name}" if schema else table_name
+        
+        # Use Spark catalog API - more reliable than SQL
+        if schema:
+            return spark.catalog.tableExists(tableName=table_name, dbName=schema)
         else:
-            tables = spark.sql("SHOW TABLES").collect()
-            return any(row.tableName == full_table_path for row in tables)
+            return any(t.name == table_name for t in spark.catalog.listTables())
     except Exception as e:
-        logging.warning(f"Error checking if table {full_table_path} exists: {e!s}")
+        logger.warning(f"Error checking if table {table_name} exists: {e!s}")
         return False
 
-def read_table_safely(
-    spark: SparkSession, full_table_path: str, default_value: DataFrame | None = None
-) -> DataFrame | None:
+def read_delta_table(path: str) -> DataFrame:
     """
-    Read a table safely, returning default_value if the table doesn't exist.
+    Read a Delta table from the specified path in Fabric.
 
     Args:
-        spark: SparkSession to use
-        full_table_path: Fully qualified table name (e.g., 'database.table')
-        default_value: Value to return if table doesn't exist (None or empty DataFrame)
+        path: Path to the Delta table in the lakehouse
 
     Returns:
-        DataFrame if table exists, default_value otherwise
+        DataFrame containing the table data
     """
+    spark = get_spark_session()
     try:
-        if table_exists(spark, full_table_path):
-            return spark.read.table(tableName=full_table_path)
-        else:
-            logging.warning(f"Table {full_table_path} does not exist, returning default value")
-            return default_value
+        return spark.read.format("delta").load(path)
     except Exception as e:
-        logging.error(f"Error reading table {full_table_path}: {e!s}")
-        return default_value
+        logger.error(f"Error reading Delta table at {path}: {e!s}")
+        raise
 
-def create_empty_table_if_not_exists(
-    spark: SparkSession, full_table_path: str, schema: DataFrame, save_mode: str = "errorifexists"
-) -> bool:
+def create_empty_dataframe(schema) -> DataFrame:
     """
-    Create an empty table with the same schema as the provided DataFrame if it doesn't exist.
+    Create an empty DataFrame with the provided schema.
 
     Args:
-        spark: SparkSession to use
-        full_table_path: Fully qualified table name (e.g., 'database.table')
-        schema: DataFrame with the desired schema
-        save_mode: Save mode to use when creating the table (default: errorifexists)
+        schema: Schema for the empty DataFrame
 
     Returns:
-        True if table was created, False if it already existed or there was an error
+        Empty DataFrame with the specified schema
     """
-    try:
-        if not table_exists(spark, full_table_path):
-            # Create an empty DataFrame with the same schema
-            empty_df: DataFrame = spark.createDataFrame([], schema.schema)
-
-            # Write the empty DataFrame to create the table
-            empty_df.write.mode(saveMode=save_mode).saveAsTable(name=full_table_path)
-            logging.info(f"Created empty table {full_table_path}")
-            return True
-        else:
-            logging.info(f"Table {full_table_path} already exists, skipping creation")
-            return False
-    except Exception as e:
-        logging.error(f"Error creating empty table {full_table_path}: {e!s}")
-        return False
+    spark = get_spark_session()
+    return spark.createDataFrame([], schema)

@@ -24,11 +24,18 @@ from .models import (
     generate_models,
     load_schema,
 )
-from .path_utils import get_table_path
+from .fabric_paths import (
+    DEFAULT_LAKEHOUSE_ROOT,
+    DEFAULT_TABLES_PATH,
+    get_entity_table_name,
+    get_error_table_path,
+    get_table_path,
+    normalize_lakehouse_path,
+)
 from .spark_utils import (
-    create_empty_table_if_not_exists,
+    create_empty_dataframe,
     get_spark_session,
-    read_table_safely,
+    read_delta_table,
     table_exists,
 )
 from .utils import create_batch_identifier, get_first_day_next_month, get_nested_value
@@ -43,7 +50,7 @@ __all__ = [
     "build_condition_string",
     "configure_logging",
     "create_batch_identifier",
-    "create_empty_table_if_not_exists",
+    "create_empty_dataframe",
     "critical",
     "debug",
     "error",
@@ -60,13 +67,19 @@ __all__ = [
     # General utilities
     "get_nested_value",
     # Spark utilities
+    "create_empty_dataframe",
     "get_spark_session",
-    # Path utilities
+    "read_delta_table",
+    "table_exists",
+    # Fabric path utilities
+    "DEFAULT_LAKEHOUSE_ROOT",
+    "DEFAULT_TABLES_PATH",
+    "get_entity_table_name",
+    "get_error_table_path",
     "get_table_path",
+    "normalize_lakehouse_path",
     "info",
     "load_schema",
-    "read_table_safely",
-    "table_exists",
     "validation",
     "warning"
 ]

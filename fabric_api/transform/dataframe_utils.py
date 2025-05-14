@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 """
-Utilities for flattening nested structures in DataFrames.
+Unified utilities for transforming DataFrames, including flattening nested structures.
+Optimized for Microsoft Fabric Spark environment.
 """
 
 import logging
+from typing import List, Optional, Union
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, to_json
+from pyspark.sql.functions import col, explode_outer, to_json
 from pyspark.sql.types import ArrayType, MapType, StructType
 
 logger = logging.getLogger(__name__)
+
 
 def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
     """
@@ -23,6 +26,10 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
     Returns:
         DataFrame with fully flattened columns
     """
+    # Return early for empty DataFrames to optimize performance
+    if df.isEmpty():
+        return df
+        
     # Helper function to check if a column needs flattening
     def needs_flattening(field_dtype):
         return isinstance(field_dtype, StructType) or \
@@ -51,11 +58,13 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
             expanded_cols.append(col(field.name))
         else:
             # For struct columns, flatten each field
-            struct_fields = field.dataType.fields
-            for struct_field in struct_fields:
-                expanded_cols.append(
-                    col(f"{field.name}.{struct_field.name}").alias(f"{field.name}_{struct_field.name}")
-                )
+            # Access fields through the schema method to avoid attribute errors
+            if isinstance(field.dataType, StructType):
+                struct_fields = field.dataType.fields
+                for struct_field in struct_fields:
+                    expanded_cols.append(
+                        col(f"{field.name}.{struct_field.name}").alias(f"{field.name}_{struct_field.name}")
+                    )
 
     # Create DataFrame with expanded columns
     expanded_df = df.select(expanded_cols)
@@ -63,7 +72,76 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
     # Recursively apply flattening until no more nested structures exist
     return flatten_dataframe(expanded_df, max_depth - 1)
 
-def flatten_array_struct_columns(df: DataFrame, array_struct_columns: list | None = None, array_to_json: bool = True) -> DataFrame:
+
+def convert_arrays_to_json(df: DataFrame, array_columns: Optional[List[str]] = None) -> DataFrame:
+    """
+    Convert array columns to JSON strings for easier handling.
+
+    Args:
+        df: Input DataFrame
+        array_columns: List of array columns to convert (if None, detect automatically)
+
+    Returns:
+        DataFrame with array columns converted to JSON strings
+    """
+    if df.isEmpty():
+        return df
+        
+    # If no array columns specified, detect automatically
+    if array_columns is None:
+        array_columns = [
+            field.name for field in df.schema.fields
+            if isinstance(field.dataType, ArrayType)
+        ]
+        
+    if not array_columns:
+        return df
+
+    # Convert each array column to JSON
+    result_df = df
+    for array_col in array_columns:
+        result_df = result_df.withColumn(array_col, to_json(col(array_col)))
+
+    return result_df
+
+
+def explode_array_columns(df: DataFrame, array_columns: Optional[List[str]] = None) -> DataFrame:
+    """
+    Explode array columns into multiple rows.
+
+    Args:
+        df: Input DataFrame
+        array_columns: List of array columns to explode (if None, detect automatically)
+
+    Returns:
+        DataFrame with array columns exploded into multiple rows
+    """
+    if df.isEmpty():
+        return df
+        
+    # If no array columns specified, detect automatically
+    if array_columns is None:
+        array_columns = [
+            field.name for field in df.schema.fields
+            if isinstance(field.dataType, ArrayType)
+        ]
+        
+    if not array_columns:
+        return df
+
+    # Explode each array column
+    result_df = df
+    for array_col in array_columns:
+        result_df = result_df.withColumn(array_col, explode_outer(col(array_col)))
+
+    return result_df
+
+
+def flatten_array_struct_columns(
+    df: DataFrame, 
+    array_struct_columns: Optional[List[str]] = None,
+    array_to_json: bool = True
+) -> DataFrame:
     """
     Handle arrays of structs by either converting to JSON strings or exploding.
 
@@ -98,9 +176,11 @@ def flatten_array_struct_columns(df: DataFrame, array_struct_columns: list | Non
 
     return result_df
 
+
 def flatten_all_nested_structures(df: DataFrame) -> DataFrame:
     """
     Apply complete flattening to all nested structures.
+    This is the recommended one-stop function for most flattening needs.
 
     Args:
         df: Input DataFrame
@@ -108,6 +188,9 @@ def flatten_all_nested_structures(df: DataFrame) -> DataFrame:
     Returns:
         Completely flattened DataFrame
     """
+    if df.isEmpty():
+        return df
+        
     # First flatten all struct types
     flattened_df = flatten_dataframe(df)
 
@@ -115,6 +198,7 @@ def flatten_all_nested_structures(df: DataFrame) -> DataFrame:
     result_df = flatten_array_struct_columns(flattened_df)
 
     return result_df
+
 
 def verify_no_remaining_structs(df: DataFrame) -> bool:
     """

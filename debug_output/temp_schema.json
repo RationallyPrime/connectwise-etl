@@ -7,7 +7,1927 @@
   "paths": {},
   "components": {
     "schemas": {
+      "ProductItem": {
+        "required": [
+          "catalogItem",
+          "billableOption"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "catalogItem": {
+            "$ref": "#/components/schemas/CatalogItemReference"
+          },
+          "description": {
+            "type": "string",
+            "description": " Max length: 2000;"
+          },
+          "sequenceNumber": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "unitOfMeasure": {
+            "$ref": "#/components/schemas/UnitOfMeasureReference"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cost": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "extPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "extCost": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "discount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "margin": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "agreementAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "priceMethod": {
+            "enum": [
+              "FlatRateForRange",
+              "PercentMarkupFromCost",
+              "PercentMarkdownFromPrice",
+              "PricePerUnit"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "billableOption": {
+            "enum": [
+              "Billable",
+              "DoNotBill",
+              "NoCharge"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "agreement": {
+            "$ref": "#/components/schemas/AgreementReference"
+          },
+          "locationId": {
+            "type": "integer",
+            "description": " Required On Updates;",
+            "format": "int32",
+            "nullable": true
+          },
+          "location": {
+            "$ref": "#/components/schemas/SystemLocationReference"
+          },
+          "businessUnitId": {
+            "type": "integer",
+            "description": " Required On Updates;",
+            "format": "int32",
+            "nullable": true
+          },
+          "businessUnit": {
+            "$ref": "#/components/schemas/BillingUnitReference"
+          },
+          "vendor": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "vendorSku": {
+            "type": "string",
+            "description": " Max length: 50;"
+          },
+          "taxableFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "dropshipFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "specialOrderFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "phaseProductFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "cancelledFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "quantityCancelled": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cancelledReason": {
+            "type": "string",
+            "description": " Max length: 100;"
+          },
+          "customerDescription": {
+            "type": "string",
+            "description": " Max length: 6000; Required On Updates;"
+          },
+          "internalNotes": {
+            "type": "string",
+            "description": " Max length: 1000;"
+          },
+          "productSuppliedFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "subContractorShipToId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "subContractorAmountLimit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "recurring": {
+            "$ref": "#/components/schemas/ProductRecurring"
+          },
+          "sla": {
+            "$ref": "#/components/schemas/SLAReference"
+          },
+          "entityType": {
+            "$ref": "#/components/schemas/EntityTypeReference"
+          },
+          "ticket": {
+            "$ref": "#/components/schemas/TicketReference"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectReference"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ProjectPhaseReference"
+          },
+          "salesOrder": {
+            "$ref": "#/components/schemas/SalesOrderReference"
+          },
+          "opportunity": {
+            "$ref": "#/components/schemas/OpportunityReference"
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "warehouseId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "warehouseIdObject": {
+            "$ref": "#/components/schemas/WarehouseReference"
+          },
+          "warehouseBinId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "warehouseBinIdObject": {
+            "$ref": "#/components/schemas/WarehouseBinReference"
+          },
+          "calculatedPriceFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "calculatedCostFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "forecastDetailId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cancelledBy": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cancelledDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "warehouse": {
+            "type": "string"
+          },
+          "warehouseBin": {
+            "type": "string"
+          },
+          "purchaseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "taxCode": {
+            "$ref": "#/components/schemas/TaxCodeReference"
+          },
+          "integrationXRef": {
+            "type": "string"
+          },
+          "listPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "serialNumberIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "serialNumbers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "forecastStatus": {
+            "$ref": "#/components/schemas/OpportunityStatusReference"
+          },
+          "productClass": {
+            "enum": [
+              "Agreement",
+              "Bundle",
+              "Inventory",
+              "NonInventory",
+              "Service"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "needToPurchaseFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "needToOrderQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "minimumStockFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "shipSet": {
+            "type": "string",
+            "description": " Max length: 10;"
+          },
+          "calculatedPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "calculatedCost": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "invoiceGrouping": {
+            "$ref": "#/components/schemas/InvoiceGroupingReference"
+          },
+          "poApprovedFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "uom": {
+            "type": "string"
+          },
+          "addComponentsFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ignorePricingSchedulesFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "asioSubscriptionsID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "bypassForecastUpdate": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            }
+          }
+        }
+      },
+      "CompanyReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ProjectReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TaxCodeReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InvoiceReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "billingType": {
+            "type": "string"
+          },
+          "applyToType": {
+            "type": "string"
+          },
+          "invoiceDate": {
+            "type": "string"
+          },
+          "chargeFirmFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "ActivityReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UnitOfMeasureReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "OpportunityReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BatchReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TicketReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "summary": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BillingUnitReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CatalogItemReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "OpportunityStatusReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ProductRecurring": {
+        "type": "object",
+        "properties": {
+          "recurringRevenue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "recurringCost": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "The Recurring End Date is calculated based on the\n            start date, number of cycles, and cycle type."
+          },
+          "billCycleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "billCycle": {
+            "$ref": "#/components/schemas/BillingCycleReference"
+          },
+          "cycles": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cycleType": {
+            "enum": [
+              "ContractYear",
+              "CalendarYear"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "agreementType": {
+            "$ref": "#/components/schemas/AgreementTypeReference"
+          }
+        }
+      },
+      "BillingCycleReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ExpenseEntry": {
+        "required": [
+          "type",
+          "amount",
+          "date"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expenseReport": {
+            "$ref": "#/components/schemas/ExpenseReportReference"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "chargeToId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "chargeToType": {
+            "enum": [
+              "Company",
+              "ServiceTicket",
+              "ProjectTicket",
+              "ChargeCode",
+              "Activity"
+            ],
+            "type": "string",
+            "description": "Gets or sets\n            company or chargeToType is required.",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/ExpenseTypeReference"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberReference"
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethodReference"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/ClassificationReference"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "billableOption": {
+            "enum": [
+              "Billable",
+              "DoNotBill",
+              "NoCharge",
+              "NoDefault"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "businessUnitId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string"
+          },
+          "agreement": {
+            "$ref": "#/components/schemas/AgreementReference"
+          },
+          "invoiceAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "mobileGuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "taxes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpenseTax"
+            }
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyReference"
+          },
+          "status": {
+            "enum": [
+              "Open",
+              "Rejected",
+              "PendingApproval",
+              "ErrorsCorrected",
+              "PendingProjectApproval",
+              "ApprovedByTierOne",
+              "RejectBySecondTier",
+              "ApprovedByTierTwo",
+              "ReadyToBill",
+              "Billed",
+              "WrittenOff",
+              "BilledAgreement"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "billAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "agreementAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "odometerStart": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "odometerEnd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ticket": {
+            "$ref": "#/components/schemas/TicketReference"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectReference"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ProjectPhaseReference"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            }
+          }
+        }
+      },
+      "ExpenseReportReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ExpenseTypeReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "MemberReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dailyCapacity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ExpenseTax": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/ExpenseTaxTypeReference"
+          }
+        }
+      },
+      "EntityTypeReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CurrencyReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "currencyCode": {
+            "type": "string"
+          },
+          "decimalSeparator": {
+            "type": "string"
+          },
+          "numberOfDecimals": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thousandsSeparator": {
+            "type": "string"
+          },
+          "negativeParenthesesFlag": {
+            "type": "boolean"
+          },
+          "displaySymbolFlag": {
+            "type": "boolean"
+          },
+          "currencyIdentifier": {
+            "type": "string"
+          },
+          "displayIdFlag": {
+            "type": "boolean"
+          },
+          "rightAlign": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WarehouseReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "lockedFlag": {
+            "type": "boolean"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AgreementTypeReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Invoice": {
+        "required": [
+          "type",
+          "company"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "invoiceNumber": {
+            "type": "string",
+            "description": " Max length: 15; Required On Updates;"
+          },
+          "type": {
+            "enum": [
+              "Agreement",
+              "CreditMemo",
+              "DownPayment",
+              "Miscellaneous",
+              "Progress",
+              "Standard"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/BillingStatusReference"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "billToCompany": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "shipToCompany": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "applyToType": {
+            "enum": [
+              "All",
+              "Agreement",
+              "Project",
+              "ProjectPhase",
+              "SalesOrder",
+              "Ticket"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "applyToId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "attention": {
+            "type": "string",
+            "description": " Max length: 60;"
+          },
+          "shipToAttention": {
+            "type": "string",
+            "description": " Max length: 60;"
+          },
+          "billingSite": {
+            "$ref": "#/components/schemas/SiteReference"
+          },
+          "billingSiteAddressLine1": {
+            "type": "string"
+          },
+          "billingSiteAddressLine2": {
+            "type": "string"
+          },
+          "billingSiteCity": {
+            "type": "string"
+          },
+          "billingSiteState": {
+            "type": "string"
+          },
+          "billingSiteZip": {
+            "type": "string"
+          },
+          "billingSiteCountry": {
+            "type": "string"
+          },
+          "shippingSite": {
+            "$ref": "#/components/schemas/SiteReference"
+          },
+          "shippingSiteAddressLine1": {
+            "type": "string"
+          },
+          "shippingSiteAddressLine2": {
+            "type": "string"
+          },
+          "shippingSiteCity": {
+            "type": "string"
+          },
+          "shippingSiteState": {
+            "type": "string"
+          },
+          "shippingSiteZip": {
+            "type": "string"
+          },
+          "shippingSiteCountry": {
+            "type": "string"
+          },
+          "billingTerms": {
+            "$ref": "#/components/schemas/BillingTermsReference"
+          },
+          "reference": {
+            "type": "string",
+            "description": " Max length: 50;"
+          },
+          "customerPO": {
+            "type": "string",
+            "description": " Max length: 50;"
+          },
+          "templateSetupId": {
+            "type": "integer",
+            "description": "Can be obtained via InvoiceTemplate report.",
+            "format": "int32",
+            "nullable": true
+          },
+          "invoiceTemplate": {
+            "$ref": "#/components/schemas/InvoiceTemplateDetailReference"
+          },
+          "emailTemplateId": {
+            "type": "integer",
+            "description": "Can be obtained via InvoiceEmailTemplate report.",
+            "format": "int32",
+            "nullable": true
+          },
+          "addToBatchEmailList": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "restrictDownpaymentFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "locationId": {
+            "type": "integer",
+            "description": " Required On Updates;",
+            "format": "int32",
+            "nullable": true
+          },
+          "location": {
+            "$ref": "#/components/schemas/SystemLocationReference"
+          },
+          "departmentId": {
+            "type": "integer",
+            "description": "departmentId is only required for special invoices.",
+            "format": "int32",
+            "nullable": true
+          },
+          "department": {
+            "$ref": "#/components/schemas/BillingUnitReference"
+          },
+          "territoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "territory": {
+            "$ref": "#/components/schemas/SystemLocationReference"
+          },
+          "topComment": {
+            "type": "string"
+          },
+          "bottomComment": {
+            "type": "string"
+          },
+          "taxableFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "taxCode": {
+            "$ref": "#/components/schemas/TaxCodeReference"
+          },
+          "internalNotes": {
+            "type": "string"
+          },
+          "downpaymentPreviouslyTaxedFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "serviceTotal": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "overrideDownPaymentAmountFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyReference"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expenseTotal": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "productTotal": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "previousProgressApplied": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "serviceAdjustmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "agreementAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "downpaymentApplied": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "subtotal": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "total": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "remainingDownpayment": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "salesTax": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "adjustmentReason": {
+            "type": "string"
+          },
+          "adjustedBy": {
+            "type": "string"
+          },
+          "closedBy": {
+            "type": "string"
+          },
+          "payments": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "credits": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "balance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "specialInvoiceFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "billingSetupReference": {
+            "$ref": "#/components/schemas/BillingSetupReference"
+          },
+          "ticket": {
+            "$ref": "#/components/schemas/TicketReference"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectReference"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ProjectPhaseReference"
+          },
+          "salesOrder": {
+            "$ref": "#/components/schemas/SalesOrderReference"
+          },
+          "agreement": {
+            "$ref": "#/components/schemas/AgreementReference"
+          },
+          "glBatch": {
+            "$ref": "#/components/schemas/BatchReference"
+          },
+          "unbatchedBatch": {
+            "$ref": "#/components/schemas/BatchReference"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            }
+          }
+        }
+      },
+      "BillingStatusReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "isClosed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InvoiceTemplateDetailReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ExpenseTaxTypeReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BillingTermsReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AgreementReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "chargeFirmFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ClassificationReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WarehouseBinReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ProjectPhaseReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SystemLocationReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CustomFieldValue": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "TextArea",
+              "Button",
+              "Currency",
+              "Date",
+              "Hyperlink",
+              "IPAddress",
+              "Checkbox",
+              "Number",
+              "Percent",
+              "PhoneNumber",
+              "Text",
+              "Password"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "entryMethod": {
+            "enum": [
+              "Date",
+              "EntryField",
+              "List",
+              "Option"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "numberOfDecimals": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "value": {
+            "type": "object"
+          },
+          "connectWiseId": {
+            "type": "string"
+          }
+        }
+      },
+      "TimeEntry": {
+        "required": [
+          "timeStart"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "companyType": {
+            "type": "string"
+          },
+          "chargeToId": {
+            "type": "integer",
+            "description": "If chargeToId is not specified, we asume you enter time against the company specified",
+            "format": "int32",
+            "nullable": true
+          },
+          "chargeToType": {
+            "enum": [
+              "Company",
+              "ServiceTicket",
+              "ProjectTicket",
+              "ChargeCode",
+              "Activity"
+            ],
+            "type": "string",
+            "description": "If chargeToId is not specified, we asume you enter time against the company specified",
+            "nullable": true
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberReference"
+          },
+          "locationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "businessUnitId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "businessGroupDesc": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/OwnerLevelReference"
+          },
+          "department": {
+            "$ref": "#/components/schemas/BillingUnitReference"
+          },
+          "workType": {
+            "$ref": "#/components/schemas/WorkTypeReference"
+          },
+          "workRole": {
+            "$ref": "#/components/schemas/WorkRoleReference"
+          },
+          "agreement": {
+            "$ref": "#/components/schemas/AgreementReference"
+          },
+          "agreementType": {
+            "type": "string"
+          },
+          "activity": {
+            "$ref": "#/components/schemas/ActivityReference"
+          },
+          "opportunityRecid": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "projectActivity": {
+            "type": "string"
+          },
+          "territory": {
+            "type": "string"
+          },
+          "timeStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hoursDeduct": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "actualHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "billableOption": {
+            "enum": [
+              "Billable",
+              "DoNotBill",
+              "NoCharge",
+              "NoDefault"
+            ],
+            "type": "string",
+            "description": " Required On Updates;",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string"
+          },
+          "internalNotes": {
+            "type": "string"
+          },
+          "addToDetailDescriptionFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "addToInternalAnalysisFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "addToResolutionFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "emailResourceFlag": {
+            "type": "boolean",
+            "description": "This is an action flag. To update this value use the /service/tickets endpoint automaticEmailResourceFlag field",
+            "nullable": true
+          },
+          "emailContactFlag": {
+            "type": "boolean",
+            "description": "This is an action flag. To update this value use the /service/tickets endpoint automaticEmailContactFlag field",
+            "nullable": true
+          },
+          "emailCcFlag": {
+            "type": "boolean",
+            "description": "This is an action flag. To update this value use the /service/tickets endpoint automaticEmailCcFlag field",
+            "nullable": true
+          },
+          "emailCc": {
+            "type": "string",
+            "description": "To update this value use the /service/tickets endpoint automaticEmailCc field"
+          },
+          "hoursBilled": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "invoiceHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "hourlyCost": {
+            "type": "string"
+          },
+          "enteredBy": {
+            "type": "string"
+          },
+          "dateEntered": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "mobileGuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "hourlyRate": {
+            "type": "number",
+            "description": "This field may only be Updated, it is defaulted on Create",
+            "format": "double",
+            "nullable": true
+          },
+          "overageRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "agreementHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "agreementAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "agreementAdjustment": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "adjustment": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "invoiceReady": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeSheet": {
+            "$ref": "#/components/schemas/TimeSheetReference"
+          },
+          "status": {
+            "enum": [
+              "Open",
+              "Rejected",
+              "PendingApproval",
+              "ErrorsCorrected",
+              "PendingProjectApproval",
+              "ApprovedByTierOne",
+              "RejectBySecondTier",
+              "ApprovedByTierTwo",
+              "ReadyToBill",
+              "Billed",
+              "WrittenOff",
+              "BilledAgreement"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "ticket": {
+            "$ref": "#/components/schemas/TicketReference"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectReference"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/ProjectPhaseReference"
+          },
+          "ticketBoard": {
+            "type": "string"
+          },
+          "ticketStatus": {
+            "type": "string"
+          },
+          "ticketType": {
+            "type": "string"
+          },
+          "ticketSubType": {
+            "type": "string"
+          },
+          "invoiceFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "extendedInvoiceAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "locationName": {
+            "type": "string"
+          },
+          "taxCode": {
+            "$ref": "#/components/schemas/TaxCodeReference"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            }
+          }
+        }
+      },
+      "WorkTypeReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "utilizationFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WorkRoleReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PaymentMethodReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "OwnerLevelReference": {
         "type": "object",
         "properties": {
           "id": {
@@ -432,7 +2352,7 @@
           }
         }
       },
-      "OpportunityReference": {
+      "ProjectTypeReference": {
         "type": "object",
         "properties": {
           "id": {
@@ -451,290 +2371,238 @@
           }
         }
       },
-      "TimeEntry": {
-        "required": [
-          "timeStart"
-        ],
+      "InvoiceTemplateReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Gets or sets invoice Template Setup Id.",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UnpostedInvoice": {
         "type": "object",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32"
           },
-          "company": {
-            "$ref": "#/components/schemas/CompanyReference"
-          },
-          "companyType": {
-            "type": "string"
-          },
-          "chargeToId": {
+          "billingLogId": {
             "type": "integer",
-            "description": "If chargeToId is not specified, we asume you enter time against the company specified",
             "format": "int32",
             "nullable": true
-          },
-          "chargeToType": {
-            "enum": [
-              "Company",
-              "ServiceTicket",
-              "ProjectTicket",
-              "ChargeCode",
-              "Activity"
-            ],
-            "type": "string",
-            "description": "If chargeToId is not specified, we asume you enter time against the company specified",
-            "nullable": true
-          },
-          "member": {
-            "$ref": "#/components/schemas/MemberReference"
           },
           "locationId": {
             "type": "integer",
             "format": "int32",
             "nullable": true
           },
-          "businessUnitId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "businessGroupDesc": {
-            "type": "string"
-          },
           "location": {
             "$ref": "#/components/schemas/OwnerLevelReference"
           },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "department": {
-            "$ref": "#/components/schemas/BillingUnitReference"
+            "$ref": "#/components/schemas/SystemDepartmentReference"
           },
-          "workType": {
-            "$ref": "#/components/schemas/WorkTypeReference"
+          "company": {
+            "$ref": "#/components/schemas/CompanyReference"
           },
-          "workRole": {
-            "$ref": "#/components/schemas/WorkRoleReference"
-          },
-          "agreement": {
-            "$ref": "#/components/schemas/AgreementReference"
-          },
-          "agreementType": {
+          "accountNumber": {
             "type": "string"
           },
-          "activity": {
-            "$ref": "#/components/schemas/ActivityReference"
+          "billToCompany": {
+            "$ref": "#/components/schemas/CompanyReference"
           },
-          "opportunityRecid": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+          "billToSite": {
+            "$ref": "#/components/schemas/SiteReference"
           },
-          "projectActivity": {
+          "shipToCompany": {
+            "$ref": "#/components/schemas/CompanyReference"
+          },
+          "shipToSite": {
+            "$ref": "#/components/schemas/SiteReference"
+          },
+          "invoiceNumber": {
             "type": "string"
           },
-          "territory": {
+          "invoiceDate": {
             "type": "string"
           },
-          "timeStart": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "timeEnd": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "hoursDeduct": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "actualHours": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "billableOption": {
+          "invoiceType": {
             "enum": [
-              "Billable",
-              "DoNotBill",
-              "NoCharge",
-              "NoDefault"
-            ],
-            "type": "string",
-            "description": " Required On Updates;",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string"
-          },
-          "internalNotes": {
-            "type": "string"
-          },
-          "addToDetailDescriptionFlag": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "addToInternalAnalysisFlag": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "addToResolutionFlag": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "emailResourceFlag": {
-            "type": "boolean",
-            "description": "This is an action flag. To update this value use the /service/tickets endpoint automaticEmailResourceFlag field",
-            "nullable": true
-          },
-          "emailContactFlag": {
-            "type": "boolean",
-            "description": "This is an action flag. To update this value use the /service/tickets endpoint automaticEmailContactFlag field",
-            "nullable": true
-          },
-          "emailCcFlag": {
-            "type": "boolean",
-            "description": "This is an action flag. To update this value use the /service/tickets endpoint automaticEmailCcFlag field",
-            "nullable": true
-          },
-          "emailCc": {
-            "type": "string",
-            "description": "To update this value use the /service/tickets endpoint automaticEmailCc field"
-          },
-          "hoursBilled": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "invoiceHours": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "hourlyCost": {
-            "type": "string"
-          },
-          "enteredBy": {
-            "type": "string"
-          },
-          "dateEntered": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "invoice": {
-            "$ref": "#/components/schemas/InvoiceReference"
-          },
-          "mobileGuid": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "hourlyRate": {
-            "type": "number",
-            "description": "This field may only be Updated, it is defaulted on Create",
-            "format": "double",
-            "nullable": true
-          },
-          "overageRate": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "agreementHours": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "agreementAmount": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "agreementAdjustment": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "adjustment": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "invoiceReady": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "timeSheet": {
-            "$ref": "#/components/schemas/TimeSheetReference"
-          },
-          "status": {
-            "enum": [
-              "Open",
-              "Rejected",
-              "PendingApproval",
-              "ErrorsCorrected",
-              "PendingProjectApproval",
-              "ApprovedByTierOne",
-              "RejectBySecondTier",
-              "ApprovedByTierTwo",
-              "ReadyToBill",
-              "Billed",
-              "WrittenOff",
-              "BilledAgreement"
+              "Agreement",
+              "CreditMemo",
+              "DownPayment",
+              "Miscellaneous",
+              "Progress",
+              "Standard"
             ],
             "type": "string",
             "nullable": true
           },
-          "ticket": {
-            "$ref": "#/components/schemas/TicketReference"
-          },
-          "project": {
-            "$ref": "#/components/schemas/ProjectReference"
-          },
-          "phase": {
-            "$ref": "#/components/schemas/ProjectPhaseReference"
-          },
-          "ticketBoard": {
+          "description": {
             "type": "string"
           },
-          "ticketStatus": {
+          "billingTerms": {
+            "$ref": "#/components/schemas/BillingTermsReference"
+          },
+          "dueDays": {
             "type": "string"
           },
-          "ticketType": {
+          "dueDate": {
             "type": "string"
           },
-          "ticketSubType": {
-            "type": "string"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyReference"
           },
-          "invoiceFlag": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "extendedInvoiceAmount": {
+          "subTotal": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "locationName": {
-            "type": "string"
+          "total": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "hasTime": {
+            "type": "boolean"
+          },
+          "hasExpenses": {
+            "type": "boolean"
+          },
+          "hasProducts": {
+            "type": "boolean"
+          },
+          "invoiceTaxableFlag": {
+            "type": "boolean",
+            "nullable": true
           },
           "taxCode": {
             "$ref": "#/components/schemas/TaxCodeReference"
+          },
+          "avalaraTaxFlag": {
+            "type": "boolean",
+            "description": "Used to determine if Avalara tax is enabled.",
+            "nullable": true
+          },
+          "itemTaxableFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "salesTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "stateTaxFlag": {
+            "type": "boolean",
+            "description": "Set to true if transaction is taxable at the state level.",
+            "nullable": true
+          },
+          "stateTaxXref": {
+            "type": "string"
+          },
+          "stateTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "countyTaxFlag": {
+            "type": "boolean",
+            "description": "Set to true if transaction is taxable at the county level.",
+            "nullable": true
+          },
+          "countyTaxXref": {
+            "type": "string"
+          },
+          "countyTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cityTaxFlag": {
+            "type": "boolean",
+            "description": "Set to true if transaction is taxable at the city level.",
+            "nullable": true
+          },
+          "cityTaxXref": {
+            "type": "string"
+          },
+          "cityTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "countryTaxFlag": {
+            "type": "boolean",
+            "description": "Set to true if transaction is taxable at the country level.",
+            "nullable": true
+          },
+          "countryTaxXref": {
+            "type": "string"
+          },
+          "countryTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "compositeTaxFlag": {
+            "type": "boolean",
+            "description": "Set to true if transaction is taxable at the composite level.",
+            "nullable": true
+          },
+          "compositeTaxXref": {
+            "type": "string"
+          },
+          "compositeTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "levelSixTaxFlag": {
+            "type": "boolean",
+            "description": "Set to true if transaction is taxable at level six.",
+            "nullable": true
+          },
+          "levelSixTaxXref": {
+            "type": "string"
+          },
+          "levelSixTaxAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "dateClosed": {
+            "type": "string"
           },
           "_info": {
             "type": "object",
             "additionalProperties": {
               "type": "string"
             }
-          },
-          "customFields": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomFieldValue"
-            }
           }
         }
       },
-      "AgreementReference": {
+      "InvoiceGroupingReference": {
         "type": "object",
         "properties": {
           "id": {
@@ -745,12 +2613,17 @@
           "name": {
             "type": "string"
           },
-          "type": {
+          "description": {
             "type": "string"
           },
-          "chargeFirmFlag": {
-            "type": "boolean",
-            "nullable": true
+          "showPriceFlag": {
+            "type": "boolean"
+          },
+          "showSubItemsFlag": {
+            "type": "boolean"
+          },
+          "groupParentChildAdditionsFlag": {
+            "type": "boolean"
           },
           "_info": {
             "type": "object",
@@ -760,7 +2633,7 @@
           }
         }
       },
-      "CompanyReference": {
+      "SalesOrderReference": {
         "type": "object",
         "properties": {
           "id": {
@@ -771,9 +2644,6 @@
           "identifier": {
             "type": "string"
           },
-          "name": {
-            "type": "string"
-          },
           "_info": {
             "type": "object",
             "additionalProperties": {
@@ -782,242 +2652,7 @@
           }
         }
       },
-      "WorkRoleReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "BillingTermsReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "ProjectReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "ProjectPhaseReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "CustomFieldValue": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "caption": {
-            "type": "string"
-          },
-          "type": {
-            "enum": [
-              "TextArea",
-              "Button",
-              "Currency",
-              "Date",
-              "Hyperlink",
-              "IPAddress",
-              "Checkbox",
-              "Number",
-              "Percent",
-              "PhoneNumber",
-              "Text",
-              "Password"
-            ],
-            "type": "string",
-            "nullable": true
-          },
-          "entryMethod": {
-            "enum": [
-              "Date",
-              "EntryField",
-              "List",
-              "Option"
-            ],
-            "type": "string",
-            "nullable": true
-          },
-          "numberOfDecimals": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "value": {
-            "type": "object"
-          },
-          "connectWiseId": {
-            "type": "string"
-          }
-        }
-      },
-      "TaxCodeReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "CurrencyReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "symbol": {
-            "type": "string"
-          },
-          "currencyCode": {
-            "type": "string"
-          },
-          "decimalSeparator": {
-            "type": "string"
-          },
-          "numberOfDecimals": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "thousandsSeparator": {
-            "type": "string"
-          },
-          "negativeParenthesesFlag": {
-            "type": "boolean"
-          },
-          "displaySymbolFlag": {
-            "type": "boolean"
-          },
-          "currencyIdentifier": {
-            "type": "string"
-          },
-          "displayIdFlag": {
-            "type": "boolean"
-          },
-          "rightAlign": {
-            "type": "boolean"
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "SLAReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "SystemLocationReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "AgreementTypeReference": {
+      "BillingSetupReference": {
         "type": "object",
         "properties": {
           "id": {
@@ -1055,29 +2690,6 @@
           }
         }
       },
-      "WorkTypeReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "utilizationFlag": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "ContactReference": {
         "type": "object",
         "properties": {
@@ -1097,200 +2709,26 @@
           }
         }
       },
-      "TicketReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "summary": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "BillingCycleReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "MemberReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "identifier": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "dailyCapacity": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "ProjectTypeReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "BillingUnitReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "InvoiceReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "identifier": {
-            "type": "string"
-          },
-          "billingType": {
-            "type": "string"
-          },
-          "applyToType": {
-            "type": "string"
-          },
-          "invoiceDate": {
-            "type": "string"
-          },
-          "chargeFirmFlag": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "InvoiceTemplateReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Gets or sets invoice Template Setup Id.",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "BatchReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "OwnerLevelReference": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "_info": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "SiteReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "_info": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SLAReference": {
         "type": "object",
         "properties": {
           "id": {

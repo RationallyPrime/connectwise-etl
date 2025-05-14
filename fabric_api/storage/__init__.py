@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 """
-Storage utilities for ConnectWise data.
+Storage utilities optimized for Microsoft Fabric.
 """
 
-from .delta import dataframe_from_models, prepare_dataframe, write_to_delta, write_validation_errors
+from .fabric_delta import (
+    add_metadata_columns,
+    dataframe_from_models,
+    write_errors,
+    write_to_delta
+)
 
 __all__ = [
+    "add_metadata_columns",
     "dataframe_from_models",
-    "prepare_dataframe",
-    "write_to_delta",
-    "write_validation_errors"
+    "write_errors",
+    "write_to_delta"
 ]

@@ -1,31 +1,32 @@
 #!/usr/bin/env python
 """
 Streamlined orchestration pipeline for ConnectWise data ETL.
+Optimized for Microsoft Fabric execution environment.
 """
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 from .client import ConnectWiseClient
 from .core.config import ENTITY_CONFIG
 from .core.spark_utils import get_spark_session
 from .extract.generic import extract_entity, get_model_class
-from .storage.delta import write_to_delta, write_validation_errors
-from .transform.flatten import flatten_dataframe
+from .storage.fabric_delta import dataframe_from_models, write_errors, write_to_delta
+from .transform.dataframe_utils import flatten_all_nested_structures
 
 logger = logging.getLogger(__name__)
 
 def process_entity(
     entity_name: str,
-    client: ConnectWiseClient | None = None,
-    conditions: str | None = None,
+    client: Optional[ConnectWiseClient] = None,
+    conditions: Optional[str] = None,
     page_size: int = 100,
-    max_pages: int | None = None,
-    base_path: str | None = None,
+    max_pages: Optional[int] = None,
+    base_path: Optional[str] = None,
     mode: str = "append",
     flatten_structs: bool = True
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """
     Process a single entity through the complete ETL pipeline.
 
@@ -42,8 +43,7 @@ def process_entity(
     Returns:
         Dictionary with processing results
     """
-    # Create dependencies if needed
-    spark = get_spark_session()
+    # Create client if needed
     client = client or ConnectWiseClient()
 
     # Extract data with validation
@@ -64,7 +64,9 @@ def process_entity(
         # Write errors if present
         if errors:
             logger.warning(f"Writing {len(errors)} validation errors")
-            write_validation_errors(spark, entity_name, errors, base_path)
+            # Make sure errors is a list, not a dict
+            error_list = errors if isinstance(errors, list) else [errors]
+            _, _ = write_errors(error_list, entity_name, base_path)
 
         return {
             "entity": entity_name,
@@ -75,26 +77,16 @@ def process_entity(
             "path": ""
         }
 
-    # Convert models to dictionary data for DataFrame
+    # Create DataFrame directly from models using our utility
     logger.info(f"Converting {len(valid_models)} valid {entity_name} models to DataFrame")
-    dict_data = [model.model_dump() for model in valid_models]
-
-    # Get model schema if available
-    model_class = get_model_class(entity_name)
-    schema = None
-    if hasattr(model_class, "model_spark_schema"):
-        schema = model_class.model_spark_schema()
-
-    # Create DataFrame
-    if schema:
-        df = spark.createDataFrame(dict_data, schema)
-    else:
-        df = spark.createDataFrame(dict_data)
+    # Ensure valid_models is a list
+    model_list = valid_models if isinstance(valid_models, list) else [valid_models]
+    df = dataframe_from_models(model_list, entity_name)
 
     # Apply flattening if requested
     if flatten_structs:
         logger.info(f"Flattening nested structures in {entity_name} data")
-        df = flatten_dataframe(df)
+        df = flatten_all_nested_structures(df)
 
     # Write to Delta
     logger.info(f"Writing {entity_name} data to Delta")
@@ -108,7 +100,9 @@ def process_entity(
     # Write errors if present
     if errors:
         logger.info(f"Writing {len(errors)} validation errors")
-        write_validation_errors(spark, entity_name, errors, base_path)
+        # Make sure errors is a list, not a dict
+        error_list = errors if isinstance(errors, list) else [errors]
+        _, _ = write_errors(error_list, entity_name, base_path)
 
     # Return results
     return {
@@ -121,15 +115,15 @@ def process_entity(
     }
 
 def process_all_entities(
-    entity_names: list[str] | None = None,
-    client: ConnectWiseClient | None = None,
-    conditions: str | dict[str, str] | None = None,
+    entity_names: Optional[List[str]] = None,
+    client: Optional[ConnectWiseClient] = None,
+    conditions: Optional[Union[str, Dict[str, str]]] = None,
     page_size: int = 100,
-    max_pages: int | None = None,
-    base_path: str | None = None,
+    max_pages: Optional[int] = None,
+    base_path: Optional[str] = None,
     mode: str = "append",
     flatten_structs: bool = True
-) -> dict[str, dict[str, Any]]:
+) -> Dict[str, Dict[str, Any]]:
     """
     Process multiple entity types.
 
@@ -178,16 +172,16 @@ def process_all_entities(
     return results
 
 def run_incremental_etl(
-    start_date: str | None = None,
-    end_date: str | None = None,
-    entity_names: list[str] | None = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    entity_names: Optional[List[str]] = None,
     lookback_days: int = 30,
-    client: ConnectWiseClient | None = None,
+    client: Optional[ConnectWiseClient] = None,
     page_size: int = 100,
-    max_pages: int | None = None,
-    base_path: str | None = None,
+    max_pages: Optional[int] = None,
+    base_path: Optional[str] = None,
     flatten_structs: bool = True
-) -> dict[str, dict[str, Any]]:
+) -> Dict[str, Dict[str, Any]]:
     """
     Run an incremental ETL process based on date range.
 
@@ -232,14 +226,14 @@ def run_incremental_etl(
     )
 
 def run_daily_etl(
-    entity_names: list[str] | None = None,
+    entity_names: Optional[List[str]] = None,
     days_back: int = 1,
-    client: ConnectWiseClient | None = None,
+    client: Optional[ConnectWiseClient] = None,
     page_size: int = 100,
-    max_pages: int | None = None,
-    base_path: str | None = None,
+    max_pages: Optional[int] = None,
+    base_path: Optional[str] = None,
     flatten_structs: bool = True
-) -> dict[str, dict[str, Any]]:
+) -> Dict[str, Dict[str, Any]]:
     """
     Run daily ETL process for yesterday's data.
 
