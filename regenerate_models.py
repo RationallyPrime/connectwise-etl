@@ -4,8 +4,8 @@ Utility script to regenerate models from a subset of the OpenAPI schema.
 
 This script:
 1. Creates a subset schema with only the models we need and their dependencies
-2. Generates Pydantic models from the subset schema
-3. Ensures reference models are properly defined and imported
+2. Generates a single models.py file with all models to avoid circular imports
+3. Updates __init__.py to import from models.py
 
 Usage:
     python regenerate_models.py [--entities ENTITY1 ENTITY2 ...]
@@ -27,14 +27,14 @@ from typing import Dict, List, Set, Any
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Default entity configurations
+# Default entity models to include
 DEFAULT_ENTITIES = {
-    "Agreement": {"output": "agreement.py", "schema_path": "Agreement"},
-    "TimeEntry": {"output": "time_entry.py", "schema_path": "TimeEntry"},
-    "ExpenseEntry": {"output": "expense_entry.py", "schema_path": "ExpenseEntry"},
-    "Invoice": {"output": "invoice.py", "schema_path": "Invoice"},
-    "UnpostedInvoice": {"output": "unposted_invoice.py", "schema_path": "UnpostedInvoice"},
-    "ProductItem": {"output": "product_item.py", "schema_path": "ProductItem"},
+    "Agreement": {"schema_path": "Agreement"},
+    "TimeEntry": {"schema_path": "TimeEntry"},
+    "ExpenseEntry": {"schema_path": "ExpenseEntry"},
+    "Invoice": {"schema_path": "Invoice"},
+    "UnpostedInvoice": {"schema_path": "UnpostedInvoice"},
+    "ProductItem": {"schema_path": "ProductItem"},
 }
 
 # Reference models to always include
@@ -120,58 +120,33 @@ def extract_model_with_dependencies(
     return subset_schema
 
 def create_init_file(output_dir: str, entity_names: List[str]) -> None:
-    """Create the __init__.py file with reference models and imports."""
+    """Create the __init__.py file that imports from models.py."""
     init_path = os.path.join(output_dir, "__init__.py")
     
     with open(init_path, 'w', encoding='utf-8') as f:
         f.write('"""ConnectWise API models generated from OpenAPI schema.\n\n')
         f.write('Compatible with Pydantic v2 and SparkDantic for Spark schema generation.\n')
         f.write('"""\n\n')
-        f.write('from typing import Any, Dict, List, Optional\n')
-        f.write('from pydantic import Field\n')
-        f.write('from sparkdantic import SparkModel\n\n')
         
-        # Define reference models
-        f.write('# Base reference model\n')
-        f.write('class ActivityReference(SparkModel):\n')
-        f.write('    """Base reference model for ConnectWise entities."""\n')
-        f.write('    id: int | None = None\n')
-        f.write('    name: str | None = None\n')
-        f.write('    _info: dict[str, str] | None = None\n\n')
+        # Import all models from models.py
+        f.write('# Import all models from the single models.py file\n')
+        f.write('from .models import (\n')
         
-        f.write('class AgreementReference(ActivityReference):\n')
-        f.write('    """Reference model for Agreement entities."""\n')
-        f.write('    type: str | None = None\n')
-        f.write('    chargeFirmFlag: bool | None = None\n\n')
+        # Reference models
+        f.write('    # Reference models\n')
+        for ref_model in REFERENCE_MODELS:
+            f.write(f'    {ref_model},\n')
         
-        f.write('class AgreementTypeReference(ActivityReference):\n')
-        f.write('    """Reference model for AgreementType entities."""\n')
-        f.write('    pass\n\n')
+        f.write('    \n')
+        f.write('    # Entity models\n')
         
-        f.write('class BatchReference(AgreementTypeReference):\n')
-        f.write('    """Reference model for Batch entities."""\n')
-        f.write('    pass\n\n')
-        
-        # Now import entities
-        f.write('# Entity imports\n')
+        # Entity models
         for entity_name in entity_names:
-            if entity_name == "Agreement":
-                f.write('from .agreement import Agreement\n')
-            elif entity_name == "TimeEntry":
-                f.write('from .time_entry import TimeEntry\n')
-            elif entity_name == "ExpenseEntry":
-                f.write('from .expense_entry import ExpenseEntry\n')
-            elif entity_name == "Invoice":
-                f.write('from .invoice import Invoice\n')
-                # Special case for PostedInvoice (alias of Invoice)
-                f.write('# PostedInvoice is an alias of Invoice\n')
-                f.write('PostedInvoice = Invoice\n')
-            elif entity_name == "UnpostedInvoice":
-                f.write('from .unposted_invoice import UnpostedInvoice\n')
-            elif entity_name == "ProductItem":
-                f.write('from .product_item import ProductItem\n')
+            f.write(f'    {entity_name},\n')
+            if entity_name == "Invoice":
+                f.write('    PostedInvoice,\n')
         
-        f.write('\n')
+        f.write(')\n\n')
         
         # __all__ list
         f.write('__all__ = [\n')
@@ -179,6 +154,7 @@ def create_init_file(output_dir: str, entity_names: List[str]) -> None:
         for ref_model in REFERENCE_MODELS:
             f.write(f'    "{ref_model}",\n')
         
+        f.write('    \n')
         f.write('    # Entity models\n')
         for entity_name in entity_names:
             f.write(f'    "{entity_name}",\n')
@@ -211,45 +187,121 @@ def generate_models(entities: Dict[str, Dict[str, str]], schema_file: str, outpu
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
     
-    # Write subset schema to temp file and generate models
+    # Create a single models.py file
+    models_file = os.path.join(output_dir, "models.py")
+    
+    # Start with the header
+    with open(models_file, 'w', encoding='utf-8') as f:
+        f.write('"""\n')
+        f.write('ConnectWise API models generated from OpenAPI schema.\n\n')
+        f.write('Compatible with Pydantic v2 and SparkDantic for Spark schema generation.\n')
+        f.write('This file contains all models to avoid circular imports.\n')
+        f.write('"""\n\n')
+        f.write('from __future__ import annotations\n\n')
+        f.write('from datetime import datetime\n')
+        f.write('from typing import Any, Dict, List, Optional, Literal\n')
+        f.write('from uuid import UUID\n\n')
+        f.write('from pydantic import Field\n')
+        f.write('from sparkdantic import SparkModel\n\n')
+        
+        # Add reference models section
+        f.write('#############################################\n')
+        f.write('# Reference Models\n')
+        f.write('#############################################\n\n')
+        
+        # Define the base reference models
+        f.write('class ActivityReference(SparkModel):\n')
+        f.write('    """Base reference model for ConnectWise entities."""\n')
+        f.write('    id: int | None = None\n')
+        f.write('    name: str | None = None\n')
+        f.write('    _info: dict[str, str] | None = None\n\n')
+        
+        f.write('class AgreementReference(ActivityReference):\n')
+        f.write('    """Reference model for Agreement entities."""\n')
+        f.write('    type: str | None = None\n')
+        f.write('    chargeFirmFlag: bool | None = None\n\n')
+        
+        f.write('class AgreementTypeReference(ActivityReference):\n')
+        f.write('    """Reference model for AgreementType entities."""\n')
+        f.write('    pass\n\n')
+        
+        f.write('class BatchReference(AgreementTypeReference):\n')
+        f.write('    """Reference model for Batch entities."""\n')
+        f.write('    pass\n\n')
+    
+    # Write subset schema to temp file for model generation
     with tempfile.NamedTemporaryFile(suffix=".json", mode="w") as tmp:
         json.dump(subset_schema, tmp)
         tmp.flush()
         
-        # Generate models for each entity
-        for entity_name, config in entities.items():
-            logger.info(f"Generating {entity_name}...")
+        # Use datamodel-codegen to generate a temporary file with all models
+        temp_output = os.path.join(debug_dir, "temp_models.py")
+        cmd = [
+            "datamodel-codegen",
+            "--input", tmp.name,
+            "--output", temp_output,
+        ]
+        
+        # Run the command
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
+            logger.info(f"✅ Generated temporary models file")
             
-            output_path = os.path.join(output_dir, config["output"])
-            cmd = [
-                "datamodel-codegen",
-                "--input", tmp.name,
-                "--output", output_path,
-                "--class-name", entity_name,
-            ]
+            # Read the generated file
+            with open(temp_output, 'r') as f:
+                content = f.read()
             
-            # Run the command
-            try:
-                result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-                logger.info(f"✅ Generated {entity_name}")
+            # Process the content to extract model definitions
+            lines = content.split('\n')
+            model_lines = []
+            skip_imports = True
+            skip_refs = False
+            
+            # Process lines to remove imports and handle duplicated reference models
+            for line in lines:
+                # Skip import lines at the top (including from __future__ import)
+                if skip_imports and (line.startswith('from ') or line.startswith('import ') or line == ''):
+                    continue
+                else:
+                    skip_imports = False
                 
-                # Fix imports if needed
-                with open(output_path, 'r') as f:
-                    content = f.read()
+                # Skip reference model definitions that we already added
+                if any(f"class {ref_model}(" in line for ref_model in REFERENCE_MODELS):
+                    skip_refs = True
+                elif skip_refs and line.strip() == '':
+                    skip_refs = False
+                    continue
                 
-                # Add __init__ import for reference models if needed
+                # Handle any reference model aliases (like ActivityReference = ProjectReference)
+                skip_line = False
                 for ref_model in REFERENCE_MODELS:
-                    if f"class {entity_name}({ref_model})" in content or f"({ref_model}):" in content:
-                        if f"from .__init__ import {ref_model}" not in content:
-                            content = content.replace("from pydantic import Field", f"from pydantic import Field\nfrom .__init__ import {ref_model}")
+                    if line.strip().startswith(f"{ref_model} = "):
+                        model_lines.append(f"# {ref_model} (already defined above)")
+                        skip_line = True
+                        break
                 
-                # Write back changes
-                with open(output_path, 'w') as f:
-                    f.write(content)
+                if not skip_refs and not skip_line:
+                    # Skip duplicate import statements that might appear in the middle of the file
+                    if not (line.startswith('from ') or line.startswith('import ')):
+                        model_lines.append(line)
+            
+            # Add entity models section
+            with open(models_file, 'a', encoding='utf-8') as f:
+                f.write('#############################################\n')
+                f.write('# Entity Models\n')
+                f.write('#############################################\n\n')
+                f.write('\n'.join(model_lines))
                 
-            except subprocess.CalledProcessError as e:
-                logger.error(f"❌ Error generating {entity_name}: {e}")
-                logger.error(f"Command output: {e.stderr}")
+                # Add PostedInvoice alias
+                f.write('\n\n# PostedInvoice is an alias of Invoice\n')
+                f.write('PostedInvoice = Invoice')
+            
+            # Clean up temporary file
+            os.remove(temp_output)
+            
+        except subprocess.CalledProcessError as e:
+            logger.error(f"❌ Error generating models: {e}")
+            logger.error(f"Command output: {e.stderr}")
     
     # Create __init__.py file
     create_init_file(output_dir, list(entities.keys()))
@@ -287,7 +339,7 @@ def main():
                 entities[entity_name] = DEFAULT_ENTITIES[entity_name]
             else:
                 logger.warning(f"Unknown entity: {entity_name}, using default configuration")
-                entities[entity_name] = {"output": f"{entity_name.lower()}.py", "schema_path": entity_name}
+                entities[entity_name] = {"schema_path": entity_name}
     else:
         entities = DEFAULT_ENTITIES
     

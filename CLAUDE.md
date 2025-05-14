@@ -21,9 +21,20 @@ We're following a structured modernization plan with distinct phases. Each phase
 4. Update any model generation code if needed
 
 **Files to focus on:**
-- `fabric_api/connectwise_models/*.py`
-- `fabric_api/generate_models_from_json.py`
+- `fabric_api/connectwise_models/models.py` (single file for all models)
+- `regenerate_models.py`
 - `fabric_api/bronze_loader.py`
+
+**Model Architecture:**
+- **Single-file Pattern:** All ConnectWise models reside in a single `models.py` file to prevent circular imports between interdependent models
+- **Reference Model Hierarchy:** Reference models follow this inheritance pattern:
+  - ActivityReference (base)
+    - AgreementReference
+    - AgreementTypeReference
+      - BatchReference
+- **Entity-Reference Pattern:** Entity models use reference models for relationships, requiring all reference types to be pre-defined
+- **Model Aliases:** PostedInvoice is an alias to Invoice for API semantic distinction without duplicating structure
+- **Schema Subsetting:** Extract only needed components with dependencies from the full OpenAPI schema
 
 ### Phase 2: Schema-Driven Field Selection Utility
 
@@ -72,23 +83,23 @@ We're following a structured modernization plan with distinct phases. Each phase
 
 ### Environment Setup
 
-The project uses Poetry for dependency management:
+The project uses uv for dependency management:
 
 ```bash
-# Install Poetry if needed
-pip install poetry
+# Install uv if needed
+pip install uv
 
 # Install dependencies
-poetry install
+uv pip install -e .
 
 # Install optional Azure dependencies
-poetry install --extras azure
+uv pip install -e ".[azure]"
 ```
 
 ### Python Requirements
 
-- Python ≥3.10
-- Key dependencies: requests, pandas, pyarrow, pydantic, pyspark, sparkdantic
+- Python ≥3.11
+- Key dependencies: requests, pandas, pyarrow, pydantic ≥2.11.4, pyspark, sparkdantic
 
 ## Testing
 
@@ -209,7 +220,7 @@ run_daily(
 
 3. **Use Existing Methods**: Don't reinvent methods already accessible through the PySpark runtime context; use them directly.
 
-4. **Model Generation**: Use the ConnectWise OpenAPI schema with datamodel-code-generator to autogenerate models.
+4. **Model Generation**: Use the `regenerate_models.py` script with subsetting approach for ConnectWise models.
 
 5. **Field Optionality**: Make all fields optional by default in generated models to handle API inconsistencies.
 
