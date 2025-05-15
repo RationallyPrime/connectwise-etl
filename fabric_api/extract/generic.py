@@ -93,7 +93,7 @@ def extract_entity(
     # Paginate through API results
     raw_data = client.paginate(
         endpoint=endpoint,
-        entity_name=entity_name.lower() + "s",  # Pluralize for API
+        entity_name=entity_name + "s",  # Pluralize for API
         fields=fields_str,
         conditions=conditions,
         child_conditions=child_conditions,

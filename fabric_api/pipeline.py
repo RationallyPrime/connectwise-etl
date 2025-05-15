@@ -43,6 +43,8 @@ COLUMN_PRUNE_CONFIG = {
             "billAmount",
             "location",
             "contact",
+            "customFields",  # Needed for agreement number extraction
+            "parentAgreement",  # Needed for agreement hierarchy
         ],
         "rename": {"billToCompany_id": "billToCompanyId", "company_id": "companyId"},
     },
@@ -124,8 +126,19 @@ COLUMN_PRUNE_CONFIG = {
             "agreement",
             "project",
             "ticket",
+            "companyId",  # Keep the ID columns too
+            "billToCompanyId",
         ],
-        "rename": {"company_id": "companyId", "billToCompany_id": "billToCompanyId"},
+        "rename": {
+            "company_id": "companyId", 
+            "billToCompany_id": "billToCompanyId",
+            "status_name": "statusName",
+            "company_name": "companyName",
+            "billToCompany_name": "billToCompanyName",
+            "agreement_id": "agreementId",
+            "project_id": "projectId",
+            "ticket_id": "ticketId"
+        },
         "split_lines": True,  # Flag to split into header/line tables
     },
     "UnpostedInvoice": {
@@ -142,7 +155,8 @@ COLUMN_PRUNE_CONFIG = {
             "salesTaxAmount",
             "description",
         ],
-        "rename": {"company_id": "companyId", "billToCompany_id": "billToCompanyId"},
+        # No rename needed - columns are already in camelCase after flattening
+        "rename": {},
     },
 }
 
@@ -172,20 +186,23 @@ def prune_columns(df: DataFrame, entity_name: str) -> DataFrame:
     column_mapping = config.get("rename", {})
 
     # Always keep metadata columns
-    metadata_columns = ["etl_timestamp", "etl_entity"]
+    metadata_columns = ["etlTimestamp", "etlEntity"]
 
     for col_name in current_columns:
+        # Remove database prefix if present (e.g., "bronze.id" -> "id")
+        clean_col_name = col_name.split(".")[-1] if "." in col_name else col_name
+        
         # Keep metadata columns
-        if col_name in metadata_columns:
+        if clean_col_name in metadata_columns:
             columns_to_keep.append(col_name)
             continue
 
         # Check if it's a column we want to keep
-        base_col = col_name.split("_")[0]  # Handle flattened columns like company_id
-        if base_col in config["keep"] or col_name in config["keep"]:
+        base_col = clean_col_name.split("_")[0]  # Handle flattened columns like company_id
+        if base_col in config["keep"] or clean_col_name in config["keep"]:
             # Check if we need to rename it
-            if col_name in column_mapping:
-                columns_to_keep.append(col(col_name).alias(column_mapping[col_name]))
+            if clean_col_name in column_mapping:
+                columns_to_keep.append(col(col_name).alias(column_mapping[clean_col_name]))
             else:
                 columns_to_keep.append(col_name)
 
@@ -214,25 +231,26 @@ def split_invoice_to_header_line(
         return df, None
 
     # Define header columns (from the flattened structure)
+    # Use camelCase consistently
     header_columns = [
         "id",
         "invoiceNumber",
         "type",
-        "status_name",
-        "company_id",
-        "company_name",
-        "billToCompany_id",
-        "billToCompany_name",
+        "statusName",
+        "companyId",
+        "companyName",
+        "billToCompanyId",
+        "billToCompanyName",
         "date",
         "dueDate",
         "subtotal",
         "total",
         "salesTax",
-        "agreement_id",
-        "project_id",
-        "ticket_id",
-        "etl_timestamp",
-        "etl_entity",
+        "agreementId",
+        "projectId",
+        "ticketId",
+        "etlTimestamp",
+        "etlEntity",
     ]
 
     # Extract header data - one row per invoice
@@ -268,7 +286,7 @@ def process_bronze_to_silver(
     spark = spark or get_spark_session()
 
     # Read from bronze
-    bronze_table = f"bronze.cw_{entity_name.lower()}"
+    bronze_table = f"bronze.{entity_name}"
     logger.info(f"Reading from bronze table: {bronze_table}")
 
     try:
@@ -293,13 +311,13 @@ def process_bronze_to_silver(
     header_df, lines_df = split_invoice_to_header_line(pruned_df, entity_name)
 
     # 4. Write to silver layer
-    silver_table = f"silver.{entity_name.lower()}"
-    silver_table_path = silver_path or f"/lakehouse/default/Tables/silver/{entity_name.lower()}"
+    silver_table = f"silver.{entity_name}"
+    silver_table_path = silver_path or f"/lakehouse/default/Tables/silver/{entity_name}"
 
     # Write main table
     write_to_delta(
         df=header_df,
-        entity_name=entity_name.lower(),
+        entity_name=entity_name,
         base_path=silver_table_path,
         mode="overwrite",
         add_timestamp=False,  # Already has timestamp from bronze
@@ -308,14 +326,13 @@ def process_bronze_to_silver(
     # Write lines table if exists
     lines_count = 0
     if lines_df is not None:
-        lines_table = f"silver.{entity_name.lower()}_lines"
         lines_table_path = (
-            silver_path or f"/lakehouse/default/Tables/silver/{entity_name.lower()}_lines"
+            silver_path or f"/lakehouse/default/Tables/silver/{entity_name}_lines"
         )
 
         write_to_delta(
             df=lines_df,
-            entity_name=f"{entity_name.lower()}_lines",
+            entity_name=f"{entity_name}_lines",
             base_path=lines_table_path,
             mode="overwrite",
             add_timestamp=False,
@@ -392,12 +409,12 @@ def process_entity_to_bronze(
         # Type: ignore needed for PySpark's strict type checking
         error_df = spark.createDataFrame(validation_errors)  # type: ignore
         raw_df = error_df
-    raw_df = raw_df.withColumn("etl_timestamp", lit(datetime.utcnow().isoformat()))
-    raw_df = raw_df.withColumn("etl_entity", lit(entity_name))
+    raw_df = raw_df.withColumn("etlTimestamp", lit(datetime.utcnow().isoformat()))
+    raw_df = raw_df.withColumn("etlEntity", lit(entity_name))
 
     # Write to bronze layer
     entity_config = ENTITY_CONFIG.get(entity_name, {})
-    bronze_table_name = entity_config.get("output_table", entity_name.lower())
+    bronze_table_name = entity_config.get("output_table", entity_name)
 
     logger.info(f"Writing {entity_name} data to bronze layer")
     path, row_count = write_to_delta(
