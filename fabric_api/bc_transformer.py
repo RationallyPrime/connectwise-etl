@@ -42,8 +42,8 @@ def clean_column_name(col_name: str) -> str:
 def transform_bc_entity(
     spark: SparkSession,
     entity_name: str,
-    bronze_path: str = None,
-    silver_path: str = None,
+    bronze_path: str | None = None,
+    silver_path: str | None = None,
     mode: str = "overwrite",
 ) -> DataFrame:
     """Transform BC entity from Bronze to Silver layer - preserves all fields."""
@@ -85,7 +85,7 @@ def transform_bc_entity(
 
 
 def transform_all_bc_entities(
-    spark: SparkSession, entities: list[str] = None, mode: str = "overwrite"
+    spark: SparkSession, entities: list[str] | None = None, mode: str = "overwrite"
 ) -> dict[str, int]:
     """Transform all BC entities from Bronze to Silver layer."""
     if not entities:

@@ -618,7 +618,7 @@ class CustLedgerEntry(SparkModel):
         alias="PredictionConfidence-1301",
         description="Prediction Confidence. Max length: 4",
     )
-    PredictionConfidence: float | None = Field(
+    PredictionConfidence_1302: float | None = Field(
         default=None,
         alias="PredictionConfidence-1302",
         description="Prediction Confidence %. Max length: 12",

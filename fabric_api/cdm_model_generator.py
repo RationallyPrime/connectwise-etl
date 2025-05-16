@@ -151,9 +151,31 @@ def generate_model_class(entity: dict[str, Any]) -> str:
     lines.append('    """')
     lines.append("")
 
+    # Track field names to prevent duplicates
+    used_field_names = set()
+
     # Generate fields
     for attr in attributes:
         field_info = process_attribute(attr)
+
+        # Handle duplicate field names by adding a suffix
+        field_name = field_info["field_name"]
+        if field_name in used_field_names:
+            # If it's a duplicate, use the CDM suffix
+            cdm_suffix = (
+                field_info["cdm_name"].split("-")[-1] if "-" in field_info["cdm_name"] else ""
+            )
+            if cdm_suffix.isdigit():
+                field_name = f"{field_name}_{cdm_suffix}"
+            else:
+                # Use a counter if no numeric suffix
+                counter = 2
+                while f"{field_name}_{counter}" in used_field_names:
+                    counter += 1
+                field_name = f"{field_name}_{counter}"
+
+        used_field_names.add(field_name)
+        field_info["field_name"] = field_name
 
         # Build field definition
         field_line = f"    {field_info['field_name']}: {field_info['python_type']}"
@@ -193,7 +215,7 @@ def generate_model_class(entity: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def generate_models_file(schema_path: Path, output_path: Path = None) -> None:
+def generate_models_file(schema_path: Path, output_path: Path | None = None) -> None:
     """Generate models.py file from CDM schema."""
     # Read the CDM schema
     with open(schema_path) as f:

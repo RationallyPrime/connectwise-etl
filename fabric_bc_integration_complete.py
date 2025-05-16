@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # PSA-BC Integration: Complete Test Suite
-# MAGIC 
+# MAGIC
 # MAGIC This notebook provides a comprehensive test suite for the PSA-BC Integration.
 # MAGIC Run cells individually to test specific phases or run all cells for complete verification.
 
@@ -21,7 +21,7 @@
 
 # COMMAND ----------
 
-from fabric_api.bc_models import Customer, GLEntry, SalesInvoiceHeader, Job, JobLedgerEntry
+from fabric_api.bc_models import Customer, GLEntry, Job
 
 print("Phase 1.1: Verify BC models exist")
 print("✓ GLEntry imported")
@@ -72,18 +72,18 @@ try:
     invoice_bronze = spark.read.table("bronze.SalesInvoiceHeader112")
     job_bronze = spark.read.table("bronze.Job167")
     job_ledger_bronze = spark.read.table("bronze.JobLedgerEntry169")
-    
+
     print(f"✓ GL Entries: {gl_bronze.count()} rows")
     print(f"✓ Customers: {customer_bronze.count()} rows")
     print(f"✓ Sales Invoices: {invoice_bronze.count()} rows")
     print(f"✓ Jobs: {job_bronze.count()} rows")
     print(f"✓ Job Ledger Entries: {job_ledger_bronze.count()} rows")
-    
+
     # Show sample bronze columns
     print("\nBronze column sample (GL Entry):")
     for col in sorted(gl_bronze.columns)[:5]:
         print(f"  - {col}")
-        
+
 except Exception as e:
     print(f"Error reading bronze tables: {e}")
     print("Make sure you're running this in a Fabric environment with bronze tables loaded.")
@@ -101,32 +101,32 @@ try:
     # Test validation with a sample of records
     sample_size = 100
     gl_sample = gl_bronze.limit(sample_size).toPandas()
-    
+
     validation_results = {"success": 0, "errors": []}
-    
+
     for idx, row in gl_sample.iterrows():
         try:
             # Convert row to dict and create model instance
             row_dict = row.to_dict()
             # Filter out None values
             filtered_dict = {k: v for k, v in row_dict.items() if v is not None}
-            
+
             # Validate with model
             gl_entry = GLEntry(**filtered_dict)
             validation_results["success"] += 1
-            
+
         except Exception as e:
             validation_results["errors"].append(f"Row {idx}: {str(e)[:100]}")
-    
-    print(f"\nValidation Results for GL Entries:")
+
+    print("\nValidation Results for GL Entries:")
     print(f"✓ Successfully validated: {validation_results['success']}/{sample_size} records")
     print(f"✗ Errors: {len(validation_results['errors'])}")
-    
+
     if validation_results["errors"]:
         print("\nFirst 3 errors:")
         for error in validation_results["errors"][:3]:
             print(f"  - {error}")
-            
+
 except Exception as e:
     print(f"Validation error: {e}")
 
@@ -137,7 +137,11 @@ except Exception as e:
 
 # COMMAND ----------
 
-from fabric_api.bc_transformer import transform_bc_entity, transform_all_bc_entities, get_bc_table_mapping
+from fabric_api.bc_transformer import (
+    get_bc_table_mapping,
+    transform_all_bc_entities,
+    transform_bc_entity,
+)
 
 print("Phase 3: Silver Transformation Pipeline")
 print("=" * 40)
@@ -161,16 +165,16 @@ print("Testing with GLEntry transformation...")
 try:
     # Transform GL Entry from Bronze to Silver
     gl_df = transform_bc_entity(spark, "GLEntry")
-    
+
     print(f"✓ GLEntry transformed: {gl_df.count()} rows")
     print("\nSilver schema (first 10 fields):")
     for field in gl_df.schema.fields[:10]:
         print(f"  - {field.name}: {field.dataType.simpleString()}")
-    
+
     # Show sample data
     print("\nSample data (first 3 rows):")
     gl_df.select(*[col for col in gl_df.columns[:5]]).show(3, truncate=False)
-    
+
 except Exception as e:
     print(f"Error transforming GLEntry: {e!s}")
 
@@ -184,20 +188,20 @@ except Exception as e:
 try:
     bronze_gl = spark.read.table("bronze.GLEntry17")
     silver_gl = spark.read.table("silver.GLEntry")
-    
+
     print("Column name comparison:")
     print("\nBronze columns (first 5):")
     for col in sorted(bronze_gl.columns)[:5]:
         print(f"  - {col}")
-    
+
     print("\nSilver columns (first 5):")
     for col in sorted(silver_gl.columns)[:5]:
         print(f"  - {col}")
-    
+
     # Check that CamelCase is preserved
     camel_case_cols = [col for col in silver_gl.columns if any(c.isupper() for c in col)]
     print(f"\n✓ CamelCase preserved: {len(camel_case_cols)} columns with uppercase letters")
-    
+
 except Exception as e:
     print(f"Error comparing columns: {e}")
 
@@ -211,19 +215,19 @@ except Exception as e:
 # Transform a subset of critical entities
 critical_entities = [
     "GLEntry",
-    "Customer", 
+    "Customer",
     "Job",
     "JobLedgerEntry",
     "SalesInvoiceHeader",
     "SalesInvoiceLine",
-    "DimensionSetEntry"
+    "DimensionSetEntry",
 ]
 
 print(f"Transforming {len(critical_entities)} critical entities...")
 
 try:
     results = transform_all_bc_entities(spark, entities=critical_entities)
-    
+
     print("\nTransformation results:")
     for entity, count in results.items():
         if count >= 0:
@@ -249,23 +253,21 @@ try:
     # Check for potential customer matches between PSA and BC
     psa_companies = spark.read.table("silver.Company")
     bc_customers = spark.read.table("silver.Customer")
-    
+
     # Find customers with matching VAT numbers - now using CamelCase fields
-    potential_matches = bc_customers.alias("bc").join(
-        psa_companies.alias("psa"),
-        F.col("bc.VATRegistrationNo") == F.col("psa.taxIdentifier"),
-        "inner"
-    ).select(
-        "bc.No",
-        "bc.Name",
-        "psa.id",
-        "psa.name",
-        "bc.VATRegistrationNo"
+    potential_matches = (
+        bc_customers.alias("bc")
+        .join(
+            psa_companies.alias("psa"),
+            F.col("bc.VATRegistrationNo") == F.col("psa.taxIdentifier"),
+            "inner",
+        )
+        .select("bc.No", "bc.Name", "psa.id", "psa.name", "bc.VATRegistrationNo")
     )
-    
+
     match_count = potential_matches.count()
     print(f"\nFound {match_count} potential customer matches by VAT")
-    
+
     if match_count > 0:
         print("\nSample matches:")
         potential_matches.show(5, truncate=False)
@@ -274,7 +276,7 @@ try:
         print("  - Different VAT number formats")
         print("  - Customers not synchronized between systems")
         print("  - Need for manual mapping table")
-        
+
 except Exception as e:
     print(f"Error in customer matching: {e}")
 
@@ -314,7 +316,7 @@ print("\n🚀 BC Integration Ready for Production!")
 
 # MAGIC %md
 # MAGIC ## Next Steps
-# MAGIC 
+# MAGIC
 # MAGIC 1. **Phase 5**: Implement Gold layer dimensions and facts
 # MAGIC 2. **Phase 6**: Create pipeline orchestration
 # MAGIC 3. **Phase 7**: Performance optimization with incremental loads
@@ -324,22 +326,22 @@ print("\n🚀 BC Integration Ready for Production!")
 
 # MAGIC %md
 # MAGIC ## Appendix: Quick Reference
-# MAGIC 
+# MAGIC
 # MAGIC ### Key Imports
 # MAGIC ```python
 # MAGIC from fabric_api.bc_models import *
 # MAGIC from fabric_api.bc_transformer import transform_bc_entity, transform_all_bc_entities
 # MAGIC from pyspark.sql import functions as F
 # MAGIC ```
-# MAGIC 
+# MAGIC
 # MAGIC ### Common Operations
 # MAGIC ```python
 # MAGIC # Transform single entity
 # MAGIC df = transform_bc_entity(spark, "Customer")
-# MAGIC 
+# MAGIC
 # MAGIC # Transform all entities
 # MAGIC results = transform_all_bc_entities(spark)
-# MAGIC 
+# MAGIC
 # MAGIC # Read silver table
 # MAGIC customers = spark.read.table("silver.Customer")
 # MAGIC ```
