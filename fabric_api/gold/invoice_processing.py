@@ -195,7 +195,9 @@ def create_invoice_lines_gold(
     # This is a placeholder showing the structure
 
     # Display column names for debugging
-    logger.info(f"Available columns in silver_time_entries: {', '.join(silver_time_entries.columns)}")
+    logger.info(
+        f"Available columns in silver_time_entries: {', '.join(silver_time_entries.columns)}"
+    )
 
     # Example structure for Standard invoices (time-based)
     time_based_lines = silver_time_entries.filter(col("invoiceId").isNotNull()).select(
@@ -225,7 +227,9 @@ def create_invoice_lines_gold(
     )
 
     # Log available columns after agreement hierarchy resolution
-    logger.info(f"Available columns after time agreement resolution: {', '.join(time_lines_with_agreements.columns)}")
+    logger.info(
+        f"Available columns after time agreement resolution: {', '.join(time_lines_with_agreements.columns)}"
+    )
 
     # Filter out Tímapottur agreement types
     filtered_time_lines = time_lines_with_agreements.filter(
@@ -264,7 +268,9 @@ def create_invoice_lines_gold(
     )
 
     # Log the columns we have after hierarchy resolution
-    logger.info(f"Available columns after agreement resolution: {', '.join(product_lines_with_agreements.columns)}")
+    logger.info(
+        f"Available columns after agreement resolution: {', '.join(product_lines_with_agreements.columns)}"
+    )
 
     # Apply special discount logic
     product_lines_with_discounts = product_lines_with_agreements.withColumn(
@@ -361,12 +367,13 @@ def create_agreement_summary_gold(
         col("billAmount").alias("agr_billAmount"),
         col("etlTimestamp").alias("agr_etlTimestamp"),
     )
-    
+
     # Add customer name (billToCompanyName or companyName)
     agreements_with_numbers = agreements_with_numbers.withColumn(
         "agr_customerName",
-        when(col("agr_billToCompanyName").isNotNull(), col("agr_billToCompanyName"))
-        .otherwise(col("agr_companyName"))
+        when(col("agr_billToCompanyName").isNotNull(), col("agr_billToCompanyName")).otherwise(
+            col("agr_companyName")
+        ),
     )
 
     # Aggregate invoice data by agreement
@@ -388,12 +395,14 @@ def create_agreement_summary_gold(
     agreement_summary = (
         agreements_with_numbers.join(
             invoice_summary,
-            agreements_with_numbers["agr_agreementNumber"] == invoice_summary["final_agreement_number"],
+            agreements_with_numbers["agr_agreementNumber"]
+            == invoice_summary["final_agreement_number"],
             "left",
         )
         .join(
             line_summary,
-            agreements_with_numbers["agr_agreementNumber"] == line_summary["final_agreement_number"],
+            agreements_with_numbers["agr_agreementNumber"]
+            == line_summary["final_agreement_number"],
             "left",
         )
         .select(

@@ -114,3 +114,6 @@ compiled/
 .zed/settings.json
 
 **/.claude/settings.local.json
+
+# Fabric integration test notebooks
+fabric_bc_integration_phase*.py
