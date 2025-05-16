@@ -16,7 +16,7 @@ class FieldInfo(SparkModel):
 class CatalogItem(SparkModel):
     id: int
     identifier: str
-    field_info: FieldInfo = Field(..., alias='_info')
+    field_info: FieldInfo = Field(..., alias="_info")
 
 
 class FieldInfo1(SparkModel):
@@ -26,7 +26,7 @@ class FieldInfo1(SparkModel):
 class UnitOfMeasure(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo1 = Field(..., alias='_info')
+    field_info: FieldInfo1 = Field(..., alias="_info")
 
 
 class FieldInfo2(SparkModel):
@@ -36,7 +36,7 @@ class FieldInfo2(SparkModel):
 class Location(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo2 = Field(..., alias='_info')
+    field_info: FieldInfo2 = Field(..., alias="_info")
 
 
 class FieldInfo3(SparkModel):
@@ -46,7 +46,7 @@ class FieldInfo3(SparkModel):
 class BusinessUnit(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo3 = Field(..., alias='_info')
+    field_info: FieldInfo3 = Field(..., alias="_info")
 
 
 class FieldInfo4(SparkModel):
@@ -56,7 +56,7 @@ class FieldInfo4(SparkModel):
 class Opportunity(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo4 = Field(..., alias='_info')
+    field_info: FieldInfo4 = Field(..., alias="_info")
 
 
 class FieldInfo5(SparkModel):
@@ -66,7 +66,7 @@ class FieldInfo5(SparkModel):
 class TaxCode(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo5 = Field(..., alias='_info')
+    field_info: FieldInfo5 = Field(..., alias="_info")
 
 
 class FieldInfo6(SparkModel):
@@ -77,7 +77,7 @@ class Company(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo6 = Field(..., alias='_info')
+    field_info: FieldInfo6 = Field(..., alias="_info")
 
 
 class ProductItem(SparkModel):
@@ -93,7 +93,9 @@ class ProductItem(SparkModel):
     extCost: float
     margin: float
     agreementAmount: float
-    priceMethod: str = Field(default="")  # Made optional with default value to fix validation errors
+    priceMethod: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
     billableOption: str
     locationId: int
     location: Location
@@ -106,16 +108,22 @@ class ProductItem(SparkModel):
     phaseProductFlag: bool
     cancelledFlag: bool
     quantityCancelled: float
-    cancelledReason: str = Field(default="")  # Made optional with default value to fix validation errors
+    cancelledReason: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
     customerDescription: str
     productSuppliedFlag: bool
-    subContractorAmountLimit: float = Field(default=0.0)  # Made optional with default value to fix validation errors
+    subContractorAmountLimit: float = Field(
+        default=0.0
+    )  # Made optional with default value to fix validation errors
     opportunity: Opportunity | None = None
     calculatedPriceFlag: bool = Field(default=False)
     calculatedCostFlag: bool = Field(default=False)
     forecastDetailId: int = Field(default=0)
     cancelledBy: int = Field(default=0)  # Made optional with default value to fix validation errors
-    cancelledDate: str = Field(default="")  # Made optional with default value to fix validation errors
+    cancelledDate: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
     taxCode: TaxCode
     listPrice: float
     company: Company

@@ -8,7 +8,7 @@ This file contains all models to avoid circular imports.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Literal
+from typing import Literal
 from uuid import UUID
 
 from pydantic import Field
@@ -18,24 +18,33 @@ from sparkdantic import SparkModel
 # Reference Models
 #############################################
 
+
 class ActivityReference(SparkModel):
     """Base reference model for ConnectWise entities."""
+
     id: int | None = None
     name: str | None = None
     _info: dict[str, str] | None = None
 
+
 class AgreementReference(ActivityReference):
     """Reference model for Agreement entities."""
+
     type: str | None = None
     chargeFirmFlag: bool | None = None
 
+
 class AgreementTypeReference(ActivityReference):
     """Reference model for AgreementType entities."""
+
     pass
+
 
 class BatchReference(AgreementTypeReference):
     """Reference model for Batch entities."""
+
     pass
+
 
 #############################################
 # Entity Models
@@ -46,20 +55,17 @@ class BatchReference(AgreementTypeReference):
 #   timestamp: 2025-05-14T14:26:01+00:00
 
 
-
-
-
 class CompanyReference(SparkModel):
     id: int | None = None
     identifier: str | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxCodeReference(SparkModel):
     id: int | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CustomFieldValue(SparkModel):
@@ -67,22 +73,22 @@ class CustomFieldValue(SparkModel):
     caption: str | None = None
     type: (
         Literal[
-            'TextArea',
-            'Button',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'PhoneNumber',
-            'Text',
-            'Password',
+            "TextArea",
+            "Button",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "PhoneNumber",
+            "Text",
+            "Password",
         ]
         | None
     ) = None
-    entryMethod: Literal['Date', 'EntryField', 'List', 'Option'] | None = None
+    entryMethod: Literal["Date", "EntryField", "List", "Option"] | None = None
     numberOfDecimals: int | None = None
     value: str | None = None  # Use a concrete type for Spark schema compatibility
     connectWiseId: str | None = None
@@ -112,11 +118,10 @@ ClassificationReference = TaxCodeReference
 BillingCycleReference = TaxCodeReference
 
 
-
 class TicketReference(SparkModel):
     id: int | None = None
     summary: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpportunityReference = TaxCodeReference
@@ -127,7 +132,7 @@ class MemberReference(SparkModel):
     identifier: str | None = None
     name: str | None = None
     dailyCapacity: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ExpenseReportReference = TaxCodeReference
@@ -139,7 +144,7 @@ class InvoiceTemplateReference(SparkModel):
     Gets or sets invoice Template Setup Id.
     """
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SystemLocationReference = TaxCodeReference
@@ -173,20 +178,20 @@ class CurrencyReference(SparkModel):
     displayIdFlag: bool | None = None
     rightAlign: bool | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingStatusReference(SparkModel):
     id: int | None = None
     name: str | None = None
     isClosed: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SalesOrderReference(SparkModel):
     id: int | None = None
     identifier: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SystemDepartmentReference = CompanyReference
@@ -220,14 +225,14 @@ class InvoiceGroupingReference(SparkModel):
     showPriceFlag: bool | None = None
     showSubItemsFlag: bool | None = None
     groupParentChildAdditionsFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WarehouseReference(SparkModel):
     id: int | None = None
     name: str | None = None
     lockedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 UnitOfMeasureReference = TaxCodeReference
@@ -245,7 +250,7 @@ class ProductRecurring(SparkModel):
     billCycleId: int | None = None
     billCycle: BillingCycleReference | None = None
     cycles: int | None = None
-    cycleType: Literal['ContractYear', 'CalendarYear'] | None = None
+    cycleType: Literal["ContractYear", "CalendarYear"] | None = None
     agreementType: AgreementTypeReference | None = None
 
 
@@ -259,7 +264,7 @@ class InvoiceReference(SparkModel):
     applyToType: str | None = None
     invoiceDate: str | None = None
     chargeFirmFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 InvoiceTemplateDetailReference = TaxCodeReference
@@ -272,7 +277,7 @@ class WorkTypeReference(SparkModel):
     id: int | None = None
     name: str | None = None
     utilizationFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SiteReference = TaxCodeReference
@@ -298,12 +303,12 @@ class UnpostedInvoice(SparkModel):
     invoiceDate: str | None = None
     invoiceType: (
         Literal[
-            'Agreement',
-            'CreditMemo',
-            'DownPayment',
-            'Miscellaneous',
-            'Progress',
-            'Standard',
+            "Agreement",
+            "CreditMemo",
+            "DownPayment",
+            "Miscellaneous",
+            "Progress",
+            "Standard",
         ]
         | None
     ) = None
@@ -363,7 +368,7 @@ class UnpostedInvoice(SparkModel):
     levelSixTaxAmount: float | None = None
     createdBy: str | None = None
     dateClosed: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Agreement(SparkModel):
@@ -403,18 +408,18 @@ class Agreement(SparkModel):
      Max length: 20;
     """
     internalNotes: str | None = None
-    applicationUnits: Literal['Amount', 'Hours', 'Incidents'] | None = None
+    applicationUnits: Literal["Amount", "Hours", "Incidents"] | None = None
     applicationLimit: float | None = None
     applicationCycle: (
         Literal[
-            'Contract2Weeks',
-            'Contract4Weeks',
-            'ContractYear',
-            'CalendarMonth',
-            'CalendarQuarter',
-            'CalendarWeek',
-            'ContractQuarter',
-            'CalendarYear',
+            "Contract2Weeks",
+            "Contract4Weeks",
+            "ContractYear",
+            "CalendarMonth",
+            "CalendarQuarter",
+            "CalendarWeek",
+            "ContractQuarter",
+            "CalendarYear",
         ]
         | None
     ) = None
@@ -430,17 +435,17 @@ class Agreement(SparkModel):
     limit: int | None = None
     expireWhenZero: bool | None = None
     chargeToFirm: bool | None = None
-    employeeCompRate: Literal['Actual', 'Hourly'] | None = None
+    employeeCompRate: Literal["Actual", "Hourly"] | None = None
     """
      Required On Updates;
     """
-    employeeCompNotExceed: Literal['Billing', 'Amount', 'Percent'] | None = None
+    employeeCompNotExceed: Literal["Billing", "Amount", "Percent"] | None = None
     compHourlyRate: float | None = None
     compLimitAmount: float | None = None
     billingCycle: BillingCycleReference | None = None
     billOneTimeFlag: bool | None = None
     billingTerms: BillingTermsReference | None = None
-    invoicingCycle: Literal['ContractYear', 'CalendarYear'] | None = None
+    invoicingCycle: Literal["ContractYear", "CalendarYear"] | None = None
     """
      Required On Updates;
     """
@@ -462,19 +467,15 @@ class Agreement(SparkModel):
     workType: WorkTypeReference | None = None
     projectType: ProjectTypeReference | None = None
     invoiceTemplate: InvoiceTemplateReference | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -482,15 +483,15 @@ class Agreement(SparkModel):
     billableExpenseInvoice: bool | None = None
     billableProductInvoice: bool | None = None
     currency: CurrencyReference | None = None
-    periodType: Literal['Current', 'Future', 'Both', 'Undefined'] | None = None
+    periodType: Literal["Current", "Future", "Both", "Undefined"] | None = None
     autoInvoiceFlag: bool | None = None
     nextInvoiceDate: str | None = None
     companyLocation: SystemLocationReference | None = None
     shipToCompany: CompanyReference | None = None
     shipToContact: ContactReference | None = None
     shipToSite: SiteReference | None = None
-    agreementStatus: Literal['Active', 'Cancelled', 'Expired', 'Inactive'] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    agreementStatus: Literal["Active", "Cancelled", "Expired", "Inactive"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -508,12 +509,12 @@ class Invoice(SparkModel):
     """
     type: (
         Literal[
-            'Agreement',
-            'CreditMemo',
-            'DownPayment',
-            'Miscellaneous',
-            'Progress',
-            'Standard',
+            "Agreement",
+            "CreditMemo",
+            "DownPayment",
+            "Miscellaneous",
+            "Progress",
+            "Standard",
         ]
         | None
     ) = Field(...)
@@ -523,8 +524,7 @@ class Invoice(SparkModel):
     shipToCompany: CompanyReference | None = None
     accountNumber: str | None = None
     applyToType: (
-        Literal['All', 'Agreement', 'Project', 'ProjectPhase', 'SalesOrder', 'Ticket']
-        | None
+        Literal["All", "Agreement", "Project", "ProjectPhase", "SalesOrder", "Ticket"] | None
     ) = None
     applyToId: int | None = None
     attention: str | None = None
@@ -617,7 +617,7 @@ class Invoice(SparkModel):
     agreement: AgreementReference | None = None
     glBatch: BatchReference | None = None
     unbatchedBatch: BatchReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -640,14 +640,14 @@ class ProductItem(SparkModel):
     agreementAmount: float | None = None
     priceMethod: (
         Literal[
-            'FlatRateForRange',
-            'PercentMarkupFromCost',
-            'PercentMarkdownFromPrice',
-            'PricePerUnit',
+            "FlatRateForRange",
+            "PercentMarkupFromCost",
+            "PercentMarkdownFromPrice",
+            "PricePerUnit",
         ]
         | None
     ) = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge'] | None = Field(...)
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge"] | None = Field(...)
     agreement: AgreementReference | None = None
     locationId: int | None = None
     """
@@ -713,9 +713,9 @@ class ProductItem(SparkModel):
     serialNumbers: list[str] | None = None
     company: CompanyReference | None = None
     forecastStatus: OpportunityStatusReference | None = None
-    productClass: (
-        Literal['Agreement', 'Bundle', 'Inventory', 'NonInventory', 'Service'] | None
-    ) = None
+    productClass: Literal["Agreement", "Bundle", "Inventory", "NonInventory", "Service"] | None = (
+        None
+    )
     needToPurchaseFlag: bool | None = None
     needToOrderQuantity: int | None = None
     minimumStockFlag: bool | None = None
@@ -731,7 +731,7 @@ class ProductItem(SparkModel):
     addComponentsFlag: bool | None = None
     ignorePricingSchedulesFlag: bool | None = None
     asioSubscriptionsID: UUID | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     bypassForecastUpdate: bool | None = None
     customFields: list[CustomFieldValue] | None = None
 
@@ -745,8 +745,7 @@ class TimeEntry(SparkModel):
     If chargeToId is not specified, we asume you enter time against the company specified
     """
     chargeToType: (
-        Literal['Company', 'ServiceTicket', 'ProjectTicket', 'ChargeCode', 'Activity']
-        | None
+        Literal["Company", "ServiceTicket", "ProjectTicket", "ChargeCode", "Activity"] | None
     ) = None
     """
     If chargeToId is not specified, we asume you enter time against the company specified
@@ -769,9 +768,7 @@ class TimeEntry(SparkModel):
     timeEnd: datetime | None = None
     hoursDeduct: float | None = None
     actualHours: float | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -816,18 +813,18 @@ class TimeEntry(SparkModel):
     timeSheet: TimeSheetReference | None = None
     status: (
         Literal[
-            'Open',
-            'Rejected',
-            'PendingApproval',
-            'ErrorsCorrected',
-            'PendingProjectApproval',
-            'ApprovedByTierOne',
-            'RejectBySecondTier',
-            'ApprovedByTierTwo',
-            'ReadyToBill',
-            'Billed',
-            'WrittenOff',
-            'BilledAgreement',
+            "Open",
+            "Rejected",
+            "PendingApproval",
+            "ErrorsCorrected",
+            "PendingProjectApproval",
+            "ApprovedByTierOne",
+            "RejectBySecondTier",
+            "ApprovedByTierTwo",
+            "ReadyToBill",
+            "Billed",
+            "WrittenOff",
+            "BilledAgreement",
         ]
         | None
     ) = None
@@ -842,7 +839,7 @@ class TimeEntry(SparkModel):
     extendedInvoiceAmount: float | None = None
     locationName: str | None = None
     taxCode: TaxCodeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -852,8 +849,7 @@ class ExpenseEntry(SparkModel):
     company: CompanyReference | None = None
     chargeToId: int | None = None
     chargeToType: (
-        Literal['Company', 'ServiceTicket', 'ProjectTicket', 'ChargeCode', 'Activity']
-        | None
+        Literal["Company", "ServiceTicket", "ProjectTicket", "ChargeCode", "Activity"] | None
     ) = None
     """
     Gets or sets
@@ -864,9 +860,7 @@ class ExpenseEntry(SparkModel):
     paymentMethod: PaymentMethodReference | None = None
     classification: ClassificationReference | None = None
     amount: float | None = Field(...)
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     date: datetime
     locationId: int | None = None
     businessUnitId: int | None = None
@@ -879,18 +873,18 @@ class ExpenseEntry(SparkModel):
     currency: CurrencyReference | None = None
     status: (
         Literal[
-            'Open',
-            'Rejected',
-            'PendingApproval',
-            'ErrorsCorrected',
-            'PendingProjectApproval',
-            'ApprovedByTierOne',
-            'RejectBySecondTier',
-            'ApprovedByTierTwo',
-            'ReadyToBill',
-            'Billed',
-            'WrittenOff',
-            'BilledAgreement',
+            "Open",
+            "Rejected",
+            "PendingApproval",
+            "ErrorsCorrected",
+            "PendingProjectApproval",
+            "ApprovedByTierOne",
+            "RejectBySecondTier",
+            "ApprovedByTierTwo",
+            "ReadyToBill",
+            "Billed",
+            "WrittenOff",
+            "BilledAgreement",
         ]
         | None
     ) = None
@@ -901,7 +895,7 @@ class ExpenseEntry(SparkModel):
     ticket: TicketReference | None = None
     project: ProjectReference | None = None
     phase: ProjectPhaseReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 

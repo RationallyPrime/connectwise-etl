@@ -15,7 +15,7 @@ class FieldInfo(SparkModel):
 class Type(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo = Field(..., alias='_info')
+    field_info: FieldInfo = Field(..., alias="_info")
 
 
 class FieldInfo1(SparkModel):
@@ -26,7 +26,7 @@ class Company(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo1 = Field(..., alias='_info')
+    field_info: FieldInfo1 = Field(..., alias="_info")
 
 
 class FieldInfo2(SparkModel):
@@ -36,7 +36,7 @@ class FieldInfo2(SparkModel):
 class Contact(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo2 = Field(..., alias='_info')
+    field_info: FieldInfo2 = Field(..., alias="_info")
 
 
 class FieldInfo3(SparkModel):
@@ -46,7 +46,7 @@ class FieldInfo3(SparkModel):
 class Site(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo3 = Field(..., alias='_info')
+    field_info: FieldInfo3 = Field(..., alias="_info")
 
 
 class FieldInfo4(SparkModel):
@@ -56,7 +56,7 @@ class FieldInfo4(SparkModel):
 class Location(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo4 = Field(..., alias='_info')
+    field_info: FieldInfo4 = Field(..., alias="_info")
 
 
 class FieldInfo5(SparkModel):
@@ -67,7 +67,7 @@ class Department(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo5 = Field(..., alias='_info')
+    field_info: FieldInfo5 = Field(..., alias="_info")
 
 
 class FieldInfo6(SparkModel):
@@ -77,7 +77,7 @@ class FieldInfo6(SparkModel):
 class BillingCycle(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo6 = Field(..., alias='_info')
+    field_info: FieldInfo6 = Field(..., alias="_info")
 
 
 class FieldInfo7(SparkModel):
@@ -88,7 +88,7 @@ class BillToCompany(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo7 = Field(..., alias='_info')
+    field_info: FieldInfo7 = Field(..., alias="_info")
 
 
 class FieldInfo8(SparkModel):
@@ -98,7 +98,7 @@ class FieldInfo8(SparkModel):
 class BillToContact(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo8 = Field(..., alias='_info')
+    field_info: FieldInfo8 = Field(..., alias="_info")
 
 
 class FieldInfo9(SparkModel):
@@ -108,7 +108,7 @@ class FieldInfo9(SparkModel):
 class BillToSite(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo9 = Field(..., alias='_info')
+    field_info: FieldInfo9 = Field(..., alias="_info")
 
 
 class FieldInfo10(SparkModel):
@@ -118,7 +118,7 @@ class FieldInfo10(SparkModel):
 class TaxCode(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo10 = Field(..., alias='_info')
+    field_info: FieldInfo10 = Field(..., alias="_info")
 
 
 class FieldInfo11(SparkModel):
@@ -138,7 +138,7 @@ class Currency(SparkModel):
     displayIdFlag: bool
     rightAlign: bool
     name: str
-    field_info: FieldInfo11 = Field(..., alias='_info')
+    field_info: FieldInfo11 = Field(..., alias="_info")
 
 
 class FieldInfo12(SparkModel):
@@ -148,7 +148,7 @@ class FieldInfo12(SparkModel):
 class CompanyLocation(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo12 = Field(..., alias='_info')
+    field_info: FieldInfo12 = Field(..., alias="_info")
 
 
 class FieldInfo13(SparkModel):
@@ -159,7 +159,7 @@ class ShipToCompany(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo13 = Field(..., alias='_info')
+    field_info: FieldInfo13 = Field(..., alias="_info")
 
 
 class FieldInfo14(SparkModel):
@@ -169,7 +169,7 @@ class FieldInfo14(SparkModel):
 class ShipToSite(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo14 = Field(..., alias='_info')
+    field_info: FieldInfo14 = Field(..., alias="_info")
 
 
 class CustomField(SparkModel):
@@ -196,9 +196,13 @@ class Agreement(SparkModel):
     endDate: str = Field(default="")  # Made optional for agreements without end dates
     noEndingDateFlag: bool
     cancelledFlag: bool
-    applicationUnits: str = Field(default="Hours")  # Made optional with default value to fix validation errors
+    applicationUnits: str = Field(
+        default="Hours"
+    )  # Made optional with default value to fix validation errors
     applicationLimit: float
-    applicationCycle: str = Field(default="None")  # Made optional with default value to fix validation errors
+    applicationCycle: str = Field(
+        default="None"
+    )  # Made optional with default value to fix validation errors
     applicationUnlimitedFlag: bool
     oneTimeFlag: bool
     coverAgreementTime: bool

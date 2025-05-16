@@ -32,10 +32,10 @@ from .extract.generic import extract_entity
 
 # Import the pipeline
 from .pipeline import (
-    process_entity_to_bronze, 
-    process_bronze_to_silver, 
-    run_full_pipeline, 
-    run_daily_pipeline
+    process_bronze_to_silver,
+    process_entity_to_bronze,
+    run_daily_pipeline,
+    run_full_pipeline,
 )
 
 # Import storage utilities
@@ -71,5 +71,5 @@ __all__ = [
     "table_exists",
     # Storage
     "write_to_delta",
-    "write_errors"
+    "write_errors",
 ]

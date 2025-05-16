@@ -17,8 +17,11 @@ from fabric_api.connectwise_models import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def test_schema_conversion():
     """
@@ -27,14 +30,7 @@ def test_schema_conversion():
     logger.info("Testing Spark schema conversion for ConnectWise models")
 
     # List of models to test
-    models = [
-        Agreement,
-        TimeEntry,
-        PostedInvoice,
-        UnpostedInvoice,
-        ExpenseEntry,
-        ProductItem
-    ]
+    models = [Agreement, TimeEntry, PostedInvoice, UnpostedInvoice, ExpenseEntry, ProductItem]
 
     # Test schema conversion for each model
     for model_class in models:
@@ -57,6 +53,7 @@ def test_schema_conversion():
 
     logger.info("Schema conversion test complete")
 
+
 def test_dataframe_creation():
     """
     Test creating empty DataFrames with the schemas.
@@ -67,14 +64,7 @@ def test_dataframe_creation():
     spark = SparkSession.builder.appName("SchemaTest").getOrCreate()
 
     # List of models to test
-    models = [
-        Agreement,
-        TimeEntry,
-        PostedInvoice,
-        UnpostedInvoice,
-        ExpenseEntry,
-        ProductItem
-    ]
+    models = [Agreement, TimeEntry, PostedInvoice, UnpostedInvoice, ExpenseEntry, ProductItem]
 
     # Test DataFrame creation for each model
     for model_class in models:
@@ -101,6 +91,7 @@ def test_dataframe_creation():
     spark.stop()
 
     logger.info("DataFrame creation test complete")
+
 
 if __name__ == "__main__":
     test_schema_conversion()

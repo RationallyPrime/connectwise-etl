@@ -15,6 +15,7 @@ from ._common import validate_batch
 
 logger = logging.getLogger(__name__)
 
+
 def get_model_class(entity_name: str) -> type[BaseModel]:
     """
     Dynamically import and return the model class for an entity.
@@ -42,13 +43,16 @@ def get_model_class(entity_name: str) -> type[BaseModel]:
         "ExpenseEntry": ExpenseEntry,
         "ProductItem": ProductItem,
         "PostedInvoice": PostedInvoice,
-        "UnpostedInvoice": UnpostedInvoice
+        "UnpostedInvoice": UnpostedInvoice,
     }
 
     if entity_name not in model_mapping:
-        raise ValueError(f"Unknown entity: {entity_name}. Must be one of {list(model_mapping.keys())}")
+        raise ValueError(
+            f"Unknown entity: {entity_name}. Must be one of {list(model_mapping.keys())}"
+        )
 
     return model_mapping[entity_name]
+
 
 def extract_entity(
     client: ConnectWiseClient,
@@ -87,7 +91,9 @@ def extract_entity(
     model_class = get_model_class(entity_name)
 
     # Generate fields string based on model
-    fields_str = fields_override if fields_override else get_fields_for_api_call(model_class, max_depth=2)
+    fields_str = (
+        fields_override if fields_override else get_fields_for_api_call(model_class, max_depth=2)
+    )
     logger.debug(f"Using fields for {entity_name}: {fields_str}")
 
     # Paginate through API results

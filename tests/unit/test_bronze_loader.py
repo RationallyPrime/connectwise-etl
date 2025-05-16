@@ -12,16 +12,20 @@ from pyspark.sql import SparkSession
 from fabric_api.bronze_loader import process_entities
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file if present
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
     logger.info("Loaded environment variables from .env file")
 except ImportError:
     logger.warning("python-dotenv not installed, skipping .env loading")
+
 
 def main():
     """
@@ -30,6 +34,7 @@ def main():
     # Create a local SparkSession for testing with a direct approach
     # to avoid builder attribute access issues
     import pyspark
+
     spark = SparkSession(pyspark.SparkContext("local[*]", "BronzeLoaderTest"))
 
     logger.info("Created SparkSession for testing")
@@ -69,6 +74,7 @@ def main():
 
     # Stop SparkSession
     spark.stop()
+
 
 if __name__ == "__main__":
     main()

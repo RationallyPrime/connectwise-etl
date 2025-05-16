@@ -12,8 +12,11 @@ from fabric_api.bronze_loader import _flatten_nested_structures, process_entity
 from fabric_api.client import ConnectWiseClient
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def test_flatten_nested_structures():
     """
@@ -25,11 +28,7 @@ def test_flatten_nested_structures():
     test_data_1 = {
         "id": 123,
         "name": "Test Object",
-        "parent": {
-            "id": 456,
-            "name": "Parent Object",
-            "type": "Parent Type"
-        }
+        "parent": {"id": 456, "name": "Parent Object", "type": "Parent Type"},
     }
 
     result_1 = _flatten_nested_structures(test_data_1)
@@ -44,8 +43,8 @@ def test_flatten_nested_structures():
         "children": [
             {"id": 1, "name": "Child 1"},
             {"id": 2, "name": "Child 2"},
-            {"id": 3, "name": "Child 3"}
-        ]
+            {"id": 3, "name": "Child 3"},
+        ],
     }
 
     result_2 = _flatten_nested_structures(test_data_2)
@@ -64,13 +63,13 @@ def test_flatten_nested_structures():
                 "street": "123 Main St",
                 "city": "Test City",
                 "state": "Test State",
-                "zip": "12345"
+                "zip": "12345",
             },
             "contacts": [
                 {"id": 1, "name": "Contact 1", "email": "contact1@example.com"},
-                {"id": 2, "name": "Contact 2", "email": "contact2@example.com"}
-            ]
-        }
+                {"id": 2, "name": "Contact 2", "email": "contact2@example.com"},
+            ],
+        },
     }
 
     result_3 = _flatten_nested_structures(test_data_3)
@@ -79,16 +78,13 @@ def test_flatten_nested_structures():
         logger.info(f"  {key}: {value}")
 
     # Test case 4: Array of primitives
-    test_data_4 = {
-        "id": 123,
-        "name": "Test Object",
-        "tags": ["tag1", "tag2", "tag3"]
-    }
+    test_data_4 = {"id": 123, "name": "Test Object", "tags": ["tag1", "tag2", "tag3"]}
 
     result_4 = _flatten_nested_structures(test_data_4)
     logger.info("Test case 4 (array of primitives):")
     for key, value in result_4.items():
         logger.info(f"  {key}: {value}")
+
 
 def test_end_to_end_fallback():
     """
@@ -98,11 +94,13 @@ def test_end_to_end_fallback():
 
     # Create a SparkSession for testing
     import pyspark
+
     spark = SparkSession(pyspark.SparkContext("local[*]", "FallbackTest"))
 
     # Create a test directory for output
     import os
     import tempfile
+
     temp_dir = tempfile.mkdtemp()
     bronze_path = os.path.join(temp_dir, "bronze")
     os.makedirs(bronze_path, exist_ok=True)
@@ -119,7 +117,7 @@ def test_end_to_end_fallback():
             bronze_path=bronze_path,
             page_size=5,  # Small page size for testing
             max_pages=1,  # Just the first page
-            write_mode="overwrite"
+            write_mode="overwrite",
         )
 
         # Show the result
@@ -140,6 +138,7 @@ def test_end_to_end_fallback():
         spark.stop()
         logger.info(f"Test output was written to {bronze_path}")
         logger.info("You may want to delete this directory when done testing")
+
 
 if __name__ == "__main__":
     # Test the flattening function

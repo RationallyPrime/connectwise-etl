@@ -2,6 +2,7 @@
 """
 Test script to simulate the ETL process in a simplified way.
 """
+
 import os
 import tempfile
 
@@ -14,10 +15,7 @@ print("=== Testing ETL Process with Fixed Models ===")
 
 # Create a SparkSession
 print("Initializing SparkSession...")
-spark = SparkSession.builder \
-    .appName("TestETL") \
-    .master("local[*]") \
-    .getOrCreate()
+spark = SparkSession.builder.appName("TestETL").master("local[*]").getOrCreate()
 
 # Sample data for testing
 sample_agreements = [
@@ -26,15 +24,15 @@ sample_agreements = [
         "name": "Support Agreement 1",
         "type": {"id": 1, "name": "Support"},
         "company": {"id": 101, "name": "Acme Inc"},
-        "contact": {"id": 201, "name": "John Doe"}
+        "contact": {"id": 201, "name": "John Doe"},
     },
     {
         "id": 2,
         "name": "Maintenance Agreement 2",
         "type": {"id": 2, "name": "Maintenance"},
         "company": {"id": 102, "name": "Globex Corp"},
-        "contact": {"id": 202, "name": "Jane Smith"}
-    }
+        "contact": {"id": 202, "name": "Jane Smith"},
+    },
 ]
 
 # Validate and convert the data

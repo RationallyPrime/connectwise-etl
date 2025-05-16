@@ -16,11 +16,11 @@ from pydantic import ValidationError
 # Load environment variables from .env file in the root directory
 # This must be done before importing modules that use environment variables
 root_dir = Path(__file__).parent.parent
-env_path = root_dir / '.env'
+env_path = root_dir / ".env"
 load_dotenv()
 
 # Import from parent directory
-sys.path.append('..')
+sys.path.append("..")
 
 from fabric_api.client import ConnectWiseClient
 from fabric_api.connectwise_models import ProductItem
@@ -28,10 +28,10 @@ from fabric_api.extract.products import fetch_product_items_raw
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def test_product_validation():
     """
@@ -46,11 +46,10 @@ def test_product_validation():
     # Create a client using environment variables loaded from .env
     logger.info("Creating ConnectWiseClient using environment variables from .env")
 
-
     # Set up authentication details
     # Default test credentials (these should be replaced with actual credentials)
     default_auth_username = "thekking+yemGyHDPdJ1hpuqx"  # Replace with actual test username
-    default_auth_password = "yMqpe26Jcu55FbQk"          # Replace with actual test password
+    default_auth_password = "yMqpe26Jcu55FbQk"  # Replace with actual test password
     default_client_id = "c7ea92d2-eaf5-4bfb-a09c-58d7f9dd7b81"  # Replace with actual client ID
 
     # Override with environment variables if available
@@ -62,9 +61,7 @@ def test_product_validation():
 
     # Create the client with explicit authentication parameters
     client = ConnectWiseClient(
-        basic_username=auth_username,
-        basic_password=auth_password,
-        client_id=client_id
+        basic_username=auth_username, basic_password=auth_password, client_id=client_id
     )
 
     # Optional: Use a small page_size for testing to speed up the process
@@ -106,13 +103,15 @@ def test_product_validation():
     for i, item in enumerate(raw_products):
         product_id = item.get("id", f"Unknown-{i}")
         product_name = item.get("description", f"Unknown-{i}")
-        logger.info(f"Validating product item {product_id} ({i+1}/{len(raw_products)})")
+        logger.info(f"Validating product item {product_id} ({i + 1}/{len(raw_products)})")
 
         try:
             # Validate against the schema
             ProductItem.model_validate(item)
             valid_count += 1
-            logger.info(f"✅ SUCCESS: Product item {product_id} ({product_name}) validated successfully")
+            logger.info(
+                f"✅ SUCCESS: Product item {product_id} ({product_name}) validated successfully"
+            )
 
         except ValidationError as e:
             invalid_count += 1
@@ -127,7 +126,7 @@ def test_product_validation():
 
             # Print more specific error details for debugging
             try:
-                if 'id' in item:
+                if "id" in item:
                     logger.error(f"  Detailed error for Product ID {item['id']}")
                 logger.error(f"  Raw error: {e!s}")
             except Exception as debug_error:
@@ -140,6 +139,7 @@ def test_product_validation():
     if invalid_count > 0:
         return 1
     return 0
+
 
 if __name__ == "__main__":
     # Ensure we're running the script with .env file access

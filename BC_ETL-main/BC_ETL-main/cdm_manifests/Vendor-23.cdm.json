@@ -1,0 +1,730 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Vendor-23",
+            "exhibitsTraits": [],
+            "displayName": "Vendor",
+            "description": "Represents the table Vendor",
+            "hasAttributes": [
+                {
+                    "name": "No-1",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Name-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "SearchName-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Search Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Name2-4",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Name 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "Address-5",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Address",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Address2-6",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Address 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "City-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "City",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "Contact-8",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Contact",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "PhoneNo-9",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Phone No.",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "TelexNo-10",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Telex No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "OurAccountNo-14",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Our Account No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TerritoryCode-15",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Territory Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "GlobalDimension1Code-16",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-17",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "BudgetedAmount-19",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Budgeted Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "VendorPostingGroup-21",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Vendor Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CurrencyCode-22",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "LanguageCode-24",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Language Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "RegistrationNumber-25",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Registration Number",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "StatisticsGroup-26",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Statistics Group",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PaymentTermsCode-27",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Payment Terms Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "FinChargeTermsCode-28",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Fin. Charge Terms Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PurchaserCode-29",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Purchaser Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ShipmentMethodCode-30",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Shipment Method Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ShippingAgentCode-31",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Shipping Agent Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "InvoiceDiscCode-33",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Invoice Disc. Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CountryRegionCode-35",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Country/Region Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "Blocked-39",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PaytoVendorNo-45",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Pay-to Vendor No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Priority-46",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Priority",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PaymentMethodCode-47",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Payment Method Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "FormatRegion-48",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Format Region",
+                    "maximumLength": 80
+                },
+                {
+                    "name": "LastModifiedDateTime-53",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "Last Modified Date Time",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "LastDateModified-54",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Last Date Modified",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ApplicationMethod-80",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Application Method",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PricesIncludingVAT-82",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Prices Including VAT",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "FaxNo-84",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Fax No.",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "TelexAnswerBack-85",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Telex Answer Back",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "VATRegistrationNo-86",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "VAT Registration No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GenBusPostingGroup-88",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GLN-90",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "GLN",
+                    "maximumLength": 13
+                },
+                {
+                    "name": "PostCode-91",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Post Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "County-92",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "County",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "EORINumber-93",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "EORI Number",
+                    "maximumLength": 40
+                },
+                {
+                    "name": "EMail-102",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "E-Mail",
+                    "maximumLength": 80
+                },
+                {
+                    "name": "HomePage-103",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Home Page",
+                    "maximumLength": 80
+                },
+                {
+                    "name": "NoSeries-107",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No. Series",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TaxAreaCode-108",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Tax Area Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TaxLiable-109",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Tax Liable",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "VATBusPostingGroup-110",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "VAT Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "BlockPaymentTolerance-116",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Block Payment Tolerance",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ICPartnerCode-119",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "IC Partner Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Prepayment-124",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Prepayment %",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PartnerType-132",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Partner Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "IntrastatPartnerType-133",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Intrastat Partner Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ExcludefromPmtPractices-134",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Exclude from Pmt. Practices",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CompanySizeCode-135",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Company Size Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PrivacyBlocked-150",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Privacy Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DisableSearchbyName-160",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Disable Search by Name",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CreditorNo-170",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Creditor No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "AllowMultiplePostingGroups-175",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Allow Multiple Posting Groups",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PreferredBankAccountCode-288",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Preferred Bank Account Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CoupledtoCRM-720",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Coupled to CRM",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CashFlowPaymentTermsCode-840",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Cash Flow Payment Terms Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PrimaryContactNo-5049",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Primary Contact No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "MobilePhoneNo-5061",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Mobile Phone No.",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "ResponsibilityCenter-5700",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Responsibility Center",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "LocationCode-5701",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Location Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "LeadTimeCalculation-5790",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Lead Time Calculation",
+                    "maximumLength": 32
+                },
+                {
+                    "name": "PriceCalculationMethod-7000",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Price Calculation Method",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "BaseCalendarCode-7600",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Base Calendar Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "DocumentSendingProfile-7601",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Document Sending Profile",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ValidateEUVatRegNo-7602",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Validate EU Vat Reg. No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CurrencyId-8001",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "Currency Id",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "PaymentTermsId-8002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "Payment Terms Id",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "PaymentMethodId-8003",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "Payment Method Id",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "OverReceiptCode-8510",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Over-Receipt Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PTEMicrosoftafslttur-65000",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "PTE Microsoft afsláttur",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PTEGjaldkeri-65001",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Gjaldkeri",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "PTESmigjaldkera-65002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Sími gjaldkera",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "PTEHeitikeju-65003",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Heiti keðju",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PTEAfmrkuntgjaldaflokks-65004",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Afmörkun útgjaldaflokks",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PTEEkkiuppskrifa-65005",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Ekki uppáskrifað",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTEPrentalaunamia-65006",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Prenta launamiða",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTEjafnaargreislur-65007",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "PTE Ójafnaðar greiðslur",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PTEEkkigreislutillgu-65008",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Ekki í greiðslutillögu",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTEContractor-65009",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Contractor",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTESleppagreislutillgu-65010",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Sleppa í greiðslutillögu",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CTRContractor-10027575",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "CTR Contractor",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

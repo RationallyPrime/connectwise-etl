@@ -20,8 +20,7 @@ from fabric_api.extract.invoices import get_unposted_invoices_with_details
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger: Logger = logging.getLogger("cw_test")
 
@@ -52,9 +51,7 @@ def setup_client():
     logger.info(f"Setting up client with auth username: {auth_username}")
 
     return ConnectWiseClient(
-        basic_username=auth_username,
-        basic_password=auth_password,
-        client_id=client_id
+        basic_username=auth_username, basic_password=auth_password, client_id=client_id
     )
 
 
@@ -85,7 +82,7 @@ def test_endpoints() -> None:
         "/time/entries",
         "/expense/entries",
         "/procurement/products",
-        "/finance/agreements"
+        "/finance/agreements",
     ]
 
     for endpoint in endpoints:
@@ -115,13 +112,25 @@ def test_invoice_extraction() -> None:
     # Set date parameters - try different date ranges
     date_ranges = [
         # Last 7 days
-        ((datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d")),
+        (
+            (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d"),
+            datetime.now().strftime("%Y-%m-%d"),
+        ),
         # Last 30 days
-        ((datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d")),
+        (
+            (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d"),
+            datetime.now().strftime("%Y-%m-%d"),
+        ),
         # Last 90 days
-        ((datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d")),
+        (
+            (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d"),
+            datetime.now().strftime("%Y-%m-%d"),
+        ),
         # Last 180 days
-        ((datetime.now() - timedelta(days=180)).strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d")),
+        (
+            (datetime.now() - timedelta(days=180)).strftime("%Y-%m-%d"),
+            datetime.now().strftime("%Y-%m-%d"),
+        ),
     ]
 
     for start_date, end_date in date_ranges:
@@ -154,14 +163,20 @@ def test_invoice_extraction() -> None:
                 invoice_number = invoices_raw[0].get("invoiceNumber", "")
 
                 if invoice_id:
-                    logger.info(f"Testing related entities for invoice {invoice_number} (ID: {invoice_id})")
+                    logger.info(
+                        f"Testing related entities for invoice {invoice_number} (ID: {invoice_id})"
+                    )
 
                     # Test time entries
                     try:
                         logger.info("Testing time entries endpoint...")
-                        time_entries_response = client.get(f"/finance/invoices/{invoice_id}/timeentries")
+                        time_entries_response = client.get(
+                            f"/finance/invoices/{invoice_id}/timeentries"
+                        )
                         time_entries_data = time_entries_response.json()
-                        logger.info(f"Found {len(time_entries_data)} time entries via direct API call")
+                        logger.info(
+                            f"Found {len(time_entries_data)} time entries via direct API call"
+                        )
                         if time_entries_data:
                             logger.info("Sample time entry schema:")
                             pretty_print_json(time_entries_data[0])
@@ -194,10 +209,12 @@ def test_invoice_extraction() -> None:
 
             # Now test the full extraction function
             logger.info("Testing full invoice extraction function...")
-            invoice_headers, invoice_lines, time_entries, expenses, products, errors = get_unposted_invoices_with_details(
-                client=client,
-                max_pages=1,  # Limit to 1 page for testing
-                **cw_filter
+            invoice_headers, invoice_lines, time_entries, expenses, products, errors = (
+                get_unposted_invoices_with_details(
+                    client=client,
+                    max_pages=1,  # Limit to 1 page for testing
+                    **cw_filter,
+                )
             )
 
             logger.info(msg="Extraction results:")
@@ -219,7 +236,9 @@ def test_invoice_extraction() -> None:
                 break
 
         except Exception as e:
-            logger.error(msg=f"Error during invoice extraction for date range {start_date} to {end_date}: {e!s}")
+            logger.error(
+                msg=f"Error during invoice extraction for date range {start_date} to {end_date}: {e!s}"
+            )
 
 
 def test_batch_invoice_extraction(max_pages: int = 5) -> None:
@@ -233,24 +252,29 @@ def test_batch_invoice_extraction(max_pages: int = 5) -> None:
 
         # Run the batch extraction
         print(f"Fetching invoices with max_pages={max_pages}...")
-        invoice_headers, invoice_lines, time_entries, expenses, products, errors = get_invoices_with_details(
-            client=client,
-            max_pages=max_pages
+        invoice_headers, invoice_lines, time_entries, expenses, products, errors = (
+            get_invoices_with_details(client=client, max_pages=max_pages)
         )
 
         # Calculate execution time
         execution_time = (datetime.now() - start_time).total_seconds()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f"EXTRACTION RESULTS | Completed in {execution_time:.2f} seconds")
-        print("="*60)
+        print("=" * 60)
         print(f"{'Data Type':<20} | {'Count':<8} | {'Sample ID'}")
-        print("-"*60)
+        print("-" * 60)
 
-        sample_header_id = getattr(invoice_headers[0], "invoice_number", "N/A") if invoice_headers else "N/A"
+        sample_header_id = (
+            getattr(invoice_headers[0], "invoice_number", "N/A") if invoice_headers else "N/A"
+        )
         print(f"{'Invoice Headers':<20} | {len(invoice_headers):<8} | {sample_header_id}")
 
-        sample_line_id = f"{getattr(invoice_lines[0], 'invoice_number', 'N/A')}:{getattr(invoice_lines[0], 'line_no', 'N/A')}" if invoice_lines else "N/A"
+        sample_line_id = (
+            f"{getattr(invoice_lines[0], 'invoice_number', 'N/A')}:{getattr(invoice_lines[0], 'line_no', 'N/A')}"
+            if invoice_lines
+            else "N/A"
+        )
         print(f"{'Invoice Lines':<20} | {len(invoice_lines):<8} | {sample_line_id}")
 
         sample_time_id = getattr(time_entries[0], "time_entry_id", "N/A") if time_entries else "N/A"
@@ -268,9 +292,9 @@ def test_batch_invoice_extraction(max_pages: int = 5) -> None:
 
         # ERROR ANALYSIS - only if errors exist
         if errors:
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print(f"ERROR ANALYSIS | {len(errors)} errors found")
-            print("="*60)
+            print("=" * 60)
 
             # Group errors by table
             table_errors = {}
@@ -287,16 +311,24 @@ def test_batch_invoice_extraction(max_pages: int = 5) -> None:
             for error in errors:
                 # Use just the first part of the error message to group similar errors
                 msg = str(error.error_message)
-                msg_start = msg.split(" (")[0] if " (" in msg else (msg[:50] + "..." if len(msg) > 50 else msg)
+                msg_start = (
+                    msg.split(" (")[0]
+                    if " (" in msg
+                    else (msg[:50] + "..." if len(msg) > 50 else msg)
+                )
                 error_types[msg_start] = error_types.get(msg_start, 0) + 1
 
             print("\nTOP ERROR TYPES:")
-            for i, (msg, count) in enumerate(sorted(error_types.items(), key=lambda x: x[1], reverse=True)[:3]):
-                print(f"  {i+1}. {count} errors: {msg}")
+            for i, (msg, count) in enumerate(
+                sorted(error_types.items(), key=lambda x: x[1], reverse=True)[:3]
+            ):
+                print(f"  {i + 1}. {count} errors: {msg}")
 
             # Show sample of most common error
             most_common_msg = max(error_types.items(), key=lambda x: x[1])[0]
-            sample_error = next((e for e in errors if most_common_msg in str(e.error_message)), errors[0])
+            sample_error = next(
+                (e for e in errors if most_common_msg in str(e.error_message)), errors[0]
+            )
 
             print("\nSAMPLE ERROR DETAILS:")
             print(f"  Table:         {getattr(sample_error, 'table_name', 'Unknown')}")
@@ -306,13 +338,20 @@ def test_batch_invoice_extraction(max_pages: int = 5) -> None:
 
         # Sample data validation check
         if invoice_lines:
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("INVOICE LINE VALIDATION CHECK")
-            print("="*60)
+            print("=" * 60)
             sample_line = invoice_lines[0]
             sample_dict = sample_line.model_dump()
-            for field in ["invoice_number", "line_no", "description", "time_entry_id", "quantity", "line_amount"]:
-                print(f"{field+':':<20} {sample_dict.get(field, 'None')}")
+            for field in [
+                "invoice_number",
+                "line_no",
+                "description",
+                "time_entry_id",
+                "quantity",
+                "line_amount",
+            ]:
+                print(f"{field + ':':<20} {sample_dict.get(field, 'None')}")
 
         print("\nBATCH EXTRACTION TEST COMPLETE")
 
@@ -329,9 +368,8 @@ def test_all_extraction_methods(max_pages: int = 50) -> None:
     from fabric_api.extract.invoices import get_invoices_with_details
 
     logger.info("Running invoice extraction (both posted and unposted)...")
-    invoice_headers, invoice_lines, time_entries, expenses, products, errors = get_invoices_with_details(
-        client=client,
-        max_pages=max_pages
+    invoice_headers, invoice_lines, time_entries, expenses, products, errors = (
+        get_invoices_with_details(client=client, max_pages=max_pages)
     )
 
     logger.info(msg="Extraction results:")
@@ -380,7 +418,9 @@ def test_all_extraction_methods(max_pages: int = 50) -> None:
 
         logger.info(f"Successfully extracted {len(agreements)} agreements")
         if agreement_errors:
-            logger.warning(f"Encountered {len(agreement_errors)} errors during agreement extraction")
+            logger.warning(
+                f"Encountered {len(agreement_errors)} errors during agreement extraction"
+            )
 
 
 def save_sample_invoice_to_json():
@@ -394,7 +434,7 @@ def save_sample_invoice_to_json():
             endpoint="/finance/accounting/unpostedinvoices",
             entity_name="unposted invoices",
             params={"pageSize": 5},
-            max_pages=1
+            max_pages=1,
         )
 
         if not raw_invoices:
@@ -405,7 +445,7 @@ def save_sample_invoice_to_json():
                 endpoint="/finance/invoices",
                 entity_name="posted invoices",
                 params={"pageSize": 5},
-                max_pages=1
+                max_pages=1,
             )
 
             if not raw_invoices:
@@ -418,7 +458,9 @@ def save_sample_invoice_to_json():
         with open("sample_invoice.json", "w") as f:
             json.dump(sample_invoice, f, indent=2, default=str)
 
-        logger.info(f"Saved sample invoice {sample_invoice.get('invoiceNumber', 'Unknown')} to sample_invoice.json")
+        logger.info(
+            f"Saved sample invoice {sample_invoice.get('invoiceNumber', 'Unknown')} to sample_invoice.json"
+        )
 
     except Exception as e:
         logger.error(f"Error saving sample invoice: {e!s}")

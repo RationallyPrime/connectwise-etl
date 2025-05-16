@@ -19,6 +19,7 @@ from pyspark.sql.functions import (
     get_json_object,
     lit,
     lower,
+    max,
     sum,
     trim,
     when,
@@ -46,10 +47,7 @@ def extract_agreement_number(df: DataFrame, custom_fields_col: str = "customFiel
         "agreementNumber",
         when(
             col(custom_fields_col).isNotNull(),
-            get_json_object(
-                get_json_object(col(custom_fields_col), "$[0]"), 
-                "$.value"
-            ),
+            get_json_object(get_json_object(col(custom_fields_col), "$[0]"), "$.value"),
         ).otherwise(None),
     )
 
@@ -57,7 +55,7 @@ def extract_agreement_number(df: DataFrame, custom_fields_col: str = "customFiel
 def resolve_agreement_hierarchy(
     df: DataFrame,
     agreements_df: DataFrame,
-    entity_agreement_col: str = "agreement_id",
+    entity_agreement_col: str = "agreementId",
     entity_type: str = "entity",
 ) -> DataFrame:
     """
@@ -82,8 +80,8 @@ def resolve_agreement_hierarchy(
         agreements_with_numbers.select(
             col("id").alias("agr_id"),
             col("agreementNumber").alias("direct_agreement_number"),
-            col("parentAgreement_id"),
-            col("type_name").alias("agreement_type"),
+            col("parentAgreementId"),
+            col("typeName").alias("agreement_type"),
         ),
         df[entity_agreement_col] == col("agr_id"),
         "left",
@@ -94,7 +92,7 @@ def resolve_agreement_hierarchy(
         agreements_with_numbers.select(
             col("id").alias("parent_id"), col("agreementNumber").alias("parent_agreement_number")
         ),
-        col("parentAgreement_id") == col("parent_id"),
+        col("parentAgreementId") == col("parent_id"),
         "left",
     )
 
@@ -190,72 +188,87 @@ def create_invoice_lines_gold(
     """
     logger.info("Creating gold invoice lines")
 
+    # Display column names for debugging purposes
+    logger.info(f"Silver time entries columns: {silver_time_entries.columns}")
+
     # For actual implementation, we'd parse invoice detail arrays
     # This is a placeholder showing the structure
 
+    # Display column names for debugging
+    logger.info(f"Available columns in silver_time_entries: {', '.join(silver_time_entries.columns)}")
+
     # Example structure for Standard invoices (time-based)
-    time_based_lines = silver_time_entries.filter(col("invoice_id").isNotNull()).select(
-        col("invoice_id"),
-        lit(10000).alias("line_number"),  # Would increment in real implementation
-        col("id").alias("time_entry_id"),
-        lit(None).alias("product_id"),
+    time_based_lines = silver_time_entries.filter(col("invoiceId").isNotNull()).select(
+        col("invoiceId"),
+        lit(10000).alias("lineNumber"),  # Would increment in real implementation
+        col("id").alias("timeEntryId"),
+        lit(None).alias("productId"),
         col("notes").alias("memo"),
         col("actualHours").alias("quantity"),
-        col("actualHours") * col("hourlyRate").alias("line_amount"),
-        concat_ws(" - ", col("workType_name"), col("member_name")).alias("description"),
-        col("timeStart").alias("document_date"),
+        (col("actualHours") * col("hourlyRate")).alias("lineAmount"),
+        concat_ws(" - ", col("workTypeName"), col("memberName")).alias("description"),
+        col("timeStart").alias("documentDate"),
         col("hourlyRate").alias("price"),
         lit(None).alias("cost"),
-        col("agreement_id"),
-        col("member_id").alias("employee_id"),
-        col("workRole_id"),
-        col("workType_id"),
+        col("agreementId"),
+        col("memberId").alias("employeeId"),
+        col("workRoleId"),
+        col("workTypeId"),
     )
 
     # Resolve agreement hierarchy for time entries
     time_lines_with_agreements = resolve_agreement_hierarchy(
         time_based_lines,
         silver_agreements,
-        entity_agreement_col="agreement_id",
+        entity_agreement_col="agreementId",
         entity_type="time_entry_lines",
     )
 
+    # Log available columns after agreement hierarchy resolution
+    logger.info(f"Available columns after time agreement resolution: {', '.join(time_lines_with_agreements.columns)}")
+
     # Filter out Tímapottur agreement types
     filtered_time_lines = time_lines_with_agreements.filter(
-        ~(trim(col("agreement_type")) == "Tímapottur")
+        ~trim(col("agreement_type")).isin(["Tímapottur", "Timapottur"])
     )
 
+    # Display column names for debugging
+    logger.info(f"Available columns in silver_products: {', '.join(silver_products.columns)}")
+
     # Example structure for Agreement invoices (product-based)
-    product_based_lines = silver_products.filter(col("invoice_id").isNotNull()).select(
-        col("invoice_id"),
-        lit(10000).alias("line_number"),  # Would increment in real implementation
-        lit(None).alias("time_entry_id"),
-        col("id").alias("product_id"),
+    product_based_lines = silver_products.filter(col("invoiceId").isNotNull()).select(
+        col("invoiceId"),
+        lit(10000).alias("lineNumber"),  # Would increment in real implementation
+        lit(None).alias("timeEntryId"),
+        col("id").alias("productId"),
         col("description").alias("memo"),
         col("quantity"),
-        col("quantity") * col("price").alias("line_amount"),
+        (col("quantity") * col("price")).alias("lineAmount"),
         col("description"),
-        col("etl_timestamp").alias("document_date"),  # Would use actual date
+        col("etlTimestamp").alias("documentDate"),  # Would use actual date
         col("price"),
         col("cost"),
-        col("agreement_id"),
-        lit(None).alias("employee_id"),
-        lit(None).alias("workRole_id"),
-        lit(None).alias("workType_id"),
-        col("catalogItem_id").alias("item_identifier"),
+        col("agreementId"),
+        lit(None).alias("employeeId"),
+        lit(None).alias("workRoleId"),
+        lit(None).alias("workTypeId"),
+        col("catalogItemId").alias("itemIdentifier"),
     )
 
     # Resolve agreement hierarchy for products
     product_lines_with_agreements = resolve_agreement_hierarchy(
         product_based_lines,
         silver_agreements,
-        entity_agreement_col="agreement_id",
+        entity_agreement_col="agreementId",
         entity_type="product_lines",
     )
 
+    # Log the columns we have after hierarchy resolution
+    logger.info(f"Available columns after agreement resolution: {', '.join(product_lines_with_agreements.columns)}")
+
     # Apply special discount logic
     product_lines_with_discounts = product_lines_with_agreements.withColumn(
-        "discount_applicable", when(col("item_identifier") != "SALE0000", True).otherwise(False)
+        "discountApplicable", when(col("itemIdentifier") != "SALE0000", True).otherwise(False)
     )
 
     # Union all line types
@@ -285,7 +298,7 @@ def create_expense_lines_gold(
     # Join expenses with invoices to get invoice numbers
     expenses_with_invoices = silver_expenses.join(
         silver_invoices.select("id", "invoiceNumber", "type"),
-        silver_expenses["invoice_id"] == silver_invoices["id"],
+        silver_expenses["invoiceId"] == silver_invoices["id"],
         "left",
     )
 
@@ -294,16 +307,16 @@ def create_expense_lines_gold(
 
     # Structure expense lines
     expense_lines = standard_invoice_expenses.select(
-        col("invoice_id"),
+        col("invoiceId"),
         col("invoiceNumber"),
-        lit(10000).alias("line_number"),  # Would increment in real implementation
-        col("type_name").alias("expense_type"),
+        lit(10000).alias("lineNumber"),  # Would increment in real implementation
+        col("typeName").alias("expenseType"),
         col("amount").alias("quantity"),
-        col("amount").alias("line_amount"),
+        col("amount").alias("lineAmount"),
         col("notes").alias("description"),
-        col("date").alias("work_date"),
-        col("member_identifier").alias("employee"),
-        col("agreement_id"),
+        col("date").alias("workDate"),
+        col("memberIdentifier").alias("employee"),
+        col("agreementId"),
         col("etlTimestamp"),
     )
 
@@ -311,7 +324,7 @@ def create_expense_lines_gold(
     expense_lines_with_agreements = resolve_agreement_hierarchy(
         expense_lines,
         silver_agreements,
-        entity_agreement_col="agreement_id",
+        entity_agreement_col="agreementId",
         entity_type="expense_lines",
     )
 
@@ -334,54 +347,73 @@ def create_agreement_summary_gold(
     """
     logger.info("Creating gold agreement summary")
 
-    # Extract agreement numbers
-    agreements_with_numbers = extract_agreement_number(silver_agreements)
+    # Extract agreement numbers with all required columns aliased
+    agreements_with_numbers = extract_agreement_number(silver_agreements).select(
+        col("id").alias("agr_id"),
+        col("name").alias("agr_name"),
+        col("agreementNumber").alias("agr_agreementNumber"),
+        col("typeName").alias("agr_typeName"),
+        col("companyName").alias("agr_companyName"),
+        col("billToCompanyName").alias("agr_billToCompanyName"),
+        col("startDate").alias("agr_startDate"),
+        col("endDate").alias("agr_endDate"),
+        col("agreementStatus").alias("agr_agreementStatus"),
+        col("billAmount").alias("agr_billAmount"),
+        col("etlTimestamp").alias("agr_etlTimestamp"),
+    )
+    
+    # Add customer name (billToCompanyName or companyName)
+    agreements_with_numbers = agreements_with_numbers.withColumn(
+        "agr_customerName",
+        when(col("agr_billToCompanyName").isNotNull(), col("agr_billToCompanyName"))
+        .otherwise(col("agr_companyName"))
+    )
 
     # Aggregate invoice data by agreement
     invoice_summary = gold_invoice_headers.groupBy("final_agreement_number").agg(
-        count("invoice_id").alias("invoice_count"),
-        sum("total").alias("total_invoiced"),
-        max("invoiceDate").alias("lastInvoiceDate"),
+        count("invoiceId").alias("inv_invoiceCount"),
+        sum("total").alias("inv_totalInvoiced"),
+        max("invoiceDate").alias("inv_lastInvoiceDate"),
     )
 
     # Aggregate line data by agreement
     line_summary = gold_invoice_lines.groupBy("final_agreement_number").agg(
-        count("line_number").alias("line_count"),
-        sum("line_amount").alias("total_line_amount"),
-        countDistinct("time_entry_id").alias("time_entry_count"),
-        countDistinct("product_id").alias("product_count"),
+        count("lineNumber").alias("line_lineCount"),
+        sum("lineAmount").alias("line_totalLineAmount"),
+        countDistinct("timeEntryId").alias("line_timeEntryCount"),
+        countDistinct("productId").alias("line_productCount"),
     )
 
     # Join with agreement data
     agreement_summary = (
         agreements_with_numbers.join(
             invoice_summary,
-            agreements_with_numbers["agreementNumber"] == invoice_summary["final_agreement_number"],
+            agreements_with_numbers["agr_agreementNumber"] == invoice_summary["final_agreement_number"],
             "left",
         )
         .join(
             line_summary,
-            agreements_with_numbers["agreementNumber"] == line_summary["final_agreement_number"],
+            agreements_with_numbers["agr_agreementNumber"] == line_summary["final_agreement_number"],
             "left",
         )
         .select(
-            col("id").alias("agreement_id"),
-            col("name").alias("agreement_name"),
-            col("agreementNumber"),
-            col("type_name").alias("agreement_type"),
-            col("company_name"),
-            col("customer_name"),
-            col("startDate"),
-            col("endDate"),
-            col("agreementStatus_name").alias("status"),
-            col("billAmount"),
-            col("invoice_count"),
-            col("total_invoiced"),
-            col("lastInvoiceDate"),
-            col("line_count"),
-            col("time_entry_count"),
-            col("product_count"),
-            col("etlTimestamp"),
+            col("agr_id").alias("agreementId"),
+            col("agr_name").alias("agreementName"),
+            col("agr_agreementNumber").alias("agreementNumber"),
+            col("agr_typeName").alias("agreementType"),
+            col("agr_companyName").alias("companyName"),
+            col("agr_customerName").alias("customerName"),
+            col("agr_startDate").alias("startDate"),
+            col("agr_endDate").alias("endDate"),
+            col("agr_agreementStatus").alias("status"),
+            col("agr_billAmount").alias("billAmount"),
+            col("inv_invoiceCount").alias("invoiceCount"),
+            col("inv_totalInvoiced").alias("totalInvoiced"),
+            col("inv_lastInvoiceDate").alias("lastInvoiceDate"),
+            col("line_lineCount").alias("lineCount"),
+            col("line_timeEntryCount").alias("timeEntryCount"),
+            col("line_productCount").alias("productCount"),
+            col("agr_etlTimestamp").alias("etlTimestamp"),
         )
     )
 
@@ -409,11 +441,15 @@ def run_gold_invoice_processing(
 
     # Read silver tables
     logger.info("Reading silver layer tables")
-    silver_invoices = spark.table("silver.postedinvoice")
-    silver_agreements = spark.table("silver.agreement")
-    silver_time_entries = spark.table("silver.timeentry")
-    silver_products = spark.table("silver.productitem")
-    silver_expenses = spark.table("silver.expenseentry")
+    silver_invoices = spark.table("silver.PostedInvoice")  # Using consistent camelCase table names
+    silver_agreements = spark.table("silver.Agreement")
+    silver_time_entries = spark.table("silver.TimeEntry")
+    silver_products = spark.table("silver.ProductItem")
+    silver_expenses = spark.table("silver.ExpenseEntry")
+
+    # Log columns available in each table for debugging
+    logger.info(f"TimeEntry columns: {', '.join(silver_time_entries.columns)}")
+    logger.info(f"ProductItem columns: {', '.join(silver_products.columns)}")
 
     # Create gold invoice headers
     gold_headers = create_invoice_headers_gold(silver_invoices, silver_agreements)
@@ -432,7 +468,7 @@ def run_gold_invoice_processing(
 
     # Create gold invoice lines (simplified - would need actual line parsing)
     gold_lines = create_invoice_lines_gold(
-        silver_invoices,  # Would parse actual line items
+        silver_invoices.select("*"),  # Pass all columns, add proper handling in real implementation
         silver_time_entries,
         silver_products,
         silver_agreements,

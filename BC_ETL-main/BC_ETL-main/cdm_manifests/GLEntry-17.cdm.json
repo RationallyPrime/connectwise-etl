@@ -1,0 +1,587 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "GLEntry-17",
+            "exhibitsTraits": [],
+            "displayName": "G/L Entry",
+            "description": "Represents the table G/L Entry",
+            "hasAttributes": [
+                {
+                    "name": "EntryNo-1",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GLAccountNo-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "G/L Account No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PostingDate-4",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Posting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentType-5",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Document Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentNo-6",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Document No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Description-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "BalAccountNo-10",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bal. Account No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Amount-17",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "GlobalDimension1Code-23",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-24",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "UserID-27",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "User ID",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "SourceCode-28",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Source Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "SystemCreatedEntry-29",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "System-Created Entry",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PriorYearEntry-30",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Prior-Year Entry",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "JobNo-41",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Job No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Quantity-42",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Quantity",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "VATAmount-43",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "VAT Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "BusinessUnitCode-45",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Business Unit Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "JournalBatchName-46",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Journal Batch Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ReasonCode-47",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Reason Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "GenPostingType-48",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Posting Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GenBusPostingGroup-49",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GenProdPostingGroup-50",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Prod. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "BalAccountType-51",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Bal. Account Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "TransactionNo-52",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Transaction No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DebitAmount-53",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Debit Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CreditAmount-54",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Credit Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "DocumentDate-55",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Document Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ExternalDocumentNo-56",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "External Document No.",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "SourceType-57",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Source Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "SourceNo-58",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Source No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "NoSeries-59",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No. Series",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TaxAreaCode-60",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Tax Area Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TaxLiable-61",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Tax Liable",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "TaxGroupCode-62",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Tax Group Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "UseTax-63",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Use Tax",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "VATBusPostingGroup-64",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "VAT Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "VATProdPostingGroup-65",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "VAT Prod. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "AdditionalCurrencyAmount-68",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Additional-Currency Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AddCurrencyDebitAmount-69",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Add.-Currency Debit Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AddCurrencyCreditAmount-70",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Add.-Currency Credit Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CloseIncomeStatementDimID-71",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Close Income Statement Dim. ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ICPartnerCode-72",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "IC Partner Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Reversed-73",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Reversed",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ReversedbyEntryNo-74",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Reversed by Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ReversedEntryNo-75",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Reversed Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "JournalTemplName-78",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Journal Templ. Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "VATReportingDate-79",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "VAT Reporting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DimensionSetID-480",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Set ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "LastDimCorrectionEntryNo-495",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Last Dim. Correction Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "LastDimCorrectionNode-496",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Last Dim. Correction Node",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DimensionChangesCount-497",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Changes Count",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "AllocationAccountNo-2678",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Allocation Account No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ProdOrderNo-5400",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Prod. Order No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "FAEntryType-5600",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "FA Entry Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "FAEntryNo-5601",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "FA Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Comment-5618",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Comment",
+                    "maximumLength": 250
+                },
+                {
+                    "name": "NonDeductibleVATAmount-6200",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Non-Deductible VAT Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "NonDeductibleVATAmountACY-6201",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Non-Deductible VAT Amount ACY",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "LastModifiedDateTime-8005",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "Last Modified DateTime",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 """
 Test script to validate Pydantic models with sample JSON data.
 """
+
 import json
 import traceback
 from pathlib import Path

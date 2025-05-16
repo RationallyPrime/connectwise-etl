@@ -31,9 +31,14 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
 
     # Helper function to check if a column needs flattening
     def needs_flattening(field_dtype):
-        return isinstance(field_dtype, StructType) or \
-               (isinstance(field_dtype, ArrayType) and isinstance(field_dtype.elementType, StructType)) or \
-               isinstance(field_dtype, MapType)
+        return (
+            isinstance(field_dtype, StructType)
+            or (
+                isinstance(field_dtype, ArrayType)
+                and isinstance(field_dtype.elementType, StructType)
+            )
+            or isinstance(field_dtype, MapType)
+        )
 
     # Initial schema check
     fields = df.schema.fields
@@ -46,24 +51,49 @@ def flatten_dataframe(df: DataFrame, max_depth: int = 3) -> DataFrame:
         return df
 
     # Process struct columns
-    struct_cols = [field.name for field in fields
-                  if isinstance(field.dataType, StructType)]
+    struct_cols = [field.name for field in fields if isinstance(field.dataType, StructType)]
 
     expanded_cols = []
+    generated_names = set()  # Track column names we've already generated
+
+    # First, track all top-level column names that aren't being flattened
+    top_level_names = {field.name for field in fields if field.name not in struct_cols}
 
     # Handling regular columns (non-struct)
     for field in fields:
         if field.name not in struct_cols:
             expanded_cols.append(col(field.name))
+            generated_names.add(field.name)
         else:
             # For struct columns, flatten each field
             # Access fields through the schema method to avoid attribute errors
             if isinstance(field.dataType, StructType):
                 struct_fields = field.dataType.fields
                 for struct_field in struct_fields:
-                    expanded_cols.append(
-                        col(f"{field.name}.{struct_field.name}").alias(f"{field.name}_{struct_field.name}")
-                    )
+                    # Maintain camelCase by combining field names with first letter capitalized
+                    child_name = struct_field.name
+
+                    # Generate camelCase name for the flattened field
+                    if child_name.startswith("_"):
+                        base_name = f"{field.name}{child_name}"
+                    else:
+                        # Always prefix with parent field name to avoid ambiguity
+                        child_camel = child_name[0].upper() + child_name[1:] if child_name else ""
+                        base_name = f"{field.name}{child_camel}"
+
+                    # Start with the base name
+                    final_name = base_name
+
+                    # If the name conflicts with existing columns, add a suffix
+                    suffix = 1
+                    while final_name in generated_names or final_name in top_level_names:
+                        final_name = f"{base_name}_{suffix}"
+                        suffix += 1
+
+                    # Track this name as used
+                    generated_names.add(final_name)
+
+                    expanded_cols.append(col(f"{field.name}.{struct_field.name}").alias(final_name))
 
     # Create DataFrame with expanded columns
     expanded_df = df.select(expanded_cols)
@@ -89,8 +119,7 @@ def convert_arrays_to_json(df: DataFrame, array_columns: list[str] | None = None
     # If no array columns specified, detect automatically
     if array_columns is None:
         array_columns = [
-            field.name for field in df.schema.fields
-            if isinstance(field.dataType, ArrayType)
+            field.name for field in df.schema.fields if isinstance(field.dataType, ArrayType)
         ]
 
     if not array_columns:
@@ -121,8 +150,7 @@ def explode_array_columns(df: DataFrame, array_columns: list[str] | None = None)
     # If no array columns specified, detect automatically
     if array_columns is None:
         array_columns = [
-            field.name for field in df.schema.fields
-            if isinstance(field.dataType, ArrayType)
+            field.name for field in df.schema.fields if isinstance(field.dataType, ArrayType)
         ]
 
     if not array_columns:
@@ -137,9 +165,7 @@ def explode_array_columns(df: DataFrame, array_columns: list[str] | None = None)
 
 
 def flatten_array_struct_columns(
-    df: DataFrame,
-    array_struct_columns: list[str] | None = None,
-    array_to_json: bool = True
+    df: DataFrame, array_struct_columns: list[str] | None = None, array_to_json: bool = True
 ) -> DataFrame:
     """
     Handle arrays of structs by either converting to JSON strings or exploding.
@@ -158,9 +184,10 @@ def flatten_array_struct_columns(
     # If no columns specified, detect automatically
     if array_struct_columns is None:
         array_struct_columns = [
-            field.name for field in df.schema.fields
-            if isinstance(field.dataType, ArrayType) and
-               isinstance(field.dataType.elementType, StructType)
+            field.name
+            for field in df.schema.fields
+            if isinstance(field.dataType, ArrayType)
+            and isinstance(field.dataType.elementType, StructType)
         ]
 
     if not array_struct_columns:

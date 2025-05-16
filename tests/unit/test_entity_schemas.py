@@ -13,37 +13,43 @@ from datetime import datetime, timedelta
 # Use the main entity models from fabric_api.connectwise_models
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def generate_random_id():
     """Generate a random ID between 1000 and 9999"""
     return random.randint(1000, 9999)
+
 
 def generate_random_date(days_back=365):
     """Generate a random date within the last year"""
     days = random.randint(0, days_back)
     return (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+
 def generate_random_decimal(min_val=10.0, max_val=1000.0):
     """Generate a random decimal value"""
     return round(random.uniform(min_val, max_val), 2)
+
 
 def create_reference():
     """Create a generic reference object"""
     return {
         "id": generate_random_id(),
         "name": f"Sample-{generate_random_id()}",
-        "_info": {
-            "additional_properties": {}
-        }
+        "_info": {"additional_properties": {}},
     }
+
 
 def generate_company_reference():
     """Generate a company reference"""
     ref = create_reference()
     ref["identifier"] = f"COMP-{ref['id']}"
     return ref
+
 
 def generate_invoice_reference():
     """Generate an invoice reference"""
@@ -55,14 +61,16 @@ def generate_invoice_reference():
     ref["charge_firm_flag"] = random.choice([True, False])
     return ref
 
+
 def generate_info_object():
     """Generate an InfoObject"""
     return {
         "additional_properties": {
             "lastUpdated": generate_random_date(),
-            "updatedBy": f"user{generate_random_id()}"
+            "updatedBy": f"user{generate_random_id()}",
         }
     }
+
 
 def generate_agreement():
     """Generate a sample Agreement"""
@@ -72,7 +80,7 @@ def generate_agreement():
         "type": {
             "id": generate_random_id(),
             "name": random.choice(["Recurring Service", "Block Time", "Managed Services"]),
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "company": generate_company_reference(),
         "contact": create_reference(),
@@ -88,19 +96,20 @@ def generate_agreement():
         "billing_cycle": {
             "id": generate_random_id(),
             "name": random.choice(["Monthly", "Quarterly", "Annual"]),
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "billing_terms": {
             "id": generate_random_id(),
             "name": random.choice(["Net 30", "Due on Receipt", "Net 15"]),
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "work_type": create_reference(),
         "work_role": create_reference(),
         "agreement_type": random.choice(["Standard", "CompanyWide"]),
         "_info": generate_info_object(),
-        "custom_fields": []
+        "custom_fields": [],
     }
+
 
 def generate_posted_invoice():
     """Generate a sample Posted Invoice"""
@@ -133,11 +142,12 @@ def generate_posted_invoice():
             "decimal_separator": ".",
             "number_of_decimals": 2,
             "thousands_separator": ",",
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "_info": generate_info_object(),
-        "custom_fields": []
+        "custom_fields": [],
     }
+
 
 def generate_unposted_invoice():
     """Generate a sample Unposted Invoice"""
@@ -156,8 +166,9 @@ def generate_unposted_invoice():
         "billing_terms": create_reference(),
         "amount": generate_random_decimal(100, 3000),
         "_info": generate_info_object(),
-        "custom_fields": []
+        "custom_fields": [],
     }
+
 
 def generate_time_entry():
     """Generate a sample Time Entry"""
@@ -171,7 +182,7 @@ def generate_time_entry():
             "identifier": f"user{generate_random_id()}",
             "name": f"User {generate_random_id()}",
             "daily_capacity": 8.0,
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "location_id": generate_random_id(),
         "business_unit_id": generate_random_id(),
@@ -192,8 +203,9 @@ def generate_time_entry():
         "date_entered": generate_random_date(),
         "entered_by": f"user{generate_random_id()}",
         "_info": generate_info_object(),
-        "custom_fields": []
+        "custom_fields": [],
     }
+
 
 def generate_expense_entry():
     """Generate a sample Expense Entry"""
@@ -205,13 +217,13 @@ def generate_expense_entry():
         "type": {
             "id": generate_random_id(),
             "name": random.choice(["Mileage", "Meals", "Lodging", "Travel"]),
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "member": {
             "id": generate_random_id(),
             "identifier": f"user{generate_random_id()}",
             "name": f"User {generate_random_id()}",
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "location_id": generate_random_id(),
         "business_unit_id": generate_random_id(),
@@ -230,8 +242,9 @@ def generate_expense_entry():
         "line_no": random.randint(1, 10),
         "expense_type": random.choice(["Meals", "Mileage", "Travel", "Lodging"]),
         "_info": generate_info_object(),
-        "custom_fields": []
+        "custom_fields": [],
     }
+
 
 def generate_product_item():
     """Generate a sample Product Item"""
@@ -241,7 +254,7 @@ def generate_product_item():
             "id": generate_random_id(),
             "identifier": f"PROD-{generate_random_id()}",
             "description": f"Sample product {generate_random_id()}",
-            "_info": generate_info_object()
+            "_info": generate_info_object(),
         },
         "description": f"Sample product description for item #{generate_random_id()}",
         "quantity": random.randint(1, 10),
@@ -267,8 +280,9 @@ def generate_product_item():
         "invoice": generate_invoice_reference(),
         "tax_code": create_reference(),
         "_info": generate_info_object(),
-        "custom_fields": []
+        "custom_fields": [],
     }
+
 
 def generate_entity_samples(output_dir: str = "entity_samples"):
     """
@@ -287,7 +301,7 @@ def generate_entity_samples(output_dir: str = "entity_samples"):
         "UnpostedInvoice": generate_unposted_invoice,
         "TimeEntry": generate_time_entry,
         "ExpenseEntry": generate_expense_entry,
-        "ProductItem": generate_product_item
+        "ProductItem": generate_product_item,
     }
 
     for entity_name, generate_func in entities.items():
@@ -299,7 +313,7 @@ def generate_entity_samples(output_dir: str = "entity_samples"):
 
             # Save to file
             file_path = os.path.join(output_dir, f"{entity_name}.json")
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 # Pretty print with 4 space indentation
                 json.dump(sample_data, f, indent=4)
 
@@ -310,11 +324,13 @@ def generate_entity_samples(output_dir: str = "entity_samples"):
 
     logger.info(f"Completed generating samples for {len(entities)} entities")
 
+
 def main():
     """Main function to run the script."""
     logger.info("Starting entity sample generation...")
     generate_entity_samples()
     logger.info("Done!")
+
 
 if __name__ == "__main__":
     main()

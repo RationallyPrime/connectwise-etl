@@ -15,14 +15,11 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file in the root directory
 root_dir = Path(__file__).parent.parent
-env_path = root_dir / '.env'
+env_path = root_dir / ".env"
 load_dotenv(dotenv_path=env_path)
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(levelname)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Silence noisy loggers
@@ -40,10 +37,15 @@ from fabric_api.extract.generic import extract_entity
 def client():
     """Return a ConnectWiseClient instance with credentials from environment."""
     # Environment variables must be set before running tests
-    if not os.getenv("CW_AUTH_USERNAME") or not os.getenv("CW_AUTH_PASSWORD") or not os.getenv("CW_CLIENTID"):
+    if (
+        not os.getenv("CW_AUTH_USERNAME")
+        or not os.getenv("CW_AUTH_PASSWORD")
+        or not os.getenv("CW_CLIENTID")
+    ):
         pytest.skip("Environment variables for ConnectWise API not set. Skipping test.")
 
     return ConnectWiseClient()
+
 
 def test_fields_parameter(client):
     """Test if fields parameter is correctly sent to the API."""
@@ -58,7 +60,7 @@ def test_fields_parameter(client):
         entity_name="agreements",
         fields=fields,
         max_pages=1,
-        page_size=5
+        page_size=5,
     )
 
     # Validate the results
@@ -66,7 +68,9 @@ def test_fields_parameter(client):
 
     # Check that we got exactly the fields we requested
     for agreement in agreements:
-        assert set(agreement.keys()).issubset({"id", "name", "_info"}), "Received fields beyond what was requested"
+        assert set(agreement.keys()).issubset({"id", "name", "_info"}), (
+            "Received fields beyond what was requested"
+        )
         assert "id" in agreement, "id field missing"
         assert "name" in agreement, "name field missing"
 
@@ -75,6 +79,7 @@ def test_fields_parameter(client):
         logger.warning("Field filtering failed - received 'type' field despite not requesting it")
 
     logger.info("FIELDS PARAMETER: Successfully filtered to only requested fields")
+
 
 def test_conditions_parameter(client):
     """Test if conditions parameter is correctly sent to the API."""
@@ -89,13 +94,16 @@ def test_conditions_parameter(client):
         entity_name="agreements",
         conditions=conditions,
         max_pages=1,
-        page_size=5
+        page_size=5,
     )
 
     assert len(filtered_agreements) > 0, "No agreements returned"
 
     # Log results for verification
-    logger.info(f"CONDITIONS PARAMETER: Successfully filtered agreements (got {len(filtered_agreements)} records)")
+    logger.info(
+        f"CONDITIONS PARAMETER: Successfully filtered agreements (got {len(filtered_agreements)} records)"
+    )
+
 
 def test_extract_entity_with_validation(client):
     """Test extracting agreements with validation against Pydantic models."""
@@ -107,7 +115,7 @@ def test_extract_entity_with_validation(client):
         entity_name="Agreement",
         max_pages=2,
         page_size=20,  # Fetch more agreements
-        return_validated=True
+        return_validated=True,
     )
 
     # Analyze validation results
@@ -117,18 +125,22 @@ def test_extract_entity_with_validation(client):
     field_errors = {}
     if errors:
         for error in errors:
-            for e in error.get('errors', []):
-                field_path = '.'.join(str(loc) for loc in e.get('loc', []))
+            for e in error.get("errors", []):
+                field_path = ".".join(str(loc) for loc in e.get("loc", []))
                 if field_path not in field_errors:
                     field_errors[field_path] = []
-                field_errors[field_path].append({
-                    'type': e.get('type'),
-                    'msg': e.get('msg'),
-                    'input': str(e.get('input', ''))[:50]  # Truncate long inputs
-                })
+                field_errors[field_path].append(
+                    {
+                        "type": e.get("type"),
+                        "msg": e.get("msg"),
+                        "input": str(e.get("input", ""))[:50],  # Truncate long inputs
+                    }
+                )
 
     # Print summary
-    logger.info(f"AGREEMENT: Validated {len(valid_agreements)} of {total_records} records ({len(errors)} errors)")
+    logger.info(
+        f"AGREEMENT: Validated {len(valid_agreements)} of {total_records} records ({len(errors)} errors)"
+    )
 
     # Print field errors if any
     if field_errors:
@@ -136,11 +148,12 @@ def test_extract_entity_with_validation(client):
         for field, errs in field_errors.items():
             logger.info(f"  - {field}: {len(errs)} errors")
             for i, err in enumerate(errs[:3]):  # Show max 3 examples per field
-                logger.info(f"    {i+1}. {err['type']}: {err['msg']} (input: {err['input']})")
+                logger.info(f"    {i + 1}. {err['type']}: {err['msg']} (input: {err['input']})")
             if len(errs) > 3:
                 logger.info(f"    ... and {len(errs) - 3} more errors")
 
     assert len(valid_agreements) > 0, "No valid agreements returned"
+
 
 def test_time_entry_extraction(client):
     """Test extracting time entries with validation."""
@@ -148,11 +161,7 @@ def test_time_entry_extraction(client):
 
     # Extract time entries with validation - larger batch
     valid_entries, errors = extract_entity(
-        client=client,
-        entity_name="TimeEntry",
-        max_pages=2,
-        page_size=20,
-        return_validated=True
+        client=client, entity_name="TimeEntry", max_pages=2, page_size=20, return_validated=True
     )
 
     # Check if we got results - not all systems will have time entries
@@ -167,18 +176,22 @@ def test_time_entry_extraction(client):
     field_errors = {}
     if errors:
         for error in errors:
-            for e in error.get('errors', []):
-                field_path = '.'.join(str(loc) for loc in e.get('loc', []))
+            for e in error.get("errors", []):
+                field_path = ".".join(str(loc) for loc in e.get("loc", []))
                 if field_path not in field_errors:
                     field_errors[field_path] = []
-                field_errors[field_path].append({
-                    'type': e.get('type'),
-                    'msg': e.get('msg'),
-                    'input': str(e.get('input', ''))[:50]  # Truncate long inputs
-                })
+                field_errors[field_path].append(
+                    {
+                        "type": e.get("type"),
+                        "msg": e.get("msg"),
+                        "input": str(e.get("input", ""))[:50],  # Truncate long inputs
+                    }
+                )
 
     # Print summary
-    logger.info(f"TIME ENTRY: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)")
+    logger.info(
+        f"TIME ENTRY: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)"
+    )
 
     # Print field errors if any
     if field_errors:
@@ -186,12 +199,15 @@ def test_time_entry_extraction(client):
         for field, errs in field_errors.items():
             logger.info(f"  - {field}: {len(errs)} errors")
             for i, err in enumerate(errs[:3]):  # Show max 3 examples per field
-                logger.info(f"    {i+1}. {err['type']}: {err['msg']} (input: {err['input']})")
+                logger.info(f"    {i + 1}. {err['type']}: {err['msg']} (input: {err['input']})")
             if len(errs) > 3:
                 logger.info(f"    ... and {len(errs) - 3} more errors")
 
     if valid_entries:
-        assert all(isinstance(entry, TimeEntry) for entry in valid_entries), "Returned objects are not TimeEntry instances"
+        assert all(isinstance(entry, TimeEntry) for entry in valid_entries), (
+            "Returned objects are not TimeEntry instances"
+        )
+
 
 def test_expense_entry_validation(client):
     """Test extracting and validating expense entries."""
@@ -199,11 +215,7 @@ def test_expense_entry_validation(client):
 
     # Extract expense entries with validation
     valid_entries, errors = extract_entity(
-        client=client,
-        entity_name="ExpenseEntry",
-        max_pages=2,
-        page_size=20,
-        return_validated=True
+        client=client, entity_name="ExpenseEntry", max_pages=2, page_size=20, return_validated=True
     )
 
     # Check if we got results - not all systems will have entries
@@ -218,18 +230,22 @@ def test_expense_entry_validation(client):
     field_errors = {}
     if errors:
         for error in errors:
-            for e in error.get('errors', []):
-                field_path = '.'.join(str(loc) for loc in e.get('loc', []))
+            for e in error.get("errors", []):
+                field_path = ".".join(str(loc) for loc in e.get("loc", []))
                 if field_path not in field_errors:
                     field_errors[field_path] = []
-                field_errors[field_path].append({
-                    'type': e.get('type'),
-                    'msg': e.get('msg'),
-                    'input': str(e.get('input', ''))[:50]  # Truncate long inputs
-                })
+                field_errors[field_path].append(
+                    {
+                        "type": e.get("type"),
+                        "msg": e.get("msg"),
+                        "input": str(e.get("input", ""))[:50],  # Truncate long inputs
+                    }
+                )
 
     # Print summary
-    logger.info(f"EXPENSE ENTRY: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)")
+    logger.info(
+        f"EXPENSE ENTRY: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)"
+    )
 
     # Print field errors if any
     if field_errors:
@@ -237,12 +253,15 @@ def test_expense_entry_validation(client):
         for field, errs in field_errors.items():
             logger.info(f"  - {field}: {len(errs)} errors")
             for i, err in enumerate(errs[:3]):  # Show max 3 examples per field
-                logger.info(f"    {i+1}. {err['type']}: {err['msg']} (input: {err['input']})")
+                logger.info(f"    {i + 1}. {err['type']}: {err['msg']} (input: {err['input']})")
             if len(errs) > 3:
                 logger.info(f"    ... and {len(errs) - 3} more errors")
 
     if valid_entries:
-        assert all(isinstance(entry, ExpenseEntry) for entry in valid_entries), "Returned objects are not ExpenseEntry instances"
+        assert all(isinstance(entry, ExpenseEntry) for entry in valid_entries), (
+            "Returned objects are not ExpenseEntry instances"
+        )
+
 
 def test_invoice_validation(client):
     """Test extracting and validating invoices."""
@@ -250,11 +269,7 @@ def test_invoice_validation(client):
 
     # Extract invoices with validation
     valid_entries, errors = extract_entity(
-        client=client,
-        entity_name="PostedInvoice",
-        max_pages=2,
-        page_size=20,
-        return_validated=True
+        client=client, entity_name="PostedInvoice", max_pages=2, page_size=20, return_validated=True
     )
 
     # Check if we got results - not all systems will have invoices
@@ -269,18 +284,22 @@ def test_invoice_validation(client):
     field_errors = {}
     if errors:
         for error in errors:
-            for e in error.get('errors', []):
-                field_path = '.'.join(str(loc) for loc in e.get('loc', []))
+            for e in error.get("errors", []):
+                field_path = ".".join(str(loc) for loc in e.get("loc", []))
                 if field_path not in field_errors:
                     field_errors[field_path] = []
-                field_errors[field_path].append({
-                    'type': e.get('type'),
-                    'msg': e.get('msg'),
-                    'input': str(e.get('input', ''))[:50]  # Truncate long inputs
-                })
+                field_errors[field_path].append(
+                    {
+                        "type": e.get("type"),
+                        "msg": e.get("msg"),
+                        "input": str(e.get("input", ""))[:50],  # Truncate long inputs
+                    }
+                )
 
     # Print summary
-    logger.info(f"INVOICE: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)")
+    logger.info(
+        f"INVOICE: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)"
+    )
 
     # Print field errors if any
     if field_errors:
@@ -288,12 +307,15 @@ def test_invoice_validation(client):
         for field, errs in field_errors.items():
             logger.info(f"  - {field}: {len(errs)} errors")
             for i, err in enumerate(errs[:3]):  # Show max 3 examples per field
-                logger.info(f"    {i+1}. {err['type']}: {err['msg']} (input: {err['input']})")
+                logger.info(f"    {i + 1}. {err['type']}: {err['msg']} (input: {err['input']})")
             if len(errs) > 3:
                 logger.info(f"    ... and {len(errs) - 3} more errors")
 
     if valid_entries:
-        assert all(isinstance(entry, Invoice) for entry in valid_entries), "Returned objects are not Invoice instances"
+        assert all(isinstance(entry, Invoice) for entry in valid_entries), (
+            "Returned objects are not Invoice instances"
+        )
+
 
 def test_product_validation(client):
     """Test extracting and validating products."""
@@ -301,11 +323,7 @@ def test_product_validation(client):
 
     # Extract products with validation
     valid_entries, errors = extract_entity(
-        client=client,
-        entity_name="ProductItem",
-        max_pages=2,
-        page_size=20,
-        return_validated=True
+        client=client, entity_name="ProductItem", max_pages=2, page_size=20, return_validated=True
     )
 
     # Check if we got results - not all systems will have products
@@ -320,18 +338,22 @@ def test_product_validation(client):
     field_errors = {}
     if errors:
         for error in errors:
-            for e in error.get('errors', []):
-                field_path = '.'.join(str(loc) for loc in e.get('loc', []))
+            for e in error.get("errors", []):
+                field_path = ".".join(str(loc) for loc in e.get("loc", []))
                 if field_path not in field_errors:
                     field_errors[field_path] = []
-                field_errors[field_path].append({
-                    'type': e.get('type'),
-                    'msg': e.get('msg'),
-                    'input': str(e.get('input', ''))[:50]  # Truncate long inputs
-                })
+                field_errors[field_path].append(
+                    {
+                        "type": e.get("type"),
+                        "msg": e.get("msg"),
+                        "input": str(e.get("input", ""))[:50],  # Truncate long inputs
+                    }
+                )
 
     # Print summary
-    logger.info(f"PRODUCT ITEM: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)")
+    logger.info(
+        f"PRODUCT ITEM: Validated {len(valid_entries)} of {total_records} records ({len(errors)} errors)"
+    )
 
     # Print field errors if any
     if field_errors:
@@ -339,12 +361,15 @@ def test_product_validation(client):
         for field, errs in field_errors.items():
             logger.info(f"  - {field}: {len(errs)} errors")
             for i, err in enumerate(errs[:3]):  # Show max 3 examples per field
-                logger.info(f"    {i+1}. {err['type']}: {err['msg']} (input: {err['input']})")
+                logger.info(f"    {i + 1}. {err['type']}: {err['msg']} (input: {err['input']})")
             if len(errs) > 3:
                 logger.info(f"    ... and {len(errs) - 3} more errors")
 
     if valid_entries:
-        assert all(isinstance(entry, ProductItem) for entry in valid_entries), "Returned objects are not ProductItem instances"
+        assert all(isinstance(entry, ProductItem) for entry in valid_entries), (
+            "Returned objects are not ProductItem instances"
+        )
+
 
 def test_combined_parameters(client):
     """Test if multiple parameters can be combined correctly."""
@@ -363,16 +388,21 @@ def test_combined_parameters(client):
         conditions=conditions,
         order_by=order_by,
         max_pages=1,
-        page_size=5
+        page_size=5,
     )
 
     assert len(agreements) > 0, "No agreements returned"
 
     # Validate we got the requested fields
     for agreement in agreements:
-        assert set(agreement.keys()).issubset({"id", "name", "type", "_info"}), "Received fields beyond what was requested"
+        assert set(agreement.keys()).issubset({"id", "name", "type", "_info"}), (
+            "Received fields beyond what was requested"
+        )
 
-    logger.info("PARAMETER COMBINATION: Successfully applied multiple filters (fields, conditions, order_by)")
+    logger.info(
+        "PARAMETER COMBINATION: Successfully applied multiple filters (fields, conditions, order_by)"
+    )
+
 
 if __name__ == "__main__":
     logger.info("===========================================")

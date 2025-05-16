@@ -1,4 +1,5 @@
 """Script to examine the agreement endpoint schema."""
+
 import json
 import os
 import sys
@@ -42,11 +43,8 @@ def get_agreement_schema():
         # Get all agreements to see structure variation
         print("\nFetching first 5 agreements to check structure consistency...")
         agreements = client.paginate(
-            endpoint="/finance/agreements",
-            entity_name="agreements",
-            max_pages=1
+            endpoint="/finance/agreements", entity_name="agreements", max_pages=1
         )[:5]
-
 
         # Check if all agreements have the same fields
         all_fields = set()
@@ -63,6 +61,7 @@ def get_agreement_schema():
 
     except Exception as e:
         print(f"Error: {e!s}")
+
 
 if __name__ == "__main__":
     get_agreement_schema()

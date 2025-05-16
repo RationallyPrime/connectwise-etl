@@ -36,7 +36,7 @@ class TestOneLakeSchemas(unittest.TestCase):
             (UnpostedInvoice, "unposted_invoice"),
             (TimeEntry, "time_entry"),
             (ExpenseEntry, "expense_entry"),
-            (ProductItem, "product_item")
+            (ProductItem, "product_item"),
         ]
 
         for model_class, entity_name in models:
@@ -72,12 +72,12 @@ class TestOneLakeSchemas(unittest.TestCase):
                     if entity_name in ["posted_invoice", "unposted_invoice"] and col == "date":
                         self.assertTrue(
                             "date" in field_names or "invoiceDate" in field_names,
-                            f"Neither 'date' nor 'invoiceDate' found in schema for {entity_name}"
+                            f"Neither 'date' nor 'invoiceDate' found in schema for {entity_name}",
                         )
                     else:
                         self.assertTrue(
                             any(name == base_col or name == col for name in field_names),
-                            f"Partition column {col} not found in schema for {entity_name}"
+                            f"Partition column {col} not found in schema for {entity_name}",
                         )
 
     def test_schema_compatibility(self):

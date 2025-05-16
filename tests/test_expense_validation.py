@@ -15,11 +15,11 @@ from pydantic import ValidationError
 # Load environment variables from .env file in the root directory
 # This must be done before importing modules that use environment variables
 root_dir = Path(__file__).parent.parent
-env_path = root_dir / '.env'
+env_path = root_dir / ".env"
 load_dotenv()
 
 # Import from parent directory
-sys.path.append('..')
+sys.path.append("..")
 
 from fabric_api.client import ConnectWiseClient
 from fabric_api.connectwise_models import ExpenseEntry
@@ -27,10 +27,10 @@ from fabric_api.extract.expenses import fetch_expense_entries_raw
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def test_expense_validation():
     """
@@ -45,11 +45,10 @@ def test_expense_validation():
     # Create a client using environment variables loaded from .env
     logger.info("Creating ConnectWiseClient using environment variables from .env")
 
-
     # Set up authentication details
     # Default test credentials (these should be replaced with actual credentials)
     default_auth_username = "thekking+yemGyHDPdJ1hpuqx"  # Replace with actual test username
-    default_auth_password = "yMqpe26Jcu55FbQk"          # Replace with actual test password
+    default_auth_password = "yMqpe26Jcu55FbQk"  # Replace with actual test password
     default_client_id = "c7ea92d2-eaf5-4bfb-a09c-58d7f9dd7b81"  # Replace with actual client ID
 
     # Override with environment variables if available
@@ -61,9 +60,7 @@ def test_expense_validation():
 
     # Create the client with explicit authentication parameters
     client = ConnectWiseClient(
-        basic_username=auth_username,
-        basic_password=auth_password,
-        client_id=client_id
+        basic_username=auth_username, basic_password=auth_password, client_id=client_id
     )
 
     # Optional: Use a small page_size for testing to speed up the process
@@ -90,7 +87,7 @@ def test_expense_validation():
 
     for i, raw_expense in enumerate(raw_expenses):
         expense_id = raw_expense.get("id", f"Unknown-{i}")
-        logger.info(f"Validating expense entry {expense_id} ({i+1}/{len(raw_expenses)})")
+        logger.info(f"Validating expense entry {expense_id} ({i + 1}/{len(raw_expenses)})")
 
         try:
             # Attempt to validate using the Pydantic model
@@ -110,12 +107,15 @@ def test_expense_validation():
                 logger.error(f"    Type: {error['type']}")
 
     # Print summary
-    logger.info(f"Validation complete: {valid_count} valid, {invalid_count} invalid expense entries")
+    logger.info(
+        f"Validation complete: {valid_count} valid, {invalid_count} invalid expense entries"
+    )
 
     # Return a non-zero exit code if any expense entries failed validation
     if invalid_count > 0:
         return 1
     return 0
+
 
 if __name__ == "__main__":
     # Ensure we're running the script with .env file access

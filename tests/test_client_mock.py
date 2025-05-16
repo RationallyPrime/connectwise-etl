@@ -11,8 +11,7 @@ import pytest
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ MOCK_AGREEMENT_RESPONSE = [
         "type": {"id": 1, "name": "Standard"},
         "company": {"id": 100, "name": "Test Company", "identifier": "TESTCO"},
         "contact": {"id": 200, "name": "Test Contact"},
-        "_info": {"lastUpdated": "2025-01-01T00:00:00Z"}
+        "_info": {"lastUpdated": "2025-01-01T00:00:00Z"},
     },
     {
         "id": 2,
@@ -37,8 +36,8 @@ MOCK_AGREEMENT_RESPONSE = [
         "type": {"id": 1, "name": "Standard"},
         "company": {"id": 101, "name": "Another Company", "identifier": "ANOTHERCO"},
         "contact": {"id": 201, "name": "Another Contact"},
-        "_info": {"lastUpdated": "2025-01-02T00:00:00Z"}
-    }
+        "_info": {"lastUpdated": "2025-01-02T00:00:00Z"},
+    },
 ]
 
 MOCK_TIME_ENTRY_RESPONSE = [
@@ -48,7 +47,7 @@ MOCK_TIME_ENTRY_RESPONSE = [
         "timeEnd": "2025-05-01T17:00:00Z",
         "member": {"id": 301, "name": "Test Member"},
         "company": {"id": 100, "name": "Test Company"},
-        "_info": {"lastUpdated": "2025-05-01T17:00:00Z"}
+        "_info": {"lastUpdated": "2025-05-01T17:00:00Z"},
     },
     {
         "id": 1002,
@@ -56,17 +55,19 @@ MOCK_TIME_ENTRY_RESPONSE = [
         "timeEnd": "2025-05-02T17:00:00Z",
         "member": {"id": 301, "name": "Test Member"},
         "company": {"id": 101, "name": "Another Company"},
-        "_info": {"lastUpdated": "2025-05-02T17:00:00Z"}
-    }
+        "_info": {"lastUpdated": "2025-05-02T17:00:00Z"},
+    },
 ]
+
 
 @pytest.fixture
 def mock_client():
     """Create a client with mocked API responses."""
-    with patch('fabric_api.client.ConnectWiseClient._headers', return_value={}), \
-         patch('fabric_api.client.os.getenv', return_value="mock_value"), \
-         patch('fabric_api.client.requests.Session') as mock_session:
-
+    with (
+        patch("fabric_api.client.ConnectWiseClient._headers", return_value={}),
+        patch("fabric_api.client.os.getenv", return_value="mock_value"),
+        patch("fabric_api.client.requests.Session") as mock_session,
+    ):
         # Set up mock response for different endpoints
         def get_mock_response(url, **kwargs):
             mock_response = Mock()
@@ -75,8 +76,8 @@ def mock_client():
             # Choose mock data based on the URL
             if "/finance/agreements" in url:
                 # Filter data based on fields parameter if present
-                if kwargs.get('params', {}).get('fields'):
-                    fields = kwargs['params']['fields'].split(',')
+                if kwargs.get("params", {}).get("fields"):
+                    fields = kwargs["params"]["fields"].split(",")
                     filtered_data = []
                     for item in MOCK_AGREEMENT_RESPONSE:
                         filtered_item = {"_info": item["_info"]}
@@ -118,6 +119,7 @@ def mock_client():
 
         yield client
 
+
 def test_fields_parameter(mock_client):
     """Test if fields parameter is correctly processed."""
     logger.info("TEST 1: Testing fields parameter with mock client")
@@ -131,7 +133,7 @@ def test_fields_parameter(mock_client):
         entity_name="agreements",
         fields=fields,
         max_pages=1,
-        page_size=2
+        page_size=2,
     )
 
     # Validate the results
@@ -139,7 +141,9 @@ def test_fields_parameter(mock_client):
 
     # Check that we got only the fields we requested
     for agreement in agreements:
-        assert set(agreement.keys()).issubset({"id", "name", "_info"}), "Received fields beyond what was requested"
+        assert set(agreement.keys()).issubset({"id", "name", "_info"}), (
+            "Received fields beyond what was requested"
+        )
         assert "id" in agreement, "id field missing"
         assert "name" in agreement, "name field missing"
 
@@ -147,23 +151,29 @@ def test_fields_parameter(mock_client):
     logger.info(f"First agreement fields: {list(agreements[0].keys())}")
     logger.info("✅ Fields parameter was successfully processed")
 
+
 def test_extract_entity_with_validation(mock_client):
     """Test extracting entities with validation against Pydantic models."""
     logger.info("TEST 2: Testing entity extraction with model validation")
 
-    with patch('fabric_api.extract.generic.get_fields_for_api_call', return_value="id,name,type,company,contact"):
+    with patch(
+        "fabric_api.extract.generic.get_fields_for_api_call",
+        return_value="id,name,type,company,contact",
+    ):
         # Extract agreements with validation
         valid_agreements, errors = extract_entity(
             client=mock_client,
             entity_name="Agreement",
             max_pages=1,
             page_size=2,
-            return_validated=True
+            return_validated=True,
         )
 
     # Validation should succeed for our mock data
     assert len(valid_agreements) > 0, "No valid agreements returned"
-    assert all(isinstance(agreement, Agreement) for agreement in valid_agreements), "Returned objects are not Agreement instances"
+    assert all(isinstance(agreement, Agreement) for agreement in valid_agreements), (
+        "Returned objects are not Agreement instances"
+    )
 
     # Log results for verification
     logger.info(f"Retrieved and validated {len(valid_agreements)} agreements")
@@ -174,18 +184,22 @@ def test_extract_entity_with_validation(mock_client):
 
     logger.info("✅ Extract entity with validation was successful")
 
+
 def test_time_entry_extraction(mock_client):
     """Test extracting time entries with validation."""
     logger.info("TEST 3: Testing time entry extraction with model validation")
 
-    with patch('fabric_api.extract.generic.get_fields_for_api_call', return_value="id,timeStart,timeEnd,member,company"):
+    with patch(
+        "fabric_api.extract.generic.get_fields_for_api_call",
+        return_value="id,timeStart,timeEnd,member,company",
+    ):
         # Extract time entries with validation
         valid_time_entries, errors = extract_entity(
             client=mock_client,
             entity_name="TimeEntry",
             max_pages=1,
             page_size=5,
-            return_validated=True
+            return_validated=True,
         )
 
     # We should have one valid entry and one with validation errors
@@ -194,10 +208,10 @@ def test_time_entry_extraction(mock_client):
 
     # Check for proper validation errors
     for error in errors:
-        assert error['entity'] == 'TimeEntry', "Wrong entity type in error"
-        assert 'errors' in error, "No error details in validation error"
+        assert error["entity"] == "TimeEntry", "Wrong entity type in error"
+        assert "errors" in error, "No error details in validation error"
         # Check if timeStart is mentioned in the error
-        found_time_start_error = any('timeStart' in str(e) for e in error['errors'])
+        found_time_start_error = any("timeStart" in str(e) for e in error["errors"])
         assert found_time_start_error, "Expected error about missing timeStart field"
 
     logger.info(f"Retrieved and validated {len(valid_time_entries)} time entries")
@@ -205,6 +219,7 @@ def test_time_entry_extraction(mock_client):
     logger.info(f"First error: {errors[0].get('errors')}")
 
     logger.info("✅ Time entry extraction test completed with expected validation errors")
+
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])

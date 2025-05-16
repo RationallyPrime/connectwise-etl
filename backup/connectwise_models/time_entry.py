@@ -17,7 +17,7 @@ class Company(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo = Field(..., alias='_info')
+    field_info: FieldInfo = Field(..., alias="_info")
 
 
 class FieldInfo1(SparkModel):
@@ -30,7 +30,7 @@ class Member(SparkModel):
     identifier: str
     name: str
     dailyCapacity: float
-    field_info: FieldInfo1 = Field(..., alias='_info')
+    field_info: FieldInfo1 = Field(..., alias="_info")
 
 
 class FieldInfo2(SparkModel):
@@ -40,7 +40,7 @@ class FieldInfo2(SparkModel):
 class Location(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo2 = Field(..., alias='_info')
+    field_info: FieldInfo2 = Field(..., alias="_info")
 
 
 class FieldInfo3(SparkModel):
@@ -50,7 +50,7 @@ class FieldInfo3(SparkModel):
 class Department(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo3 = Field(..., alias='_info')
+    field_info: FieldInfo3 = Field(..., alias="_info")
 
 
 class FieldInfo4(SparkModel):
@@ -61,7 +61,7 @@ class WorkType(SparkModel):
     id: int
     name: str
     utilizationFlag: bool
-    field_info: FieldInfo4 = Field(..., alias='_info')
+    field_info: FieldInfo4 = Field(..., alias="_info")
 
 
 class FieldInfo5(SparkModel):
@@ -71,7 +71,7 @@ class FieldInfo5(SparkModel):
 class WorkRole(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo5 = Field(..., alias='_info')
+    field_info: FieldInfo5 = Field(..., alias="_info")
 
 
 class FieldInfo6(SparkModel):
@@ -81,7 +81,7 @@ class FieldInfo6(SparkModel):
 class TimeSheet(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo6 = Field(..., alias='_info')
+    field_info: FieldInfo6 = Field(..., alias="_info")
 
 
 class FieldInfo7(SparkModel):
@@ -93,7 +93,7 @@ class FieldInfo7(SparkModel):
 class Ticket(SparkModel):
     id: int
     summary: str
-    field_info: FieldInfo7 = Field(..., alias='_info')
+    field_info: FieldInfo7 = Field(..., alias="_info")
 
 
 class FieldInfo8(SparkModel):
@@ -105,7 +105,7 @@ class FieldInfo8(SparkModel):
 class Project(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo8 = Field(..., alias='_info')
+    field_info: FieldInfo8 = Field(..., alias="_info")
 
 
 class FieldInfo9(SparkModel):
@@ -116,7 +116,7 @@ class FieldInfo9(SparkModel):
 class Phase(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo9 = Field(..., alias='_info')
+    field_info: FieldInfo9 = Field(..., alias="_info")
 
 
 class FieldInfo10(SparkModel):
@@ -126,7 +126,7 @@ class FieldInfo10(SparkModel):
 class TaxCode(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo10 = Field(..., alias='_info')
+    field_info: FieldInfo10 = Field(..., alias="_info")
 
 
 class TimeEntry(SparkModel):
@@ -143,7 +143,9 @@ class TimeEntry(SparkModel):
     department: Department
     workType: WorkType
     workRole: WorkRole
-    projectActivity: str = Field(default="")  # Made optional with default value to fix validation errors
+    projectActivity: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
     territory: str
     timeStart: str
     timeEnd: str
@@ -153,9 +155,15 @@ class TimeEntry(SparkModel):
     addToDetailDescriptionFlag: bool
     addToInternalAnalysisFlag: bool
     addToResolutionFlag: bool
-    emailResourceFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
-    emailContactFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
-    emailCcFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
+    emailResourceFlag: bool = Field(
+        default=False
+    )  # Made optional with default value to fix validation errors
+    emailContactFlag: bool = Field(
+        default=False
+    )  # Made optional with default value to fix validation errors
+    emailCcFlag: bool = Field(
+        default=False
+    )  # Made optional with default value to fix validation errors
     hoursBilled: float
     invoiceHours: float
     hourlyCost: str
@@ -173,9 +181,19 @@ class TimeEntry(SparkModel):
     ticket: Ticket | None = None  # Made optional with default value to fix validation errors
     project: Project | None = None  # Made optional with default value to fix validation errors
     phase: Phase | None = None  # Made optional with default value to fix validation errors
-    ticketBoard: str = Field(default="")  # Made optional with default value to fix validation errors
-    ticketStatus: str = Field(default="")  # Made optional with default value to fix validation errors
-    invoiceFlag: bool = Field(default=False)  # Made optional with default value to fix validation errors
-    extendedInvoiceAmount: float = Field(default=0.0)  # Made optional with default value to fix validation errors
-    locationName: str = Field(default="")  # Made optional with default value to fix validation errors
+    ticketBoard: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
+    ticketStatus: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
+    invoiceFlag: bool = Field(
+        default=False
+    )  # Made optional with default value to fix validation errors
+    extendedInvoiceAmount: float = Field(
+        default=0.0
+    )  # Made optional with default value to fix validation errors
+    locationName: str = Field(
+        default=""
+    )  # Made optional with default value to fix validation errors
     taxCode: TaxCode | None = None  # Made optional with default value to fix validation errors

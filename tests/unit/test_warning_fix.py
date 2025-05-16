@@ -2,6 +2,7 @@
 """
 Simple test script to verify Pydantic warning filters work.
 """
+
 import sys
 
 # Import necessary modules
@@ -18,7 +19,7 @@ agreement = Agreement(
     name="Test Agreement",
     type={"id": 1, "name": "Test Type"},
     company={"id": 1, "name": "Test Company"},
-    contact={"id": 1, "name": "Test Contact"}
+    contact={"id": 1, "name": "Test Contact"},
 )
 
 print(f"✅ Model initialized correctly: {agreement.id=}, {agreement.name=}")

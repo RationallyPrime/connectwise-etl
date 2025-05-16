@@ -37,6 +37,7 @@ class ApiErrorRecord(dict):
 
     The shape purposefully mirrors *ManageInvoiceError* for downstream processing.
     """
+
     invoice_number: str  # type: ignore[assignment]
     error_table_id: int  # type: ignore[assignment]
     error_type: str | None
@@ -46,7 +47,7 @@ class ApiErrorRecord(dict):
 
 class ConnectWiseClient:
     """Thin, resilient wrapper around the ConnectWise Manage REST API.
-    
+
     Optimized for Microsoft Fabric environment with simplified authentication.
     """
 
@@ -164,9 +165,7 @@ class ConnectWiseClient:
         auth = (self.basic_username, self.basic_password)
 
         logger.debug(f"POST {url}")
-        resp = self.session.post(
-            url, headers=headers, json=json_data, params=params, auth=auth
-        )
+        resp = self.session.post(url, headers=headers, json=json_data, params=params, auth=auth)
         resp.raise_for_status()
         return resp
 

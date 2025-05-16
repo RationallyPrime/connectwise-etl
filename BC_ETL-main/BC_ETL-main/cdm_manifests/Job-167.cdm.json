@@ -1,0 +1,852 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Job-167",
+            "exhibitsTraits": [],
+            "displayName": "Job",
+            "description": "Represents the table Job",
+            "hasAttributes": [
+                {
+                    "name": "No-1",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "SearchDescription-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Search Description",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Description-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Description2-4",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "BilltoCustomerNo-5",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Customer No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CreationDate-12",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Creation Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "StartingDate-13",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Starting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "EndingDate-14",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Ending Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Status-19",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Status",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PersonResponsible-20",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Person Responsible",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension1Code-21",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-22",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "JobPostingGroup-23",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Job Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Blocked-24",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "LastDateModified-29",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Last Date Modified",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CustomerDiscGroup-31",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Disc. Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CustomerPriceGroup-32",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Price Group",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "LanguageCode-41",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Language Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "BilltoName-58",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "BilltoAddress-59",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Address",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "BilltoAddress2-60",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Address 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "BilltoCity-61",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to City",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "BilltoCounty-63",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to County",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "BilltoPostCode-64",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Post Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "NoSeries-66",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No. Series",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "BilltoCountryRegionCode-67",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Country/Region Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "BilltoName2-68",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Name 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "Reserve-117",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Reserve",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WIPMethod-1000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WIP Method",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CurrencyCode-1001",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "BilltoContactNo-1002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Contact No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "BilltoContact-1003",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bill-to Contact",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "WIPPostingDate-1008",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "WIP Posting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "InvoiceCurrencyCode-1011",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Invoice Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ExchCalculationCost-1012",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Exch. Calculation (Cost)",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ExchCalculationPrice-1013",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Exch. Calculation (Price)",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "AllowScheduleContractLines-1014",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Allow Schedule/Contract Lines",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Complete-1015",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Complete",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ApplyUsageLink-1025",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Apply Usage Link",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WIPPostingMethod-1027",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "WIP Posting Method",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "OverBudget-1035",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Over Budget",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ProjectManager-1036",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Project Manager",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "SelltoCustomerNo-2000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Customer No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "SelltoCustomerName-2001",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Customer Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "SelltoCustomerName2-2002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Customer Name 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "SelltoAddress-2003",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Address",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "SelltoAddress2-2004",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Address 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "SelltoCity-2005",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to City",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "SelltoContact-2006",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Contact",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "SelltoPostCode-2007",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Post Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "SelltoCounty-2008",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to County",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "SelltoCountryRegionCode-2009",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Country/Region Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "SelltoPhoneNo-2010",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Phone No.",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "SelltoEMail-2011",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to E-Mail",
+                    "maximumLength": 80
+                },
+                {
+                    "name": "SelltoContactNo-2012",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Contact No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ShiptoCode-3000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ShiptoName-3001",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "ShiptoName2-3002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Name 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "ShiptoAddress-3003",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Address",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "ShiptoAddress2-3004",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Address 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "ShiptoCity-3005",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to City",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "ShiptoContact-3006",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Contact",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "ShiptoPostCode-3007",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Post Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ShiptoCounty-3008",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to County",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "ShiptoCountryRegionCode-3009",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Ship-to Country/Region Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ExternalDocumentNo-4000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "External Document No.",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "PaymentMethodCode-4001",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Payment Method Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PaymentTermsCode-4002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Payment Terms Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "YourReference-4003",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Your Reference",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "PriceCalculationMethod-7000",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Price Calculation Method",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CostCalculationMethod-7001",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Cost Calculation Method",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTEGroupCode-65000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Group Code",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PTEForbidtoReopenJobReq-65001",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Forbid to Reopen Job Req.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTETempoID-65002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Tempo ID",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "PTEJiraPrimaryProjectId-65003",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "PTE Jira Primary Project Id",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTETransactionReportssur-65004",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Transaction Report Össur",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTECategory-65005",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Category",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PTEJobRequestRequired-65006",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "PTE Job Request Required",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBNamedEmployees-10007200",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOBNamedEmployees",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBRSMReport-10007203",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "WJOB RSM Report",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBRSMReportTable-10007204",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "WJOB RSM Report Table",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBTemplate-10007208",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Template",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBType-10007209",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Type",
+                    "maximumLength": 15
+                },
+                {
+                    "name": "WJOBWorkTypeCode-10007211",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Work Type Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "WJOBRSMCombine-10007212",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "WJOB RSM Combine",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBScheduleisalsoContract-10007218",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOBSchedule is also Contract",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBCreateSchedulewhenPoste-10007219",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOBCreate Schedule when Poste",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBMaxHoursWarning-10007220",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Max. Hours Warning",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBSupervisor-10007221",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Supervisor",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "WJOBVATBusPostingGroup-10007222",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB VAT Bus.Posting Group",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "WJOBJournalsReviewedDate-10007223",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Journals Reviewed Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBCreatedby-10007225",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Created by",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "WJOBLastModifiedby-10007226",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Last Modified by",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "WJOBShiptoCode-10007249",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Ship-to Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "WJobPAInvoiceMaxhours-10007251",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "WJobPA Invoice Max. (hours)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "WJobPAInvoiceMaxAmount-10007252",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "WJobPA Invoice Max. Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "WJobPADiscountLimitAmt-10007253",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "WJobPA Discount Limit (Amt)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "WJobPAExcLimitDiscount-10007254",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "WJobPA Exc. Limit Discount %",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "WJobPAProformaperTask-10007256",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJobPA Proforma per Task",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJobPAIndexCode-10007258",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJobPA Index Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "WJobPAContractRefIndex-10007259",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "WJobPA Contract Ref. Index",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "WJobJRJobRequestsRequired-10007270",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJobJR Job Requests Required",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBShowonTransactionReport-10007550",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "WJOBShow on Transaction Report",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBTransactionGrouping-10007551",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Transaction Grouping",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJobPABilltoJobNo-10027451",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJobPA Bill-to Job No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

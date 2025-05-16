@@ -9,8 +9,11 @@ from fabric_api.client import ConnectWiseClient
 from fabric_api.extract import agreements, expenses, invoices, products, time
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def test_schema_driven_field_selection():
     """
@@ -47,6 +50,7 @@ def test_schema_driven_field_selection():
     products.fetch_product_items_raw(client, max_pages=0)
 
     logger.info("\nAll extract modules tested for field selection")
+
 
 if __name__ == "__main__":
     test_schema_driven_field_selection()

@@ -27,6 +27,7 @@ logging.addLevelName(ETL_PROGRESS, "ETL_PROGRESS")
 # Configure default logging format
 DEFAULT_LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
+
 class ETLLogger:
     """
     Enhanced logger for ETL operations with structured error reporting.
@@ -38,7 +39,7 @@ class ETLLogger:
         log_level: int = logging.INFO,
         log_file: str | None = None,
         console: bool = True,
-        format_str: str = DEFAULT_LOG_FORMAT
+        format_str: str = DEFAULT_LOG_FORMAT,
     ):
         """
         Initialize the ETL logger.
@@ -109,7 +110,7 @@ class ETLLogger:
         self,
         error: ValidationError,
         record_id: str | int | None = None,
-        entity_type: str | None = None
+        entity_type: str | None = None,
     ) -> dict[str, Any]:
         """
         Log a validation error and return structured error information.
@@ -130,7 +131,7 @@ class ETLLogger:
             "entity": entity_type or "Unknown",
             "raw_data_id": str(record_id) if record_id is not None else "Unknown",
             "errors": error_details,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
         # Log the error
@@ -145,10 +146,7 @@ class ETLLogger:
         return error_entry
 
     def api_error(
-        self,
-        endpoint: str,
-        error: Exception,
-        status_code: int | None = None
+        self, endpoint: str, error: Exception, status_code: int | None = None
     ) -> dict[str, Any]:
         """
         Log an API error and return structured error information.
@@ -168,7 +166,7 @@ class ETLLogger:
             "status_code": status_code,
             "error_message": str(error),
             "error_type": type(error).__name__,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
         # Log the error
@@ -180,10 +178,7 @@ class ETLLogger:
         return error_entry
 
     def etl_error(
-        self,
-        stage: str,
-        error: Exception,
-        context: dict[str, Any] | None = None
+        self, stage: str, error: Exception, context: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Log an ETL processing error and return structured error information.
@@ -203,13 +198,11 @@ class ETLLogger:
             "error_message": str(error),
             "error_type": type(error).__name__,
             "context": context or {},
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
         # Log the error
-        self.error(
-            f"ETL error during {stage}: {type(error).__name__} - {error!s}"
-        )
+        self.error(f"ETL error during {stage}: {type(error).__name__} - {error!s}")
 
         # Log context at debug level if provided
         if context:
@@ -254,11 +247,15 @@ class ETLLogger:
             finally:
                 elapsed = time.time() - start_time
                 context_str = f" | Context: {ctx.context}" if ctx.context else ""
-                self.info(f"Completed operation: {operation_name} | Time: {elapsed:.2f}s{context_str}")
+                self.info(
+                    f"Completed operation: {operation_name} | Time: {elapsed:.2f}s{context_str}"
+                )
 
         return _timer()
 
-    def summarize_validation_errors(self, validation_errors: list[dict[str, Any]]) -> dict[str, Any]:
+    def summarize_validation_errors(
+        self, validation_errors: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Summarize validation errors by entity and error type.
 
@@ -280,10 +277,7 @@ class ETLLogger:
             entities[entity].append(error)
 
         # Summarize errors by entity
-        summary = {
-            "total_errors": len(validation_errors),
-            "entities": {}
-        }
+        summary = {"total_errors": len(validation_errors), "entities": {}}
 
         for entity, errors in entities.items():
             # Group errors by field location
@@ -298,49 +292,56 @@ class ETLLogger:
                         field_counts[loc] = 0
                     field_counts[loc] += 1
 
-            summary["entities"][entity] = {
-                "count": len(errors),
-                "fields": field_counts
-            }
+            summary["entities"][entity] = {"count": len(errors), "fields": field_counts}
 
         # Log the summary
         self.validation(f"Validation error summary: {json.dumps(summary, indent=2)}")
 
         return summary
 
+
 # Default logger instance for the ETL process
 etl_logger = ETLLogger("fabric_api.etl")
+
 
 # Helper functions to use the default logger
 def debug(msg: str, *args, **kwargs):
     etl_logger.debug(msg, *args, **kwargs)
 
+
 def info(msg: str, *args, **kwargs):
     etl_logger.info(msg, *args, **kwargs)
+
 
 def warning(msg: str, *args, **kwargs):
     etl_logger.warning(msg, *args, **kwargs)
 
+
 def error(msg: str, *args, **kwargs):
     etl_logger.error(msg, *args, **kwargs)
+
 
 def critical(msg: str, *args, **kwargs):
     etl_logger.critical(msg, *args, **kwargs)
 
+
 def api_call(msg: str, *args, **kwargs):
     etl_logger.api_call(msg, *args, **kwargs)
+
 
 def validation(msg: str, *args, **kwargs):
     etl_logger.validation(msg, *args, **kwargs)
 
+
 def etl_progress(msg: str, *args, **kwargs):
     etl_logger.etl_progress(msg, *args, **kwargs)
+
 
 def configure_logging(
     log_level: int = logging.INFO,
     log_file: str | None = None,
     console: bool = True,
-    format_str: str = DEFAULT_LOG_FORMAT
+    format_str: str = DEFAULT_LOG_FORMAT,
 ):
     """
     Configure the default ETL logger.
@@ -357,5 +358,5 @@ def configure_logging(
         log_level=log_level,
         log_file=log_file,
         console=console,
-        format_str=format_str
+        format_str=format_str,
     )

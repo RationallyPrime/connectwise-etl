@@ -26,7 +26,6 @@ __all__ = [
     "AgreementReference",
     "AgreementTypeReference",
     "BatchReference",
-
     # Entity models
     "Agreement",
     "TimeEntry",

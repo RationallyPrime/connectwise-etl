@@ -13,7 +13,9 @@ import tempfile
 from typing import Any
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Default schema file for ConnectWise Manage
@@ -48,7 +50,7 @@ ENTITY_TYPES = {
     "ProductItem": {
         "schema_path": "procurement.ProductItem",
         "output_file": "product_item.py",
-    }
+    },
 }
 
 # Reference models to include in all generation
@@ -58,10 +60,11 @@ REFERENCE_MODELS = [
 
 # Fields to exclude from generated models
 EXCLUDE_FIELDS = [
-    "_info",          # Metadata links we don't need
-    "customFields",   # Custom fields can vary and add complexity
-    "dateRemoved",    # Unused field
+    "_info",  # Metadata links we don't need
+    "customFields",  # Custom fields can vary and add complexity
+    "dateRemoved",  # Unused field
 ]
+
 
 def load_schema(file_path: str) -> dict[str, Any]:
     """Load OpenAPI schema from file."""
@@ -70,6 +73,7 @@ def load_schema(file_path: str) -> dict[str, Any]:
         schema = json.load(f)
     logger.info(f"Successfully loaded schema with {len(schema.get('paths', {}))} paths")
     return schema
+
 
 def extract_entity_schema(schema: dict[str, Any], entity_path: str) -> dict[str, Any] | None:
     """Extract an entity schema from the OpenAPI components."""
@@ -80,12 +84,7 @@ def extract_entity_schema(schema: dict[str, Any], entity_path: str) -> dict[str,
     if "." in entity_path:
         module, entity = entity_path.split(".", 1)
         # Try different formats the schema might use
-        candidates = [
-            f"{module}.{entity}",
-            entity,
-            f"{module}{entity}",
-            f"{entity}Model"
-        ]
+        candidates = [f"{module}.{entity}", entity, f"{module}{entity}", f"{entity}Model"]
 
         for candidate in candidates:
             if candidate in components:
@@ -98,6 +97,7 @@ def extract_entity_schema(schema: dict[str, Any], entity_path: str) -> dict[str,
     logger.warning(f"Could not find schema for {entity_path}")
     return None
 
+
 def extract_reference_model(schema: dict[str, Any], model_name: str) -> dict[str, Any] | None:
     """Extract a reference model from the OpenAPI components."""
     components = schema.get("components", {}).get("schemas", {})
@@ -106,14 +106,17 @@ def extract_reference_model(schema: dict[str, Any], model_name: str) -> dict[str
     logger.warning(f"Could not find reference model schema for {model_name}")
     return None
 
-def prepare_unified_schema(schema: dict[str, Any], entities: list[str] | None = None) -> dict[str, Any]:
+
+def prepare_unified_schema(
+    schema: dict[str, Any], entities: list[str] | None = None
+) -> dict[str, Any]:
     """Create a unified schema with selected entities and required reference models."""
     # Create a schema just for our selected entities
     unified_schema = {
         "openapi": "3.0.0",
         "info": {"title": "ConnectWise PSA API", "version": "1.0.0"},
         "paths": {},
-        "components": {"schemas": {}}
+        "components": {"schemas": {}},
     }
 
     entity_set = set(entities) if entities else None
@@ -161,6 +164,7 @@ def prepare_unified_schema(schema: dict[str, Any], entities: list[str] | None = 
 
     return unified_schema
 
+
 def generate_models(schema_file: str, output_dir: str, entities: list[str] | None = None) -> bool:
     """Generate models from OpenAPI schema using datamodel-code-generator."""
     # Load schema
@@ -178,9 +182,11 @@ def generate_models(schema_file: str, output_dir: str, entities: list[str] | Non
         tmp_file.flush()
 
         # Dump schema to a debug file for inspection if needed
-        debug_schema_path = os.path.join(os.path.dirname(output_dir), "debug_output", "temp_schema.json")
+        debug_schema_path = os.path.join(
+            os.path.dirname(output_dir), "debug_output", "temp_schema.json"
+        )
         os.makedirs(os.path.dirname(debug_schema_path), exist_ok=True)
-        with open(debug_schema_path, 'w') as f:
+        with open(debug_schema_path, "w") as f:
             json.dump(unified_schema, f, indent=2)
         logger.info(f"Saved debug schema to {debug_schema_path}")
 
@@ -197,9 +203,12 @@ def generate_models(schema_file: str, output_dir: str, entities: list[str] | Non
             # Run datamodel-codegen with pyproject.toml config
             cmd = [
                 "datamodel-codegen",
-                "--input", tmp_file.name,
-                "--output", output_path,
-                "--class-name", entity_name
+                "--input",
+                tmp_file.name,
+                "--output",
+                output_path,
+                "--class-name",
+                entity_name,
             ]
 
             try:
@@ -213,47 +222,52 @@ def generate_models(schema_file: str, output_dir: str, entities: list[str] | Non
 
     # Create __init__.py file
     init_path = os.path.join(output_dir, "__init__.py")
-    with open(init_path, 'w', encoding='utf-8') as f:
+    with open(init_path, "w", encoding="utf-8") as f:
         f.write('"""ConnectWise API models generated from OpenAPI schema.\n\n')
-        f.write('Compatible with Pydantic v2 and SparkDantic for Spark schema generation.\n')
+        f.write("Compatible with Pydantic v2 and SparkDantic for Spark schema generation.\n")
         f.write('"""\n\n')
-        f.write('from typing import Any, Dict, List, Optional\n')
-        f.write('from pydantic import RootModel, Field\n')
-        f.write('from sparkdantic import SparkModel\n\n')
+        f.write("from typing import Any, Dict, List, Optional\n")
+        f.write("from pydantic import RootModel, Field\n")
+        f.write("from sparkdantic import SparkModel\n\n")
 
         # Import statements for entities
         for entity_name in processed_entities:
             module_name = ENTITY_TYPES[entity_name]["output_file"].replace(".py", "")
-            f.write(f'from .{module_name} import {entity_name}\n')
+            f.write(f"from .{module_name} import {entity_name}\n")
 
         # Include special imports for ActivityReference
         # We need to import it from each module where it's defined
-        f.write('\n# Reference Models\n')
-        f.write('from .agreement import ActivityReference\n')
+        f.write("\n# Reference Models\n")
+        f.write("from .agreement import ActivityReference\n")
 
-        f.write('\n')
+        f.write("\n")
 
         # __all__ list
-        f.write('__all__ = [\n')
+        f.write("__all__ = [\n")
         for entity_name in processed_entities:
             f.write(f'    "{entity_name}",\n')
 
         # Add reference models to __all__
-        f.write('    # Reference models\n')
+        f.write("    # Reference models\n")
         for ref_model in REFERENCE_MODELS:
             f.write(f'    "{ref_model}",\n')
 
-        f.write(']\n')
+        f.write("]\n")
 
     logger.info(f"Created package __init__.py at {init_path}")
 
     return success
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Generate Pydantic models from OpenAPI schema')
-    parser.add_argument('--file', help='Path to OpenAPI schema file', default=DEFAULT_SCHEMA_FILE)
-    parser.add_argument('--output-dir', help='Output directory for models', default='fabric_api/connectwise_models')
-    parser.add_argument('--entities', nargs='+', help='Specific entities to generate (space-separated)')
+    parser = argparse.ArgumentParser(description="Generate Pydantic models from OpenAPI schema")
+    parser.add_argument("--file", help="Path to OpenAPI schema file", default=DEFAULT_SCHEMA_FILE)
+    parser.add_argument(
+        "--output-dir", help="Output directory for models", default="fabric_api/connectwise_models"
+    )
+    parser.add_argument(
+        "--entities", nargs="+", help="Specific entities to generate (space-separated)"
+    )
 
     args = parser.parse_args()
 
@@ -267,6 +281,7 @@ def main():
     except Exception as e:
         logger.exception(f"Error generating models: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

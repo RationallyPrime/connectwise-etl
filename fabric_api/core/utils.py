@@ -10,9 +10,7 @@ from typing import Any
 
 
 def get_nested_value(
-    data: dict[str, Any] | list[Any] | None,
-    dotted_path: str,
-    default: Any = None
+    data: dict[str, Any] | list[Any] | None, dotted_path: str, default: Any = None
 ) -> Any:
     """
     Safely retrieve nested value using a dotted path.
@@ -42,6 +40,7 @@ def get_nested_value(
             return default
     return current_value
 
+
 def create_batch_identifier(timestamp: datetime | None = None) -> str:
     """
     Return UTC timestamp formatted as YYYYMMDD-HHMMSS.
@@ -54,6 +53,7 @@ def create_batch_identifier(timestamp: datetime | None = None) -> str:
     """
     ts: datetime = timestamp or datetime.utcnow()
     return ts.strftime("%Y%m%d-%H%M%S")
+
 
 def get_first_day_next_month(reference: date | None = None) -> str:
     """

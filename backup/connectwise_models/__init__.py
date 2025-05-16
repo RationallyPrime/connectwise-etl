@@ -31,27 +31,39 @@ __all__ = [
 
 # For backward compatibility
 
+
 # List container models for API responses
 class AgreementList(SparkModel):
     """List of agreements response"""
+
     items: list[Agreement]
+
 
 class PostedInvoiceList(SparkModel):
     """List of invoices response"""
+
     items: list[PostedInvoice]
+
 
 class UnpostedInvoiceList(SparkModel):
     """List of unposted invoices response"""
+
     items: list[UnpostedInvoice]
+
 
 class TimeEntryList(SparkModel):
     """List of time entries response"""
+
     items: list[TimeEntry]
+
 
 class ExpenseEntryList(SparkModel):
     """List of expense entries response"""
+
     items: list[ExpenseEntry]
+
 
 class ProductItemList(SparkModel):
     """List of product items response"""
+
     items: list[ProductItem]

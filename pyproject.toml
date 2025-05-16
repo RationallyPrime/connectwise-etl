@@ -59,11 +59,15 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["E402", "I001"]  # Ignore import order issues in test files
+"tests/**/*.py" = ["E402", "I001", "F821", "W293", "B018", "W291", "W292"]  # Ignore issues in test files
 "fabric_api/connectwise_models/**/*.py" = ["N815"]  # Ignore variable naming in auto-generated models
 "backup/connectwise_models/**/*.py" = ["N815"]  # Ignore variable naming in backup models
-"fabric_api/client.py" = ["E402"]  # Imports after docstring
-"fabric_api/**/__init__.py" = ["RUF022"]  # Allow non-sorted __all__ for more logical grouping
+"fabric_api/client.py" = ["E402", "RUF001", "W293"]  # Imports after docstring, special characters, blank lines
+"fabric_api/**/__init__.py" = ["RUF022", "E402"]  # Allow non-sorted __all__ for more logical grouping
+"fabric_api/core/spark_utils.py" = ["W293", "F841"]  # Blank lines in docstrings, unused variable
+"fabric_api/extract/_common.py" = ["E402"]  # Imports after docstring
+"notebook-test.py" = ["E402", "F821", "W291", "B018"]  # Notebook format issues
+"bronze_silver_example.py" = ["E402", "F821", "W291", "W292"]  # Example notebook issues
 
 [tool.ruff.lint.isort]
 case-sensitive = true

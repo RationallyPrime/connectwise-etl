@@ -5,7 +5,9 @@ from typing import Any
 from pydantic import BaseModel
 
 
-def get_fields_for_api_call(model_class: type[BaseModel], max_depth: int = 1, include_all_nested: bool = False) -> str:
+def get_fields_for_api_call(
+    model_class: type[BaseModel], max_depth: int = 1, include_all_nested: bool = False
+) -> str:
     """
     Generates a ConnectWise API 'fields' string from a Pydantic model.
     Handles basic nesting up to max_depth if ConnectWise API supports it
@@ -20,7 +22,7 @@ def get_fields_for_api_call(model_class: type[BaseModel], max_depth: int = 1, in
     Returns:
         Comma-separated list of fields formatted for the ConnectWise API
     """
-    field_list = _get_field_list(model_class, max_depth, '', set(), include_all_nested)
+    field_list = _get_field_list(model_class, max_depth, "", set(), include_all_nested)
     return ",".join(sorted(field_list))  # Sort for consistency and cache-friendliness
 
 
@@ -29,7 +31,7 @@ def _get_field_list(
     max_depth: int,
     parent_path: str,
     visited: set[type[BaseModel]],
-    include_all_nested: bool
+    include_all_nested: bool,
 ) -> list[str]:
     """
     Recursively extracts field names from a Pydantic model.
@@ -88,11 +90,7 @@ def _get_field_list(
             if include_all_nested:
                 # Include all nested fields
                 nested_fields = _get_field_list(
-                    field_type,
-                    max_depth - 1,
-                    full_path,
-                    visited.copy(),
-                    include_all_nested
+                    field_type, max_depth - 1, full_path, visited.copy(), include_all_nested
                 )
                 field_list.extend(nested_fields)
             else:
@@ -127,7 +125,7 @@ def _to_camel_case(snake_str: str) -> str:
         return snake_str
 
     # Convert snake_case to camelCase
-    return re.sub(r'_([a-z])', lambda x: x.group(1).upper(), snake_str)
+    return re.sub(r"_([a-z])", lambda x: x.group(1).upper(), snake_str)
 
 
 def build_condition_string(**conditions: Any) -> str:
@@ -183,7 +181,7 @@ def build_condition_string(**conditions: Any) -> str:
             "_contains": "contains",
             "_like": "like",
             "_in": "in",
-            "_not_in": "not in"
+            "_not_in": "not in",
         }
 
         operator = "="  # Default operator
@@ -193,7 +191,7 @@ def build_condition_string(**conditions: Any) -> str:
         for op_suffix, op_symbol in operator_map.items():
             if key.endswith(op_suffix):
                 operator = op_symbol
-                field_name = key[:-len(op_suffix)]
+                field_name = key[: -len(op_suffix)]
                 break
 
         # Convert field name to camelCase
@@ -202,9 +200,10 @@ def build_condition_string(**conditions: Any) -> str:
         # Format value based on type
         if isinstance(value, str):
             # Add brackets for date values
-            if (operator in [">", ">=", "<", "<="] and
-                (re.match(r'^\d{4}-\d{2}-\d{2}', value) or
-                 re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', value))):
+            if operator in [">", ">=", "<", "<="] and (
+                re.match(r"^\d{4}-\d{2}-\d{2}", value)
+                or re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value)
+            ):
                 formatted_value = f"[{value}]"
             else:
                 formatted_value = f'"{value}"'
@@ -213,7 +212,9 @@ def build_condition_string(**conditions: Any) -> str:
         elif isinstance(value, list | tuple):
             # Format lists for IN operators
             if operator in ["in", "not in"]:
-                values_str = ','.join(str(v) if isinstance(v, int | float) else f'"{v}"' for v in value)
+                values_str = ",".join(
+                    str(v) if isinstance(v, int | float) else f'"{v}"' for v in value
+                )
                 formatted_value = f"({values_str})"
             else:
                 # Default list representation

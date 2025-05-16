@@ -9,19 +9,23 @@ from pyspark.sql import DataFrame, SparkSession
 
 logger = logging.getLogger(__name__)
 
+
 def get_spark_session() -> SparkSession:
     """
     Get the active Spark session already initialized in Microsoft Fabric.
-    
+
     In Fabric, the Spark session is always available and pre-configured.
-    
+
     Returns:
         The active SparkSession
     """
     spark = SparkSession.getActiveSession()
     if not spark:
-        raise RuntimeError("No active Spark session found. This code must run in a Microsoft Fabric environment.")
+        raise RuntimeError(
+            "No active Spark session found. This code must run in a Microsoft Fabric environment."
+        )
     return spark
+
 
 def table_exists(table_name: str, schema: str | None = None) -> bool:
     """
@@ -48,6 +52,7 @@ def table_exists(table_name: str, schema: str | None = None) -> bool:
         logger.warning(f"Error checking if table {table_name} exists: {e!s}")
         return False
 
+
 def read_delta_table(path: str) -> DataFrame:
     """
     Read a Delta table from the specified path in Fabric.
@@ -64,6 +69,7 @@ def read_delta_table(path: str) -> DataFrame:
     except Exception as e:
         logger.error(f"Error reading Delta table at {path}: {e!s}")
         raise
+
 
 def create_empty_dataframe(schema) -> DataFrame:
     """

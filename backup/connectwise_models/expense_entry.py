@@ -15,7 +15,7 @@ class FieldInfo(SparkModel):
 class ExpenseReport(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo = Field(..., alias='_info')
+    field_info: FieldInfo = Field(..., alias="_info")
 
 
 class FieldInfo1(SparkModel):
@@ -27,7 +27,7 @@ class Company(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo1 = Field(..., alias='_info')
+    field_info: FieldInfo1 = Field(..., alias="_info")
 
 
 class FieldInfo2(SparkModel):
@@ -37,7 +37,7 @@ class FieldInfo2(SparkModel):
 class Type(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo2 = Field(..., alias='_info')
+    field_info: FieldInfo2 = Field(..., alias="_info")
 
 
 class FieldInfo3(SparkModel):
@@ -48,7 +48,7 @@ class Member(SparkModel):
     id: int
     identifier: str
     name: str
-    field_info: FieldInfo3 = Field(..., alias='_info')
+    field_info: FieldInfo3 = Field(..., alias="_info")
 
 
 class FieldInfo4(SparkModel):
@@ -58,7 +58,7 @@ class FieldInfo4(SparkModel):
 class PaymentMethod(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo4 = Field(..., alias='_info')
+    field_info: FieldInfo4 = Field(..., alias="_info")
 
 
 class FieldInfo5(SparkModel):
@@ -68,7 +68,7 @@ class FieldInfo5(SparkModel):
 class Classification(SparkModel):
     id: int
     name: str
-    field_info: FieldInfo5 = Field(..., alias='_info')
+    field_info: FieldInfo5 = Field(..., alias="_info")
 
 
 class FieldInfo6(SparkModel):
@@ -88,7 +88,7 @@ class Currency(SparkModel):
     displayIdFlag: bool
     rightAlign: bool
     name: str
-    field_info: FieldInfo6 = Field(..., alias='_info')
+    field_info: FieldInfo6 = Field(..., alias="_info")
 
 
 class ExpenseEntry(SparkModel):

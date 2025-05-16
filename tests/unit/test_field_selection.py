@@ -16,8 +16,11 @@ from fabric_api.connectwise_models import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def test_field_selection_basic():
     """
@@ -26,14 +29,7 @@ def test_field_selection_basic():
     logger.info("Testing basic field selection for entity types")
 
     # Test each entity type
-    models = [
-        Agreement,
-        TimeEntry,
-        PostedInvoice,
-        UnpostedInvoice,
-        ExpenseEntry,
-        ProductItem
-    ]
+    models = [Agreement, TimeEntry, PostedInvoice, UnpostedInvoice, ExpenseEntry, ProductItem]
 
     for model_class in models:
         model_name = model_class.__name__
@@ -44,6 +40,7 @@ def test_field_selection_basic():
         logger.info(f"Fields for {model_name} (depth=1):")
         logger.info(f"  {fields}")
         logger.info(f"  Field count: {len(fields.split(','))}")
+
 
 def test_field_selection_nested():
     """
@@ -64,6 +61,7 @@ def test_field_selection_nested():
     logger.info(f"  {fields}")
     logger.info(f"  Field count: {len(fields.split(','))}")
 
+
 def test_nested_path_formatting():
     """
     Test that nested paths are formatted correctly for the API.
@@ -74,10 +72,11 @@ def test_nested_path_formatting():
     fields = get_fields_for_api_call(TimeEntry, max_depth=2)
 
     # Check for properly formatted paths like "company/id", "company/name", etc.
-    nested_paths = [f for f in fields.split(',') if '/' in f]
+    nested_paths = [f for f in fields.split(",") if "/" in f]
     logger.info("Nested paths in TimeEntry (depth=2):")
     for path in nested_paths[:10]:  # Show first 10 paths only
         logger.info(f"  {path}")
+
 
 if __name__ == "__main__":
     test_field_selection_basic()

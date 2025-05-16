@@ -1,0 +1,1301 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [],
+    "manifestName": "data-manifest",
+    "explanation": "Data exported from the Business Central to the Azure Data Lake Storage",
+    "entities": [
+        {
+            "type": "LocalEntity",
+            "entityName": "Currency-4",
+            "entityPath": "Currency-4.cdm.json/Currency-4",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Currency-4",
+                    "rootLocation": "data/Currency-4",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Language-8",
+            "entityPath": "Language-8.cdm.json/Language-8",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Language-8",
+                    "rootLocation": "data/Language-8",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "CountryRegion-9",
+            "entityPath": "CountryRegion-9.cdm.json/CountryRegion-9",
+            "dataPartitionPatterns": [
+                {
+                    "name": "CountryRegion-9",
+                    "rootLocation": "data/CountryRegion-9",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ShipmentMethod-10",
+            "entityPath": "ShipmentMethod-10.cdm.json/ShipmentMethod-10",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ShipmentMethod-10",
+                    "rootLocation": "data/ShipmentMethod-10",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalespersonPurchaser-13",
+            "entityPath": "SalespersonPurchaser-13.cdm.json/SalespersonPurchaser-13",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalespersonPurchaser-13",
+                    "rootLocation": "data/SalespersonPurchaser-13",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Location-14",
+            "entityPath": "Location-14.cdm.json/Location-14",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Location-14",
+                    "rootLocation": "data/Location-14",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "GLAccount-15",
+            "entityPath": "GLAccount-15.cdm.json/GLAccount-15",
+            "dataPartitionPatterns": [
+                {
+                    "name": "GLAccount-15",
+                    "rootLocation": "data/GLAccount-15",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "GLEntry-17",
+            "entityPath": "GLEntry-17.cdm.json/GLEntry-17",
+            "dataPartitionPatterns": [
+                {
+                    "name": "GLEntry-17",
+                    "rootLocation": "data/GLEntry-17",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Customer-18",
+            "entityPath": "Customer-18.cdm.json/Customer-18",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Customer-18",
+                    "rootLocation": "data/Customer-18",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "CustLedgerEntry-21",
+            "entityPath": "CustLedgerEntry-21.cdm.json/CustLedgerEntry-21",
+            "dataPartitionPatterns": [
+                {
+                    "name": "CustLedgerEntry-21",
+                    "rootLocation": "data/CustLedgerEntry-21",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Vendor-23",
+            "entityPath": "Vendor-23.cdm.json/Vendor-23",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Vendor-23",
+                    "rootLocation": "data/Vendor-23",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "VendorLedgerEntry-25",
+            "entityPath": "VendorLedgerEntry-25.cdm.json/VendorLedgerEntry-25",
+            "dataPartitionPatterns": [
+                {
+                    "name": "VendorLedgerEntry-25",
+                    "rootLocation": "data/VendorLedgerEntry-25",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Item-27",
+            "entityPath": "Item-27.cdm.json/Item-27",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Item-27",
+                    "rootLocation": "data/Item-27",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemLedgerEntry-32",
+            "entityPath": "ItemLedgerEntry-32.cdm.json/ItemLedgerEntry-32",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemLedgerEntry-32",
+                    "rootLocation": "data/ItemLedgerEntry-32",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalesHeader-36",
+            "entityPath": "SalesHeader-36.cdm.json/SalesHeader-36",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalesHeader-36",
+                    "rootLocation": "data/SalesHeader-36",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalesLine-37",
+            "entityPath": "SalesLine-37.cdm.json/SalesLine-37",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalesLine-37",
+                    "rootLocation": "data/SalesLine-37",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PurchaseHeader-38",
+            "entityPath": "PurchaseHeader-38.cdm.json/PurchaseHeader-38",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PurchaseHeader-38",
+                    "rootLocation": "data/PurchaseHeader-38",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PurchaseLine-39",
+            "entityPath": "PurchaseLine-39.cdm.json/PurchaseLine-39",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PurchaseLine-39",
+                    "rootLocation": "data/PurchaseLine-39",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "CompanyInformation-79",
+            "entityPath": "CompanyInformation-79.cdm.json/CompanyInformation-79",
+            "dataPartitionPatterns": [
+                {
+                    "name": "CompanyInformation-79",
+                    "rootLocation": "data/CompanyInformation-79",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AccScheduleName-84",
+            "entityPath": "AccScheduleName-84.cdm.json/AccScheduleName-84",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AccScheduleName-84",
+                    "rootLocation": "data/AccScheduleName-84",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AccScheduleLine-85",
+            "entityPath": "AccScheduleLine-85.cdm.json/AccScheduleLine-85",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AccScheduleLine-85",
+                    "rootLocation": "data/AccScheduleLine-85",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "UserSetup-91",
+            "entityPath": "UserSetup-91.cdm.json/UserSetup-91",
+            "dataPartitionPatterns": [
+                {
+                    "name": "UserSetup-91",
+                    "rootLocation": "data/UserSetup-91",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "CustomerPostingGroup-92",
+            "entityPath": "CustomerPostingGroup-92.cdm.json/CustomerPostingGroup-92",
+            "dataPartitionPatterns": [
+                {
+                    "name": "CustomerPostingGroup-92",
+                    "rootLocation": "data/CustomerPostingGroup-92",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "VendorPostingGroup-93",
+            "entityPath": "VendorPostingGroup-93.cdm.json/VendorPostingGroup-93",
+            "dataPartitionPatterns": [
+                {
+                    "name": "VendorPostingGroup-93",
+                    "rootLocation": "data/VendorPostingGroup-93",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "InventoryPostingGroup-94",
+            "entityPath": "InventoryPostingGroup-94.cdm.json/InventoryPostingGroup-94",
+            "dataPartitionPatterns": [
+                {
+                    "name": "InventoryPostingGroup-94",
+                    "rootLocation": "data/InventoryPostingGroup-94",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "GLBudgetName-95",
+            "entityPath": "GLBudgetName-95.cdm.json/GLBudgetName-95",
+            "dataPartitionPatterns": [
+                {
+                    "name": "GLBudgetName-95",
+                    "rootLocation": "data/GLBudgetName-95",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "GLBudgetEntry-96",
+            "entityPath": "GLBudgetEntry-96.cdm.json/GLBudgetEntry-96",
+            "dataPartitionPatterns": [
+                {
+                    "name": "GLBudgetEntry-96",
+                    "rootLocation": "data/GLBudgetEntry-96",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "GeneralLedgerSetup-98",
+            "entityPath": "GeneralLedgerSetup-98.cdm.json/GeneralLedgerSetup-98",
+            "dataPartitionPatterns": [
+                {
+                    "name": "GeneralLedgerSetup-98",
+                    "rootLocation": "data/GeneralLedgerSetup-98",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalesInvoiceHeader-112",
+            "entityPath": "SalesInvoiceHeader-112.cdm.json/SalesInvoiceHeader-112",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalesInvoiceHeader-112",
+                    "rootLocation": "data/SalesInvoiceHeader-112",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalesInvoiceLine-113",
+            "entityPath": "SalesInvoiceLine-113.cdm.json/SalesInvoiceLine-113",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalesInvoiceLine-113",
+                    "rootLocation": "data/SalesInvoiceLine-113",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalesCrMemoHeader-114",
+            "entityPath": "SalesCrMemoHeader-114.cdm.json/SalesCrMemoHeader-114",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalesCrMemoHeader-114",
+                    "rootLocation": "data/SalesCrMemoHeader-114",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SalesCrMemoLine-115",
+            "entityPath": "SalesCrMemoLine-115.cdm.json/SalesCrMemoLine-115",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SalesCrMemoLine-115",
+                    "rootLocation": "data/SalesCrMemoLine-115",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PurchInvHeader-122",
+            "entityPath": "PurchInvHeader-122.cdm.json/PurchInvHeader-122",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PurchInvHeader-122",
+                    "rootLocation": "data/PurchInvHeader-122",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PurchInvLine-123",
+            "entityPath": "PurchInvLine-123.cdm.json/PurchInvLine-123",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PurchInvLine-123",
+                    "rootLocation": "data/PurchInvLine-123",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PurchCrMemoHdr-124",
+            "entityPath": "PurchCrMemoHdr-124.cdm.json/PurchCrMemoHdr-124",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PurchCrMemoHdr-124",
+                    "rootLocation": "data/PurchCrMemoHdr-124",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PurchCrMemoLine-125",
+            "entityPath": "PurchCrMemoLine-125.cdm.json/PurchCrMemoLine-125",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PurchCrMemoLine-125",
+                    "rootLocation": "data/PurchCrMemoLine-125",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Resource-156",
+            "entityPath": "Resource-156.cdm.json/Resource-156",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Resource-156",
+                    "rootLocation": "data/Resource-156",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Job-167",
+            "entityPath": "Job-167.cdm.json/Job-167",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Job-167",
+                    "rootLocation": "data/Job-167",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "JobLedgerEntry-169",
+            "entityPath": "JobLedgerEntry-169.cdm.json/JobLedgerEntry-169",
+            "dataPartitionPatterns": [
+                {
+                    "name": "JobLedgerEntry-169",
+                    "rootLocation": "data/JobLedgerEntry-169",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "UnitofMeasure-204",
+            "entityPath": "UnitofMeasure-204.cdm.json/UnitofMeasure-204",
+            "dataPartitionPatterns": [
+                {
+                    "name": "UnitofMeasure-204",
+                    "rootLocation": "data/UnitofMeasure-204",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "GeneralPostingSetup-252",
+            "entityPath": "GeneralPostingSetup-252.cdm.json/GeneralPostingSetup-252",
+            "dataPartitionPatterns": [
+                {
+                    "name": "GeneralPostingSetup-252",
+                    "rootLocation": "data/GeneralPostingSetup-252",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "Dimension-348",
+            "entityPath": "Dimension-348.cdm.json/Dimension-348",
+            "dataPartitionPatterns": [
+                {
+                    "name": "Dimension-348",
+                    "rootLocation": "data/Dimension-348",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "DimensionValue-349",
+            "entityPath": "DimensionValue-349.cdm.json/DimensionValue-349",
+            "dataPartitionPatterns": [
+                {
+                    "name": "DimensionValue-349",
+                    "rootLocation": "data/DimensionValue-349",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "DimensionSetEntry-480",
+            "entityPath": "DimensionSetEntry-480.cdm.json/DimensionSetEntry-480",
+            "dataPartitionPatterns": [
+                {
+                    "name": "DimensionSetEntry-480",
+                    "rootLocation": "data/DimensionSetEntry-480",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemAttribute-7500",
+            "entityPath": "ItemAttribute-7500.cdm.json/ItemAttribute-7500",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemAttribute-7500",
+                    "rootLocation": "data/ItemAttribute-7500",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemAttributeValue-7501",
+            "entityPath": "ItemAttributeValue-7501.cdm.json/ItemAttributeValue-7501",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemAttributeValue-7501",
+                    "rootLocation": "data/ItemAttributeValue-7501",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemAttributeTranslation-7502",
+            "entityPath": "ItemAttributeTranslation-7502.cdm.json/ItemAttributeTranslation-7502",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemAttributeTranslation-7502",
+                    "rootLocation": "data/ItemAttributeTranslation-7502",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemAttrValueTranslation-7503",
+            "entityPath": "ItemAttrValueTranslation-7503.cdm.json/ItemAttrValueTranslation-7503",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemAttrValueTranslation-7503",
+                    "rootLocation": "data/ItemAttrValueTranslation-7503",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemAttributeValueMapping-7505",
+            "entityPath": "ItemAttributeValueMapping-7505.cdm.json/ItemAttributeValueMapping-7505",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemAttributeValueMapping-7505",
+                    "rootLocation": "data/ItemAttributeValueMapping-7505",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSESetup-82560",
+            "entityPath": "ADLSESetup-82560.cdm.json/ADLSESetup-82560",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSESetup-82560",
+                    "rootLocation": "data/ADLSESetup-82560",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSETable-82561",
+            "entityPath": "ADLSETable-82561.cdm.json/ADLSETable-82561",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSETable-82561",
+                    "rootLocation": "data/ADLSETable-82561",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSEField-82562",
+            "entityPath": "ADLSEField-82562.cdm.json/ADLSEField-82562",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSEField-82562",
+                    "rootLocation": "data/ADLSEField-82562",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSEDeletedRecord-82563",
+            "entityPath": "ADLSEDeletedRecord-82563.cdm.json/ADLSEDeletedRecord-82563",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSEDeletedRecord-82563",
+                    "rootLocation": "data/ADLSEDeletedRecord-82563",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSETableLastTimestamp-82564",
+            "entityPath": "ADLSETableLastTimestamp-82564.cdm.json/ADLSETableLastTimestamp-82564",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSETableLastTimestamp-82564",
+                    "rootLocation": "data/ADLSETableLastTimestamp-82564",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSECurrentSession-82565",
+            "entityPath": "ADLSECurrentSession-82565.cdm.json/ADLSECurrentSession-82565",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSECurrentSession-82565",
+                    "rootLocation": "data/ADLSECurrentSession-82565",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSERun-82566",
+            "entityPath": "ADLSERun-82566.cdm.json/ADLSERun-82566",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSERun-82566",
+                    "rootLocation": "data/ADLSERun-82566",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSEEnumTranslation-82567",
+            "entityPath": "ADLSEEnumTranslation-82567.cdm.json/ADLSEEnumTranslation-82567",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSEEnumTranslation-82567",
+                    "rootLocation": "data/ADLSEEnumTranslation-82567",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ADLSEEnumTranslationLang-82568",
+            "entityPath": "ADLSEEnumTranslationLang-82568.cdm.json/ADLSEEnumTranslationLang-82568",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ADLSEEnumTranslationLang-82568",
+                    "rootLocation": "data/ADLSEEnumTranslationLang-82568",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AMSAgreementHeader-10007050",
+            "entityPath": "AMSAgreementHeader-10007050.cdm.json/AMSAgreementHeader-10007050",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AMSAgreementHeader-10007050",
+                    "rootLocation": "data/AMSAgreementHeader-10007050",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AMSAgreementBOMHistory-10007057",
+            "entityPath": "AMSAgreementBOMHistory-10007057.cdm.json/AMSAgreementBOMHistory-10007057",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AMSAgreementBOMHistory-10007057",
+                    "rootLocation": "data/AMSAgreementBOMHistory-10007057",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AMSAgreementType-10007053",
+            "entityPath": "AMSAgreementType-10007053.cdm.json/AMSAgreementType-10007053",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AMSAgreementType-10007053",
+                    "rootLocation": "data/AMSAgreementType-10007053",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AMSAgreementLine-10007051",
+            "entityPath": "AMSAgreementLine-10007051.cdm.json/AMSAgreementLine-10007051",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AMSAgreementLine-10007051",
+                    "rootLocation": "data/AMSAgreementLine-10007051",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "DetailedCustLedgEntry-379",
+            "entityPath": "DetailedCustLedgEntry-379.cdm.json/DetailedCustLedgEntry-379",
+            "dataPartitionPatterns": [
+                {
+                    "name": "DetailedCustLedgEntry-379",
+                    "rootLocation": "data/DetailedCustLedgEntry-379",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "DetailedVendorLedgEntry-380",
+            "entityPath": "DetailedVendorLedgEntry-380.cdm.json/DetailedVendorLedgEntry-380",
+            "dataPartitionPatterns": [
+                {
+                    "name": "DetailedVendorLedgEntry-380",
+                    "rootLocation": "data/DetailedVendorLedgEntry-380",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemVariant-5401",
+            "entityPath": "ItemVariant-5401.cdm.json/ItemVariant-5401",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemVariant-5401",
+                    "rootLocation": "data/ItemVariant-5401",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "DefaultDimension-352",
+            "entityPath": "DefaultDimension-352.cdm.json/DefaultDimension-352",
+            "dataPartitionPatterns": [
+                {
+                    "name": "DefaultDimension-352",
+                    "rootLocation": "data/DefaultDimension-352",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "FixedAsset-5600",
+            "entityPath": "FixedAsset-5600.cdm.json/FixedAsset-5600",
+            "dataPartitionPatterns": [
+                {
+                    "name": "FixedAsset-5600",
+                    "rootLocation": "data/FixedAsset-5600",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ItemCharge-5800",
+            "entityPath": "ItemCharge-5800.cdm.json/ItemCharge-5800",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ItemCharge-5800",
+                    "rootLocation": "data/ItemCharge-5800",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "BankAccount-270",
+            "entityPath": "BankAccount-270.cdm.json/BankAccount-270",
+            "dataPartitionPatterns": [
+                {
+                    "name": "BankAccount-270",
+                    "rootLocation": "data/BankAccount-270",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "IndustryGroup-5057",
+            "entityPath": "IndustryGroup-5057.cdm.json/IndustryGroup-5057",
+            "dataPartitionPatterns": [
+                {
+                    "name": "IndustryGroup-5057",
+                    "rootLocation": "data/IndustryGroup-5057",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PTEEmployeeIndustry-50005",
+            "entityPath": "PTEEmployeeIndustry-50005.cdm.json/PTEEmployeeIndustry-50005",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PTEEmployeeIndustry-50005",
+                    "rootLocation": "data/PTEEmployeeIndustry-50005",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PTECustomerNAVSystem-80003",
+            "entityPath": "PTECustomerNAVSystem-80003.cdm.json/PTECustomerNAVSystem-80003",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PTECustomerNAVSystem-80003",
+                    "rootLocation": "data/PTECustomerNAVSystem-80003",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "ValueEntry-5802",
+            "entityPath": "ValueEntry-5802.cdm.json/ValueEntry-5802",
+            "dataPartitionPatterns": [
+                {
+                    "name": "ValueEntry-5802",
+                    "rootLocation": "data/ValueEntry-5802",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "PTEIndustries-50004",
+            "entityPath": "PTEIndustries-50004.cdm.json/PTEIndustries-50004",
+            "dataPartitionPatterns": [
+                {
+                    "name": "PTEIndustries-50004",
+                    "rootLocation": "data/PTEIndustries-50004",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "AccountingPeriod-50",
+            "entityPath": "AccountingPeriod-50.cdm.json/AccountingPeriod-50",
+            "dataPartitionPatterns": [
+                {
+                    "name": "AccountingPeriod-50",
+                    "rootLocation": "data/AccountingPeriod-50",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "SourceCodeSetup-242",
+            "entityPath": "SourceCodeSetup-242.cdm.json/SourceCodeSetup-242",
+            "dataPartitionPatterns": [
+                {
+                    "name": "SourceCodeSetup-242",
+                    "rootLocation": "data/SourceCodeSetup-242",
+                    "globPattern": "/*.parquet",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.format.parquet"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "relationships": []
+}

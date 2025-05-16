@@ -289,7 +289,9 @@ def generate_models(entities: dict[str, dict[str, str]], schema_file: str, outpu
                     # Fix the overly restrictive type
                     line = line.replace("dict[str, Any]", "Any")
                     # Add a comment explaining the change
-                    line += "  # API inconsistency: Sometimes returns strings or other non-dict values"
+                    line += (
+                        "  # API inconsistency: Sometimes returns strings or other non-dict values"
+                    )
                     fix_value_field = True
 
                 # Skip reference model definitions that we already added

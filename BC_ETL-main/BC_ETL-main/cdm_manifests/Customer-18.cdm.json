@@ -1,0 +1,269 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Customer-18",
+            "exhibitsTraits": [],
+            "displayName": "Customer",
+            "description": "Represents the table Customer",
+            "hasAttributes": [
+                {
+                    "name": "No-1",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Name-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Address-5",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Address",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Address2-6",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Address 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "City-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "City",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "Contact-8",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Contact",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "PhoneNo-9",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Phone No.",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "TelexNo-10",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Telex No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension1Code-16",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-17",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ChainName-18",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Chain Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "BudgetedAmount-19",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Budgeted Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CreditLimitLCY-20",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Credit Limit (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CustomerPostingGroup-21",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CurrencyCode-22",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "CustomerPriceGroup-23",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Price Group",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "SalespersonCode-29",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Salesperson Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CustomerDiscGroup-34",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Disc. Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CountryRegionCode-35",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Country/Region Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "Blocked-39",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GenBusPostingGroup-88",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PostCode-91",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Post Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "County-92",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "County",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "PTEIndustryCode-65001",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Industry Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PTEGroupCode-65006",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Group Code",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PTEGroupingCode-65007",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Grouping Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

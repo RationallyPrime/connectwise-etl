@@ -73,9 +73,9 @@ class TestOneLakeUtils(unittest.TestCase):
         invoice_partitions = get_partition_columns("posted_invoice")
         self.assertIn("date", invoice_partitions)
 
-    @patch('fabric_api.onelake_utils.to_date')
-    @patch('fabric_api.onelake_utils.date_format')
-    @patch('fabric_api.onelake_utils.col')
+    @patch("fabric_api.onelake_utils.to_date")
+    @patch("fabric_api.onelake_utils.date_format")
+    @patch("fabric_api.onelake_utils.col")
     def test_prepare_dataframe_for_onelake(self, mock_col, mock_date_format, mock_to_date):
         """Test preparing DataFrame for OneLake."""
         # Create mock DataFrame
@@ -95,7 +95,7 @@ class TestOneLakeUtils(unittest.TestCase):
         # Verify withColumn was called with timestamp
         self.assertTrue(df.withColumn.called)
 
-    @patch('fabric_api.onelake_utils.prepare_dataframe_for_onelake')
+    @patch("fabric_api.onelake_utils.prepare_dataframe_for_onelake")
     def test_write_to_onelake(self, mock_prepare):
         """Test writing to OneLake."""
         # Create mock DataFrame and SparkSession
@@ -113,25 +113,21 @@ class TestOneLakeUtils(unittest.TestCase):
 
         # Test write_to_onelake with SQL table creation
         table_path, table_name, row_count = write_to_onelake(
-            df=df,
-            entity_name="Agreement",
-            spark=self.spark,
-            mode="append",
-            create_table=True
+            df=df, entity_name="Agreement", spark=self.spark, mode="append", create_table=True
         )
 
         # Verify SQL was executed for table creation
         self.assertTrue(self.spark.sql.called)
         self.assertEqual(row_count, 10)
 
-    @patch('fabric_api.onelake_utils.write_to_onelake')
+    @patch("fabric_api.onelake_utils.write_to_onelake")
     def test_direct_etl_to_onelake(self, mock_write):
         """Test direct ETL to OneLake."""
         # Mock data and model class
         client_data = [
             {"id": 1, "name": "Agreement 1", "type": "Type A"},
             {"id": 2, "name": "Agreement 2", "type": "Type B"},
-            {"id": 3, "name": "Invalid", "type": None}  # This will fail validation
+            {"id": 3, "name": "Invalid", "type": None},  # This will fail validation
         ]
 
         # Mock model validation and dumping
@@ -140,7 +136,7 @@ class TestOneLakeUtils(unittest.TestCase):
         model_class.model_validate.side_effect = [
             model_instance,  # First record valid
             model_instance,  # Second record valid
-            Exception("Invalid type")  # Third record invalid
+            Exception("Invalid type"),  # Third record invalid
         ]
         model_instance.model_dump.return_value = {"id": 1, "name": "Agreement", "type": "Type"}
         model_class.model_spark_schema.return_value = "mock_schema"
@@ -157,7 +153,7 @@ class TestOneLakeUtils(unittest.TestCase):
             entity_name="Agreement",
             spark=self.spark,
             model_class=model_class,
-            mode="append"
+            mode="append",
         )
 
         # Verify results

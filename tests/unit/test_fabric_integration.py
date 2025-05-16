@@ -74,7 +74,10 @@ class TestFabricIntegration:
             result = ensure_fabric_path(path)
 
             # Then it should be converted to an ABFSS URL
-            assert result == "abfss://lakehouse@teststorage.dfs.fabric.microsoft.com/lakehouse/default/Tables/my_table"
+            assert (
+                result
+                == "abfss://lakehouse@teststorage.dfs.fabric.microsoft.com/lakehouse/default/Tables/my_table"
+            )
 
     def test_ensure_fabric_path_with_abfss_path(self):
         """Test ensure_fabric_path with an ABFSS path."""
@@ -158,4 +161,6 @@ class TestFabricIntegration:
         spark.sql.assert_not_called()
 
         # And a debug message should be logged
-        mock_log.debug.assert_called_with("Not running in Fabric, skipping table metadata registration")
+        mock_log.debug.assert_called_with(
+            "Not running in Fabric, skipping table metadata registration"
+        )

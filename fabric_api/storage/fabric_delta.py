@@ -30,21 +30,18 @@ logger = logging.getLogger(__name__)
 FABRIC_DELTA_OPTIONS = {
     "delta.autoOptimize.optimizeWrite": "true",
     "delta.autoOptimize.autoCompact": "true",
-    "mergeSchema": "true"
+    "mergeSchema": "true",
 }
 
-def add_metadata_columns(
-    df: DataFrame,
-    entity_name: str,
-    add_timestamp: bool = True
-) -> DataFrame:
+
+def add_metadata_columns(df: DataFrame, entity_name: str, add_timestamp: bool = True) -> DataFrame:
     """
     Add metadata columns to a DataFrame.
 
     Args:
         df: Input DataFrame
         entity_name: Name of the entity
-        add_timestamp: Whether to add etl_timestamp column
+        add_timestamp: Whether to add etlTimestamp column
 
     Returns:
         DataFrame with added metadata columns
@@ -54,15 +51,16 @@ def add_metadata_columns(
 
     result_df = df
 
-    # Add timestamp if requested
-    if add_timestamp and "etl_timestamp" not in result_df.columns:
-        result_df = result_df.withColumn("etl_timestamp", lit(datetime.utcnow().isoformat()))
+    # Add timestamp if requested - consistently using camelCase
+    if add_timestamp and "etlTimestamp" not in result_df.columns:
+        result_df = result_df.withColumn("etlTimestamp", lit(datetime.utcnow().isoformat()))
 
-    # Add entity name
-    if "etl_entity" not in result_df.columns:
-        result_df = result_df.withColumn("etl_entity", lit(entity_name))
+    # Add entity name - consistently using camelCase
+    if "etlEntity" not in result_df.columns:
+        result_df = result_df.withColumn("etlEntity", lit(entity_name))
 
     return result_df
+
 
 def write_to_delta(
     df: DataFrame,
@@ -72,7 +70,7 @@ def write_to_delta(
     partition_cols: list[str] | None = None,
     add_timestamp: bool = True,
     options: dict[str, str] | None = None,
-    use_prefix: bool = False
+    use_prefix: bool = False,
 ) -> tuple[str, int]:
     """
     Write a DataFrame to Delta with Fabric-optimized settings.
@@ -125,10 +123,9 @@ def write_to_delta(
 
     return path, row_count
 
+
 def write_errors(
-    errors: list[dict[str, Any]],
-    entity_name: str,
-    base_path: str | None = None
+    errors: list[dict[str, Any]], entity_name: str, base_path: str | None = None
 ) -> tuple[str, int]:
     """
     Write validation errors to a Delta table.
@@ -153,10 +150,12 @@ def write_errors(
 
     # Create a minimal schema if errors list is empty
     if not errors:
-        schema = StructType([
-            StructField("entity", StringType(), True),
-            StructField("error_message", StringType(), True)
-        ])
+        schema = StructType(
+            [
+                StructField("entity", StringType(), True),
+                StructField("error_message", StringType(), True),
+            ]
+        )
         errors_df = spark.createDataFrame([], schema)
     else:
         # Create a simple schema from the first error to avoid type issues
@@ -189,7 +188,7 @@ def write_errors(
         for error in errors:
             clean_error = {}
             for key, value in error.items():
-                if isinstance(value, (dict, list)):
+                if isinstance(value, dict | list):
                     clean_error[key] = json.dumps(value)
                 else:
                     clean_error[key] = value
@@ -202,7 +201,7 @@ def write_errors(
         errors_df = errors_df.withColumn("entity", lit(entity_name))
 
     # Get path for the error table
-    error_path = get_error_table_path(base_path=base_path)
+    get_error_table_path(base_path=base_path)
 
     # Write to validation_errors table
     return write_to_delta(
@@ -210,13 +209,11 @@ def write_errors(
         entity_name="validation_errors",
         base_path=base_path,
         mode="append",
-        partition_cols=["entity"]
+        partition_cols=["entity"],
     )
 
-def dataframe_from_models(
-    models: list[Any],
-    entity_name: str
-) -> DataFrame:
+
+def dataframe_from_models(models: list[Any], entity_name: str) -> DataFrame:
     """
     Create a DataFrame from a list of Pydantic models.
 

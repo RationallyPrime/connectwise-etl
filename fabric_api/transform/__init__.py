@@ -16,5 +16,5 @@ __all__ = [
     "explode_array_columns",
     "flatten_all_nested_structures",
     "flatten_dataframe",
-    "verify_no_remaining_structs"
+    "verify_no_remaining_structs",
 ]

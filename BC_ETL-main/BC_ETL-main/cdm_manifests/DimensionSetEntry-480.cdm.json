@@ -1,0 +1,102 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "DimensionSetEntry-480",
+            "exhibitsTraits": [],
+            "displayName": "Dimension Set Entry",
+            "description": "Represents the table Dimension Set Entry",
+            "hasAttributes": [
+                {
+                    "name": "DimensionSetID-1",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Set ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DimensionCode-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "DimensionValueCode-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Value Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "DimensionValueID-4",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Value ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GlobalDimensionNo-8",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

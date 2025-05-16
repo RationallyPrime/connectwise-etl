@@ -1,0 +1,998 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "JobLedgerEntry-169",
+            "exhibitsTraits": [],
+            "displayName": "Job Ledger Entry",
+            "description": "Represents the table Job Ledger Entry",
+            "hasAttributes": [
+                {
+                    "name": "EntryNo-1",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "JobNo-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Job No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PostingDate-3",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Posting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentNo-4",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Document No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Type-5",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "No-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Description-8",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Quantity-9",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Quantity",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "DirectUnitCostLCY-11",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Direct Unit Cost (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "UnitCostLCY-12",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Cost (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "TotalCostLCY-13",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Total Cost (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "UnitPriceLCY-14",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Price (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "TotalPriceLCY-15",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Total Price (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "ResourceGroupNo-16",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Resource Group No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "UnitofMeasureCode-17",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Unit of Measure Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "LocationCode-20",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Location Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "JobPostingGroup-29",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Job Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension1Code-30",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-31",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "WorkTypeCode-32",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Work Type Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "CustomerPriceGroup-33",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Price Group",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "UserID-37",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "User ID",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "SourceCode-38",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Source Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ShptMethodCode-40",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Shpt. Method Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "AmttoPosttoGL-60",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Amt. to Post to G/L",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AmtPostedtoGL-61",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Amt. Posted to G/L",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "EntryType-64",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Entry Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "JournalBatchName-75",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Journal Batch Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ReasonCode-76",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Reason Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "TransactionType-77",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Transaction Type",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "TransportMethod-78",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Transport Method",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "CountryRegionCode-79",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Country/Region Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "GenBusPostingGroup-80",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GenProdPostingGroup-81",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Prod. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "EntryExitPoint-82",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Entry/Exit Point",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "DocumentDate-83",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Document Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ExternalDocumentNo-84",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "External Document No.",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "Area-85",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Area",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "TransactionSpecification-86",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Transaction Specification",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "NoSeries-87",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No. Series",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "AdditionalCurrencyTotalCost-88",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Additional-Currency Total Cost",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AddCurrencyTotalPrice-89",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Add.-Currency Total Price",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AddCurrencyLineAmount-94",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Add.-Currency Line Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "DimensionSetID-480",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Set ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "JobTaskNo-1000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Job Task No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "LineAmountLCY-1001",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Line Amount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "UnitCost-1002",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Cost",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "TotalCost-1003",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Total Cost",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "UnitPrice-1004",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Price",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "TotalPrice-1005",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Total Price",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "LineAmount-1006",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Line Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "LineDiscountAmount-1007",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Line Discount Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "LineDiscountAmountLCY-1008",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Line Discount Amount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CurrencyCode-1009",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "CurrencyFactor-1010",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Currency Factor",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "Description2-1016",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "LedgerEntryType-1017",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Ledger Entry Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "LedgerEntryNo-1018",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Ledger Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "SerialNo-1019",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Serial No.",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "LotNo-1020",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Lot No.",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "LineDiscount-1021",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Line Discount %",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "LineType-1022",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Line Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "OriginalUnitCostLCY-1023",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Unit Cost (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "OriginalTotalCostLCY-1024",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Total Cost (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "OriginalUnitCost-1025",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Unit Cost",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "OriginalTotalCost-1026",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Total Cost",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "OriginalTotalCostACY-1027",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Total Cost (ACY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "Adjusted-1028",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Adjusted",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DateTimeAdjusted-1029",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "DateTime Adjusted",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "VariantCode-5402",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Variant Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "BinCode-5403",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bin Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "QtyperUnitofMeasure-5404",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Qty. per Unit of Measure",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "QuantityBase-5405",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Quantity (Base)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "ServiceOrderNo-5900",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Service Order No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PostedServiceShipmentNo-5901",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Posted Service Shipment No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PackageNo-6515",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Package No.",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "PTEOldPhaseCode-65000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Old Phase Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "PTEJobAnalyzesType-65001",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "PTE Job Analyzes Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTECustomerNo-65002",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Customer No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PTECustomerName-65003",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Customer Name",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "PTEEmployeeDivision-65004",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Employee Division",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PTEJiraWorklogid-65005",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "PTE Jira Worklog_id",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTEDescription3-65020",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE Description3",
+                    "maximumLength": 80
+                },
+                {
+                    "name": "WJOBReviewedby-10007200",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Reviewed by",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "WJOBWork-10007201",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Work",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBJobType-10007202",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Job Type",
+                    "maximumLength": 15
+                },
+                {
+                    "name": "WJOBManuallyModified-10007203",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Manually Modified",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBReviewed-10007204",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Reviewed",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "WJOBRegbyResource-10007206",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Reg. by Resource",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "WJOBResourceName-10007208",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJOB Resource Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "WJobExternalDocument2-10007210",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJob External Document 2",
+                    "maximumLength": 30
+                },
+                {
+                    "name": "WJobPAProformaNo-10007255",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJobPA Proforma No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "WJobJRRequestNo-10007270",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "WJobJR Request No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

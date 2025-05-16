@@ -12,8 +12,11 @@ from pyspark.sql import SparkSession
 from fabric_api.orchestration import ETLOrchestrator, run_full_etl, run_incremental_etl
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def test_etl_orchestrator():
     """
@@ -63,7 +66,9 @@ def test_etl_orchestrator():
             )
 
             for entity_name, (entity_df, entity_row_count, entity_error_count) in results.items():
-                logger.info(f"Processed {entity_name}: {entity_row_count} rows, {entity_error_count} errors")
+                logger.info(
+                    f"Processed {entity_name}: {entity_row_count} rows, {entity_error_count} errors"
+                )
 
                 # Show schema
                 logger.info(f"{entity_name} DataFrame schema:")
@@ -77,13 +82,16 @@ def test_etl_orchestrator():
             )
 
             for entity_name, (_, entity_row_count, entity_error_count) in results.items():
-                logger.info(f"Processed {entity_name} incrementally: {entity_row_count} rows, {entity_error_count} errors")
+                logger.info(
+                    f"Processed {entity_name} incrementally: {entity_row_count} rows, {entity_error_count} errors"
+                )
 
             logger.info("\nETL Orchestrator test completed successfully")
 
         finally:
             # Stop the SparkSession
             spark.stop()
+
 
 def test_convenience_functions():
     """
@@ -117,9 +125,12 @@ def test_convenience_functions():
         )
 
         for entity_name, (_, row_count, error_count) in results.items():
-            logger.info(f"Incremental ETL for {entity_name}: {row_count} rows, {error_count} errors")
+            logger.info(
+                f"Incremental ETL for {entity_name}: {row_count} rows, {error_count} errors"
+            )
 
         logger.info("\nConvenience functions test completed successfully")
+
 
 if __name__ == "__main__":
     test_etl_orchestrator()

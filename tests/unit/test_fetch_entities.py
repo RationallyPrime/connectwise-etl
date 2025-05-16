@@ -18,8 +18,11 @@ from fabric_api.bronze_loader import ENTITY_CONFIG
 from fabric_api.client import ConnectWiseClient
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def fetch_entity_samples(output_dir: str = "entity_samples", limit: int = 1):
     """
@@ -45,12 +48,7 @@ def fetch_entity_samples(output_dir: str = "entity_samples", limit: int = 1):
 
         try:
             # Fetch data with limit
-            raw_data = fetch_func(
-                client=client,
-                page_size=limit,
-                max_pages=1,
-                conditions=None
-            )
+            raw_data = fetch_func(client=client, page_size=limit, max_pages=1, conditions=None)
 
             # If we have data, take the first item
             if raw_data and len(raw_data) > 0:
@@ -59,7 +57,7 @@ def fetch_entity_samples(output_dir: str = "entity_samples", limit: int = 1):
 
                 # Save to file
                 file_path = os.path.join(output_dir, f"{entity_name}.json")
-                with open(file_path, 'w', encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     # Pretty print with 4 space indentation
                     json.dump(sample_item, f, indent=4, default=str)
 
@@ -72,11 +70,13 @@ def fetch_entity_samples(output_dir: str = "entity_samples", limit: int = 1):
     logger.info(f"Completed fetching samples for {len(results)} entities")
     return results
 
+
 def main():
     """Main function to run the script."""
     logger.info("Starting entity sample fetch...")
     fetch_entity_samples()
     logger.info("Done!")
+
 
 if __name__ == "__main__":
     main()

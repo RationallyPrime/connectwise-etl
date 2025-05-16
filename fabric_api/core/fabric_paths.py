@@ -11,10 +11,8 @@ DEFAULT_TABLES_PATH = f"{DEFAULT_LAKEHOUSE_ROOT}/Tables"
 DEFAULT_FILES_PATH = f"{DEFAULT_LAKEHOUSE_ROOT}/Files"
 DEFAULT_ERROR_TABLE = "validation_errors"
 
-def get_table_path(
-    entity_name: str,
-    base_path: str | None = None
-) -> str:
+
+def get_table_path(entity_name: str, base_path: str | None = None) -> str:
     """
     Get the standard path for an entity table in Fabric.
 
@@ -33,6 +31,7 @@ def get_table_path(
 
     return path
 
+
 def get_error_table_path(base_path: str | None = None) -> str:
     """
     Get the path for the validation errors table.
@@ -45,6 +44,7 @@ def get_error_table_path(base_path: str | None = None) -> str:
     """
     return os.path.join(base_path or DEFAULT_TABLES_PATH, DEFAULT_ERROR_TABLE)
 
+
 def get_entity_table_name(entity_name: str) -> str:
     """
     Get the standardized table name for an entity.
@@ -56,6 +56,7 @@ def get_entity_table_name(entity_name: str) -> str:
         Standardized table name for the entity (same as entity name)
     """
     return entity_name
+
 
 def normalize_lakehouse_path(path: str) -> str:
     """

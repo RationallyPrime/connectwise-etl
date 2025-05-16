@@ -81,5 +81,5 @@ __all__ = [
     "info",
     "load_schema",
     "validation",
-    "warning"
+    "warning",
 ]

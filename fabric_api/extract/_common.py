@@ -18,11 +18,11 @@ from ..client import ConnectWiseClient
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T', bound=BaseModel)
+T = TypeVar("T", bound=BaseModel)
+
 
 def validate_batch(
-    data: list[dict[str, Any]],
-    model_class: type[T]
+    data: list[dict[str, Any]], model_class: type[T]
 ) -> tuple[list[T], list[dict[str, Any]]]:
     """
     Validate a batch of raw data against a Pydantic model.
@@ -44,17 +44,21 @@ def validate_batch(
             valid_models.append(model)
         except ValidationError as e:
             logger.warning(f"Validation failed for {model_class.__name__} ID {record_id}")
-            validation_errors.append({
-                "entity": model_class.__name__,
-                "raw_data_id": record_id,
-                "errors": e.errors(),
-                "raw_data": item,
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            validation_errors.append(
+                {
+                    "entity": model_class.__name__,
+                    "raw_data_id": record_id,
+                    "errors": e.errors(),
+                    "raw_data": item,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
     logger.info(f"Validated {len(valid_models)} of {len(data)} {model_class.__name__} records")
     if validation_errors:
-        logger.warning(f"Found {len(validation_errors)} validation errors in {model_class.__name__} data")
+        logger.warning(
+            f"Found {len(validation_errors)} validation errors in {model_class.__name__} data"
+        )
 
     return valid_models, validation_errors
 
@@ -64,7 +68,7 @@ def fetch_parallel(
     endpoint_formatter: Callable[[Any], str],
     items: list[Any],
     max_workers: int = 5,
-    **params: Any
+    **params: Any,
 ) -> list[dict[str, Any]]:
     """
     Fetch data from multiple endpoints in parallel using a thread pool.

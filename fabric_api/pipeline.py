@@ -34,41 +34,79 @@ COLUMN_PRUNE_CONFIG = {
             "id",
             "name",
             "type",
+            "typeId",
+            "typeName",
             "company",
+            "companyId",
+            "companyName",
+            "companyIdentifier",
             "customer",
+            "customerId",
+            "customerName",
+            "customerIdentifier",
             "startDate",
             "endDate",
             "agreementStatus",
             "billToCompany",
+            "billToCompanyId",
+            "billToCompanyName",
+            "billToCompanyIdentifier",
             "billAmount",
             "location",
+            "locationId",
+            "locationName",
             "contact",
+            "contactId",
+            "contactName",
             "customFields",  # Needed for agreement number extraction
             "parentAgreement",  # Needed for agreement hierarchy
+            "parentAgreementId",
+            "parentAgreementName",
         ],
-        "rename": {"billToCompany_id": "billToCompanyId", "company_id": "companyId"},
+        "rename": {
+            # Since flattening now uses camelCase, most mappings are no longer needed
+            # Only keep the few that still need conversion
+            "etl_timestamp": "etlTimestamp",
+            "etl_entity": "etlEntity",
+        },
     },
     "TimeEntry": {
         "keep": [
             "id",
             "company",
+            "companyId",
+            "companyName",
+            "companyIdentifier",
             "member",
+            "memberId",
+            "memberName",
+            "memberIdentifier",
             "timeStart",
             "timeEnd",
             "actualHours",
             "billableOption",
             "notes",
             "agreement",
+            "agreementId",
+            "agreementName",
             "invoice",
+            "invoiceId",
+            "invoiceIdentifier",
             "workType",
+            "workTypeId",
+            "workTypeName",
             "workRole",
+            "workRoleId",
+            "workRoleName",
             "chargeToType",
             "chargeToId",
+            "hourlyRate",  # This field exists in the bronze data
         ],
         "rename": {
-            "company_id": "companyId",
-            "member_id": "memberId",
-            "agreement_id": "agreementId",
+            # Since flattening now uses camelCase, most mappings are no longer needed
+            # Only keep the few that still need conversion
+            "etl_timestamp": "etlTimestamp",
+            "etl_entity": "etlEntity",
         },
     },
     "ExpenseEntry": {
@@ -88,27 +126,47 @@ COLUMN_PRUNE_CONFIG = {
             "mobileGuid",
         ],
         "rename": {
-            "company_id": "companyId",
-            "member_id": "memberId",
-            "agreement_id": "agreementId",
+            # Since flattening now uses camelCase, most mappings are no longer needed
+            # Only keep the few that still need conversion
+            "etl_timestamp": "etlTimestamp",
+            "etl_entity": "etlEntity",
         },
     },
     "ProductItem": {
         "keep": [
             "id",
             "catalogItem",
+            "catalogItemId",
+            "catalogItemName",
+            "catalogItemIdentifier",
             "description",
             "quantity",
             "price",
             "cost",
             "billableOption",
             "agreement",
+            "agreementId",
+            "agreementName",
             "invoice",
+            "invoiceId",
+            "invoiceIdentifier",
             "location",
+            "locationId",
+            "locationName",
             "businessUnit",
+            "businessUnitId",
+            "businessUnitName",
             "vendor",
+            "vendorId",
+            "vendorName",
+            "vendorIdentifier",
         ],
-        "rename": {"catalogItem_id": "catalogItemId", "location_id": "locationId"},
+        "rename": {
+            # Since flattening now uses camelCase, most mappings are no longer needed
+            # Only keep the few that still need conversion
+            "etl_timestamp": "etlTimestamp",
+            "etl_entity": "etlEntity",
+        },
     },
     "PostedInvoice": {
         "keep": [
@@ -116,28 +174,36 @@ COLUMN_PRUNE_CONFIG = {
             "invoiceNumber",
             "type",
             "status",
+            "statusId",
+            "statusName",
             "company",
+            "companyId",
+            "companyName",
+            "companyIdentifier",
             "billToCompany",
+            "billToCompanyId",
+            "billToCompanyName",
+            "billToCompanyIdentifier",
             "date",
             "dueDate",
             "subtotal",
             "total",
             "salesTax",
             "agreement",
+            "agreementId",
+            "agreementName",
             "project",
+            "projectId",
+            "projectName",
             "ticket",
-            "companyId",  # Keep the ID columns too
-            "billToCompanyId",
+            "ticketId",
+            "ticketSummary",
         ],
         "rename": {
-            "company_id": "companyId", 
-            "billToCompany_id": "billToCompanyId",
-            "status_name": "statusName",
-            "company_name": "companyName",
-            "billToCompany_name": "billToCompanyName",
-            "agreement_id": "agreementId",
-            "project_id": "projectId",
-            "ticket_id": "ticketId"
+            # Since flattening now uses camelCase, most mappings are no longer needed
+            # Only keep the few that still need conversion
+            "etl_timestamp": "etlTimestamp",
+            "etl_entity": "etlEntity",
         },
         "split_lines": True,  # Flag to split into header/line tables
     },
@@ -155,31 +221,36 @@ COLUMN_PRUNE_CONFIG = {
             "salesTaxAmount",
             "description",
         ],
-        # No rename needed - columns are already in camelCase after flattening
-        "rename": {},
+        "rename": {
+            # Since flattening now uses camelCase, most mappings are no longer needed
+            # Only keep the few that still need conversion
+            "etl_timestamp": "etlTimestamp",
+            "etl_entity": "etlEntity",
+        },
     },
 }
 
 
 def prune_columns(df: DataFrame, entity_name: str) -> DataFrame:
     """
-    Prune unnecessary columns based on the configuration.
+    DISABLED: Column pruning is disabled - returning all columns.
 
     Args:
         df: Input DataFrame
         entity_name: Name of the entity
 
     Returns:
-        DataFrame with only necessary columns
+        Original DataFrame without any column pruning
     """
-    if entity_name not in COLUMN_PRUNE_CONFIG:
-        logger.warning(f"No pruning config for {entity_name}, keeping all columns")
-        return df
+    logger.info(f"Column pruning disabled - returning all columns for {entity_name}")
+    logger.info(f"Available columns: {', '.join(df.columns[:20])}...")  # Show first 20 columns
+    return df
 
     config = COLUMN_PRUNE_CONFIG[entity_name]
 
     # Get current columns
     current_columns = df.columns
+    logger.info(f"Current columns before pruning for {entity_name}: {', '.join(current_columns)}")
 
     # Determine columns to keep
     columns_to_keep = []
@@ -191,23 +262,51 @@ def prune_columns(df: DataFrame, entity_name: str) -> DataFrame:
     for col_name in current_columns:
         # Remove database prefix if present (e.g., "bronze.id" -> "id")
         clean_col_name = col_name.split(".")[-1] if "." in col_name else col_name
-        
+
         # Keep metadata columns
         if clean_col_name in metadata_columns:
             columns_to_keep.append(col_name)
             continue
 
+        # Special handling for hourlyRate (top-level)
+        if clean_col_name == "hourlyRate" and "hourlyRate" in config["keep"]:
+            logger.info("Found hourlyRate column, adding to keep list")
+            columns_to_keep.append(col_name)  # Keep the original hourlyRate column as-is
+            continue
+
         # Check if it's a column we want to keep
-        base_col = clean_col_name.split("_")[0]  # Handle flattened columns like company_id
-        if base_col in config["keep"] or clean_col_name in config["keep"]:
+        # With camelCase, we no longer split on underscores, just check directly
+        if clean_col_name in config["keep"]:
             # Check if we need to rename it
             if clean_col_name in column_mapping:
+                logger.info(f"Renaming column {clean_col_name} to {column_mapping[clean_col_name]}")
                 columns_to_keep.append(col(col_name).alias(column_mapping[clean_col_name]))
             else:
                 columns_to_keep.append(col_name)
+        # Also check for nested fields like "company.id" that need to be kept
+        elif "." in clean_col_name:
+            parts = clean_col_name.split(".")
+            if parts[0] in config["keep"]:
+                columns_to_keep.append(col_name)
+
+    # Special handling for TimeEntry to ensure hourlyRate is included
+    if entity_name == "TimeEntry":
+        # Get the column names that will be in the final dataframe
+        # First select the columns to see what we'll have
+        temp_df = df.select(*columns_to_keep)
+        final_column_names = temp_df.columns
+
+        if "hourlyRate" not in final_column_names:
+            logger.warning(
+                f"hourlyRate column was not found in the final columns to keep. "
+                f"Available columns: {', '.join(final_column_names)}"
+            )
 
     # Select only the columns we want
     pruned_df = df.select(*columns_to_keep)
+
+    # Log the final columns
+    logger.info(f"Columns after pruning for {entity_name}: {', '.join(pruned_df.columns)}")
 
     return pruned_df
 
@@ -231,24 +330,41 @@ def split_invoice_to_header_line(
         return df, None
 
     # Define header columns (from the flattened structure)
-    # Use camelCase consistently
+    # This should be a comprehensive list of all columns we want in camelCase
     header_columns = [
+        # Core fields
         "id",
         "invoiceNumber",
         "type",
+        # Reference fields
+        "status",
+        "statusId",
         "statusName",
+        "company",
         "companyId",
         "companyName",
+        "companyIdentifier",
+        "billToCompany",
         "billToCompanyId",
         "billToCompanyName",
+        "billToCompanyIdentifier",
+        # Date and amounts
         "date",
         "dueDate",
         "subtotal",
         "total",
         "salesTax",
+        # Related entities
+        "agreement",
         "agreementId",
+        "agreementName",
+        "project",
         "projectId",
+        "projectName",
+        "ticket",
         "ticketId",
+        "ticketSummary",
+        # Metadata
         "etlTimestamp",
         "etlEntity",
     ]
@@ -298,6 +414,9 @@ def process_bronze_to_silver(
     initial_count = bronze_df.count()
     logger.info(f"Found {initial_count} rows in bronze table")
 
+    # Simple diagnostic logging - show columns in bronze
+    logger.info(f"Bronze table columns for {entity_name}: {', '.join(bronze_df.columns)}")
+
     # Apply transformations
     # 1. Flatten nested structures
     logger.info("Flattening nested structures...")
@@ -306,6 +425,9 @@ def process_bronze_to_silver(
     # 2. Prune unnecessary columns
     logger.info("Pruning columns...")
     pruned_df = prune_columns(flattened_df, entity_name)
+
+    # Log columns after pruning for debugging
+    logger.info(f"Columns after pruning for {entity_name}: {', '.join(pruned_df.columns)}")
 
     # 3. Handle special cases like invoice splitting
     header_df, lines_df = split_invoice_to_header_line(pruned_df, entity_name)
@@ -326,9 +448,7 @@ def process_bronze_to_silver(
     # Write lines table if exists
     lines_count = 0
     if lines_df is not None:
-        lines_table_path = (
-            silver_path or f"/lakehouse/default/Tables/silver/{entity_name}_lines"
-        )
+        lines_table_path = silver_path or f"/lakehouse/default/Tables/silver/{entity_name}_lines"
 
         write_to_delta(
             df=lines_df,
