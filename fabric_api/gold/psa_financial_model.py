@@ -8,15 +8,16 @@ This module creates a unified financial data model for PSA that:
 """
 
 import logging
-from typing import Optional
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import (
     coalesce,
     col,
+    concat,
     current_timestamp,
     lit,
-    when,
+    sum,
+    count,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,11 +32,11 @@ def create_unified_line_items(
 ) -> DataFrame:
     """
     Create a unified fact table for all PSA line items.
-    
+
     This fact table serves as the foundation for both PSA reporting
     and BC integration.
     """
-    
+
     # Standardize time entries
     time_lines = time_entries.select(
         col("id").alias("source_id"),
@@ -55,7 +56,7 @@ def create_unified_line_items(
         lit(None).alias("bc_resource_no"),  # Will be mapped from employee
         lit("RESOURCE").alias("bc_line_type"),
     )
-    
+
     # Standardize expense entries
     expense_lines = expense_entries.select(
         col("id").alias("source_id"),
@@ -75,7 +76,7 @@ def create_unified_line_items(
         lit(None).alias("bc_resource_no"),
         lit("EXPENSE").alias("bc_line_type"),
     )
-    
+
     # Standardize product items
     product_lines = product_items.select(
         col("id").alias("source_id"),
@@ -95,66 +96,50 @@ def create_unified_line_items(
         lit(None).alias("bc_resource_no"),
         lit("ITEM").alias("bc_line_type"),
     )
-    
+
     # Union all line types
     all_lines = time_lines.unionByName(expense_lines).unionByName(product_lines)
-    
+
     # Add invoice and agreement information
-    enriched_lines = (
-        all_lines
-        .join(
-            invoices.select("id", "invoiceNumber", "companyId", "statusName"),
-            all_lines.invoice_id == invoices.id,
-            "left"
-        )
-        .join(
-            agreements.select("id", "agreementNumber", "parentAgreementId"),
-            all_lines.agreement_id == agreements.id,
-            "left"
-        )
+    enriched_lines = all_lines.join(
+        invoices.select("id", "invoiceNumber", "companyId", "statusName"),
+        all_lines.invoice_id == invoices.id,
+        "left",
+    ).join(
+        agreements.select("id", "agreementNumber", "parentAgreementId"),
+        all_lines.agreement_id == agreements.id,
+        "left",
     )
-    
+
     # Populate BC mapping fields
     final_lines = enriched_lines.withColumn(
-        "bc_job_no", 
-        coalesce(col("agreementNumber"), col("parentAgreementId"))
-    ).withColumn(
-        "line_item_key",
-        concat(col("line_type"), lit("_"), col("source_id"))
-    )
-    
+        "bc_job_no", coalesce(col("agreementNumber"), col("parentAgreementId"))
+    ).withColumn("line_item_key", concat(col("line_type"), lit("_"), col("source_id")))
+
     return final_lines
 
 
 def create_financial_summary(line_items: DataFrame) -> DataFrame:
     """
     Create financial summary by various dimensions.
-    
+
     This can be used for both PSA dashboards and BC financial reporting.
     """
-    return (
-        line_items
-        .groupBy(
-            "agreement_id",
-            "agreementNumber", 
-            "companyId",
-            "posting_date",
-            "line_type"
-        )
-        .agg(
-            sum("revenue").alias("total_revenue"),
-            sum("cost").alias("total_cost"),
-            sum("quantity").alias("total_quantity"),
-            count("line_item_key").alias("line_count"),
-            (sum("revenue") - sum("cost")).alias("gross_margin")
-        )
+    return line_items.groupBy(
+        "agreement_id", "agreementNumber", "companyId", "posting_date", "line_type"
+    ).agg(
+        sum("revenue").alias("total_revenue"),
+        sum("cost").alias("total_cost"),
+        sum("quantity").alias("total_quantity"),
+        count("line_item_key").alias("line_count"),
+        (sum("revenue") - sum("cost")).alias("gross_margin"),
     )
 
 
 def create_bc_job_ledger_view(line_items: DataFrame) -> DataFrame:
     """
     Transform PSA line items into BC Job Ledger Entry format.
-    
+
     This view can be used for BC integration or reporting.
     """
     return line_items.select(
@@ -176,10 +161,10 @@ def create_bc_job_ledger_view(line_items: DataFrame) -> DataFrame:
     )
 
 
-def create_bc_dimension_bridge(line_items: DataFrame, dimension_entries: DataFrame) -> DataFrame:
+def create_bc_dimension_bridge(line_items: DataFrame, dimension_entries: DataFrame) -> None:
     """
     Create BC-compatible dimension bridge for financial reporting.
-    
+
     Maps PSA dimensions to BC dimension framework.
     """
     # This would map PSA dimensions (department, project, etc.) to BC dimensions
@@ -194,36 +179,36 @@ def run_psa_financial_gold(
 ) -> dict[str, int]:
     """
     Run PSA financial model processing.
-    
+
     Creates standalone PSA financial facts and BC-compatible views.
     """
     results = {}
-    
+
     # Read silver tables
     time_entries = spark.table(f"{silver_path}.TimeEntry")
     expense_entries = spark.table(f"{silver_path}.ExpenseEntry")
     product_items = spark.table(f"{silver_path}.ProductItem")
     invoices = spark.table(f"{silver_path}.PostedInvoice")
     agreements = spark.table(f"{silver_path}.Agreement")
-    
+
     # Create unified line items
     line_items = create_unified_line_items(
         time_entries, expense_entries, product_items, invoices, agreements
     )
-    
+
     # Write main fact table
     line_items.write.mode("overwrite").saveAsTable(f"{gold_path}.fact_psa_line_items")
     results["fact_psa_line_items"] = line_items.count()
-    
+
     # Create financial summary
     financial_summary = create_financial_summary(line_items)
     financial_summary.write.mode("overwrite").saveAsTable(f"{gold_path}.fact_financial_summary")
     results["fact_financial_summary"] = financial_summary.count()
-    
+
     # Create BC-compatible views
     bc_job_ledger = create_bc_job_ledger_view(line_items)
     bc_job_ledger.write.mode("overwrite").saveAsTable(f"{gold_path}.vw_bc_job_ledger_entries")
     results["vw_bc_job_ledger_entries"] = bc_job_ledger.count()
-    
+
     logger.info(f"PSA Financial Gold processing complete: {results}")
     return results

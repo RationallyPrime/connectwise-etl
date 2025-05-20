@@ -15,6 +15,11 @@ def log_error(message: str) -> None:
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {message}")
 
 
+def log_warning(message: str) -> None:
+    """Log a warning message with timestamp."""
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] WARNING: {message}")
+
+
 def log_dataframe_info(df: DataFrame, description: str) -> None:
     """Log dataframe information."""
     count = df.count()

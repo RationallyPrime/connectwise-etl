@@ -202,7 +202,7 @@ def create_invoice_lines_gold(
     # Example structure for Standard invoices (time-based)
     # Check which column name format exists
     invoice_col = "invoiceId" if "invoiceId" in silver_time_entries.columns else "invoice_id"
-    
+
     time_based_lines = silver_time_entries.filter(col(invoice_col).isNotNull()).select(
         col(invoice_col).cast("integer").alias("invoiceId"),
         lit(10000).alias("lineNumber"),  # Would increment in real implementation
@@ -219,7 +219,9 @@ def create_invoice_lines_gold(
         col("memberId").cast("integer").alias("employeeId"),
         col("workRoleId").cast("integer"),
         col("workTypeId").cast("integer"),
-        lit(None).cast("string").alias("itemIdentifier"),  # Add itemIdentifier for schema consistency
+        lit(None)
+        .cast("string")
+        .alias("itemIdentifier"),  # Add itemIdentifier for schema consistency
     )
 
     # Resolve agreement hierarchy for time entries
@@ -246,7 +248,7 @@ def create_invoice_lines_gold(
     # Example structure for Agreement invoices (product-based)
     # Check which column name format exists
     product_invoice_col = "invoiceId" if "invoiceId" in silver_products.columns else "invoice_id"
-    
+
     # Include catalogItemIdentifier in initial selection if it exists
     product_columns = [
         col(product_invoice_col).cast("integer").alias("invoiceId"),
@@ -265,14 +267,16 @@ def create_invoice_lines_gold(
         lit(None).cast("integer").alias("workRoleId"),
         lit(None).cast("integer").alias("workTypeId"),
     ]
-    
+
     # Add itemIdentifier based on availability
     if "catalogItemIdentifier" in silver_products.columns:
         product_columns.append(col("catalogItemIdentifier").cast("string").alias("itemIdentifier"))
     else:
         product_columns.append(lit(None).cast("string").alias("itemIdentifier"))
-    
-    product_based_lines = silver_products.filter(col(product_invoice_col).isNotNull()).select(*product_columns)
+
+    product_based_lines = silver_products.filter(col(product_invoice_col).isNotNull()).select(
+        *product_columns
+    )
 
     # Resolve agreement hierarchy for products
     product_lines_with_agreements = resolve_agreement_hierarchy(
@@ -296,7 +300,7 @@ def create_invoice_lines_gold(
     all_lines = filtered_time_lines.unionByName(
         product_lines_with_discounts, allowMissingColumns=True
     )
-    
+
     # Ensure consistent data types for critical columns
     all_lines = all_lines.select(
         col("invoiceId").cast("integer"),
@@ -318,7 +322,9 @@ def create_invoice_lines_gold(
         col("parentAgreementId").cast("integer"),
         col("agreement_type").cast("string"),
         col("final_agreement_number").cast("string"),
-        col("discountApplicable").cast("boolean") if "discountApplicable" in all_lines.columns else lit(False).alias("discountApplicable")
+        col("discountApplicable").cast("boolean")
+        if "discountApplicable" in all_lines.columns
+        else lit(False).alias("discountApplicable"),
     )
 
     return all_lines
@@ -329,7 +335,7 @@ def create_expense_lines_gold(
 ) -> DataFrame:
     """
     Create gold layer expense lines linked to invoices.
-    
+
     Note: Processes all expense entries that have invoice IDs, regardless of invoice type.
 
     Args:
@@ -342,26 +348,26 @@ def create_expense_lines_gold(
     """
     logger.info("Creating gold expense lines")
 
-    # Check if silver_expenses has invoiceId or invoice_id column 
+    # Check if silver_expenses has invoiceId or invoice_id column
     invoice_id_col = "invoice_id" if "invoice_id" in silver_expenses.columns else "invoiceId"
-    
+
     # Debug: Log available columns
     logger.info(f"Expense columns: {', '.join(silver_expenses.columns)}")
-    
+
     # Debug: Count expenses with invoice IDs
     expenses_with_invoice = silver_expenses.filter(col(invoice_id_col).isNotNull())
     logger.info(f"Expenses with invoice IDs: {expenses_with_invoice.count()}")
-    
+
     # Join expenses with invoices to get invoice numbers
     expenses_with_invoices = expenses_with_invoice.join(
         silver_invoices.select("id", "invoiceNumber", "type"),
         expenses_with_invoice[invoice_id_col] == silver_invoices["id"],
         "left",
     )
-    
+
     # Debug: Count after join
     logger.info(f"Expenses after invoice join: {expenses_with_invoices.count()}")
-    
+
     # Debug: Check invoice types
     invoice_types = expenses_with_invoices.select("type").distinct().collect()
     logger.info(f"Invoice types in expenses: {[row.type for row in invoice_types]}")
@@ -369,31 +375,41 @@ def create_expense_lines_gold(
     # Don't filter by invoice type - process all expenses with invoice IDs
     # The original assumption that Agreement invoices don't have expenses appears to be incorrect
     all_invoice_expenses = expenses_with_invoices
-    
+
     # Debug: Count all expenses
     logger.info(f"All invoice expenses: {all_invoice_expenses.count()}")
 
     # Structure expense lines
     expense_columns = all_invoice_expenses.columns
-    
+
     # Map column names that might vary (PSA tables often use snake_case)
     type_col = "typeName" if "typeName" in expense_columns else "type_name"
-    member_col = "memberIdentifier" if "memberIdentifier" in expense_columns else "member_identifier"
+    member_col = (
+        "memberIdentifier" if "memberIdentifier" in expense_columns else "member_identifier"
+    )
     agreement_col = "agreementId" if "agreementId" in expense_columns else "agreement_id"
     timestamp_col = "etlTimestamp" if "etlTimestamp" in expense_columns else "etl_timestamp"
-    
+
     expense_lines = all_invoice_expenses.select(
         col(invoice_id_col).alias("invoiceId"),
         col("invoiceNumber"),
         lit(10000).alias("lineNumber"),  # Would increment in real implementation
-        col(type_col).alias("expenseType") if type_col in expense_columns else lit(None).alias("expenseType"),
+        col(type_col).alias("expenseType")
+        if type_col in expense_columns
+        else lit(None).alias("expenseType"),
         col("amount").alias("quantity"),
         col("amount").alias("lineAmount"),
         col("notes").alias("description"),
         col("date").alias("workDate"),
-        col(member_col).alias("employee") if member_col in expense_columns else lit(None).alias("employee"),
-        col(agreement_col).alias("agreementId") if agreement_col in expense_columns else lit(None).alias("agreementId"),
-        col(timestamp_col).alias("etlTimestamp") if timestamp_col in expense_columns else lit(None).alias("etlTimestamp"),
+        col(member_col).alias("employee")
+        if member_col in expense_columns
+        else lit(None).alias("employee"),
+        col(agreement_col).alias("agreementId")
+        if agreement_col in expense_columns
+        else lit(None).alias("agreementId"),
+        col(timestamp_col).alias("etlTimestamp")
+        if timestamp_col in expense_columns
+        else lit(None).alias("etlTimestamp"),
     )
 
     # Resolve agreement hierarchy
@@ -522,10 +538,10 @@ def run_gold_invoice_processing(
     logger.info("Reading silver layer tables")
     # Note: These are PSA tables, they don't have numeric suffixes and maintain original names
     silver_invoices = spark.table("silver.PostedInvoice")  # PSA table
-    silver_agreements = spark.table("silver.Agreement")    # PSA table
+    silver_agreements = spark.table("silver.Agreement")  # PSA table
     silver_time_entries = spark.table("silver.TimeEntry")  # PSA table
-    silver_products = spark.table("silver.ProductItem")    # PSA table
-    silver_expenses = spark.table("silver.ExpenseEntry")   # PSA table
+    silver_products = spark.table("silver.ProductItem")  # PSA table
+    silver_expenses = spark.table("silver.ExpenseEntry")  # PSA table
 
     # Log columns available in each table for debugging
     logger.info(f"TimeEntry columns: {', '.join(silver_time_entries.columns)}")
@@ -559,18 +575,17 @@ def run_gold_invoice_processing(
     # Write gold lines - force schema overwrite if there's a mismatch
     # First, let's check if the table exists and drop it if needed
     try:
-        existing_table_path = f"{gold_path}/invoice_lines"
-        spark.sql(f"DROP TABLE IF EXISTS gold.invoice_lines")
+        spark.sql("DROP TABLE IF EXISTS gold.invoice_lines")
     except Exception:
         pass  # Table might not exist
-    
+
     write_to_delta(
         df=gold_lines,
         entity_name="invoice_lines",
         base_path=gold_path,
         mode="overwrite",
         add_timestamp=False,
-        options={"overwriteSchema": "true", "mergeSchema": "true"}
+        options={"overwriteSchema": "true", "mergeSchema": "true"},
     )
     results["invoice_lines"] = line_count
 

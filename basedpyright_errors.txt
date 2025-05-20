@@ -1,0 +1,93 @@
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline.py:31:39 - error: "AccScheduleLine" is not a known attribute of module ".models" (reportAttributeAccessIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline.py:32:39 - error: "AccScheduleName" is not a known attribute of module ".models" (reportAttributeAccessIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline.py:37:40 - error: "DefaultDimension" is not a known attribute of module ".models" (reportAttributeAccessIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline.py:359:19 - error: Cannot assign to attribute "_table_name" for class "DataFrame"
+    Attribute "_table_name" is unknown (reportAttributeAccessIssue)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced.py:175:19 - error: Cannot assign to attribute "_table_name" for class "DataFrame"
+    Attribute "_table_name" is unknown (reportAttributeAccessIssue)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py:155:13 - error: "log_warning" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py:197:17 - error: "log_warning" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py:212:19 - error: Cannot assign to attribute "_table_name" for class "DataFrame"
+    Attribute "_table_name" is unknown (reportAttributeAccessIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py:213:19 - error: Cannot assign to attribute "_model_class" for class "DataFrame"
+    Attribute "_model_class" is unknown (reportAttributeAccessIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py:569:79 - error: "__name__" is not a known attribute of "None" (reportOptionalMemberAccess)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/bc_medallion_pipeline_enhanced_with_models.py:622:79 - error: "__name__" is not a known attribute of "None" (reportOptionalMemberAccess)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:25:19 - error: "Optional" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:69:19 - error: "Optional" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:108:14 - error: "Optional" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:152:20 - error: "Optional" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:189:27 - error: Expression of type "None" cannot be assigned to parameter of type "SparkSession"
+    "None" is not assignable to "SparkSession" (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:211:40 - error: "date_format" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:212:29 - error: "year" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:213:30 - error: "month" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:214:32 - error: "quarter" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:215:29 - error: "weekofyear" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:216:37 - error: "dayofmonth" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:217:36 - error: "dayofweek" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:218:35 - error: "date_format" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:222:39 - error: "concat" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions.py:273:61 - error: Argument of type "None" cannot be assigned to parameter "psa_invoices" of type "DataFrame" in function "create_customer_dimension"
+    "None" is not assignable to "DataFrame" (reportArgumentType)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions_enhanced.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/conformed_dimensions_enhanced.py:278:43 - error: "concat" is not defined (reportUndefinedVariable)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:114:35 - error: "concat" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:128:9 - error: No overloads for "sum" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:128:13 - error: Argument of type "Literal['revenue']" cannot be assigned to parameter "iterable" of type "Iterable[_SupportsSumNoDefaultT@sum]" in function "sum"
+    "Literal['revenue']" is not assignable to "Iterable[_SupportsSumNoDefaultT@sum]"
+      Type parameter "_T_co@Iterable" is covariant, but "str" is not a subtype of "_SupportsSumNoDefaultT@sum"
+        Type "str" is not assignable to type "_SupportsSumWithNoDefaultGiven"
+          "str" is incompatible with protocol "_SupportsSumWithNoDefaultGiven"
+            "__radd__" is not present (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:129:9 - error: No overloads for "sum" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:129:13 - error: Argument of type "Literal['cost']" cannot be assigned to parameter "iterable" of type "Iterable[_SupportsSumNoDefaultT(1)@sum]" in function "sum"
+    "Literal['cost']" is not assignable to "Iterable[_SupportsSumNoDefaultT(1)@sum]"
+      Type parameter "_T_co@Iterable" is covariant, but "str" is not a subtype of "_SupportsSumNoDefaultT(1)@sum"
+        Type "str" is not assignable to type "_SupportsSumWithNoDefaultGiven"
+          "str" is incompatible with protocol "_SupportsSumWithNoDefaultGiven"
+            "__radd__" is not present (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:130:9 - error: No overloads for "sum" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:130:13 - error: Argument of type "Literal['quantity']" cannot be assigned to parameter "iterable" of type "Iterable[_SupportsSumNoDefaultT(2)@sum]" in function "sum"
+    "Literal['quantity']" is not assignable to "Iterable[_SupportsSumNoDefaultT(2)@sum]"
+      Type parameter "_T_co@Iterable" is covariant, but "str" is not a subtype of "_SupportsSumNoDefaultT(2)@sum"
+        Type "str" is not assignable to type "_SupportsSumWithNoDefaultGiven"
+          "str" is incompatible with protocol "_SupportsSumWithNoDefaultGiven"
+            "__radd__" is not present (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:131:9 - error: "count" is not defined (reportUndefinedVariable)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:132:10 - error: No overloads for "sum" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:132:14 - error: Argument of type "Literal['revenue']" cannot be assigned to parameter "iterable" of type "Iterable[_SupportsSumNoDefaultT(3)@sum]" in function "sum"
+    "Literal['revenue']" is not assignable to "Iterable[_SupportsSumNoDefaultT(3)@sum]"
+      Type parameter "_T_co@Iterable" is covariant, but "str" is not a subtype of "_SupportsSumNoDefaultT(3)@sum"
+        Type "str" is not assignable to type "_SupportsSumWithNoDefaultGiven"
+          "str" is incompatible with protocol "_SupportsSumWithNoDefaultGiven"
+            "__radd__" is not present (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:132:27 - error: No overloads for "sum" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:132:31 - error: Argument of type "Literal['cost']" cannot be assigned to parameter "iterable" of type "Iterable[_SupportsSumNoDefaultT(4)@sum]" in function "sum"
+    "Literal['cost']" is not assignable to "Iterable[_SupportsSumNoDefaultT(4)@sum]"
+      Type parameter "_T_co@Iterable" is covariant, but "str" is not a subtype of "_SupportsSumNoDefaultT(4)@sum"
+        Type "str" is not assignable to type "_SupportsSumWithNoDefaultGiven"
+          "str" is incompatible with protocol "_SupportsSumWithNoDefaultGiven"
+            "__radd__" is not present (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/gold/psa_financial_model.py:161:88 - error: Function with declared return type "DataFrame" must return value on all code paths
+    "None" is not assignable to "DataFrame" (reportReturnType)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline/psa_gold_pipeline.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline/psa_gold_pipeline.py:25:27 - error: Expression of type "None" cannot be assigned to parameter of type "SparkSession"
+    "None" is not assignable to "SparkSession" (reportArgumentType)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline/psa_gold_pipeline.py:26:16 - error: Expected class but received "(iterable: Iterable[object], /) -> bool" (reportGeneralTypeIssues)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline_psa_enhanced.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline_psa_enhanced.py:80:24 - error: No overloads for "createDataFrame" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline_psa_enhanced.py:80:51 - error: Argument of type "list[dict[str, Any]]" cannot be assigned to parameter "data" of type "DataFrameLike" in function "createDataFrame"
+    "list[dict[str, Any]]" is not assignable to "DataFrame" (reportArgumentType)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline_psa_enhanced_with_models.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline_psa_enhanced_with_models.py:103:24 - error: No overloads for "createDataFrame" match the provided arguments (reportCallIssue)
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/pipeline_psa_enhanced_with_models.py:103:51 - error: Argument of type "list[dict[str, Any]]" cannot be assigned to parameter "data" of type "DataFrameLike" in function "createDataFrame"
+    "list[dict[str, Any]]" is not assignable to "DataFrame" (reportArgumentType)
+/home/rationallyprime/CascadeProjects/PSA/fabric_api/unified_lakehouse_orchestrator.py
+  /home/rationallyprime/CascadeProjects/PSA/fabric_api/unified_lakehouse_orchestrator.py:26:6 - error: Import ".pipeline.psa_gold_pipeline" could not be resolved (reportMissingImports)
+47 errors, 0 warnings, 0 notes
