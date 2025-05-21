@@ -1,4 +1,3 @@
-import logging
 import re
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional, Type
@@ -8,114 +7,98 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 from sparkdantic import SparkModel
 
-# Attempt to import all models from the newly generated bc_models
-# This might be a long list, so handle potential import errors gracefully for now
-# if the models haven't been generated in the exact expected way yet.
+# Import core utilities
+from core_etl.logging_utils import etl_logger
+from core_etl.config_utils import get_bc_table_config, get_bc_global_setting
+from core_etl.delta_writer import write_delta_table
+from core_etl.watermark_manager import get_watermark, update_watermark
+# Spark session is expected to be passed by the caller, initialized using core_etl.spark_utils.get_spark_session()
+
+# Import SCD Type 2 handling function (assuming it will be created here)
+from fabric_api.silver.scd import apply_scd_type_2
+
+# Updated Pydantic model import path
 try:
-    from fabric_api.bc_models import models as bc_all_models # Assuming __init__ exposes them
-    # Or, if models are directly in bc_models.models:
-    # from fabric_api.bc_models.models import * 
+    from fabric_api.models.bc_models import models as bc_all_models
 except ImportError:
-    logging.warning("BC models could not be imported. Ensure they are generated correctly.")
+    etl_logger.warning("BC models from fabric_api.models.bc_models could not be imported. Ensure they are generated correctly.")
     bc_all_models = None # Placeholder
 
-logger = logging.getLogger(__name__)
 
 class BCPipeline:
     def __init__(self, spark: SparkSession):
         self.spark = spark
+        # Schemas can be made configurable via get_bc_global_setting if needed
+        self.bronze_schema_name = get_bc_global_setting("bronze_schema_name") if get_bc_global_setting("bronze_schema_name") else "bronze.bc"
+        self.silver_schema_name = get_bc_global_setting("silver_schema_name") if get_bc_global_setting("silver_schema_name") else "silver.bc"
+        self.gold_schema_name = get_bc_global_setting("gold_schema_name") if get_bc_global_setting("gold_schema_name") else "gold.bc"
+        
         self.schemas = {
-            "bronze": "bronze.bc",
-            "silver": "silver.bc",
-            "gold": "gold.bc",
+            "bronze": self.bronze_schema_name,
+            "silver": self.silver_schema_name,
+            "gold": self.gold_schema_name,
         }
         self._create_schemas()
 
         self.model_mapping: Dict[str, Type[SparkModel]] = {}
         if bc_all_models:
-            # Dynamically populate model_mapping from imported models
-            # Assumes model class names match clean table names
             for model_name in dir(bc_all_models):
                 model_class = getattr(bc_all_models, model_name)
                 if isinstance(model_class, type) and issubclass(model_class, SparkModel) and model_class is not SparkModel:
-                    # Store by class name (which should be the clean table name)
                     self.model_mapping[model_name] = model_class
         
         if not self.model_mapping:
-            logger.warning("model_mapping is empty. BC Pydantic models might not be loaded correctly.")
+            etl_logger.warning("model_mapping is empty. BC Pydantic models might not be loaded correctly from fabric_api.models.bc_models.")
 
-        # Define natural keys using CamelCase field names as per new models
-        # These should match the Python attribute names in the generated Pydantic models
-        self.natural_keys = {
-            "AccountingPeriod": ["StartingDate"],
-            "CompanyInformation": ["Name"], # Assuming 'Name' is the PK for CompanyInformation
-            "Currency": ["Code"],
-            "CustLedgerEntry": ["EntryNo"],
-            "Customer": ["No"],
-            "DetailedCustLedgEntry": ["EntryNo"],
-            "DetailedVendorLedgEntry": ["EntryNo"],
-            "Dimension": ["Code"],
-            "DimensionSetEntry": ["DimensionSetID", "DimensionCode"], # Check if 'Company' is needed
-            "DimensionValue": ["DimensionCode", "Code"], # Check if 'Company' is needed
-            "GLAccount": ["No"],
-            "GLEntry": ["EntryNo"],
-            "GeneralLedgerSetup": ["PrimaryKey"], # This table is often a singleton
-            "Item": ["No"],
-            "Job": ["No"],
-            "JobLedgerEntry": ["EntryNo"],
-            "Resource": ["No"],
-            "SalesInvoiceHeader": ["No"],
-            "SalesInvoiceLine": ["DocumentNo", "LineNo"],
-            "Vendor": ["No"],
-            "VendorLedgerEntry": ["EntryNo"],
-        }
-
-        self.dimension_tables = [
-            "AccountingPeriod", "GLAccount", "Customer", "Vendor", "Item",
-            "Dimension", "DimensionValue", "Currency", "CompanyInformation",
-            "Job", "Resource", "GeneralLedgerSetup",
-        ]
-
-        self.fact_tables = [
-            "GLEntry", "CustLedgerEntry", "VendorLedgerEntry", "JobLedgerEntry",
-            "SalesInvoiceHeader", "SalesInvoiceLine", "DetailedCustLedgEntry",
-            "DetailedVendorLedgEntry", "DimensionSetEntry", # DimensionSetEntry can also be seen as a fact or bridge component
-        ]
+        # dimension_tables, fact_tables, and natural_keys are now sourced from YAML config via get_bc_table_config
+        # No longer hardcoded here.
 
     def _create_schemas(self):
         for schema_name in self.schemas.values():
             try:
                 self.spark.sql(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
-                logger.info(f"Ensured schema exists: {schema_name}")
+                etl_logger.info(f"Ensured schema exists: {schema_name}")
             except Exception as e:
-                logger.error(f"Error creating schema {schema_name}: {e}, continuing...")
+                etl_logger.error(f"Error creating schema {schema_name}: {e}, continuing...")
 
     def bronze_to_silver(
         self, 
-        table_name: str, 
-        incremental: bool = False, 
-        watermark_column: str = "SystemModifiedAt" # Assuming SystemModifiedAt is CamelCase from model
+        table_name: str, # This is the raw table name from bronze, e.g., Customer20
+        run_incremental: bool = False # Parameter name changed for clarity
     ) -> Optional[DataFrame]:
-        logger.info(f"Processing {table_name} from Bronze to Silver")
+        etl_logger.info(f"Processing {table_name} from Bronze to Silver. Incremental run: {run_incremental}")
 
-        # 1. Read bronze table
+        # 1. Get table configuration
+        # Strip numeric suffix from table name to get clean_table_name for config lookup
+        table_suffix_match = re.search(r'(\d+)$', table_name)
+        table_numeric_suffix = table_suffix_match.group(1) if table_suffix_match else None
+        clean_table_name = re.sub(r'\d+$', '', table_name) if table_numeric_suffix else table_name
+        
+        config = get_bc_table_config(clean_table_name)
+        if not config:
+            etl_logger.error(f"No configuration found for table {clean_table_name} (derived from {table_name}). Skipping.")
+            return None
+
+        watermark_column = config.get("incremental_column")
+        scd_type = config.get("scd_type", "1") # Default to SCD Type 1
+        natural_keys_config = config.get("natural_keys", []) # Used for SCD1 merge and general deduplication if not SCD2
+        business_keys_config = config.get("business_keys", []) # Specifically for SCD2
+        silver_target_table_name = config.get("silver_target_name", clean_table_name)
+        silver_partition_columns = config.get("partition_columns_silver")
+
+        # 2. Read bronze table
         bronze_table_path = f"{self.schemas['bronze']}.{table_name}"
         try:
             bronze_df = self.spark.table(bronze_table_path)
         except Exception as e:
             error_msg = str(e)
             if "doesn't exist" in error_msg or "not found" in error_msg:
-                logger.error(f"Table {bronze_table_path} not found or broken - skipping")
+                etl_logger.error(f"Table {bronze_table_path} not found or broken - skipping")
             else:
-                logger.error(f"Failed to read bronze table {bronze_table_path}: {error_msg}")
+                etl_logger.error(f"Failed to read bronze table {bronze_table_path}: {error_msg}")
             return None
-
-        # 2. Strip numeric suffix from table name and extract suffix
-        table_suffix_match = re.search(r'(\d+)$', table_name)
-        table_numeric_suffix = table_suffix_match.group(1) if table_suffix_match else None
-        clean_table_name = re.sub(r'\d+$', '', table_name) if table_numeric_suffix else table_name
         
-        logger.info(f"Clean table name: {clean_table_name}, Table suffix: {table_numeric_suffix}")
+        etl_logger.info(f"Clean table name for processing: {clean_table_name}, Original table: {table_name}, Suffix: {table_numeric_suffix}")
 
         # 3. Rename columns: strip table's numeric suffix, standardize $Company
         current_columns = bronze_df.columns
@@ -124,151 +107,252 @@ class BCPipeline:
             new_col_name = col_name
             if table_numeric_suffix and new_col_name.endswith(table_numeric_suffix):
                 new_col_name = new_col_name[:-len(table_numeric_suffix)]
-                logger.debug(f"Renaming column {col_name} to {new_col_name}")
+                etl_logger.debug(f"Renaming column {col_name} to {new_col_name} for {clean_table_name}")
             
             if new_col_name == "$Company":
-                new_col_name = "Company" # Standardize to 'Company'
-                logger.debug(f"Renaming column $Company to Company")
+                new_col_name = "Company"
+                etl_logger.debug(f"Renaming column $Company to Company for {clean_table_name}")
 
             renamed_cols_expr.append(F.col(col_name).alias(new_col_name))
         
-        transformed_df = bronze_df.select(*renamed_cols_expr)
+        source_df = bronze_df.select(*renamed_cols_expr)
 
-        # 4. Get Pydantic model and schema
+        # 4. Get Pydantic model and schema for validation and selection
         model_class = self.model_mapping.get(clean_table_name)
-        validated_df = transformed_df
+        validated_df = source_df # Start with source_df
         
         if model_class:
-            logger.info(f"Using Pydantic model {model_class.__name__} for {clean_table_name}")
+            etl_logger.info(f"Using Pydantic model {model_class.__name__} for {clean_table_name}")
             try:
                 model_schema = model_class.model_spark_schema()
-                
-                # Select only columns present in the model schema from the transformed_df
-                # Ensure field names in model_schema are used for selection
                 model_field_names = set(model_schema.fieldNames())
-                df_field_names = set(transformed_df.columns)
+                df_field_names = set(source_df.columns)
                 
-                columns_to_select = []
-                missing_in_df = []
-                
-                for model_field_name in model_field_names:
-                    if model_field_name in df_field_names:
-                        columns_to_select.append(model_field_name)
-                    else:
-                        # This can happen if a field in model is not in source, which is fine
-                        missing_in_df.append(model_field_name)
-                
+                columns_to_select = [mf for mf in model_field_names if mf in df_field_names]
+                missing_in_df = [mf for mf in model_field_names if mf not in df_field_names]
+                                
                 if missing_in_df:
-                    logger.debug(f"Fields in model but not in DataFrame for {clean_table_name}: {missing_in_df}")
+                    etl_logger.debug(f"Fields in model {model_class.__name__} but not in DataFrame for {clean_table_name}: {missing_in_df}")
 
                 if not columns_to_select:
-                    logger.warning(f"No common columns found between DataFrame and model for {clean_table_name}. Skipping schema validation.")
-                    validated_df = transformed_df # Use transformed_df if no common columns
+                    etl_logger.warning(f"No common columns found between DataFrame and model {model_class.__name__} for {clean_table_name}. Using DataFrame schema as is for further processing.")
+                    # validated_df remains source_df
                 else:
-                    selected_df = transformed_df.select(*columns_to_select)
-                
-                    # Cast columns to model schema types
+                    selected_df = source_df.select(*columns_to_select)
                     casted_df = selected_df
                     for field in model_schema.fields:
-                        if field.name in selected_df.columns:
+                        if field.name in selected_df.columns: # Ensure column exists before casting
                             casted_df = casted_df.withColumn(field.name, F.col(field.name).cast(field.dataType))
                     validated_df = casted_df
-                    logger.info(f"Schema validation and casting applied for {clean_table_name} using {model_class.__name__}")
-
+                    etl_logger.info(f"Schema validation and casting applied for {clean_table_name} using {model_class.__name__}")
             except Exception as e:
-                logger.warning(f"Could not fully apply Pydantic model schema for {clean_table_name} using {model_class.__name__}: {e}. Proceeding with best effort.")
-                # validated_df remains transformed_df if error during schema application
+                etl_logger.warning(f"Could not fully apply Pydantic model schema for {clean_table_name} using {model_class.__name__}: {e}. Proceeding with best effort using available columns.")
+                # validated_df might be source_df or partially processed
         else:
-            logger.warning(f"No Pydantic model found for {clean_table_name}. Proceeding without schema validation.")
+            etl_logger.warning(f"No Pydantic model found for {clean_table_name}. Proceeding without schema validation against Pydantic model.")
 
-        # 5. Apply incremental filter if enabled (using original watermark_column name)
-        # The watermark column should ideally be defined in the model and thus use CamelCase.
-        if incremental and watermark_column in validated_df.columns: # Check against validated_df columns
-            # This part might need adjustment if watermark columns also have suffixes in bronze
-            # For now, assume watermark_column is its final CamelCase name from model
-            # Or, it's a system column that doesn't get renamed.
-            
-            # Get last watermark (would normally come from a metadata table)
-            # Using a fixed lookback for example purposes
-            seven_days_ago = datetime.now() - timedelta(days=7)
-            # Ensure the watermark column is of a comparable type (timestamp or date)
-            # This relies on the model schema casting if watermark_column is part of the model
-            validated_df = validated_df.filter(F.col(watermark_column) >= F.lit(seven_days_ago).cast("timestamp"))
-            logger.info(f"Applied incremental filter on {watermark_column} for {clean_table_name}")
-
-
-        # 6. Add processing metadata
-        silver_df = validated_df.withColumn("SilverProcessedAt", F.current_timestamp())
-
-        # 7. Apply data quality checks (Drop duplicates)
-        # Natural keys should use CamelCase field names from models, including 'Company'
-        if clean_table_name in self.natural_keys:
-            nk_columns = self.natural_keys[clean_table_name]
-            # Check if 'Company' is part of natural keys or should be added if present in df
-            columns_for_dedup = nk_columns[:] # Make a copy
-            if "Company" not in columns_for_dedup and "Company" in silver_df.columns:
-                 # Check if 'Company' should be part of the composite key for this table
-                 # This logic might need refinement based on specific table needs.
-                 # For many BC tables, primary keys are often per company.
-                 # For simplicity, if 'Company' column exists, add it to NK for deduplication.
-                logger.debug(f"Adding 'Company' to natural keys for deduplication of {clean_table_name}")
-                columns_for_dedup.insert(0, "Company") # Add Company as the first key for partitioning
-
-            # Ensure all nk_columns for deduplication actually exist in the DataFrame
-            final_dedup_cols = [col for col in columns_for_dedup if col in silver_df.columns]
-            if final_dedup_cols:
-                if len(final_dedup_cols) != len(columns_for_dedup):
-                    logger.warning(f"Not all natural key columns found for {clean_table_name} for deduplication. Original: {columns_for_dedup}, Found: {final_dedup_cols}")
-                
-                logger.info(f"Dropping duplicates for {clean_table_name} based on keys: {final_dedup_cols}")
-                silver_df = silver_df.dropDuplicates(final_dedup_cols)
+        # 5. Apply incremental filter if enabled
+        current_max_watermark_val = None
+        if run_incremental and watermark_column:
+            if watermark_column not in validated_df.columns:
+                etl_logger.warning(f"Watermark column '{watermark_column}' not found in DataFrame for {clean_table_name}. Cannot apply incremental filter.")
             else:
-                logger.warning(f"No natural key columns found in DataFrame for {clean_table_name}. Skipping deduplication.")
+                last_watermark_str = get_watermark(self.spark, f"silver.{silver_target_table_name}") # Use target table name for watermark key
+                if last_watermark_str:
+                    etl_logger.info(f"Last watermark for {silver_target_table_name}: {last_watermark_str}")
+                    # Ensure watermark column type is compatible for comparison
+                    # Pydantic model casting should have handled this if watermark_column is in the model.
+                    # If not, an explicit cast might be needed based on expected data type.
+                    # For simplicity, assume it's a timestamp or string that can be directly compared.
+                    validated_df = validated_df.filter(F.col(watermark_column) > F.lit(last_watermark_str)) 
+                
+                # Calculate new watermark value from the potentially filtered dataframe
+                # Ensure the column is not all nulls before trying to get max.
+                if watermark_column in validated_df.columns and validated_df.select(watermark_column).na.drop().count() > 0:
+                    current_max_watermark_val = validated_df.agg(F.max(watermark_column)).collect()[0][0]
+                    etl_logger.info(f"New potential watermark for {silver_target_table_name} from this batch: {current_max_watermark_val}")
+                else:
+                    etl_logger.info(f"No new data or no valid watermark values in {watermark_column} for {silver_target_table_name} in this batch.")
+
+
+        # 6. Add generic processing timestamp. Specific SCD handling will manage SilverCreatedAt/SilverModifiedAt/EffectiveDate etc.
+        df_with_processed_ts = validated_df.withColumn("SilverProcessedAt", F.current_timestamp())
+
+        # 7. Handle SCD Type specific logic and Write to Silver
+        silver_table_full_path = f"{self.schemas['silver']}.{silver_target_table_name}"
+        write_mode = "overwrite" # Default, will be changed by SCD logic if needed
+        df_to_write = df_with_processed_ts
+        scd1_merge_params = None # For SCD1 merge keys
+
+        if scd_type == "2":
+            etl_logger.info(f"Applying SCD Type 2 processing for {clean_table_name} (target: {silver_target_table_name})")
+            if not business_keys_config:
+                etl_logger.error(f"SCD Type 2 specified for {clean_table_name}, but 'business_keys' are not defined in config. Skipping SCD2 processing.")
+                return None # Or raise error, or fallback
+            
+            # Define SCD2 control columns (could be made configurable)
+            effective_date_col = "SilverEffectiveDate"
+            end_date_col = "SilverEndDate"
+            current_flag_col = "IsSilverCurrent"
+            
+            etl_logger.info(f"Using Business Keys for SCD2: {business_keys_config}")
+            etl_logger.info(f"SCD2 Control Columns: EffectiveDate='{effective_date_col}', EndDate='{end_date_col}', CurrentFlag='{current_flag_col}'")
+
+            # The `apply_scd_type_2` function needs the target silver table to check existing records
+            # It will read the existing silver table, compare, and return a DataFrame of records to append.
+            # This DataFrame includes new records, and old records that need their end dates/current flags updated.
+            # However, the current signature of apply_scd_type_2 is:
+            # apply_scd_type_2(df: DataFrame, business_keys: list[str], effective_date_col: str, end_date_col: str, current_flag_col: str) -> DataFrame
+            # This implies it takes the *source* df and handles the merge/comparison internally by reading the target table.
+            # Let's assume apply_scd_type_2 needs the spark session and full silver table path to read the target.
+            
+            # The df_with_processed_ts contains only the *new or changed data from source for this batch*.
+            # apply_scd_type_2 will need to:
+            #   1. Read the existing silver table (`silver_table_full_path`).
+            #   2. Join `df_with_processed_ts` with existing silver data on business keys.
+            #   3. Identify new records, changed records, unchanged records.
+            #   4. For changed records: generate a new version (effective date now, end date far future, current true)
+            #      AND identify the old version in silver to be closed (update its end date, set current false).
+            #   5. For new records: generate a new version (effective date now, end date far future, current true).
+            #   6. Return a DataFrame of *all rows that need to be written* to the silver table.
+            #      This implies `apply_scd_type_2` might return more rows than it received if it's also returning the updated old versions.
+            #      OR, it might perform the updates on the target table directly (less likely for a function named "apply_")
+            #      The prompt says "returns a DataFrame containing all records to be appended". This means it prepares the new/updated records.
+            #      The `write_delta_table` with mode="append" will just add these.
+            #      This approach requires the target table to be a Delta table that supports schema evolution and potentially complex appends if not careful.
+            #      A more robust `apply_scd_type_2` might actually perform the MERGE itself using DeltaTable APIs.
+            #      Given the constraints, we assume `apply_scd_type_2` returns a DataFrame that should simply be appended.
+
+            df_to_write = apply_scd_type_2(
+                spark=self.spark, # Assuming apply_scd_type_2 needs spark
+                source_df=df_with_processed_ts, # New/changed data from this batch
+                target_table_path=silver_table_full_path, # Full path to existing silver delta table
+                business_keys=business_keys_config,
+                effective_date_col=effective_date_col,
+                end_date_col=end_date_col,
+                current_flag_col=current_flag_col
+                # `apply_scd_type_2` is responsible for SilverCreatedAt/SilverProcessedAt on the records it outputs
+            )
+            if df_to_write is None:
+                etl_logger.error(f"apply_scd_type_2 returned None for {clean_table_name}. Skipping write.")
+                return None
+
+            write_mode = "append" # Always append for SCD Type 2 history
+            etl_logger.info(f"SCD Type 2 processing for {silver_target_table_name} will use append mode.")
+
+        elif run_incremental: # SCD Type 1 or other incremental types
+            # Keys for SCD1 merge operation.
+            scd1_merge_keys = natural_keys_config[:] # Use natural_keys for SCD1, not business_keys
+            if "Company" not in scd1_merge_keys and "Company" in df_to_write.columns:
+                etl_logger.debug(f"Adding 'Company' to SCD1 merge keys for {clean_table_name} if not already present.")
+                scd1_merge_keys.insert(0, "Company")
+            
+            scd1_merge_keys = [k for k in scd1_merge_keys if k in df_to_write.columns]
+
+            if scd_type == "1" and scd1_merge_keys:
+                write_mode = "merge" 
+                scd1_merge_params = scd1_merge_keys
+                # df_to_write already has SilverProcessedAt.
+                # write_delta_table (if mode='merge') should handle setting SilverCreatedAt for new records.
+                etl_logger.info(f"Preparing SCD1 merge for {silver_target_table_name} with keys: {scd1_merge_params}")
+            else: # Incremental append for non-SCD1 or if keys are missing
+                if scd_type == "1" and not scd1_merge_keys:
+                     etl_logger.warning(f"SCD Type 1 specified for {clean_table_name} but no valid natural keys found for merge. Falling back to append.")
+                write_mode = "append"
+                etl_logger.info(f"Preparing incremental append for {silver_target_table_name} (SCD type is '{scd_type}')")
+        else: # Full load (non-incremental)
+            write_mode = "overwrite"
+            # For full overwrite, SilverCreatedAt would typically be set for all records during this load.
+            df_to_write = df_to_write.withColumn("SilverCreatedAt", F.current_timestamp())
+            etl_logger.info(f"Preparing full overwrite for {silver_target_table_name}")
         
-        self._log_dataframe_info(silver_df, f"Silver {clean_table_name}")
+        # Perform the write operation
+        try:
+            write_delta_table(
+                df=df_to_write,
+                table_path=silver_table_full_path,
+                mode=write_mode,
+                partition_by_cols=silver_partition_columns,
+                merge_schema_flag=True, 
+                overwrite_schema_flag=(write_mode == "overwrite"),
+                scd1_keys=scd1_merge_params 
+            )
+            etl_logger.info(f"Successfully wrote to Silver table: {silver_table_full_path} with mode '{write_mode}'")
 
-        # Attach clean_table_name for the caller (e.g., orchestrator)
-        # This is a common pattern but not standard DataFrame API. Consider a wrapper class or returning a tuple.
-        silver_df._table_name = clean_table_name # type: ignore[attr-defined]
-        return silver_df
+            # Update watermark if incremental and successful write (applies to both SCD1 and SCD2 source batch handling)
+            if run_incremental and watermark_column and current_max_watermark_val is not None:
+                update_watermark(self.spark, f"silver.{silver_target_table_name}", str(current_max_watermark_val))
+                etl_logger.info(f"Successfully updated watermark for {silver_target_table_name} to {current_max_watermark_val}")
 
-    def generate_surrogate_key(self, df: DataFrame, table_name: str, key_name: Optional[str] = None) -> DataFrame:
+        except Exception as e:
+            etl_logger.error(f"Failed to write or update watermark for Silver table {silver_target_table_name}: {e}", exc_info=True)
+            return None # Signal failure
+        
+        self._log_dataframe_info(df_to_write, f"Silver data preview for {silver_target_table_name} (mode: {write_mode})")
+        
+        # Attach clean_table_name for orchestrator use
+        # df_to_write might be significantly different in schema for SCD2 (new date/flag cols)
+        # For consistency, we might want to return the original df_with_processed_ts if downstream processes
+        # are not expecting the SCD2-specific columns. However, returning the actual written data is usually more correct.
+        # The _processed_clean_table_name attribute is for the orchestrator to know which *entity* was processed.
+        df_to_write._processed_clean_table_name = clean_table_name # type: ignore[attr-defined] 
+        return df_to_write
+
+
+    def generate_surrogate_key(self, df: DataFrame, table_config_name: str, key_name: Optional[str] = None) -> DataFrame:
+        config = get_bc_table_config(table_config_name)
+        if not config:
+            etl_logger.error(f"No configuration found for table {table_config_name} to generate surrogate key. Skipping SK generation.")
+            return df # Or add a null SK column: df.withColumn(key_name or f"SK_{table_config_name}", F.lit(None).cast("long"))
+
         if key_name is None:
-            key_name = f"SK_{table_name}"
+            key_name = f"SK_{table_config_name}" # Default SK name
 
-        natural_keys_for_table = self.natural_keys.get(table_name, [])
+        natural_keys_for_table = config.get("natural_keys", [])
         if not natural_keys_for_table:
-            logger.error(f"No natural keys defined for table {table_name} to generate surrogate key.")
-            return df.withColumn(key_name, F.lit(None).cast("long")) # Add an empty key column
+            etl_logger.error(f"No natural keys defined in config for table {table_config_name} to generate surrogate key '{key_name}'.")
+            return df.withColumn(key_name, F.lit(None).cast("long"))
 
-        # Ensure all natural key columns exist in the DataFrame
         actual_natural_keys = [k for k in natural_keys_for_table if k in df.columns]
         if len(actual_natural_keys) != len(natural_keys_for_table):
             missing_keys = [k for k in natural_keys_for_table if k not in df.columns]
-            logger.warning(f"Not all defined natural keys for table {table_name} found in DataFrame. Missing: {missing_keys}. Using available: {actual_natural_keys}")
-            if not actual_natural_keys: # If no NKs are present at all
-                logger.error(f"No natural keys for {table_name} are present in the DataFrame. Cannot generate surrogate key.")
+            etl_logger.warning(f"Not all configured natural keys for table {table_config_name} found in DataFrame. Missing: {missing_keys}. Using available: {actual_natural_keys} for SK '{key_name}'.")
+            if not actual_natural_keys:
+                etl_logger.error(f"No configured natural keys for {table_config_name} are present in the DataFrame. Cannot generate surrogate key '{key_name}'.")
                 return df.withColumn(key_name, F.lit(None).cast("long"))
         
         order_by_cols = [F.col(k) for k in actual_natural_keys]
         
-        company_col = "Company"
-        if company_col in df.columns and company_col not in actual_natural_keys:
-            window_spec = Window.partitionBy(F.col(company_col)).orderBy(*order_by_cols)
-            logger.debug(f"Generating surrogate key for {table_name} partitioned by {company_col}.")
-        else:
-            window_spec = Window.orderBy(*order_by_cols)
-            if company_col not in df.columns:
-                 logger.debug(f"'Company' column not found in {table_name}. Surrogate key will be generated without company partitioning.")
-            else: # Company is part of natural keys
-                 logger.debug(f"'Company' is part of natural keys for {table_name}. Surrogate key generation will include it in ordering.")
+        # Standardized company column name from Pydantic models
+        company_col = "Company" 
+        window_spec = Window.orderBy(*order_by_cols) # Default: no company partition
+
+        # Check if 'Company' should be part of partitioning for the SK.
+        # This depends on whether the natural keys are unique across companies or within a company.
+        # For most BC tables, natural keys are unique within a company.
+        # The config for natural_keys should include "Company" if it's part of the composite key.
+        # If "Company" is present in df.columns AND it's NOT listed in natural_keys_for_table,
+        # it implies we might need to partition by it before applying row_number over the other natural keys.
+        # However, if "Company" IS part of natural_keys_for_table, it's already included in order_by_cols.
         
+        # A common pattern is to partition by Company if it exists and is not already the sole natural key.
+        if company_col in df.columns:
+            if company_col not in actual_natural_keys : # If Company is present but not part of NKs used for ordering
+                 etl_logger.debug(f"Generating surrogate key '{key_name}' for {table_config_name} partitioned by {company_col} and ordered by {actual_natural_keys}.")
+                 window_spec = Window.partitionBy(F.col(company_col)).orderBy(*order_by_cols)
+            else: # Company is part of natural keys, so it's in order_by_cols
+                 etl_logger.debug(f"Generating surrogate key '{key_name}' for {table_config_name} ordered by {actual_natural_keys} (which includes Company).")
+                 # window_spec remains Window.orderBy(*order_by_cols)
+        else: # Company column not present
+            etl_logger.debug(f"'Company' column not found in {table_config_name}. Surrogate key '{key_name}' will be generated based on ordering by {actual_natural_keys} without company partitioning.")
+            
         result_df = df.withColumn(key_name, F.row_number().over(window_spec))
-        logger.info(f"Generated surrogate key '{key_name}' for table '{table_name}' using keys: {actual_natural_keys}")
+        etl_logger.info(f"Generated surrogate key '{key_name}' for table '{table_config_name}' using keys: {actual_natural_keys}")
         return result_df
 
-    def create_date_dimension(self, start_date: date, end_date: date, fiscal_year_start_month: int = 1) -> DataFrame:
-        logger.info(f"Creating Date dimension from {start_date} to {end_date} with fiscal year starting in month {fiscal_year_start_month}")
+    def create_date_dimension(self, start_date: date, end_date: date) -> DataFrame:
+        fiscal_year_start_month = get_bc_global_setting("fiscal_year_start_month") or 1 # Default to January
+        etl_logger.info(f"Creating Date dimension from {start_date} to {end_date} with fiscal year starting in month {fiscal_year_start_month}")
         
         current_date_val = start_date
         dates_list = []
@@ -284,7 +368,7 @@ class BCPipeline:
             .withColumn("Quarter", F.quarter("Date"))
             .withColumn("Month", F.month("Date"))
             .withColumn("DayOfMonth", F.dayofmonth("Date"))
-            .withColumn("DayOfWeek", F.dayofweek("Date")) # Sunday=1, Saturday=7
+            .withColumn("DayOfWeek", F.dayofweek("Date")) 
             .withColumn("DayName", F.date_format("Date", "EEEE"))
             .withColumn("MonthName", F.date_format("Date", "MMMM"))
             .withColumn("WeekOfYear", F.weekofyear("Date"))
@@ -306,113 +390,177 @@ class BCPipeline:
             ( (F.col("FiscalMonth") - 1) / 3).cast("integer") + 1
         )
         
-        date_dim_path = f"{self.schemas['gold']}.dim_Date"
+        # Configuration for date dimension target name (though "dim_Date" is standard)
+        date_dim_config_name = "Date" # Logical name for config lookup
+        date_dim_config = get_bc_table_config(date_dim_config_name)
+        date_dim_target_name = date_dim_config.get("gold_target_name", "dim_Date") if date_dim_config else "dim_Date"
+        date_dim_partition_cols = date_dim_config.get("partition_columns_gold") if date_dim_config else None
+
+        date_dim_path = f"{self.schemas['gold']}.{date_dim_target_name}"
         try:
-            date_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(date_dim_path)
-            logger.info(f"Date dimension created and saved to {date_dim_path}")
+            write_delta_table(
+                df=date_df,
+                table_path=date_dim_path,
+                mode="overwrite",
+                partition_by_cols=date_dim_partition_cols,
+                overwrite_schema_flag=True
+            )
+            etl_logger.info(f"Date dimension created and saved to {date_dim_path}")
         except Exception as e:
-            logger.error(f"Failed to save Date dimension to {date_dim_path}: {e}")
+            etl_logger.error(f"Failed to save Date dimension to {date_dim_path}: {e}", exc_info=True)
+            # Depending on policy, might re-raise or return None
+            raise # Re-raise to signal failure in run_pipeline
         return date_df
 
-    def create_dimension_bridge(self, dimension_types: Optional[Dict[str, str]] = None) -> Optional[DataFrame]:
-        logger.info("Creating Dimension Bridge table (dim_DimensionBridge)")
-        if dimension_types is None:
-            dimension_types = { # Using placeholder names, actual DimensionCode values from data are needed
-                "DEPARTMENT": "DepartmentName",
-                "PROJECT": "ProjectName",
-                "CUSTOMERGROUP": "CustomerGroupName",
-                "SALESPERSON": "SalespersonName",
-            }
+    def create_dimension_bridge(self, dimension_types_override: Optional[Dict[str, str]] = None) -> Optional[DataFrame]:
+        etl_logger.info("Creating Dimension Bridge table (dim_DimensionBridge)")
 
-        dim_set_entry_path = f"{self.schemas['silver']}.DimensionSetEntry"
-        dim_value_path = f"{self.schemas['silver']}.DimensionValue"
+        # Config names for source and target tables
+        dim_set_entry_config_name = "DimensionSetEntry"
+        dim_value_config_name = "DimensionValue"
+        dim_bridge_config_name = "DimensionBridge"
+
+        dim_set_entry_config = get_bc_table_config(dim_set_entry_config_name)
+        dim_value_config = get_bc_table_config(dim_value_config_name)
+        dim_bridge_config = get_bc_table_config(dim_bridge_config_name)
+
+        if not (dim_set_entry_config and dim_value_config and dim_bridge_config):
+            etl_logger.error("Missing configuration for DimensionSetEntry, DimensionValue, or DimensionBridge. Cannot create bridge.")
+            return None
+
+        # Get Silver layer table names from config (or use clean name as default)
+        silver_dim_set_entry_name = dim_set_entry_config.get("silver_target_name", dim_set_entry_config_name)
+        silver_dim_value_name = dim_value_config.get("silver_target_name", dim_value_config_name)
+        
+        dim_set_entry_path = f"{self.schemas['silver']}.{silver_dim_set_entry_name}"
+        dim_value_path = f"{self.schemas['silver']}.{silver_dim_value_name}"
 
         try:
             dim_set_entry_df = self.spark.table(dim_set_entry_path)
             dim_value_df = self.spark.table(dim_value_path)
         except Exception as e:
-            logger.error(f"Failed to read DimensionSetEntry or DimensionValue tables: {e}")
+            etl_logger.error(f"Failed to read {dim_set_entry_path} or {dim_value_path} tables: {e}", exc_info=True)
             return None
+
+        # Use dimension_types_override if provided, else try from global settings, else default
+        dimension_types_map = dimension_types_override
+        if dimension_types_map is None:
+            dimension_types_map = get_bc_global_setting("dimension_pivot_type_mapping")
+        if dimension_types_map is None: # Still None, use hardcoded as last resort
+             dimension_types_map = { 
+                "DEPARTMENT": "DepartmentName", "PROJECT": "ProjectName", 
+                "CUSTOMERGROUP": "CustomerGroupName", "SALESPERSON": "SalespersonName",
+             }
+             etl_logger.debug(f"Using default dimension_types_map for bridge: {dimension_types_map}")
+
 
         join_conditions_list = [
             dim_set_entry_df["DimensionCode"] == dim_value_df["DimensionCode"],
-            dim_set_entry_df["DimensionValueCode"] == dim_value_df["Code"]
+            dim_set_entry_df["DimensionValueCode"] == dim_value_df["Code"] # 'Code' is from DimensionValue model
         ]
         company_columns_for_select = []
-        if "Company" in dim_set_entry_df.columns and "Company" in dim_value_df.columns:
-            join_conditions_list.append(dim_set_entry_df["Company"] == dim_value_df["Company"])
-            company_columns_for_select = [dim_set_entry_df["Company"]] # Ensure Company is selected
+        # Standardized 'Company' column name
+        company_col = "Company" 
+        if company_col in dim_set_entry_df.columns and company_col in dim_value_df.columns:
+            join_conditions_list.append(dim_set_entry_df[company_col] == dim_value_df[company_col])
+            # Select company from one table to avoid ambiguity (e.g., dim_set_entry_df[company_col])
+            company_columns_for_select = [dim_set_entry_df[company_col]] 
         else:
-            logger.warning("'Company' column not found in one or both DimensionSetEntry/DimensionValue. Joining without it.")
+            etl_logger.warning(f"'{company_col}' column not found in one or both {silver_dim_set_entry_name}/{silver_dim_value_name}. Joining without it.")
 
         bridge_df = dim_set_entry_df.join(
             dim_value_df,
-            F.expr(" AND ".join([str(cond._jc) for cond in join_conditions_list])), # type: ignore[attr-defined]
+            F.expr(" AND ".join([str(cond._jc) for cond in join_conditions_list])),
             "inner"
         ).select(
             dim_set_entry_df["DimensionSetID"],
-            *company_columns_for_select,
+            *company_columns_for_select, # Will be empty list if company_col not selected
             dim_value_df["DimensionCode"],
-            dim_value_df["Code"].alias("DimensionValueCode"),
-            dim_value_df["Name"].alias("DimensionValueName")
+            dim_value_df["Code"].alias("DimensionValueCode"), # From DimensionValue model
+            dim_value_df["Name"].alias("DimensionValueName")  # From DimensionValue model
         )
 
         if "DimensionCode" not in bridge_df.columns:
-            logger.error("DimensionCode column not found in bridge_df after join. Cannot pivot.")
+            etl_logger.error("DimensionCode column not found in bridge_df after join. Cannot pivot.")
             return None
 
         distinct_dimension_codes = [row.DimensionCode for row in bridge_df.select("DimensionCode").distinct().collect() if row.DimensionCode]
         
         pivot_expressions = []
         for dim_code_val in distinct_dimension_codes:
-            col_name = dimension_types.get(dim_code_val.upper(), dim_code_val.upper().replace(" ", "_")) # Use upper for matching keys
-            safe_col_name = "Dim_" + re.sub(r'[^a-zA-Z0-9_]', '', col_name) # Prefix to ensure valid and distinct
+            # Use configured map, fall back to cleaning the dim_code_val itself
+            col_name = dimension_types_map.get(dim_code_val.upper(), dim_code_val.upper().replace(" ", "_"))
+            safe_col_name = "Dim_" + re.sub(r'[^a-zA-Z0-9_]', '', col_name)
             pivot_expressions.append(
                 F.max(F.when(F.col("DimensionCode") == dim_code_val, F.col("DimensionValueName"))).alias(safe_col_name)
             )
         
         group_by_cols = ["DimensionSetID"]
-        if "Company" in bridge_df.columns:
-            group_by_cols.append("Company")
+        if company_columns_for_select: # If 'Company' was selected
+            group_by_cols.append(company_col) 
             
         if not pivot_expressions:
-             logger.warning("No dimension codes found to pivot for DimensionBridge.")
-             # Create a DataFrame with just keys if no pivot expressions
-             if "Company" in bridge_df.columns:
-                final_bridge_df = bridge_df.select("DimensionSetID", "Company").distinct()
+             etl_logger.warning("No dimension codes found to pivot for DimensionBridge. Result will only have DimensionSetID (and Company if present).")
+             if company_columns_for_select:
+                final_bridge_df = bridge_df.select("DimensionSetID", company_col).distinct()
              else:
                 final_bridge_df = bridge_df.select("DimensionSetID").distinct()
         else:
             final_bridge_df = bridge_df.groupBy(*group_by_cols).agg(*pivot_expressions)
-
-        final_bridge_df = self.generate_surrogate_key(final_bridge_df, "DimensionBridge", key_name="DimensionBridgeKey")
         
-        bridge_table_path = f"{self.schemas['gold']}.dim_DimensionBridge"
+        # Generate SK for the bridge table itself. Config name "DimensionBridge"
+        final_bridge_df = self.generate_surrogate_key(final_bridge_df, dim_bridge_config_name, key_name="DimensionBridgeKey")
+        
+        gold_bridge_target_name = dim_bridge_config.get("gold_target_name", "dim_DimensionBridge")
+        gold_bridge_partition_cols = dim_bridge_config.get("partition_columns_gold")
+        bridge_table_path = f"{self.schemas['gold']}.{gold_bridge_target_name}"
+        
         try:
-            final_bridge_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(bridge_table_path)
-            logger.info(f"Dimension Bridge table created and saved to {bridge_table_path}")
+            write_delta_table(
+                df=final_bridge_df,
+                table_path=bridge_table_path,
+                mode="overwrite",
+                partition_by_cols=gold_bridge_partition_cols,
+                overwrite_schema_flag=True
+            )
+            etl_logger.info(f"Dimension Bridge table created and saved to {bridge_table_path}")
         except Exception as e:
-            logger.error(f"Failed to save Dimension Bridge to {bridge_table_path}: {e}")
+            etl_logger.error(f"Failed to save Dimension Bridge to {bridge_table_path}: {e}", exc_info=True)
+            return None # Signal error
             
-        self._log_dataframe_info(final_bridge_df, "dim_DimensionBridge")
+        self._log_dataframe_info(final_bridge_df, gold_bridge_target_name)
         return final_bridge_df
 
-    def silver_to_gold_dimension(self, table_name: str) -> Optional[DataFrame]:
-        logger.info(f"Processing dimension table {table_name} from Silver to Gold")
-        silver_table_path = f"{self.schemas['silver']}.{table_name}"
+    def silver_to_gold_dimension(self, clean_silver_table_name: str) -> Optional[DataFrame]:
+        etl_logger.info(f"Processing dimension table {clean_silver_table_name} from Silver to Gold")
         
+        config = get_bc_table_config(clean_silver_table_name)
+        if not config:
+            etl_logger.error(f"No configuration found for dimension table {clean_silver_table_name}. Skipping.")
+            return None
+
+        # Silver source name might differ from clean_silver_table_name if specified in config
+        silver_source_name = config.get("silver_target_name", clean_silver_table_name)
+        silver_table_path = f"{self.schemas['silver']}.{silver_source_name}"
+        
+        gold_dim_target_name = config.get("gold_target_name", f"dim_{clean_silver_table_name}")
+        gold_dim_partition_cols = config.get("partition_columns_gold")
+        # scd_type_dim = config.get("scd_type_gold", "1") # For future SCD2/SCD1 handling in Gold
+
         try:
             silver_df = self.spark.table(silver_table_path)
         except Exception as e:
-            logger.error(f"Failed to read Silver table {silver_table_path}: {e}")
+            etl_logger.error(f"Failed to read Silver table {silver_table_path}: {e}", exc_info=True)
             return None
 
-        dim_df = self.generate_surrogate_key(silver_df, table_name) # SK name will be SK_{table_name}
+        # Use clean_silver_table_name for SK generation config lookup
+        dim_df = self.generate_surrogate_key(silver_df, clean_silver_table_name) 
 
-        if table_name == "GLAccount":
-            if "AccountCategory" in dim_df.columns: # Field name from model
+        # Custom transformations for specific dimensions
+        if clean_silver_table_name == "GLAccount":
+            if "AccountCategory" in dim_df.columns:
                 dim_df = dim_df.withColumn(
-                    "AccountCategoryName", # New derived column
+                    "AccountCategoryName",
                     F.when(F.col("AccountCategory") == 1, F.lit("Assets"))
                      .when(F.col("AccountCategory") == 2, F.lit("Liabilities"))
                      .when(F.col("AccountCategory") == 3, F.lit("Equity"))
@@ -420,319 +568,361 @@ class BCPipeline:
                      .when(F.col("AccountCategory") == 5, F.lit("Expense"))
                      .otherwise(F.lit("Unknown"))
                 )
-        elif table_name == "Customer":
+        elif clean_silver_table_name == "Customer":
             address_cols = ["Address", "Address2", "City", "PostCode", "County", "CountryRegionCode"]
             actual_address_cols = [col for col in address_cols if col in dim_df.columns]
-            if actual_address_cols: # Check if any address columns are actually present
-                dim_df = dim_df.withColumn("FullAddress", F.concat_ws(", ", *[F.col(c) for c in actual_address_cols]))
-            
-            if "CustomerPostingGroup" in dim_df.columns: # Field name from model
+            if actual_address_cols:
+                dim_df = dim_df.withColumn("FullAddress", F.concat_ws(", ", *[F.col(c) for c in actual_address_cols if c in dim_df.columns]))
+            if "CustomerPostingGroup" in dim_df.columns:
                  dim_df = dim_df.withColumn("CustomerGroupSegment", F.col("CustomerPostingGroup"))
+        
+        # Placeholder for SCD Type 2 logic if this dimension requires it (e.g. if config indicates scd_type_gold == "2")
+        # scd_type_gold = config.get("scd_type_gold", "1") 
+        # if scd_type_gold == "2":
+        #     etl_logger.info(f"SCD Type 2 processing for {gold_dim_target_name} is not yet implemented. Performing SCD1 overwrite.")
+        #     # dim_df = self._handle_scd2_dimension(dim_df, gold_table_full_path, natural_keys_for_scd2_from_config)
 
-        gold_table_path = f"{self.schemas['gold']}.dim_{table_name}"
+        gold_table_full_path = f"{self.schemas['gold']}.{gold_dim_target_name}"
         try:
-            dim_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(gold_table_path)
-            logger.info(f"Dimension table dim_{table_name} saved to {gold_table_path}")
+            # For dimensions, typically overwrite mode unless SCD2 is implemented with merges
+            write_delta_table(
+                df=dim_df,
+                table_path=gold_table_full_path,
+                mode="overwrite", # For SCD1 dims or initial load of SCD2
+                partition_by_cols=gold_dim_partition_cols,
+                overwrite_schema_flag=True 
+            )
+            etl_logger.info(f"Dimension table {gold_dim_target_name} saved to {gold_table_full_path}")
         except Exception as e:
-            logger.error(f"Failed to save Gold dimension table {gold_table_path}: {e}")
+            etl_logger.error(f"Failed to save Gold dimension table {gold_table_full_path}: {e}", exc_info=True)
             return None
             
-        self._log_dataframe_info(dim_df, f"dim_{table_name}")
+        self._log_dataframe_info(dim_df, gold_dim_target_name)
         return dim_df
 
-    def silver_to_gold_fact(self, table_name: str, min_year: Optional[int] = None) -> Optional[DataFrame]:
-        logger.info(f"Processing fact table {table_name} from Silver to Gold")
-        silver_table_path = f"{self.schemas['silver']}.{table_name}"
+import importlib # Added for dynamic imports
+
+# ... other imports ...
+
+class BCPipeline:
+    # ... __init__ and other methods ...
+
+    def silver_to_gold_fact(
+        self, 
+        clean_silver_table_name: str, # This is the clean name of the silver table, e.g., "GLEntry"
+        is_full_refresh: bool = False, # Parameter from run_pipeline to control write mode
+        # min_year_filter is now fetched from global settings inside
+    ) -> Optional[DataFrame]:
+        etl_logger.info(f"Processing fact from silver table: {clean_silver_table_name}. Full refresh: {is_full_refresh}")
         
-        try:
-            fact_df = self.spark.table(silver_table_path)
-        except Exception as e:
-            logger.error(f"Failed to read Silver table {silver_table_path}: {e}")
+        table_config = get_bc_table_config(clean_silver_table_name)
+        if not table_config:
+            etl_logger.error(f"No configuration found for silver table '{clean_silver_table_name}' to process to Gold Fact. Skipping.")
             return None
 
-        if min_year and "PostingDate" in fact_df.columns:
-            fact_df = fact_df.filter(F.year(F.col("PostingDate")) >= min_year)
-            logger.info(f"Filtered {table_name} for year >= {min_year}")
+        if table_config.get("table_type") != "fact":
+            etl_logger.warning(f"Table '{clean_silver_table_name}' is not configured as 'fact' type. Skipping fact processing.")
+            return None
 
-        date_dim_path = f"{self.schemas['gold']}.dim_Date"
+        # Determine the target fact function and gold table name from config
+        target_fact_function_name = table_config.get("gold_fact_function_name")
+        if not target_fact_function_name:
+            fact_type = table_config.get("gold_target_fact_type")
+            if not fact_type:
+                etl_logger.error(f"Configuration for '{clean_silver_table_name}' must specify either 'gold_fact_function_name' or 'gold_target_fact_type'. Skipping.")
+                return None
+            target_fact_function_name = f"create_{fact_type.lower()}_fact"
+        
+        gold_target_table_name = table_config.get("gold_target_name", f"fact_{clean_silver_table_name}")
+        primary_silver_source_name = table_config.get("silver_target_name", clean_silver_table_name) # Actual silver table name
+        
+        etl_logger.info(f"Target fact function: '{target_fact_function_name}', Gold table: '{gold_target_table_name}', Primary Silver source: '{primary_silver_source_name}'")
+
+        # 1. Read primary silver source DataFrame
         try:
-            date_dim_df = self.spark.table(date_dim_path)
-            if "PostingDate" in fact_df.columns and "Date" in date_dim_df.columns and "DateKey" in date_dim_df.columns:
-                fact_df = fact_df.join(date_dim_df, fact_df["PostingDate"] == date_dim_df["Date"], "left") \
-                                 .select(fact_df["*"], date_dim_df["DateKey"].alias("PostingDateKey"))
-                logger.info(f"Joined {table_name} with dim_Date")
-            else:
-                logger.warning(f"Could not join {table_name} with dim_Date due to missing PostingDate/Date/DateKey columns.")
+            primary_silver_df = self.spark.table(f"{self.schemas['silver']}.{primary_silver_source_name}")
         except Exception as e:
-            logger.warning(f"dim_Date table not found or error during join: {e}. Proceeding without Date dim join.")
+            etl_logger.error(f"Failed to read primary Silver source table {self.schemas['silver']}.{primary_silver_source_name}: {e}", exc_info=True)
+            return None
 
-        bridge_dim_path = f"{self.schemas['gold']}.dim_DimensionBridge"
-        company_col = "Company" # Standardized
-        dim_set_id_col = "DimensionSetID" # Standardized
+        # 2. Load common dimensions needed by many/all facts
+        common_dims_to_load = {
+            "date_dim_df": get_bc_table_config("Date").get("gold_target_name", "dim_Date") if get_bc_table_config("Date") else "dim_Date",
+            "company_dim_df": get_bc_table_config("CompanyInformation").get("gold_target_name", "dim_CompanyInformation") if get_bc_table_config("CompanyInformation") else "dim_CompanyInformation",
+            "dimension_bridge_df": get_bc_table_config("DimensionBridge").get("gold_target_name", "dim_DimensionBridge") if get_bc_table_config("DimensionBridge") else "dim_DimensionBridge",
+        }
+        loaded_dims = {}
+        for df_arg_name, dim_table_gold_name in common_dims_to_load.items():
+            try:
+                # Ensure dim_table_gold_name is not None before attempting to load
+                if dim_table_gold_name:
+                    loaded_dims[df_arg_name] = self.spark.table(f"{self.schemas['gold']}.{dim_table_gold_name}")
+                    etl_logger.info(f"Loaded common Gold dimension: {dim_table_gold_name} for {df_arg_name}")
+                else:
+                    etl_logger.warning(f"Configuration for common dimension key '{df_arg_name}' resulted in a None table name. Passing None.")
+                    loaded_dims[df_arg_name] = None
+            except Exception as e:
+                etl_logger.warning(f"Could not load common Gold dimension {dim_table_gold_name}: {e}. Passing None for {df_arg_name}.", exc_info=False)
+                loaded_dims[df_arg_name] = None
+        
+        # 3. Load specific dimensions based on fact function needs
+        specific_dims_map = {
+            "create_finance_fact": {
+                "gl_account_dim_df": get_bc_table_config("GLAccount").get("gold_target_name", "dim_GLAccount") if get_bc_table_config("GLAccount") else "dim_GLAccount",
+            },
+            "create_sales_fact": {
+                "customer_dim_df": get_bc_table_config("Customer").get("gold_target_name", "dim_Customer") if get_bc_table_config("Customer") else "dim_Customer",
+                "item_dim_df": get_bc_table_config("Item").get("gold_target_name", "dim_Item") if get_bc_table_config("Item") else "dim_Item",
+            },
+            "create_purchase_fact": {
+                "vendor_dim_df": get_bc_table_config("Vendor").get("gold_target_name", "dim_Vendor") if get_bc_table_config("Vendor") else "dim_Vendor",
+                "item_dim_df": get_bc_table_config("Item").get("gold_target_name", "dim_Item") if get_bc_table_config("Item") else "dim_Item",
+            },
+            "create_inventory_fact": {
+                "item_dim_df": get_bc_table_config("Item").get("gold_target_name", "dim_Item") if get_bc_table_config("Item") else "dim_Item",
+                "location_dim_df": get_bc_table_config("Location").get("gold_target_name", "dim_Location") if get_bc_table_config("Location") else "dim_Location", 
+            },
+            "create_accounts_receivable_fact": {
+                 "customer_dim_df": get_bc_table_config("Customer").get("gold_target_name", "dim_Customer") if get_bc_table_config("Customer") else "dim_Customer",
+            },
+            "create_accounts_payable_fact": {
+                 "vendor_dim_df": get_bc_table_config("Vendor").get("gold_target_name", "dim_Vendor") if get_bc_table_config("Vendor") else "dim_Vendor",
+            }
+        }
 
+        if target_fact_function_name in specific_dims_map:
+            for df_arg_name, dim_table_gold_name in specific_dims_map[target_fact_function_name].items():
+                if df_arg_name not in loaded_dims: 
+                    try:
+                        if dim_table_gold_name:
+                            loaded_dims[df_arg_name] = self.spark.table(f"{self.schemas['gold']}.{dim_table_gold_name}")
+                            etl_logger.info(f"Loaded specific Gold dimension for {target_fact_function_name}: {dim_table_gold_name} as {df_arg_name}")
+                        else:
+                            etl_logger.warning(f"Configuration for specific dimension key '{df_arg_name}' for '{target_fact_function_name}' resulted in a None table name. Passing None.")
+                            loaded_dims[df_arg_name] = None
+                    except Exception as e:
+                        etl_logger.warning(f"Could not load specific Gold dimension {dim_table_gold_name} for {target_fact_function_name}: {e}. Passing None for {df_arg_name}.", exc_info=False)
+                        loaded_dims[df_arg_name] = None
+        
+        # 4. Dynamically import and call the fact creation function
         try:
-            bridge_df = self.spark.table(bridge_dim_path)
-            join_cols_bridge = [dim_set_id_col, company_col]
+            bc_facts_module = importlib.import_module("fabric_api.gold.bc_facts")
+            fact_function = getattr(bc_facts_module, target_fact_function_name)
+        except (ImportError, AttributeError) as e:
+            etl_logger.error(f"Could not find or import fact function '{target_fact_function_name}' from 'fabric_api.gold.bc_facts': {e}", exc_info=True)
+            return None
+
+        # 5. Get global settings and prepare parameters for the fact function
+        min_year_filter_gold = get_bc_global_setting("min_year_filter_gold")
+        fiscal_year_start_month = get_bc_global_setting("fiscal_year_start_month") or 1
+        
+        fact_function_params = {
+            "spark": self.spark,
+            "primary_silver_df": primary_silver_df,
+            **loaded_dims, 
+            "silver_db_name": self.schemas['silver'],
+            "gold_db_name": self.schemas['gold'],
+            "min_year_filter": min_year_filter_gold, # Use the specific gold filter
+            "fiscal_year_start_month": fiscal_year_start_month,
+            "is_incremental": not is_full_refresh, 
+        }
+        
+        etl_logger.info(f"Calling fact function '{target_fact_function_name}' with available parameters.")
+        gold_df = fact_function(**fact_function_params)
+
+        # 6. Write the output DataFrame
+        if gold_df:
+            gold_table_full_path = f"{self.schemas['gold']}.{gold_target_table_name}"
+            write_mode = "append" if not is_full_refresh else "overwrite" 
+            gold_fact_partition_cols = table_config.get("partition_columns_gold") 
             
-            fact_has_join_cols = all(col in fact_df.columns for col in join_cols_bridge)
-            bridge_has_join_cols = all(col in bridge_df.columns for col in join_cols_bridge)
-            bridge_has_sk = "DimensionBridgeKey" in bridge_df.columns
-
-            if fact_has_join_cols and bridge_has_join_cols and bridge_has_sk:
-                bridge_join_df = bridge_df.select(*join_cols_bridge, "DimensionBridgeKey")
-                fact_df = fact_df.join(bridge_join_df, on=join_cols_bridge, how="left")
-                logger.info(f"Joined {table_name} with dim_DimensionBridge")
-            else:
-                missing_fact_cols = [col for col in join_cols_bridge if col not in fact_df.columns]
-                missing_bridge_cols = [col for col in join_cols_bridge if col not in bridge_df.columns]
-                if not bridge_has_sk: missing_bridge_cols.append("DimensionBridgeKey (SK)")
-                logger.warning(f"Could not join {table_name} with dim_DimensionBridge. Missing fact cols: {missing_fact_cols}, bridge cols: {missing_bridge_cols}.")
-        except Exception as e:
-            logger.warning(f"dim_DimensionBridge table not found or error during join: {e}. Proceeding without Dimension Bridge join.")
-
-        # Dimension Joins (example for GLEntry)
-        if table_name == "GLEntry":
-            if "GLAccountNo" in fact_df.columns and company_col in fact_df.columns:
-                try:
-                    gl_account_dim = self.spark.table(f"{self.schemas['gold']}.dim_GLAccount")
-                    if "SK_GLAccount" in gl_account_dim.columns and "No" in gl_account_dim.columns and company_col in gl_account_dim.columns:
-                        fact_df = fact_df.join(
-                            gl_account_dim.select(F.col("SK_GLAccount").alias("GLAccountKey"), F.col("No"), F.col(company_col)),
-                            (fact_df["GLAccountNo"] == gl_account_dim["No"]) & (fact_df[company_col] == gl_account_dim[company_col]), "left"
-                        ).drop(gl_account_dim[company_col]).drop(gl_account_dim["No"])
-                    else: logger.warning(f"dim_GLAccount is missing required columns for join with {table_name}.")
-                except Exception as e: logger.warning(f"Error joining {table_name} with dim_GLAccount: {e}")
-            if "Amount" in fact_df.columns: # Measure from model
-                fact_df = fact_df.withColumn("AmountSign", F.signum(F.col("Amount")))
-        
-        elif table_name == "CustLedgerEntry":
-            if "CustomerNo" in fact_df.columns and company_col in fact_df.columns: # Field names from model
-                try:
-                    customer_dim = self.spark.table(f"{self.schemas['gold']}.dim_Customer")
-                    if "SK_Customer" in customer_dim.columns and "No" in customer_dim.columns and company_col in customer_dim.columns:
-                        fact_df = fact_df.join(
-                            customer_dim.select(F.col("SK_Customer").alias("CustomerKey"), F.col("No"), F.col(company_col)),
-                            (fact_df["CustomerNo"] == customer_dim["No"]) & (fact_df[company_col] == customer_dim[company_col]), "left"
-                        ).drop(customer_dim[company_col]).drop(customer_dim["No"])
-                    else: logger.warning(f"dim_Customer is missing required columns for join with {table_name}.")
-                except Exception as e: logger.warning(f"Error joining {table_name} with dim_Customer: {e}")
-
-        elif table_name == "VendorLedgerEntry":
-            if "VendorNo" in fact_df.columns and company_col in fact_df.columns: # Field names from model
-                try:
-                    vendor_dim = self.spark.table(f"{self.schemas['gold']}.dim_Vendor")
-                    if "SK_Vendor" in vendor_dim.columns and "No" in vendor_dim.columns and company_col in vendor_dim.columns:
-                        fact_df = fact_df.join(
-                            vendor_dim.select(F.col("SK_Vendor").alias("VendorKey"), F.col("No"), F.col(company_col)),
-                            (fact_df["VendorNo"] == vendor_dim["No"]) & (fact_df[company_col] == vendor_dim[company_col]), "left"
-                        ).drop(vendor_dim[company_col]).drop(vendor_dim["No"])
-                    else: logger.warning(f"dim_Vendor is missing required columns for join with {table_name}.")
-                except Exception as e: logger.warning(f"Error joining {table_name} with dim_Vendor: {e}")
-        
-        fact_df = fact_df.withColumn("GoldFactProcessedAt", F.current_timestamp())
-        
-        gold_table_path = f"{self.schemas['gold']}.fact_{table_name}"
-        try:
-            fact_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(gold_table_path)
-            logger.info(f"Fact table fact_{table_name} saved to {gold_table_path}")
-        except Exception as e:
-            logger.error(f"Failed to save Gold fact table {gold_table_path}: {e}")
+            etl_logger.info(f"Writing gold fact table {gold_table_full_path}. Mode: {write_mode}, Partitions: {gold_fact_partition_cols}")
+            write_delta_table(
+                df=gold_df,
+                table_path=gold_table_full_path,
+                mode=write_mode,
+                partition_by_cols=gold_fact_partition_cols,
+                merge_schema_flag=True, 
+                overwrite_schema_flag=(write_mode == "overwrite")
+            )
+            etl_logger.info(f"Successfully wrote gold fact table: {gold_table_full_path}")
+            self._log_dataframe_info(gold_df, gold_target_table_name)
+            return gold_df
+        else:
+            etl_logger.warning(f"Gold fact DataFrame was not generated by '{target_fact_function_name}' for source '{clean_silver_table_name}'.")
             return None
-
-        self._log_dataframe_info(fact_df, f"fact_{table_name}")
-        return fact_df
 
     def run_pipeline(
         self,
-        tables: Optional[List[str]] = None, # List of raw table names from bronze (e.g., Customer20)
-        incremental: bool = False,
-        min_year: Optional[int] = None,
-        dimension_types: Optional[Dict[str, str]] = None,
+        raw_bronze_tables_list: Optional[List[str]] = None, 
+        run_incremental_silver: bool = False, 
+        # gold_min_year_filter: Optional[int] = None, # Removed
+        dimension_pivot_types_override: Optional[Dict[str, str]] = None,
+        is_full_refresh_gold: bool = False, # Added
     ) -> Dict[str, Any]:
-        logger.info("Starting BC Medallion Pipeline full run")
+        etl_logger.info(f"Starting BC Medallion Pipeline. Incremental Silver: {run_incremental_silver}, Full Refresh Gold: {is_full_refresh_gold}")
         results: Dict[str, Any] = {"status": "started", "phases": {}}
 
         # Phase 1: Create Date Dimension
-        logger.info("Phase 1: Creating Date Dimension")
+        etl_logger.info("Phase 1: Creating Date Dimension")
         results["phases"]["date_dimension"] = {"status": "pending", "details": {}}
         try:
-            start_date_val = date(min_year if min_year else 2020, 1, 1)
-            # Ensure end_date is far enough in the future.
-            current_year = datetime.now().year
-            end_date_val = date(current_year + 5, 12, 31) 
+            start_year_setting = get_bc_global_setting("date_dimension_start_year")
+            min_year_gold_filter = get_bc_global_setting("min_year_filter_gold") # For consistency if facts use it
             
-            date_dim_df = self.create_date_dimension(start_date_val, end_date_val)
-            # create_date_dimension already writes the table
-            # date_table_path = f"{self.schemas['gold']}.dim_Date" 
-            # date_dim_df.write.mode("overwrite").saveAsTable(date_table_path)
-            if date_dim_df: # Check if DataFrame was returned
+            default_start_year = 2015 
+            # Prefer min_year_gold_filter if set, then specific date_dimension_start_year, then default
+            start_year = min_year_gold_filter if min_year_gold_filter else (start_year_setting if start_year_setting else default_start_year)
+            
+            end_year_offset = get_bc_global_setting("date_dimension_end_year_offset") or 5 
+            end_year = datetime.now().year + end_year_offset
+            
+            start_date_val = date(start_year, 1, 1)
+            end_date_val = date(end_year, 12, 31)
+            
+            date_dim_df = self.create_date_dimension(start_date_val, end_date_val) 
+            
+            if date_dim_df is not None: 
+                date_dim_config = get_bc_table_config("Date")
+                date_dim_gold_name = date_dim_config.get("gold_target_name", "dim_Date") if date_dim_config else "dim_Date"
                 results["phases"]["date_dimension"]["status"] = "success"
-                results["phases"]["date_dimension"]["details"]["table_written"] = f"{self.schemas['gold']}.dim_Date"
-                logger.info(f"Date dimension created successfully at {self.schemas['gold']}.dim_Date")
-            else:
-                results["phases"]["date_dimension"]["status"] = "error"
-                results["phases"]["date_dimension"]["details"]["error_message"] = "create_date_dimension returned None"
-
+                results["phases"]["date_dimension"]["details"]["table_written"] = f"{self.schemas['gold']}.{date_dim_gold_name}"
+                etl_logger.info(f"Date dimension created successfully: {self.schemas['gold']}.{date_dim_gold_name}")
         except Exception as e:
-            logger.error(f"Error in Phase 1 (Create Date Dimension): {e}", exc_info=True)
+            etl_logger.error(f"Error in Phase 1 (Create Date Dimension): {e}", exc_info=True)
             results["phases"]["date_dimension"]["status"] = "error"
             results["phases"]["date_dimension"]["details"]["error_message"] = str(e)
         
         # Phase 2: Process Bronze to Silver
-        logger.info("Phase 2: Processing Bronze to Silver")
-        results["phases"]["bronze_to_silver"] = {"status": "pending", "details": {}}
-        silver_tables_created: List[str] = [] # Stores clean table names
+        etl_logger.info("Phase 2: Processing Bronze to Silver")
+        results["phases"]["bronze_to_silver"] = {"status": "pending", "processed_tables": {}}
+        silver_tables_processed_clean_names: List[str] = [] 
 
-        if not tables:
+        active_bronze_tables = raw_bronze_tables_list
+        if not active_bronze_tables: 
             try:
-                logger.info(f"No specific tables provided, discovering tables from schema: {self.schemas['bronze']}")
+                etl_logger.info(f"No specific tables provided, discovering tables from schema: {self.schemas['bronze']}")
                 bronze_spark_tables = self.spark.sql(f"SHOW TABLES IN {self.schemas['bronze']}").collect()
-                tables = [t.tableName for t in bronze_spark_tables if not t.tableName.startswith("vw_")] # Exclude views
-                logger.info(f"Discovered {len(tables)} tables in {self.schemas['bronze']}: {tables}")
-                if not tables:
-                    logger.warning(f"No tables found in {self.schemas['bronze']}. Skipping Bronze to Silver.")
+                active_bronze_tables = [t.tableName for t in bronze_spark_tables if not t.tableName.startswith("vw_")] 
+                etl_logger.info(f"Discovered {len(active_bronze_tables)} tables in {self.schemas['bronze']}: {active_bronze_tables}")
             except Exception as e:
-                logger.error(f"Error discovering tables in {self.schemas['bronze']}: {e}", exc_info=True)
+                etl_logger.error(f"Error discovering tables in {self.schemas['bronze']}: {e}", exc_info=True)
                 results["phases"]["bronze_to_silver"]["status"] = "error"
-                results["phases"]["bronze_to_silver"]["details"]["error_message"] = f"Failed to discover tables: {e}"
-                tables = [] 
+                results["phases"]["bronze_to_silver"]["error_message"] = f"Failed to discover tables: {e}"
+                active_bronze_tables = [] 
 
-        for table_name in tables:
-            clean_name_for_check = re.sub(r'\d+$', '', table_name)
-            # Basic filter: BC table names usually start with an uppercase letter (Pydantic model name)
-            # and often have a numeric suffix from source, or their clean name is in our model_mapping.
-            is_likely_bc_table = table_name[0].isupper() and \
-                                 (re.search(r'\d+$', table_name) or clean_name_for_check in self.model_mapping)
-
-            if not is_likely_bc_table:
-                 logger.info(f"Skipping table {table_name} as it does not appear to be a BC source table.")
+        for raw_table_name in active_bronze_tables:
+            clean_name_for_config = re.sub(r'\d+$', '', raw_table_name)
+            table_config = get_bc_table_config(clean_name_for_config)
+            if not (clean_name_for_config in self.model_mapping or table_config):
+                 etl_logger.info(f"Skipping table {raw_table_name} (no Pydantic model, no explicit config).")
                  continue
 
-            table_detail = {"source_table": table_name, "status": "pending"}
+            table_detail_report = {"source_bronze_table": raw_table_name, "status": "pending"}
             try:
-                logger.info(f"Processing table: {table_name} for Bronze to Silver")
-                silver_df = self.bronze_to_silver(table_name, incremental=incremental)
+                silver_df = self.bronze_to_silver(raw_table_name, run_incremental=run_incremental_silver)
                 if silver_df:
-                    clean_silver_table_name = getattr(silver_df, "_table_name", clean_name_for_check)
-                    silver_table_path = f"{self.schemas['silver']}.{clean_silver_table_name}"
-                    
-                    write_mode = "append" if incremental else "overwrite"
-                    # Using mergeSchema to handle schema evolution, common in Silver
-                    silver_df.write.format("delta").mode(write_mode).option("mergeSchema", "true").saveAsTable(silver_table_path)
-                    
-                    silver_tables_created.append(clean_silver_table_name)
-                    table_detail["status"] = "success"
-                    table_detail["silver_table"] = silver_table_path
-                    # table_detail["rows_written"] = silver_df.count() # Can be expensive, enable if needed
-                    logger.info(f"Successfully processed {table_name} to {silver_table_path}")
+                    processed_clean_name = getattr(silver_df, "_processed_clean_table_name", clean_name_for_config)
+                    silver_target_name = table_config.get("silver_target_name", processed_clean_name) if table_config else processed_clean_name
+                    silver_tables_processed_clean_names.append(processed_clean_name)
+                    table_detail_report["status"] = "success"
+                    table_detail_report["silver_table"] = f"{self.schemas['silver']}.{silver_target_name}"
+                    etl_logger.info(f"Successfully processed {raw_table_name} to Silver table {silver_target_name}")
                 else:
-                    logger.warning(f"No DataFrame returned from bronze_to_silver for {table_name}. Skipping write.")
-                    table_detail["status"] = "skipped"
-                    table_detail["reason"] = "No data returned from bronze_to_silver"
+                    table_detail_report["status"] = "skipped_or_error"
+                    table_detail_report["reason"] = "bronze_to_silver returned None or error (see logs)."
             except Exception as e:
-                logger.error(f"Failed to process {table_name} from Bronze to Silver: {e}", exc_info=True)
-                table_detail["status"] = "error"
-                table_detail["error_message"] = str(e)
-            results["phases"]["bronze_to_silver"]["details"][table_name] = table_detail
-        
-        if not any(td["status"] == "success" for td in results["phases"]["bronze_to_silver"]["details"].values()):
-            results["phases"]["bronze_to_silver"]["status"] = "warning_or_error_no_success"
-        else:
-            results["phases"]["bronze_to_silver"]["status"] = "completed"
+                etl_logger.error(f"Major failure in bronze_to_silver for {raw_table_name}: {e}", exc_info=True)
+                table_detail_report["status"] = "error"; table_detail_report["error_message"] = str(e)
+            results["phases"]["bronze_to_silver"]["processed_tables"][raw_table_name] = table_detail_report
+        results["phases"]["bronze_to_silver"]["status"] = "completed" if silver_tables_processed_clean_names else "completed_with_no_successes"
 
 
         # Phase 3: Process Silver to Gold - Dimensions
-        logger.info("Phase 3: Processing Silver to Gold - Dimensions")
-        results["phases"]["silver_to_gold_dimensions"] = {"status": "pending", "details": {}}
-        for dim_table_name in self.dimension_tables:
-            table_detail = {"source_table": dim_table_name, "status": "pending"}
-            if dim_table_name in silver_tables_created:
+        etl_logger.info("Phase 3: Processing Silver to Gold - Dimensions")
+        results["phases"]["silver_to_gold_dimensions"] = {"status": "pending", "processed_tables": {}}
+        processed_gold_dimensions_map: Dict[str, str] = {} 
+        for clean_silver_name in silver_tables_processed_clean_names: 
+            config = get_bc_table_config(clean_silver_name)
+            if config and config.get("table_type") == "dimension":
+                table_detail_report = {"source_silver_table": clean_silver_name, "status": "pending"}
                 try:
-                    logger.info(f"Processing dimension: {dim_table_name} for Silver to Gold")
-                    gold_dim_df = self.silver_to_gold_dimension(dim_table_name)
-                    # silver_to_gold_dimension already writes the table
+                    gold_dim_df = self.silver_to_gold_dimension(clean_silver_name) 
                     if gold_dim_df:
-                        table_detail["status"] = "success"
-                        table_detail["gold_table"] = f"{self.schemas['gold']}.dim_{dim_table_name}"
-                        # table_detail["rows_written"] = gold_dim_df.count()
-                        logger.info(f"Successfully processed dimension {dim_table_name}")
-                    else:
-                        table_detail["status"] = "skipped"
-                        table_detail["reason"] = "No data returned from silver_to_gold_dimension"
+                        gold_dim_target_name = config.get("gold_target_name", f"dim_{clean_silver_name}")
+                        table_detail_report["status"] = "success"
+                        table_detail_report["gold_table"] = f"{self.schemas['gold']}.{gold_dim_target_name}"
+                        processed_gold_dimensions_map[clean_silver_name] = gold_dim_target_name
+                    else: table_detail_report["status"] = "skipped_or_error"
                 except Exception as e:
-                    logger.error(f"Failed to process dimension {dim_table_name}: {e}", exc_info=True)
-                    table_detail["status"] = "error"
-                    table_detail["error_message"] = str(e)
-            else:
-                table_detail["status"] = "skipped"
-                table_detail["reason"] = f"Not created in Silver layer: {dim_table_name}"
-            results["phases"]["silver_to_gold_dimensions"]["details"][dim_table_name] = table_detail
+                    etl_logger.error(f"Major failure processing dimension {clean_silver_name} to Gold: {e}", exc_info=True)
+                    table_detail_report["status"] = "error"; table_detail_report["error_message"] = str(e)
+                results["phases"]["silver_to_gold_dimensions"]["processed_tables"][clean_silver_name] = table_detail_report
         results["phases"]["silver_to_gold_dimensions"]["status"] = "completed"
 
 
         # Phase 4: Create Dimension Bridge
-        logger.info("Phase 4: Creating Dimension Bridge")
+        etl_logger.info("Phase 4: Creating Dimension Bridge")
         results["phases"]["dimension_bridge"] = {"status": "pending", "details": {}}
-        if all(dt in silver_tables_created for dt in ["DimensionSetEntry", "DimensionValue"]):
+        dim_set_entry_conf_name = "DimensionSetEntry"; dim_value_conf_name = "DimensionValue"
+        can_create_bridge = all(name in silver_tables_processed_clean_names for name in [dim_set_entry_conf_name, dim_value_conf_name])
+        
+        if can_create_bridge:
             try:
-                logger.info("All required tables for dimension bridge are present. Creating bridge.")
-                bridge_df = self.create_dimension_bridge(dimension_types=dimension_types)
-                # create_dimension_bridge already writes the table
+                bridge_df = self.create_dimension_bridge(dimension_types_override=dimension_pivot_types_override) 
                 if bridge_df:
+                    bridge_conf = get_bc_table_config("DimensionBridge")
+                    bridge_gold_name = bridge_conf.get("gold_target_name", "dim_DimensionBridge") if bridge_conf else "dim_DimensionBridge"
                     results["phases"]["dimension_bridge"]["status"] = "success"
-                    results["phases"]["dimension_bridge"]["details"]["table_written"] = f"{self.schemas['gold']}.dim_DimensionBridge"
-                    # results["phases"]["dimension_bridge"]["details"]["rows_written"] = bridge_df.count()
-                    logger.info(f"Dimension bridge created successfully.")
-                else:
-                    results["phases"]["dimension_bridge"]["status"] = "skipped"
-                    results["phases"]["dimension_bridge"]["details"]["reason"] = "No data returned from create_dimension_bridge"
+                    results["phases"]["dimension_bridge"]["details"]["table_written"] = f"{self.schemas['gold']}.{bridge_gold_name}"
+                    processed_gold_dimensions_map["DimensionBridge"] = bridge_gold_name 
+                else: results["phases"]["dimension_bridge"]["status"] = "skipped_or_error"
             except Exception as e:
-                logger.error(f"Failed to create dimension bridge: {e}", exc_info=True)
-                results["phases"]["dimension_bridge"]["status"] = "error"
-                results["phases"]["dimension_bridge"]["details"]["error_message"] = str(e)
+                etl_logger.error(f"Major failure creating dimension bridge: {e}", exc_info=True)
+                results["phases"]["dimension_bridge"]["status"] = "error"; results["phases"]["dimension_bridge"]["details"]["error_message"] = str(e)
         else:
-            results["phases"]["dimension_bridge"]["status"] = "skipped"
-            missing_reqs = [req for req in ["DimensionSetEntry", "DimensionValue"] if req not in silver_tables_created]
-            results["phases"]["dimension_bridge"]["details"]["reason"] = f"Required tables not created in Silver: {missing_reqs}"
-            logger.warning(f"Skipping dimension bridge creation, required tables not in silver: {missing_reqs}")
+            missing_reqs = [name for name in [dim_set_entry_conf_name, dim_value_conf_name] if name not in silver_tables_processed_clean_names]
+            results["phases"]["dimension_bridge"]["status"] = "skipped"; results["phases"]["dimension_bridge"]["details"]["reason"] = f"Required source tables not in Silver: {missing_reqs}"
+            etl_logger.warning(f"Skipping dimension bridge creation, missing Silver tables: {missing_reqs}")
 
         # Phase 5: Process Silver to Gold - Facts
-        logger.info("Phase 5: Processing Silver to Gold - Facts")
-        results["phases"]["silver_to_gold_facts"] = {"status": "pending", "details": {}}
-        for fact_table_name in self.fact_tables:
-            if fact_table_name == "DimensionSetEntry" and results["phases"]["dimension_bridge"]["status"] == "success":
-                 logger.info(f"Skipping {fact_table_name} in facts processing as it's part of dimension bridge.")
-                 continue
+        etl_logger.info("Phase 5: Processing Silver to Gold - Facts")
+        results["phases"]["silver_to_gold_facts"] = {"status": "pending", "processed_tables": {}}
+        for clean_silver_name in silver_tables_processed_clean_names: 
+            config = get_bc_table_config(clean_silver_name)
+            if config and config.get("table_type") == "fact":
+                if clean_silver_name == dim_set_entry_conf_name and results["phases"]["dimension_bridge"]["status"] == "success":
+                    etl_logger.info(f"Skipping {clean_silver_name} in facts processing as it's input to dim_DimensionBridge.")
+                    continue
 
-            table_detail = {"source_table": fact_table_name, "status": "pending"}
-            if fact_table_name in silver_tables_created:
+                table_detail_report = {"source_silver_table": clean_silver_name, "status": "pending"}
                 try:
-                    logger.info(f"Processing fact: {fact_table_name} for Silver to Gold")
-                    gold_fact_df = self.silver_to_gold_fact(fact_table_name, min_year=min_year)
-                    # silver_to_gold_fact already writes the table
+                    etl_logger.info(f"Processing fact: {clean_silver_name} from Silver to Gold with is_full_refresh_gold={is_full_refresh_gold}")
+                    gold_fact_df = self.silver_to_gold_fact(
+                        clean_silver_table_name=clean_silver_name,
+                        is_full_refresh=is_full_refresh_gold 
+                    )
                     if gold_fact_df:
-                        table_detail["status"] = "success"
-                        table_detail["gold_table"] = f"{self.schemas['gold']}.fact_{fact_table_name}"
-                        # table_detail["rows_written"] = gold_fact_df.count()
-                        logger.info(f"Successfully processed fact {fact_table_name}")
-                    else:
-                        table_detail["status"] = "skipped"
-                        table_detail["reason"] = "No data returned from silver_to_gold_fact"
+                        gold_fact_target_name = config.get("gold_target_name", f"fact_{clean_silver_name}")
+                        table_detail_report["status"] = "success"
+                        table_detail_report["gold_table"] = f"{self.schemas['gold']}.{gold_fact_target_name}"
+                    else: table_detail_report["status"] = "skipped_or_error"
                 except Exception as e:
-                    logger.error(f"Failed to process fact {fact_table_name}: {e}", exc_info=True)
-                    table_detail["status"] = "error"
-                    table_detail["error_message"] = str(e)
-            else:
-                table_detail["status"] = "skipped"
-                table_detail["reason"] = f"Not created in Silver layer: {fact_table_name}"
-            results["phases"]["silver_to_gold_facts"]["details"][fact_table_name] = table_detail
+                    etl_logger.error(f"Major failure processing fact {clean_silver_name} to Gold: {e}", exc_info=True)
+                    table_detail_report["status"] = "error"; table_detail_report["error_message"] = str(e)
+                results["phases"]["silver_to_gold_facts"]["processed_tables"][clean_silver_name] = table_detail_report
         results["phases"]["silver_to_gold_facts"]["status"] = "completed"
         
         results["status"] = "completed"
-        logger.info("BC Medallion Pipeline full run completed.")
+        etl_logger.info("BC Medallion Pipeline full run attempt finished.")
         return results
 
-    # Helper for logging (can be moved to a util if used elsewhere)
     def _log_dataframe_info(self, df: DataFrame, name: str):
-        logger.info(f"DataFrame {name}: Count={df.count()}, Schema:")
-        df.printSchema()
+        try:
+            count = -1 
+            # count = df.count() # Potentially expensive
+            etl_logger.info(f"DataFrame '{name}': Schema below. Count (if calculated): {count}")
+            df.printSchema()
+            # df.show(5, truncate=False) # Potentially verbose
+        except Exception as e:
+            etl_logger.warning(f"Could not log full info for DataFrame {name}: {e}")
