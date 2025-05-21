@@ -100,7 +100,7 @@ reportMissingTypeStubs = "none"
 [tool.datamodel-codegen]
 target-python-version = "3.11"
 base-class = "sparkdantic.SparkModel"
-input-file-type = "openapi"
+input-file-type = "jsonschema"
 output-model-type = "pydantic_v2.BaseModel"
 use-standard-collections = true
 use-schema-description = true
