@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-fabric_api.extract._common
+unified_etl.extract._common
 
 Shared utilities for extraction modules
 """

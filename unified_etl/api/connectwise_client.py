@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""fabric_api.client
+"""unified_etl.api.connectwise_client
 
 Enhanced ConnectWise REST client optimized for Microsoft Fabric environment.
 

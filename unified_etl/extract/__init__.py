@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""fabric_api.extract
+"""unified_etl.extract
 
 Extraction layer for fetching raw data from the ConnectWise API.
 Provides a generic extraction function that works for all entity types.
