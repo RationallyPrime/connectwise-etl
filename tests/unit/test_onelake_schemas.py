@@ -44,10 +44,10 @@ class TestOneLakeSchemas(unittest.TestCase):
             schema = model_class.model_spark_schema()
 
             # Schema should not be None
-            self.assertIsNotNone(schema)
+            assert schema is not None
 
             # Schema should have fields
-            self.assertTrue(len(schema.fields) > 0)
+            assert len(schema.fields) > 0
 
             # Print schema structure for inspection
             print(f"\n{entity_name.upper()} SCHEMA:")
@@ -70,14 +70,12 @@ class TestOneLakeSchemas(unittest.TestCase):
 
                     # For invoices, we need to handle special case for 'date' field
                     if entity_name in ["posted_invoice", "unposted_invoice"] and col == "date":
-                        self.assertTrue(
-                            "date" in field_names or "invoiceDate" in field_names,
-                            f"Neither 'date' nor 'invoiceDate' found in schema for {entity_name}",
+                        assert "date" in field_names or "invoiceDate" in field_names, (
+                            f"Neither 'date' nor 'invoiceDate' found in schema for {entity_name}"
                         )
                     else:
-                        self.assertTrue(
-                            any(name == base_col or name == col for name in field_names),
-                            f"Partition column {col} not found in schema for {entity_name}",
+                        assert any(name in (base_col, col) for name in field_names), (
+                            f"Partition column {col} not found in schema for {entity_name}"
                         )
 
     def test_schema_compatibility(self):
@@ -99,8 +97,8 @@ class TestOneLakeSchemas(unittest.TestCase):
                 print(f"Field {field}: {agreement_field.dataType} vs {invoice_field.dataType}")
                 # In a real test, we would check type compatibility
                 # Here we just check that types are not None
-                self.assertIsNotNone(agreement_field.dataType)
-                self.assertIsNotNone(invoice_field.dataType)
+                assert agreement_field.dataType is not None
+                assert invoice_field.dataType is not None
 
 
 if __name__ == "__main__":

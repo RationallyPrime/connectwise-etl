@@ -56,7 +56,7 @@ class ConnectWiseClient:
         "https://verk.thekking.is/v4_6_release/apis/3.0",  # sensible default for Wise
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize client using environment variables from Fabric."""
         # Get credentials from environment variables
         self.basic_username = os.getenv("CW_AUTH_USERNAME")
@@ -72,7 +72,7 @@ class ConnectWiseClient:
 
         # Set up a session with retry logic
         self.session = requests.Session()
-        retry_strategy = Retry(
+        retry_strategy: Retry = Retry(
             total=5,
             backoff_factor=0.5,
             status_forcelist=[429, 500, 502, 503, 504],
@@ -121,7 +121,7 @@ class ConnectWiseClient:
             Response object from the API call
         """
         # Combine params with fields and conditions
-        all_params = params.copy() if params else {}
+        all_params: dict[str, Any] = params.copy() if params else {}
 
         # Add standard filtering parameters if provided
         if fields:
@@ -138,7 +138,7 @@ class ConnectWiseClient:
 
         # Build request URL and headers
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
-        headers = self._headers()
+        headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
@@ -159,7 +159,7 @@ class ConnectWiseClient:
     ) -> Response:
         """Perform a POST request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
-        headers = self._headers()
+        headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
@@ -180,12 +180,12 @@ class ConnectWiseClient:
     ) -> Response:
         """Perform a PUT request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
-        headers = self._headers()
+        headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
         assert self.basic_password is not None
-        auth = (self.basic_username, self.basic_password)
+        auth: tuple[str, str] = (self.basic_username, self.basic_password)
 
         logger.debug(f"PUT {url}")
         resp = self.session.put(url, headers=headers, json=json_data, params=params, auth=auth)
@@ -195,12 +195,12 @@ class ConnectWiseClient:
     def delete(self, endpoint: str, *, params: dict[str, Any] | None = None) -> Response:
         """Perform a DELETE request to the ConnectWise API."""
         url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
-        headers = self._headers()
+        headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
         assert self.basic_username is not None
         assert self.basic_password is not None
-        auth = (self.basic_username, self.basic_password)
+        auth: tuple[str, str] = (self.basic_username, self.basic_password)
 
         logger.debug(f"DELETE {url}")
         resp = self.session.delete(url, headers=headers, params=params, auth=auth)
@@ -237,7 +237,7 @@ class ConnectWiseClient:
             List of entity dictionaries from the API
         """
         # Combine params with fields and conditions
-        all_params = params.copy() if params else {}
+        all_params: dict[str, Any] = params.copy() if params else {}
 
         # Set page size
         if "pageSize" not in all_params:
@@ -279,12 +279,12 @@ class ConnectWiseClient:
             logger.debug(f"Requesting {entity_name} page {page}: {url}")
 
             try:
-                headers = self._headers()
+                headers: dict[str, str] = self._headers()
 
                 # These values are validated in __init__, so they're guaranteed to be non-None
                 assert self.basic_username is not None
                 assert self.basic_password is not None
-                auth = (self.basic_username, self.basic_password)
+                auth: tuple[str, str] = (self.basic_username, self.basic_password)
 
                 response = self.session.get(url, headers=headers, params=query, auth=auth)
                 response.raise_for_status()

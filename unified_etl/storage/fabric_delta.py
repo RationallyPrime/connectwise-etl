@@ -20,7 +20,6 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from unified_etl.utils.naming import constructTablePath
 from unified_etl.utils.spark_utils import get_spark_session
 
 
@@ -34,6 +33,7 @@ def get_table_path(entity_name: str, base_path: str | None = None) -> str:
 def get_error_table_path(entity_name: str, base_path: str = "Tables") -> str:
     """Get the full path for an error table."""
     return f"{base_path}/{entity_name}_errors"
+
 
 # Initialize logger
 logger = logging.getLogger(__name__)

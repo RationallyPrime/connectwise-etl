@@ -410,7 +410,7 @@ def bronze_to_silver_transformation(
                     merge_condition = " AND ".join(merge_condition_parts)
 
                     # Define columns to exclude from updates (business keys + creation timestamp)
-                    excluded_update_cols = business_keys + ["SilverCreatedAt"]
+                    excluded_update_cols = [*business_keys, "SilverCreatedAt"]
                     if "$Company" in processed_df.columns:
                         excluded_update_cols.append("$Company")  # Exclude $Company if present
 

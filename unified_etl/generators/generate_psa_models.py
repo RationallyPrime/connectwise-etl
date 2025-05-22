@@ -9,9 +9,9 @@ from typing import Any
 
 # Configure basic logging for the generator script itself
 logger = logging.getLogger(__name__)
-if not logger.handlers: # Avoid adding multiple handlers if reloaded
+if not logger.handlers:  # Avoid adding multiple handlers if reloaded
     handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
@@ -23,22 +23,19 @@ DEFAULT_PSA_OUTPUT_DIR = "unified_etl/models/psa_models/"
 
 def _load_openapi_schema(schema_path: pathlib.Path) -> dict[str, Any]:
     """Load an OpenAPI schema from a file path."""
-    with open(schema_path, encoding='utf-8') as f:
+    with open(schema_path, encoding="utf-8") as f:
         return json.load(f)
+
 
 def _find_references_in_schema_object(schema_obj: dict[str, Any], refs: set[str]) -> set[str]:
     """Find all $ref references in a schema object."""
     if isinstance(schema_obj, dict):
         for k, v in schema_obj.items():
             if k == "$ref" and isinstance(v, str) and v.startswith("#/components/schemas/"):
-                ref_name = v.split("/")[-1]
+                ref_name: str = v.split("/")[-1]
                 refs.add(ref_name)
-            elif isinstance(v, (dict, list)):
-                _find_references_in_schema_object(v, refs) # Recursive call
-    elif isinstance(schema_obj, list):
-        for item in schema_obj:
-            if isinstance(item, (dict, list)):
-                _find_references_in_schema_object(item, refs) # Recursive call
+            elif isinstance(v, dict):
+                _find_references_in_schema_object(schema_obj=v, refs=refs)  # Recursive call
     return refs
 
 
@@ -48,10 +45,10 @@ def _extract_models_with_dependencies(
     """
     Extract specified models and their dependencies from a full OpenAPI schema.
     """
-    subset_schema_components = {}
+    subset_schema_components: dict[str, Any] = {}
 
-    models_to_process = set(model_names_to_extract)
-    processed_models = set()
+    models_to_process: set[str] = set(model_names_to_extract)
+    processed_models: set[str] = set()
 
     while models_to_process:
         model_name = models_to_process.pop()
@@ -60,7 +57,9 @@ def _extract_models_with_dependencies(
 
         model_schema_obj = full_schema.get("components", {}).get("schemas", {}).get(model_name)
         if not model_schema_obj:
-            logger.warning(f"Model '{model_name}' not found in the provided OpenAPI schema. Skipping.")
+            logger.warning(
+                f"Model '{model_name}' not found in the provided OpenAPI schema. Skipping."
+            )
             processed_models.add(model_name)
             continue
 
@@ -68,7 +67,9 @@ def _extract_models_with_dependencies(
 
         # Find dependencies (references) within this model's schema
         # Initialize new set for each model to avoid issues with shared mutable default args
-        dependent_refs = _find_references_in_schema_object(model_schema_obj, set())
+        dependent_refs: set[str] = _find_references_in_schema_object(
+            schema_obj=model_schema_obj, refs=set()
+        )
 
         for ref in dependent_refs:
             if ref not in processed_models and ref not in subset_schema_components:
@@ -76,10 +77,12 @@ def _extract_models_with_dependencies(
 
         processed_models.add(model_name)
 
-    final_subset_schema = {
+    final_subset_schema: dict[str, Any] = {
         "openapi": full_schema.get("openapi", "3.0.0"),
-        "info": full_schema.get("info", {"title": "Subset Schema for PSA Models", "version": "1.0.0"}),
-        "paths": {}, # Paths are not needed for model generation
+        "info": full_schema.get(
+            "info", {"title": "Subset Schema for PSA Models", "version": "1.0.0"}
+        ),
+        "paths": {},  # Paths are not needed for model generation
         "components": {"schemas": subset_schema_components},
     }
     logger.info(f"Generated subset schema with {len(subset_schema_components)} models for PSA.")
@@ -91,7 +94,7 @@ def _create_psa_init_file(output_dir: pathlib.Path, all_generated_model_names: l
     init_path = output_dir / "__init__.py"
 
     # Ensure class names are unique and sorted for consistent __init__.py
-    unique_sorted_model_names = sorted(list(set(all_generated_model_names)))
+    unique_sorted_model_names = sorted(set(all_generated_model_names))
 
     with open(init_path, "w", encoding="utf-8") as f:
         f.write('"""PSA API models generated from OpenAPI schema by datamodel-code-generator.\n')
@@ -125,7 +128,7 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
     """
     logger.info(f"Post-processing PSA models file: {models_file_path}")
 
-    with open(models_file_path, encoding='utf-8') as f:
+    with open(models_file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Standard header for the combined models file
@@ -140,19 +143,21 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
         "# fmt: off\n\n"
         "from __future__ import annotations\n\n"
         "from datetime import datetime\n"
-        "from typing import Any, Dict, List, Optional, Literal\n" # Ensure Literal is imported
-        "from uuid import UUID\n\n" # Ensure UUID is imported
+        "from typing import Any, Dict, List, Optional, Literal\n"  # Ensure Literal is imported
+        "from uuid import UUID\n\n"  # Ensure UUID is imported
         "from pydantic import Field\n"
         "from sparkdantic import SparkModel\n\n"
     )
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     processed_lines = []
 
     # Remove existing imports and __future__
     in_imports_section = True
     for line in lines:
-        if in_imports_section and (line.startswith("from ") or line.startswith("import ") or line.strip() == ""):
+        if in_imports_section and (
+            line.startswith("from ") or line.startswith("import ") or line.strip() == ""
+        ):
             continue
         in_imports_section = False
         processed_lines.append(line)
@@ -162,10 +167,12 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
     # Fix CustomFieldValue.value type hint (if class exists)
     # value: Optional[Dict[str, Any]] = Field(default=None, alias="value") -> value: Optional[Any] ...
     custom_field_value_pattern = r"(class CustomFieldValue\(.+?\):.*?value:\s*Optional\[)Dict\[str, Any\](\].*?# API inconsistency)?"
-    replace_with = r"\1Any\2" # Keep the comment if it was there
+    replace_with = r"\1Any\2"  # Keep the comment if it was there
 
-    if "class CustomFieldValue(" in content: # Check if class exists
-        modified_content, num_subs = re.subn(custom_field_value_pattern, replace_with, content, flags=re.DOTALL)
+    if "class CustomFieldValue(" in content:  # Check if class exists
+        modified_content, num_subs = re.subn(
+            custom_field_value_pattern, replace_with, content, flags=re.DOTALL
+        )
         if num_subs > 0:
             content = modified_content
             logger.info("Applied fix for CustomFieldValue.value type hint.")
@@ -179,17 +186,18 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
             else:
                 logger.warning("Could not apply CustomFieldValue.value fix; pattern not found.")
 
-
     # Add PostedInvoice = Invoice alias if Invoice model is present
     if "class Invoice(" in content:
-        content += "\n\n# PostedInvoice is an alias of Invoice, used for consistency in some contexts\n"
+        content += (
+            "\n\n# PostedInvoice is an alias of Invoice, used for consistency in some contexts\n"
+        )
         content += "PostedInvoice = Invoice\n"
         logger.info("Added PostedInvoice = Invoice alias.")
 
     # Prepend the standard header
     final_content = header + content
 
-    with open(models_file_path, 'w', encoding='utf-8') as f:
+    with open(models_file_path, "w", encoding="utf-8") as f:
         f.write(final_content)
 
     logger.info(f"PSA models file post-processing complete for {models_file_path}")
@@ -199,8 +207,8 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
 def generate_psa_models(
     openapi_schema_path_str: str = DEFAULT_PSA_OPENAPI_SCHEMA_PATH,
     output_dir_str: str = DEFAULT_PSA_OUTPUT_DIR,
-    entities_to_include: list[str] | None = None, # e.g. ["Agreement", "TimeEntry"]
-    reference_models_to_include: list[str] | None = None # e.g. ["ActivityReference"]
+    entities_to_include: list[str] | None = None,  # e.g. ["Agreement", "TimeEntry"]
+    reference_models_to_include: list[str] | None = None,  # e.g. ["ActivityReference"]
 ):
     """
     Generates Pydantic models for specified PSA entities from an OpenAPI schema.
@@ -213,22 +221,29 @@ def generate_psa_models(
     logger.info(f"Output directory: {output_dir}")
 
     if not openapi_schema_path.exists():
-        logger.error(f"OpenAPI schema file not found at {openapi_schema_path}. Exiting PSA model generation.")
+        logger.error(
+            f"OpenAPI schema file not found at {openapi_schema_path}. Exiting PSA model generation."
+        )
         return False
 
     # Define default entities if none are provided
     if entities_to_include is None:
         entities_to_include = [
-            "Agreement", "TimeEntry", "ExpenseEntry",
-            "Invoice", # This will also implicitly include PostedInvoice due to alias
+            "Agreement",
+            "TimeEntry",
+            "ExpenseEntry",
+            "Invoice",  # This will also implicitly include PostedInvoice due to alias
             "ProductItem",
             # Add other core entities here as needed by default
         ]
         logger.info(f"No specific entities provided, using default set: {entities_to_include}")
 
     if reference_models_to_include is None:
-        reference_models_to_include = [ # These are common reference types
-            "ActivityReference", "AgreementReference", "AgreementTypeReference", "BatchReference",
+        reference_models_to_include = [  # These are common reference types
+            "ActivityReference",
+            "AgreementReference",
+            "AgreementTypeReference",
+            "BatchReference",
             # Add other common reference types if necessary
         ]
         logger.info(f"Using default reference models: {reference_models_to_include}")
@@ -237,16 +252,20 @@ def generate_psa_models(
 
     all_models_for_subset = list(set(entities_to_include + reference_models_to_include))
 
-    logger.info(f"Creating subset schema including {len(all_models_for_subset)} initial models and their dependencies...")
+    logger.info(
+        f"Creating subset schema including {len(all_models_for_subset)} initial models and their dependencies..."
+    )
     subset_schema = _extract_models_with_dependencies(full_schema, all_models_for_subset)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     models_file_path = output_dir / "models.py"
 
     # Write subset schema to a temporary file for datamodel-codegen
-    with tempfile.NamedTemporaryFile(suffix=".json", mode="w", delete=False, dir=output_dir) as tmp_schema_file:
+    with tempfile.NamedTemporaryFile(
+        suffix=".json", mode="w", delete=False, dir=output_dir
+    ) as tmp_schema_file:
         json.dump(subset_schema, tmp_schema_file, indent=2)
-        tmp_schema_file_path = tmp_schema_file.name # Get path for codegen
+        tmp_schema_file_path = tmp_schema_file.name  # Get path for codegen
 
     logger.info(f"Temporary subset schema written to: {tmp_schema_file_path}")
 
@@ -257,20 +276,26 @@ def generate_psa_models(
     # The base_class is set to SparkModel.
     cmd = [
         "datamodel-codegen",
-        "--input", tmp_schema_file_path,
-        "--input-file-type", "openapi", # Important: use openapi for full component resolution
-        "--output", str(models_file_path),
-        "--base-class", "sparkdantic.SparkModel",
-        "--target-python-version", "3.11",
+        "--input",
+        tmp_schema_file_path,
+        "--input-file-type",
+        "openapi",  # Important: use openapi for full component resolution
+        "--output",
+        str(models_file_path),
+        "--base-class",
+        "sparkdantic.SparkModel",
+        "--target-python-version",
+        "3.11",
         "--use-standard-collections",
         "--use-schema-description",
-        "--use_field_description", # Note: original script had this, check CLI option name
+        "--use_field_description",  # Note: original script had this, check CLI option name
         "--reuse-model",
         "--field-constraints",
         "--strict-nullable",
         "--use-union-operator",
-        "--disable-timestamp", # Avoid adding generation timestamp in the models file itself
-        "--custom-template-dir", "unified_etl/generators/templates/psa", # Path to custom templates
+        "--disable-timestamp",  # Avoid adding generation timestamp in the models file itself
+        "--custom-template-dir",
+        "unified_etl/generators/templates/psa",  # Path to custom templates
         # "--snake-case-field", # Usually false for PSA to keep original casing
     ]
 
@@ -285,9 +310,12 @@ def generate_psa_models(
         # Create __init__.py file
         # Extract all class names from the generated models.py for __init__.py
         # This should include entities, their dependencies, and reference models.
-        all_generated_model_names = sorted(list(subset_schema["components"]["schemas"].keys()))
+        all_generated_model_names = sorted(subset_schema["components"]["schemas"].keys())
         # Ensure PostedInvoice is added if Invoice was generated, due to alias
-        if "Invoice" in all_generated_model_names and "PostedInvoice" not in all_generated_model_names:
+        if (
+            "Invoice" in all_generated_model_names
+            and "PostedInvoice" not in all_generated_model_names
+        ):
             all_generated_model_names.append("PostedInvoice")
 
         _create_psa_init_file(output_dir, all_generated_model_names)
@@ -299,7 +327,9 @@ def generate_psa_models(
         logger.error(f"Command output (stderr): {e.stderr}")
         return False
     except Exception as e:
-        logger.error(f"An unexpected error occurred during PSA model generation: {e}", exc_info=True)
+        logger.error(
+            f"An unexpected error occurred during PSA model generation: {e}", exc_info=True
+        )
         return False
     finally:
         # Clean up temporary schema file
@@ -311,7 +341,7 @@ def generate_psa_models(
 if __name__ == "__main__":
     # This allows the script to be run directly for testing/debugging
     # Setup basic logging for direct script run
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # For direct execution, consider where schemas are relative to this script
     # Assuming project root is parent of unified_etl
@@ -328,10 +358,9 @@ if __name__ == "__main__":
     dummy_template_dir = project_root / "unified_etl/generators/templates/psa"
     dummy_template_dir.mkdir(parents=True, exist_ok=True)
 
-
     success = generate_psa_models(
         openapi_schema_path_str=str(default_schema),
-        output_dir_str=str(default_output)
+        output_dir_str=str(default_output),
         # entities_to_include and reference_models_to_include will use defaults
     )
     if success:

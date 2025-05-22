@@ -44,7 +44,7 @@ def join_dimension(
                 if isinstance(fact_join_keys, list) and len(fact_join_keys) > 0:
                     date_col = fact_join_keys[0]
                 elif isinstance(fact_join_keys, dict) and len(fact_join_keys) > 0:
-                    date_col = list(fact_join_keys.keys())[0]
+                    date_col = next(iter(fact_join_keys.keys()))
 
                 if date_col and date_col in fact_df.columns:
                     # Generate DateKey in YYYYMMDD format as integer
@@ -61,7 +61,9 @@ def join_dimension(
                     # If fact_join_keys is a dict, update it to use DateKey
                     elif isinstance(fact_join_keys, dict):
                         # Determine the target key in the dimension
-                        dim_key = list(fact_join_keys.values())[0] if fact_join_keys else "DateKey"
+                        dim_key = (
+                            next(iter(fact_join_keys.values())) if fact_join_keys else "DateKey"
+                        )
                         fact_join_keys = {"DateKey": dim_key}
 
             if not dim_config:

@@ -22,18 +22,18 @@ def run_etl(
     tables: list[str] | None = None,
     lakehouse_root: str = "/lakehouse/default/Tables",
     mode: str = "append",
-    log_level: str = "INFO"
+    log_level: str = "INFO",
 ) -> dict[str, bool]:
     """
     Run the complete ETL pipeline for specified tables.
-    
+
     Args:
         config_path: Path to YAML configuration file
         tables: List of table names to process (if None, processes all configured tables)
         lakehouse_root: Root path for OneLake tables
         mode: Write mode for Delta tables ("append", "overwrite")
         log_level: Logging level
-        
+
     Returns:
         Dictionary mapping table names to success status
     """
@@ -41,10 +41,7 @@ def run_etl(
     logger.info("Starting unified ETL pipeline")
 
     # Initialize Spark session
-    spark = get_spark_session(
-        app_name="UnifiedETL",
-        log_level=log_level
-    )
+    spark = get_spark_session(app_name="UnifiedETL", log_level=log_level)
 
     # Load configuration
     config_manager = ConfigManager(config_path)
@@ -62,16 +59,12 @@ def run_etl(
     try:
         # Bronze to Silver pipeline
         bronze_silver = BronzeSilverPipeline(
-            spark=spark,
-            config_manager=config_manager,
-            lakehouse_root=lakehouse_root
+            spark=spark, config_manager=config_manager, lakehouse_root=lakehouse_root
         )
 
         # Silver to Gold pipeline
         silver_gold = SilverGoldPipeline(
-            spark=spark,
-            config_manager=config_manager,
-            lakehouse_root=lakehouse_root
+            spark=spark, config_manager=config_manager, lakehouse_root=lakehouse_root
         )
 
         for table in tables_to_process:
@@ -109,11 +102,11 @@ def run_bronze_only(
     config_path: str | None = None,
     lakehouse_root: str = "/lakehouse/default/Tables",
     mode: str = "append",
-    log_level: str = "INFO"
+    log_level: str = "INFO",
 ) -> dict[str, bool]:
     """
     Run only the bronze layer data ingestion for a specific source.
-    
+
     Args:
         source: Data source name (e.g., "connectwise", "business_central")
         tables: List of table names to process
@@ -121,7 +114,7 @@ def run_bronze_only(
         lakehouse_root: Root path for OneLake tables
         mode: Write mode for Delta tables
         log_level: Logging level
-        
+
     Returns:
         Dictionary mapping table names to success status
     """
@@ -131,7 +124,6 @@ def run_bronze_only(
     # Implementation depends on source type
     # This will be extended to support different sources
     if source == "connectwise":
-
         # ConnectWise-specific bronze ingestion logic
         # This will be implemented in the next phase
         pass
@@ -150,12 +142,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Unified ETL Pipeline")
     parser.add_argument("--config", help="Path to configuration file")
     parser.add_argument("--tables", nargs="+", help="Specific tables to process")
-    parser.add_argument("--lakehouse-root", default="/lakehouse/default/Tables",
-                       help="Root path for OneLake tables")
-    parser.add_argument("--mode", choices=["append", "overwrite"], default="append",
-                       help="Write mode for Delta tables")
-    parser.add_argument("--log-level", choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-                       default="INFO", help="Logging level")
+    parser.add_argument(
+        "--lakehouse-root", default="/lakehouse/default/Tables", help="Root path for OneLake tables"
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["append", "overwrite"],
+        default="append",
+        help="Write mode for Delta tables",
+    )
+    parser.add_argument(
+        "--log-level",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        default="INFO",
+        help="Logging level",
+    )
     parser.add_argument("--bronze-only", help="Run bronze ingestion only for specified source")
 
     args = parser.parse_args()
@@ -167,7 +168,7 @@ if __name__ == "__main__":
             config_path=args.config,
             lakehouse_root=args.lakehouse_root,
             mode=args.mode,
-            log_level=args.log_level
+            log_level=args.log_level,
         )
     else:
         results = run_etl(
@@ -175,7 +176,7 @@ if __name__ == "__main__":
             tables=args.tables,
             lakehouse_root=args.lakehouse_root,
             mode=args.mode,
-            log_level=args.log_level
+            log_level=args.log_level,
         )
 
     # Print results

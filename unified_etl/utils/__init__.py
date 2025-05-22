@@ -1,5 +1,4 @@
 from .exceptions import (
-    BCETLExceptionError,
     ColumnStandardizationError,
     DataTypeConversionError,
     DimensionResolutionError,
@@ -7,6 +6,7 @@ from .exceptions import (
     HierarchyBuildError,
     SurrogateKeyError,
     TableNotFoundExceptionError,
+    UnifiedETLExceptionError,
 )
 from .logging import (
     configure,
@@ -26,27 +26,27 @@ from .naming import (
 )
 
 __all__ = [
-    # Naming utilities
-    "standardize_table_reference",
-    "escape_column_name",
-    "get_escaped_col",
-    "construct_table_path",
-    # Logging utilities
-    "configure",
-    "debug",
-    "info",
-    "warning",
-    "error",
-    "critical",
-    "span",
-    "instrument_spark_job",
-    # Exceptions
-    "BCETLExceptionError",
-    "TableNotFoundExceptionError",
     "ColumnStandardizationError",
+    "DataTypeConversionError",
     "DimensionResolutionError",
+    "FactTableError",
     "HierarchyBuildError",
     "SurrogateKeyError",
-    "DataTypeConversionError",
-    "FactTableError",
+    "TableNotFoundExceptionError",
+    # Exceptions
+    "UnifiedETLExceptionError",
+    # Logging utilities
+    "configure",
+    "construct_table_path",
+    "critical",
+    "debug",
+    "error",
+    "escape_column_name",
+    "get_escaped_col",
+    "info",
+    "instrument_spark_job",
+    "span",
+    # Naming utilities
+    "standardize_table_reference",
+    "warning",
 ]

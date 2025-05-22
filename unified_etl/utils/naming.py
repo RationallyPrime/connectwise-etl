@@ -22,8 +22,9 @@ def escape_column_name(col_name: str) -> str:
     clean_name = col_name.strip("`")
     # Escape if it contains special chars, spaces, or might be a keyword (basic check)
     if (
-        (not clean_name.isalnum()
-        and "_" not in clean_name)  # Simple check if not alphanumeric or underscore
+        (
+            not clean_name.isalnum() and "_" not in clean_name
+        )  # Simple check if not alphanumeric or underscore
         or "$" in clean_name
         or "." in clean_name
         or "-" in clean_name

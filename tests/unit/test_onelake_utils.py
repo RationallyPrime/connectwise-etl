@@ -37,41 +37,41 @@ class TestOneLakeUtils(unittest.TestCase):
         relative_path = "/Tables/connectwise/agreement"
         abfss_path = build_abfss_path(relative_path)
         expected = "abfss://lakehouse@teststorageaccount.dfs.fabric.microsoft.com/Tables/connectwise/agreement"
-        self.assertEqual(abfss_path, expected)
+        assert abfss_path == expected
 
         # Test with path that already has abfss://
         already_abfss = "abfss://lakehouse@storage.dfs.fabric.microsoft.com/path"
-        self.assertEqual(build_abfss_path(already_abfss), already_abfss)
+        assert build_abfss_path(already_abfss) == already_abfss
 
     def test_get_table_path(self):
         """Test getting table paths."""
         # Test with default table type (delta)
         path = get_table_path("Agreement")
-        self.assertTrue("/Tables/connectwise/agreement" in path)
+        assert "/Tables/connectwise/agreement" in path
 
         # Test with parquet table type
         parquet_path = get_table_path("TimeEntry", table_type="parquet")
-        self.assertTrue("/Files/connectwise/time_entry" in parquet_path)
+        assert "/Files/connectwise/time_entry" in parquet_path
 
     def test_get_table_name(self):
         """Test getting table names."""
         # Test with CamelCase entity name
         name = get_table_name("Agreement")
-        self.assertEqual(name, "connectwise.agreement")
+        assert name == "connectwise.agreement"
 
         # Test with snake_case entity name
         name2 = get_table_name("time_entry")
-        self.assertEqual(name2, "connectwise.time_entry")
+        assert name2 == "connectwise.time_entry"
 
     def test_get_partition_columns(self):
         """Test getting partition columns."""
         # Test agreement partitioning
         agreement_partitions = get_partition_columns("agreement")
-        self.assertIn("agreementType", agreement_partitions)
+        assert "agreementType" in agreement_partitions
 
         # Test invoice partitioning
         invoice_partitions = get_partition_columns("posted_invoice")
-        self.assertIn("date", invoice_partitions)
+        assert "date" in invoice_partitions
 
     @patch("fabric_api.onelake_utils.to_date")
     @patch("fabric_api.onelake_utils.date_format")
@@ -93,7 +93,7 @@ class TestOneLakeUtils(unittest.TestCase):
         prepare_dataframe_for_onelake(df, "posted_invoice")
 
         # Verify withColumn was called with timestamp
-        self.assertTrue(df.withColumn.called)
+        assert df.withColumn.called
 
     @patch("fabric_api.onelake_utils.prepare_dataframe_for_onelake")
     def test_write_to_onelake(self, mock_prepare):
@@ -117,8 +117,8 @@ class TestOneLakeUtils(unittest.TestCase):
         )
 
         # Verify SQL was executed for table creation
-        self.assertTrue(self.spark.sql.called)
-        self.assertEqual(row_count, 10)
+        assert self.spark.sql.called
+        assert row_count == 10
 
     @patch("fabric_api.onelake_utils.write_to_onelake")
     def test_direct_etl_to_onelake(self, mock_write):
@@ -157,8 +157,8 @@ class TestOneLakeUtils(unittest.TestCase):
         )
 
         # Verify results
-        self.assertEqual(result[1], 2)  # 2 rows written
-        self.assertEqual(result[2], 1)  # 1 error
+        assert result[1] == 2  # 2 rows written
+        assert result[2] == 1  # 1 error
 
     def test_create_database_if_not_exists(self):
         """Test database creation."""

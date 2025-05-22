@@ -1,5 +1,7 @@
 import pathlib
 import re
+from pathlib import Path
+from re import Match
 
 from datamodel_code_generator import InputFileType, PythonVersion, generate
 
@@ -10,31 +12,34 @@ DEFAULT_BC_OUTPUT_INIT_FILE = "unified_etl/models/bc_models/__init__.py"
 
 # (Original DESIRED_PYTHON_FIELD_NAMES - kept for post_process_model_file logic)
 # This might be better passed as a parameter or loaded from a config if it becomes complex
-DESIRED_PYTHON_FIELD_NAMES = {
+DESIRED_PYTHON_FIELD_NAMES: dict[str, str] = {
     "systemId": "SystemId",
     "$systemId": "SystemId",
 }
 
+
 def get_input_files(input_dir: pathlib.Path) -> list[pathlib.Path]:
     """Scans the input directory for *.cdm.json files."""
     return list(input_dir.glob("*.cdm.json"))
+
 
 def extract_class_names(file_path: pathlib.Path) -> list[str]:
     """
     Extracts class names from a Python file.
     A simple approach: looks for lines starting with 'class '.
     """
-    class_names = []
+    class_names: list[str] = []
     if not file_path.exists():
         print(f"Warning: Model file {file_path} not found for class name extraction.")
         return class_names
 
     with open(file_path, encoding="utf-8") as f:
         for line in f:
-            match = re.match(r"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", line)
+            match: Match[str] | None = re.match(r"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", line)
             if match:
                 class_names.append(match.group(1))
-    return sorted(list(set(class_names)))
+    return sorted(set(class_names))
+
 
 def post_process_model_file(filepath: pathlib.Path):
     """
@@ -55,9 +60,18 @@ def post_process_model_file(filepath: pathlib.Path):
 
     # Targeted replacements for 'systemId' variants to become 'SystemId' as Python attribute
     replacements = [
-        (r"(\s+)system_id(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"](?:systemId|\$systemId)['\"])", r"\1SystemId\2"),
-        (r"(\s+)systemid(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"](?:systemId|\$systemId)['\"])", r"\1SystemId\2"),
-        (r"(\s+)systemId(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"](?:systemId|\$systemId)['\"])", r"\1SystemId\2"),
+        (
+            r"(\s+)system_id(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"](?:systemId|\$systemId)['\"])",
+            r"\1SystemId\2",
+        ),
+        (
+            r"(\s+)systemid(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"](?:systemId|\$systemId)['\"])",
+            r"\1SystemId\2",
+        ),
+        (
+            r"(\s+)systemId(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"](?:systemId|\$systemId)['\"])",
+            r"\1SystemId\2",
+        ),
     ]
     for pattern, replacement in replacements:
         content = re.sub(pattern, replacement, content)
@@ -68,7 +82,7 @@ def post_process_model_file(filepath: pathlib.Path):
     content = re.sub(
         r"(\s+)([a-z][a-z0-9_]*)(\s*:\s*(?:Optional\[.+?\]|.+?)\s*=\s*Field\([^)]*alias=['\"]\$([A-Z][A-Za-z0-9_]*)['\"])",
         lambda m: f"{m.group(1)}{m.group(4)}{m.group(3)}",
-        content
+        content,
     )
 
     if content != original_content:
@@ -95,11 +109,11 @@ from .models import ({", ".join(sorted(model_class_names))})
 
 __all__ = [
 '''
-    for name in sorted(model_class_names): # Ensure sorted for consistency
+    for name in sorted(model_class_names):  # Ensure sorted for consistency
         content += f'    "{name}",\n'
-    content += ''']
+    content += """]
 # fmt: on
-'''
+"""
     try:
         output_init_file.parent.mkdir(parents=True, exist_ok=True)
         with open(output_init_file, "w", encoding="utf-8") as f:
@@ -112,7 +126,7 @@ __all__ = [
 def generate_bc_models(
     input_dir_str: str = DEFAULT_BC_CDM_SCHEMA_DIR,
     output_models_file_str: str = DEFAULT_BC_OUTPUT_MODELS_FILE,
-    output_init_file_str: str = DEFAULT_BC_OUTPUT_INIT_FILE
+    output_init_file_str: str = DEFAULT_BC_OUTPUT_INIT_FILE,
 ):
     """Main function to generate Pydantic models from BC CDM manifest files."""
 
@@ -127,33 +141,33 @@ def generate_bc_models(
 
     output_models_file.parent.mkdir(parents=True, exist_ok=True)
 
-    input_files = get_input_files(input_dir)
+    input_files: list[Path] = get_input_files(input_dir)
     if not input_files:
         print(f"No '*.cdm.json' files found in {input_dir}. Exiting BC model generation.")
         return False
 
     print(f"Found {len(input_files)} BC CDM input files:")
-    for f_path in input_files: # Renamed f to f_path to avoid confusion with open file handle
+    for f_path in input_files:  # Renamed f to f_path to avoid confusion with open file handle
         print(f"  - {f_path.name}")
 
     try:
         print("Generating BC models using datamodel-code-generator...")
         generate(
-            input_=input_files, # List of pathlib.Path objects
-            input_file_type=InputFileType.JsonSchema, # Assuming CDM manifests are treated as JSON Schema
+            input_=input_files,  # List of pathlib.Path objects
+            input_file_type=InputFileType.JsonSchema,  # Assuming CDM manifests are treated as JSON Schema
             output=output_models_file,
-            base_class="sparkdantic.SparkModel", # Base class for generated models
+            base_class="sparkdantic.SparkModel",  # Base class for generated models
             target_python_version=PythonVersion.PY_311,
-            snake_case_field=False, # Preserve original casing from schema as much as possible
-            remove_special_field_name_prefix=True, # Handles '$' prefixes, e.g. $Company -> Company
+            snake_case_field=False,  # Preserve original casing from schema as much as possible
+            remove_special_field_name_prefix=True,  # Handles '$' prefixes, e.g. $Company -> Company
             use_standard_collections=True,
             use_schema_description=True,
             use_field_description=True,
-            reuse_model=True, # Important for CDM references
+            reuse_model=True,  # Important for CDM references
             field_constraints=True,
             strict_nullable=True,
-            collapse_root_models=True, # Typically good for CDM where each file is one model
-            use_union_operator=True, # Use | for Optional types
+            collapse_root_models=True,  # Typically good for CDM where each file is one model
+            use_union_operator=True,  # Use | for Optional types
             # custom_template_dir: Optional[pathlib.Path] = None, # For advanced field name customization if needed
             # extra_template_data: Optional[Dict[str, Any]] = None, # For passing data to custom templates
         )
@@ -168,15 +182,19 @@ def generate_bc_models(
             print(f"Found {len(model_class_names)} BC model classes for __init__.py.")
             create_init_file(output_init_file, model_class_names)
         else:
-            print(f"No model class names found in {output_models_file}. Skipping BC __init__.py generation.")
+            print(
+                f"No model class names found in {output_models_file}. Skipping BC __init__.py generation."
+            )
 
         return True
 
     except Exception as e:
         print(f"An error occurred during BC model generation: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 if __name__ == "__main__":
     # This allows the script to be run directly for testing/debugging

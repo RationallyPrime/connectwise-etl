@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from unified_etl.api.connectwise_client import ConnectWiseClient
 from unified_etl.utils.api_utils import get_fields_for_api_call
 from unified_etl.utils.config_loader import get_table_config as get_entity_config
+
 from ._common import validate_batch
 
 logger = logging.getLogger(__name__)
@@ -84,7 +85,9 @@ def extract_entity(
         If return_validated=True: Tuple of (valid models, validation errors)
     """
     # Get entity configuration
-    config = get_entity_config(entity_name)
+    config: dict[str, Any] | None = get_entity_config(entity_name)
+    if config is None:
+        raise ValueError(f"Unknown entity: {entity_name}")
     endpoint = config["endpoint"]
 
     # Get model class
@@ -97,7 +100,7 @@ def extract_entity(
     logger.debug(f"Using fields for {entity_name}: {fields_str}")
 
     # Paginate through API results
-    raw_data = client.paginate(
+    raw_data: list[dict[str, Any]] = client.paginate(
         endpoint=endpoint,
         entity_name=entity_name + "s",  # Pluralize for API
         fields=fields_str,

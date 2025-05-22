@@ -429,7 +429,7 @@ def create_item_attribute_dimension(
                     if attrs.get("is_business_key", False)
                 ]
                 if config_keys:
-                    business_keys = config_keys + ["$Company"]
+                    business_keys = [*config_keys, "$Company"]
                     logging.info(f"Using business keys from config: {business_keys}")
 
             # Read the tables
@@ -631,7 +631,7 @@ def create_item_attribute_bridge(
                     if attrs.get("is_business_key", False)
                 ]
                 if config_keys:
-                    business_keys = config_keys + ["$Company"]
+                    business_keys = [*config_keys, "$Company"]
                     logging.info(f"Using business keys from config: {business_keys}")
 
             # Read the tables

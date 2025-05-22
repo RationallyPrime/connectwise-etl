@@ -4,80 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The ConnectWise PSA to Microsoft Fabric Integration project extracts company data from ConnectWise PSA API and loads it directly into Microsoft Fabric OneLake. It handles relationship endpoint permission issues by using filtered queries to standard endpoints instead of direct relationship endpoints.
+The Unified ETL Framework integrates company data from ConnectWise PSA and Microsoft Business Central APIs, loading it directly into Microsoft Fabric OneLake using a proper medallion architecture. The framework handles API limitations with intelligent field selection and provides a generic, configuration-driven approach to ETL processing.
 
-## Implementation Plan
+## Current Architecture
 
-We're following a structured modernization plan with distinct phases. Each phase will be implemented sequentially, with code review and commits after each.
+After comprehensive consolidation, the project now follows a clean unified structure:
 
-### Phase 1: SparkModel Schema Compatibility (Pydantic + SparkDantic)
+- **unified_etl/**: Single consolidated ETL framework
+- **Eliminated duplication**: Removed fabric_api/ and BC_ETL-main/ (180+ files, ~40k lines)
+- **Generic processing**: Single fact creator replaces 9 entity-specific implementations
+- **CamelCase preservation**: Configured to maintain source system naming conventions
 
-**Goal:** Ensure all Pydantic models inherit from `sparkdantic.SparkModel` and function correctly in Microsoft Fabric Spark Runtime.
+## Medallion Architecture - Separation of Concerns
 
-**Tasks:**
-1. Verify all models in `fabric_api/connectwise_models/` properly inherit from SparkModel
-2. Test Spark schema conversion with `model_spark_schema()` method
-3. Implement fallback mechanism for nested fields that cause schema issues
-4. Update any model generation code if needed
+### Bronze Layer (Raw Data Landing)
+**Purpose**: Land raw data exactly as received from source systems
+- Store raw JSON/API responses without transformation
+- Preserve original data types and structures
+- Add only extraction metadata (timestamp, source, batch_id)
+- No validation or transformation applied
 
-**Files to focus on:**
-- `fabric_api/connectwise_models/models.py` (single file for all models)
-- `regenerate_models.py`
-- `fabric_api/bronze_loader.py`
+**Files**:
+- `unified_etl/bronze/reader.py`
 
-**Model Architecture:**
-- **Single-file Pattern:** All ConnectWise models reside in a single `models.py` file to prevent circular imports between interdependent models
-- **Reference Model Hierarchy:** Reference models follow this inheritance pattern:
-  - ActivityReference (base)
-    - AgreementReference
-    - AgreementTypeReference
-      - BatchReference
-- **Entity-Reference Pattern:** Entity models use reference models for relationships, requiring all reference types to be pre-defined
-- **Model Aliases:** PostedInvoice is an alias to Invoice for API semantic distinction without duplicating structure
-- **Schema Subsetting:** Extract only needed components with dependencies from the full OpenAPI schema
+### Silver Layer (Validation & Standardization)
+**Purpose**: Clean, validate, and standardize data while preserving business meaning
+- **Validate with Pydantic**: Apply data models for type safety and structure validation
+- **Convert data types**: String dates → timestamps, numeric strings → numbers
+- **Flatten nested columns**: Expand complex objects into flat table structure
+- **Strip prefixes/suffixes**: Remove API artifacts from column names if needed
+- **Preserve all business data**: No column removal, only structure improvement
 
-### Phase 2: Schema-Driven Field Selection Utility
+**Files**:
+- `unified_etl/silver/cleanse.py`
+- `unified_etl/silver/standardize.py`
+- `unified_etl/silver/scd.py`
+- `unified_etl/silver/dimension.py`
+- `unified_etl/pipeline/bronze_silver.py`
 
-**Goal:** Use Pydantic models to dynamically determine which fields to request from the API.
+### Gold Layer (Business Enhancement)
+**Purpose**: Add business intelligence constructs and dimensional modeling
+- **Add surrogate keys**: Generate business-meaningful unique identifiers
+- **Create date dimension**: Standard calendar table with business periods
+- **Build dimension bridge**: Connect facts to multiple dimensions
+- **Add dimension tables**: Normalize entities not present in source (geography, categories)
+- **Table-specific transforms**: Account hierarchy, organizational structures
+- **Calculated columns**: Business metrics and derived values
+- **No column removal**: Only addition and enrichment
 
-**Tasks:**
-1. Enhance `get_fields_for_api_call()` in `api_utils.py`
-2. Apply this utility across all extract modules
-3. Support appropriate nesting for fields if needed
-4. Test field selection with all main entity types
+**Files**:
+- `unified_etl/gold/dimensions.py`
+- `unified_etl/gold/hierarchy.py`
+- `unified_etl/gold/keys.py`
+- `unified_etl/gold/generic_fact.py`
+- `unified_etl/gold/facts/` (specific business logic)
+- `unified_etl/pipeline/silver_gold.py`
 
-**Files to focus on:**
-- `fabric_api/api_utils.py`
-- `fabric_api/extract/*.py`
+## Implementation Status
 
-### Phase 3: Modular ETL Workflow
+### ✅ Completed: Consolidation & Framework
+- Eliminated code duplication across multiple directories
+- Created generic fact table creator
+- Updated pyproject.toml for camelCase preservation
+- Fixed import paths and dependencies
+- Comprehensive documentation and README
 
-**Goal:** Separate ETL stages into modular, testable units.
+### 🔄 Current Phase: Model Regeneration & Layer Refinement
+1. **Regenerate Models**: Use updated datamodel-codegen configuration
+2. **Layer Specification**: Implement clear medallion architecture boundaries
+3. **Field Selection**: Dynamic API field selection from Pydantic models
 
-**Tasks:**
-1. Standardize extract functions to return raw JSON data
-2. Create consistent validation layer using Pydantic models
-3. Isolate Delta loading logic
-4. Build clear orchestration structure
-
-**Files to focus on:**
-- `fabric_api/bronze_loader.py`
-- `fabric_api/pipeline.py`
-- Possibly extraction functions in `fabric_api/extract/*.py`
-
-### Phase 4: OneLake-Focused Data Structure
-
-**Goal:** Align output with Microsoft Fabric OneLake conventions.
-
-**Tasks:**
-1. Configure direct Delta writes to OneLake paths
-2. Implement consistent table naming and partitioning
-3. Ensure Fabric Spark compatibility
-4. Remove any unnecessary data movement steps
-
-**Files to focus on:**
-- `fabric_api/bronze_loader.py`
-- `fabric_api/pipeline.py`
+### 📋 Next Phase: Advanced Features
+- Schema evolution handling
+- Multi-source integration (Jira, ServiceNow, etc.)
+- Performance optimization for large datasets
 
 ## Development Setup
 
@@ -101,6 +101,28 @@ uv pip install -e ".[azure]"
 - Python ≥3.11
 - Key dependencies: requests, pandas, pyarrow, pydantic ≥2.11.4, pyspark, sparkdantic
 
+## Model Generation
+
+### Current Configuration (pyproject.toml)
+```toml
+[tool.datamodel-codegen]
+input-file-type = "openapi"
+output-file-type = "pydantic_v2"
+base-class = "sparkdantic.SparkModel"
+snake-case-field = false  # Preserve camelCase
+aliased-fields = true
+field-constraints = true
+```
+
+### Regenerating Models
+```bash
+# For ConnectWise PSA models
+datamodel-codegen --input PSA_OpenAPI_schema.json --output unified_etl/models/models.py
+
+# For Business Central models (when available)
+datamodel-codegen --input BC_OpenAPI_schema.json --output unified_etl/models/bc_models.py
+```
+
 ## Testing
 
 Run tests with pytest:
@@ -109,137 +131,116 @@ Run tests with pytest:
 # Run all tests
 pytest
 
-# Run a specific test file
-pytest test_api.py
+# Run specific test categories
+pytest tests/unit/         # Unit tests
+pytest tests/test_*.py     # Integration tests
 
-# Run a specific test case
-pytest test_api.py::test_client_construction
+# Run with coverage
+pytest --cov=unified_etl
 ```
 
 ## Code Quality Tools
 
 ### Type Checking
-
-The project uses pyright for type checking:
-
 ```bash
-# Run type checker
 pyright
 ```
 
 ### Linting
-
-The project uses ruff for linting:
-
 ```bash
-# Run linter
-ruff .
+ruff check .
+ruff format .
 ```
 
 ## Build and Deployment
 
 ### Building the Package
-
-Build a wheel distribution for deployment to Fabric:
-
 ```bash
 # Using pip build
 python -m pip install build
 python -m build --wheel
-
-# This will create a .whl file in the dist/ directory
 ```
 
 ### Deploying to Microsoft Fabric
 
 1. Create a Lakehouse in your workspace
 2. Add secrets to your workspace Key Vault:
-   - `CW_COMPANY`
-   - `CW_PUBLIC_KEY`
-   - `CW_PRIVATE_KEY`
-   - `CW_CLIENTID`
+   - `CW_COMPANY`, `CW_PUBLIC_KEY`, `CW_PRIVATE_KEY`, `CW_CLIENTID`
+   - `BC_TENANT_ID`, `BC_CLIENT_ID`, `BC_CLIENT_SECRET`
 3. Upload the wheel file to your lakehouse
 4. Create a Notebook and attach your Lakehouse
-5. Install the wheel in the first cell:
+5. Install the wheel:
    ```python
-   %pip install /lakehouse/Files/dist/fabric_api-0.1.0-py3-none-any.whl
+   %pip install /lakehouse/Files/dist/unified_etl-0.1.0-py3-none-any.whl
    ```
-6. Run the ETL code in the next cell
+6. Run the ETL pipeline
 
-## Architecture
+## Core Components
 
-### Core Components
+### Extract Layer
+- **Generic Extractor** (`unified_etl/extract/generic.py`): Unified API client with retry logic
+- **Field Selection** (`unified_etl/utils/api_utils.py`): Dynamic field selection from Pydantic models
+- **Source Adapters**: ConnectWise PSA, Business Central, extensible for new sources
 
-- **Client Module** (`client.py`): Provides a resilient ConnectWise API client with retry logic
-- **Extract Modules** (`extract/*.py`):
-  - Fetch different entity types (invoices, agreements, time, expenses, products)
-  - Handle relationships between entities
-- **Transform Module** (`transform.py`): Processes data and writes to OneLake
-- **Pipeline Module** (`pipeline.py`): Orchestrates the extraction and loading process
-- **Bronze Loader** (`bronze_loader.py`): Loads data into Delta tables
+### Transform Layer
+- **Bronze→Silver** (`unified_etl/pipeline/bronze_silver.py`): Validation and standardization
+- **Silver→Gold** (`unified_etl/pipeline/silver_gold.py`): Business enhancement
+- **Generic Processing** (`unified_etl/gold/generic_fact.py`): Configuration-driven fact creation
 
-### Data Flow
+### Storage Layer
+- **Delta Tables** (`unified_etl/storage/fabric_delta.py`): OneLake integration
+- **Schema Management** (`unified_etl/utils/schema_utils.py`): Evolution and compatibility
+- **Partitioning Strategy**: Optimized for query performance
 
-1. **Extract**: Pull company data from ConnectWise PSA API
-2. **Transform**: Convert to DataFrame and add extraction timestamp
-3. **Load**: Write directly to OneLake via abfss:// URLs
+## Data Flow
 
-### Key Features
+```
+Source APIs → Bronze (Raw) → Silver (Validated) → Gold (Enhanced)
+     ↓              ↓              ↓               ↓
+  Raw JSON    Pydantic Valid   Flattened      Dimensional
+              + Type Cast      + Cleaned      + Surrogate Keys
+              + Structure      + Standards    + Business Logic
+```
 
-- Secure credential handling via Fabric Key Vault
-- Direct writing to OneLake
-- Delta loading optimizations
-- Resilient API client with retry logic
-- Configurable date filters for data extraction
+## Key Features
+
+- **Medallion Architecture**: Proper separation of concerns across Bronze→Silver→Gold
+- **Generic Processing**: Configuration-driven, not entity-specific
+- **CamelCase Preservation**: Maintains source system naming conventions
+- **SparkDantic Integration**: Automatic Spark schema generation from Pydantic models
+- **Schema Evolution**: Graceful handling of API changes
+- **Fabric Optimization**: Native OneLake integration with Delta tables
+- **Resilient Processing**: Retry logic, error handling, and recovery strategies
 
 ## Running the Pipeline
 
-The pipeline can be run using the `run_daily` function in `pipeline.py`:
-
 ```python
-from fabric_api.pipeline import run_daily
+from unified_etl.main import run_etl_pipeline
 
-# Run with default parameters (last 30 days)
-run_daily()
+# Run complete pipeline
+run_etl_pipeline(
+    sources=["connectwise", "business_central"],
+    layers=["bronze", "silver", "gold"],
+    lakehouse_root="/lakehouse/default/Tables/"
+)
 
-# Run with custom parameters
-run_daily(
-    start_date="2025-04-01",
-    end_date="2025-04-30",
-    max_pages=100,
-    lakehouse_root="/lakehouse/default/Tables/connectwise",
-    mode="append"
+# Run specific layer
+from unified_etl.pipeline.silver_gold import run_silver_to_gold_pipeline
+run_silver_to_gold_pipeline(
+    entity_configs=["agreement", "invoice", "time_entry"],
+    lakehouse_root="/lakehouse/default/Tables/"
 )
 ```
 
 ## Optimization Guidelines
 
-1. **Environment Variables**: Lakehouse paths and other environmental variables should be set in the notebook that installs and runs the package, not hardcoded in the library.
-
-2. **PySpark Context**: The package should assume it's running in Microsoft Fabric schema-enabled lakehouses where PySpark is always available. The Spark session should be created in the notebook, not in the library.
-
-3. **Use Existing Methods**: Don't reinvent methods already accessible through the PySpark runtime context; use them directly.
-
-4. **Model Generation**: Use the `regenerate_models.py` script with subsetting approach for ConnectWise models.
-
-5. **Field Optionality**: Make all fields optional by default in generated models to handle API inconsistencies.
-
-6. **Pydantic V2**: Use Pydantic v2 for all models for better performance and compatibility.
-
-7. **Spark Schema Handling**: Use SparkModel interfaces consistently for schema conversion.
-
-8. **Minimize Redundancy**: Consolidate duplicate utilities and path handling logic.
-
-9. **Consistent Delta Writing**: Standardize Delta table operations with uniform conventions.
-
-10. **Centralized Configuration**: Use a central configuration approach for entity definitions.
-
-11. **Performance Optimization**: Apply Fabric-specific optimizations for Spark configuration and Delta operations.
-
-12. **Modular Architecture**: Maintain clear separation between extract, transform, and load stages.
-
-13. **Error Tracking**: Implement consistent error handling with proper logging and recovery strategies.
-
-14. **Schema Evolution**: Handle schema changes gracefully with appropriate validation and transformation.
-
-15. **Partitioning Strategy**: Implement proper partitioning for query optimization while ensuring schema compatibility.
+1. **CamelCase Fields**: Preserve source system naming with `snake-case-field = false`
+2. **SparkModel Inheritance**: All Pydantic models inherit from `sparkdantic.SparkModel`
+3. **Generic Processing**: Use configuration-driven approach, avoid entity-specific code
+4. **Layer Boundaries**: Strict separation - Bronze (raw), Silver (validated), Gold (enhanced)
+5. **Schema Evolution**: Handle API changes gracefully with Pydantic validation
+6. **Performance**: Leverage Spark SQL and Delta optimizations for large datasets
+7. **Error Handling**: Comprehensive logging and recovery strategies
+8. **Field Selection**: Dynamic API calls based on Pydantic model introspection
+9. **Partitioning**: Optimize for common query patterns while maintaining schema compatibility
+10. **Testing**: Unit tests for transformations, integration tests for full pipeline flows
