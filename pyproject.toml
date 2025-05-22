@@ -1,28 +1,42 @@
 [project]
-name = "fabric-api"
-version = "0.4.0"
-description = "ConnectWise PSA to Microsoft Fabric OneLake integration."
+name = "unified-etl"
+version = "0.1.0"
+description = "Unified ETL framework for JSON-based sources to Microsoft Fabric OneLake"
 authors = [
     {name = "Hákon Freyr Gunnarsson", email = "hakonf@wise.is"}
 ]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "requests",
+    "pydantic>=2.11.4",
+    "sparkdantic",
+    "requests>=2.28.0",
     "pandas>=1.5.0",
     "pyarrow>=10.0.0",
-    "python-dotenv",
-    "pydantic>=2.11.4",
-    "pyspark",
-    "sparkdantic",
-    "ruff>=0.11.9",
+    "pyyaml>=6.0.0",
     "datamodel-code-generator>=0.30.1",
+    "python-dotenv>=1.0.0",
     "basedpyright>=1.29.1",
+    "ruff>=0.11.9",
 ]
 
 [project.optional-dependencies]
-fabric = ["pyspark"]
+spark = ["pyspark>=3.3.0", "delta-spark>=2.2.0"]
+observability = ["logfire>=0.6.0"]
 azure = ["azure-identity", "azure-keyvault-secrets"]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.11.9",
+    "basedpyright>=1.29.1",
+    "types-pyyaml",
+    "types-requests",
+]
+local = [
+    "pyspark>=3.3.0",
+ "delta-spark>=2.2.0",
+ "logfire>=0.6.0",
+]
+minimal = []
 
 [build-system]
 requires = ["hatchling"]
@@ -40,6 +54,7 @@ exclude = [
     "build",
     "dist",
     "__pycache__",
+    "unified_etl/models/",  # Exclude generated models
 ]
 
 [tool.ruff.lint]
@@ -53,21 +68,18 @@ select = [
     "UP",   # pyupgrade
     "N",    # naming conventions
     "RUF",  # ruff-specific rules
+    "PT",   # pytest
+    "SIM",  # flake8-simplify
 ]
 ignore = [
     "E501",  # line too long, handled by formatter
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["E402", "I001", "F821", "W293", "B018", "W291", "W292"]  # Ignore issues in test files
-"fabric_api/connectwise_models/**/*.py" = ["N815"]  # Ignore variable naming in auto-generated models
-"backup/connectwise_models/**/*.py" = ["N815"]  # Ignore variable naming in backup models
-"fabric_api/client.py" = ["E402", "RUF001", "W293"]  # Imports after docstring, special characters, blank lines
-"fabric_api/**/__init__.py" = ["RUF022", "E402"]  # Allow non-sorted __all__ for more logical grouping
-"fabric_api/core/spark_utils.py" = ["W293", "F841"]  # Blank lines in docstrings, unused variable
-"fabric_api/extract/_common.py" = ["E402"]  # Imports after docstring
-"notebook-test.py" = ["E402", "F821", "W291", "B018"]  # Notebook format issues
-"bronze_silver_example.py" = ["E402", "F821", "W291", "W292"]  # Example notebook issues
+"tests/**/*.py" = ["E402", "I001", "F821", "W293", "B018", "W291", "W292"]
+"unified_etl/models/**/*.py" = ["N815", "N802", "N806", "N813"]  # Generated models may have naming issues
+"unified_etl/generators/**/*.py" = ["E402"]
+"unified_etl/**/*.py" = ["N802", "N806", "N813"]  # Allow camelCase function and variable names
 
 [tool.ruff.lint.isort]
 case-sensitive = true
@@ -84,7 +96,7 @@ pythonPlatform = "Linux"
 typeCheckingMode = "basic"
 venvPath = "."
 venv = ".venv"
-include = ["fabric_api"]
+include = ["unified_etl"]
 exclude = [
     "**/.venv/**",
     "**/__pycache__/**",
@@ -92,10 +104,25 @@ exclude = [
     "**/.git/**",
     "**/dist/**",
     "**/build/**",
+    "unified_etl/models/**",  # Exclude generated models from type checking
 ]
 enableTypeIgnoreComments = true
 useLibraryCodeForTypes = true
 reportMissingTypeStubs = "none"
+reportUnusedImport = "warning"
+reportPrivateUsage = false
+reportOptionalMemberAccess = false
+reportPrivateImportUsage = false
+reportUnsupportedDunderAll = false
+reportConstantRedefinition = false
+reportUnknownLambdaType = false
+reportPossiblyUnboundVariable = false
+reportCallIssue = false
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownVariableType = "none"
+reportAttributeAccessIssue = "none"
+reportOptionalCall = "warning"
 
 [tool.datamodel-codegen]
 target-python-version = "3.11"
@@ -114,9 +141,9 @@ use-model-config = true
 capitalize-enum-members = true
 use-union-operator = true
 
-# Field handling settings
-snake-case-field = false
-aliased-fields = false
+# Field handling settings - preserve camelCase
+snake-case-field = false  # Preserve camelCase field names
+aliased-fields = true
 use-annotated = false
 strip-default-none = false
 
@@ -132,3 +159,8 @@ use-subclass-enum = true
 
 # Regular class generation settings
 class-name = "JsonSchema"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]

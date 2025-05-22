@@ -14,9 +14,9 @@ from logging import Logger
 from typing import Any
 
 # Import the necessary modules
-from fabric_api.client import ConnectWiseClient
-from fabric_api.extract._common import paginate
-from fabric_api.extract.invoices import get_unposted_invoices_with_details
+from unified_etl.client import ConnectWiseClient
+from unified_etl.extract._common import paginate
+from unified_etl.extract.invoices import get_unposted_invoices_with_details
 
 # Configure logging
 logging.basicConfig(
@@ -248,7 +248,7 @@ def test_batch_invoice_extraction(max_pages: int = 5) -> None:
     client = setup_client()
 
     try:
-        from fabric_api.extract.invoices import get_invoices_with_details
+        from unified_etl.extract.invoices import get_invoices_with_details
 
         # Run the batch extraction
         print(f"Fetching invoices with max_pages={max_pages}...")
@@ -365,7 +365,7 @@ def test_all_extraction_methods(max_pages: int = 50) -> None:
     client: ConnectWiseClient = setup_client()
 
     # Test invoice extraction (both posted and unposted)
-    from fabric_api.extract.invoices import get_invoices_with_details
+    from unified_etl.extract.invoices import get_invoices_with_details
 
     logger.info("Running invoice extraction (both posted and unposted)...")
     invoice_headers, invoice_lines, time_entries, expenses, products, errors = (
@@ -403,7 +403,7 @@ def test_all_extraction_methods(max_pages: int = 50) -> None:
     logger.info(f"Found {len(agreement_ids)} unique agreement IDs")
 
     if agreement_ids:
-        from fabric_api.extract.agreements import get_agreement_with_relations
+        from unified_etl.extract.agreements import get_agreement_with_relations
 
         logger.info("Testing agreement extraction...")
         agreements = []

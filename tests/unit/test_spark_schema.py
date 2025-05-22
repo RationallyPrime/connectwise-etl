@@ -7,7 +7,7 @@ import logging
 
 from pyspark.sql import SparkSession
 
-from fabric_api.connectwise_models import (
+from unified_etl.connectwise_models import (
     Agreement,
     ExpenseEntry,
     PostedInvoice,

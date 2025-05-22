@@ -16,9 +16,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Import our modules
-from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import Agreement
-from fabric_api.extract.generic import extract_entity
+from unified_etl.client import ConnectWiseClient
+from unified_etl.connectwise_models import Agreement
+from unified_etl.extract.generic import extract_entity
 
 # Mock API response data
 MOCK_AGREEMENT_RESPONSE = [

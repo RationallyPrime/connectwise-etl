@@ -9,7 +9,7 @@ import os
 
 from pyspark.sql import SparkSession
 
-from fabric_api.bronze_loader import process_entities
+from unified_etl.bronze_loader import process_entities
 
 # Configure logging
 logging.basicConfig(

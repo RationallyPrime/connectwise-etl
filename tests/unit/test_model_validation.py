@@ -7,7 +7,7 @@ import traceback
 from pathlib import Path
 from typing import Any
 
-from fabric_api.connectwise_models import Agreement, PostedInvoice
+from unified_etl.connectwise_models import Agreement, PostedInvoice
 
 
 def load_sample(entity_name: str) -> dict[str, Any]:

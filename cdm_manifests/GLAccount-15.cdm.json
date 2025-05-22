@@ -1,0 +1,361 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "GLAccount-15",
+            "exhibitsTraits": [],
+            "displayName": "G/L Account",
+            "description": "Represents the table G/L Account",
+            "hasAttributes": [
+                {
+                    "name": "No-1",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Name-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "SearchName-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Search Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "AccountType-4",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Account Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GlobalDimension1Code-6",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "AccountCategory-8",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Account Category",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "IncomeBalance-9",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Income/Balance",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DebitCredit-10",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Debit/Credit",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "No2-11",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No. 2",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Blocked-13",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DirectPosting-14",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Direct Posting",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ReconciliationAccount-16",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Reconciliation Account",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "NewPage-17",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "New Page",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "NoofBlankLines-18",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "No. of Blank Lines",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Indentation-19",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Indentation",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "LastModifiedDateTime-25",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "Last Modified Date Time",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "LastDateModified-26",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Last Date Modified",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Totaling-34",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Totaling",
+                    "maximumLength": 250
+                },
+                {
+                    "name": "ConsolTranslationMethod-39",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Consol. Translation Method",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ConsolDebitAcc-40",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Consol. Debit Acc.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ConsolCreditAcc-41",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Consol. Credit Acc.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GenPostingType-43",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Posting Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GenBusPostingGroup-44",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GenProdPostingGroup-45",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Prod. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "AutomaticExtTexts-49",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Automatic Ext. Texts",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "TaxAreaCode-54",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Tax Area Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TaxLiable-55",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Tax Liable",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "TaxGroupCode-56",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Tax Group Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "VATBusPostingGroup-57",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "VAT Bus. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "VATProdPostingGroup-58",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "VAT Prod. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ExchangeRateAdjustment-63",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Exchange Rate Adjustment",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DefaultICPartnerGLAccNo-66",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Default IC Partner G/L Acc. No",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "OmitDefaultDescrinJnl-70",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Omit Default Descr. in Jnl.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "AccountSubcategoryEntryNo-80",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Account Subcategory Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CostTypeNo-1100",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Cost Type No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "DefaultDeferralTemplateCode-1700",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Default Deferral Template Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "APIAccountType-9000",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "API Account Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "IRSNumber-10900",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "IRS Number",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "IRSNo-14602",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "IRS No.",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ReviewPolicy-22200",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Review Policy",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PTENewNo-65000",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "PTE New No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

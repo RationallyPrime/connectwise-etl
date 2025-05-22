@@ -197,7 +197,7 @@ class TestMockAPI:
         ]
         
         # Test extraction
-        from fabric_api.extract.generic import extract_entity
+        from unified_etl.extract.generic import extract_entity
         
         # This would normally call the API
         # Here we're testing the mock works

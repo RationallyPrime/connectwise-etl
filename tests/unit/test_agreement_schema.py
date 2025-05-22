@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-from fabric_api.client import ConnectWiseClient
+from unified_etl.client import ConnectWiseClient
 
 
 def get_agreement_schema():

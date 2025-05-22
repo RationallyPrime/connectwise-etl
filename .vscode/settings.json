@@ -1,0 +1,10 @@
+{
+    "windsurfPyright.analysis.diagnosticMode": "workspace",
+    "windsurfPyright.analysis.inlayHints.callArgumentNames": true,
+    "windsurfPyright.analysis.inlayHints.functionReturnTypes": true,
+    "windsurfPyright.analysis.inlayHints.genericTypes": true,
+    "windsurfPyright.analysis.inlayHints.variableTypes": true,
+    "windsurfPyright.analysis.typeCheckingMode": "strict",
+    "ruff.configuration": "pyproject.toml",
+    "ruff.nativeServer": "on"
+}

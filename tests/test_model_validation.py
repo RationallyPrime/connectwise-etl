@@ -8,8 +8,8 @@ from typing import Optional
 
 # Mock the models for testing (in real scenario, import from generated models)
 try:
-    from fabric_api.connectwise_models import TimeEntry, Agreement, PostedInvoice
-    from fabric_api.bc_models import Customer, GLEntry, Job
+    from unified_etl.connectwise_models import TimeEntry, Agreement, PostedInvoice
+    from unified_etl.bc_models import Customer, GLEntry, Job
 except ImportError:
     # Create mock models for testing
     from sparkdantic import SparkModel

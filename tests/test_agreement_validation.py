@@ -20,10 +20,10 @@ load_dotenv()
 # Import from parent directory
 sys.path.append("..")
 
-from fabric_api.client import ConnectWiseClient
-from fabric_api.extract.agreements import fetch_agreements_raw
-from fabric_api.validation import logger as validation_logger
-from fabric_api.validation import validate_agreements
+from unified_etl.client import ConnectWiseClient
+from unified_etl.extract.agreements import fetch_agreements_raw
+from unified_etl.validation import logger as validation_logger
+from unified_etl.validation import validate_agreements
 
 # Set up logging - more concise for testing
 logging.basicConfig(

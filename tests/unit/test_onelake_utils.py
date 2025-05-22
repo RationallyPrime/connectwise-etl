@@ -7,7 +7,7 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 
-from fabric_api.onelake_utils import (
+from unified_etl.onelake_utils import (
     build_abfss_path,
     create_database_if_not_exists,
     direct_etl_to_onelake,

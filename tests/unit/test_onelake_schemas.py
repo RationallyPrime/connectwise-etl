@@ -7,7 +7,7 @@ This test ensures that our schemas are correctly structured without needing Fabr
 import unittest
 from unittest.mock import MagicMock
 
-from fabric_api.connectwise_models import (
+from unified_etl.connectwise_models import (
     Agreement,
     ExpenseEntry,
     PostedInvoice,
@@ -15,7 +15,7 @@ from fabric_api.connectwise_models import (
     TimeEntry,
     UnpostedInvoice,
 )
-from fabric_api.onelake_utils import get_partition_columns
+from unified_etl.onelake_utils import get_partition_columns
 
 
 class TestOneLakeSchemas(unittest.TestCase):

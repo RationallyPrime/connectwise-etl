@@ -5,8 +5,8 @@ Test script for the enhanced field selection utility.
 
 import logging
 
-from fabric_api.api_utils import get_fields_for_api_call
-from fabric_api.connectwise_models import (
+from unified_etl.api_utils import get_fields_for_api_call
+from unified_etl.connectwise_models import (
     Agreement,
     ExpenseEntry,
     PostedInvoice,

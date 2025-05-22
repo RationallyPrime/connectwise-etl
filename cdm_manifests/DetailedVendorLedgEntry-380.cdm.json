@@ -1,0 +1,260 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "DetailedVendorLedgEntry-380",
+            "exhibitsTraits": [],
+            "displayName": "Detailed Vendor Ledg. Entry",
+            "description": "Represents the table Detailed Vendor Ledg. Entry",
+            "hasAttributes": [
+                {
+                    "name": "EntryNo-1",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "VendorLedgerEntryNo-2",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Vendor Ledger Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "EntryType-3",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Entry Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PostingDate-4",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Posting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentType-5",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Document Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentNo-6",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Document No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Amount-7",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AmountLCY-8",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Amount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "VendorNo-9",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Vendor No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CurrencyCode-10",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "SourceCode-12",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Source Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "TransactionNo-13",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Transaction No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "JournalBatchName-14",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Journal Batch Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ReasonCode-15",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Reason Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "DebitAmount-16",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Debit Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CreditAmount-17",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Credit Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "DebitAmountLCY-18",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Debit Amount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "CreditAmountLCY-19",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Credit Amount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "InitialEntryDueDate-20",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Initial Entry Due Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

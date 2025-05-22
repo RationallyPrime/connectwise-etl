@@ -1,0 +1,102 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "AccountingPeriod-50",
+            "exhibitsTraits": [],
+            "displayName": "Accounting Period",
+            "description": "Represents the table Accounting Period",
+            "hasAttributes": [
+                {
+                    "name": "StartingDate-1",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Starting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Name-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "NewFiscalYear-3",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "New Fiscal Year",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Closed-4",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Closed",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DateLocked-5",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Date Locked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

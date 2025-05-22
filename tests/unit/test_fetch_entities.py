@@ -14,8 +14,8 @@ os.environ["CW_AUTH_USERNAME"] = "thekking+yemGyHDPdJ1hpuqx"
 os.environ["CW_AUTH_PASSWORD"] = "yMqpe26Jcu55FbQk"
 os.environ["CW_CLIENTID"] = "c7ea92d2-eaf5-4bfb-a09c-58d7f9dd7b81"
 
-from fabric_api.bronze_loader import ENTITY_CONFIG
-from fabric_api.client import ConnectWiseClient
+from unified_etl.bronze_loader import ENTITY_CONFIG
+from unified_etl.client import ConnectWiseClient
 
 # Configure logging
 logging.basicConfig(

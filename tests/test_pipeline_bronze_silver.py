@@ -26,8 +26,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Import our modules
-from fabric_api.client import ConnectWiseClient
-from fabric_api.pipeline import (
+from unified_etl.client import ConnectWiseClient
+from unified_etl.pipeline import (
     process_entity_to_bronze,
     process_bronze_to_silver,
     run_full_pipeline,

@@ -5,8 +5,8 @@ Test script to verify field selection in extract modules.
 
 import logging
 
-from fabric_api.client import ConnectWiseClient
-from fabric_api.extract import agreements, expenses, invoices, products, time
+from unified_etl.client import ConnectWiseClient
+from unified_etl.extract import agreements, expenses, invoices, products, time
 
 # Configure logging
 logging.basicConfig(

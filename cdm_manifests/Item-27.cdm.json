@@ -1,0 +1,257 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Item-27",
+            "exhibitsTraits": [],
+            "displayName": "Item",
+            "description": "Represents the table Item",
+            "hasAttributes": [
+                {
+                    "name": "No-1",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Description-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "Description2-5",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description 2",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "BaseUnitofMeasure-8",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Base Unit of Measure",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "Type-10",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "InventoryPostingGroup-11",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Inventory Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ItemDiscGroup-14",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Item Disc. Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "UnitPrice-18",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Price",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "UnitCost-22",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Cost",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "VendorNo-31",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Vendor No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "VendorItemNo-32",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Vendor Item No.",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "GrossWeight-41",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Gross Weight",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "NetWeight-42",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Net Weight",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "UnitVolume-44",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Unit Volume",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "Blocked-54",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GenProdPostingGroup-91",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Gen. Prod. Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension1Code-105",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-106",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "AssemblyPolicy-910",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Assembly Policy",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ItemCategoryCode-5702",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Item Category Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

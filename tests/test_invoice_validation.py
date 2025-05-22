@@ -21,9 +21,9 @@ load_dotenv()
 # Import from parent directory
 sys.path.append("..")
 
-from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import PostedInvoice, UnpostedInvoice
-from fabric_api.extract.invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
+from unified_etl.client import ConnectWiseClient
+from unified_etl.connectwise_models import PostedInvoice, UnpostedInvoice
+from unified_etl.extract.invoices import fetch_posted_invoices_raw, fetch_unposted_invoices_raw
 
 # Set up logging
 logging.basicConfig(

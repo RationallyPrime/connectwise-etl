@@ -22,9 +22,9 @@ load_dotenv()
 # Import from parent directory
 sys.path.append("..")
 
-from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import TimeEntry
-from fabric_api.extract.time import fetch_time_entries_raw
+from unified_etl.client import ConnectWiseClient
+from unified_etl.connectwise_models import TimeEntry
+from unified_etl.extract.time import fetch_time_entries_raw
 
 # Set up logging
 logging.basicConfig(

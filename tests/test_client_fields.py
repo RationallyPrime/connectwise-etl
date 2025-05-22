@@ -28,9 +28,9 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("requests").setLevel(logging.WARNING)
 
 # Import our modules
-from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import ExpenseEntry, Invoice, ProductItem, TimeEntry
-from fabric_api.extract.generic import extract_entity
+from unified_etl.client import ConnectWiseClient
+from unified_etl.connectwise_models import ExpenseEntry, Invoice, ProductItem, TimeEntry
+from unified_etl.extract.generic import extract_entity
 
 
 @pytest.fixture

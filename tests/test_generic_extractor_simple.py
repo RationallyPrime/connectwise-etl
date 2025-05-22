@@ -22,8 +22,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Import our modules
-from fabric_api.client import ConnectWiseClient
-from fabric_api.extract import extract_entity
+from unified_etl.client import ConnectWiseClient
+from unified_etl.extract import extract_entity
 
 
 @pytest.fixture

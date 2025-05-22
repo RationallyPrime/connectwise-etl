@@ -22,9 +22,9 @@ load_dotenv()
 # Import from parent directory
 sys.path.append("..")
 
-from fabric_api.client import ConnectWiseClient
-from fabric_api.connectwise_models import ProductItem
-from fabric_api.extract.products import fetch_product_items_raw
+from unified_etl.client import ConnectWiseClient
+from unified_etl.connectwise_models import ProductItem
+from unified_etl.extract.products import fetch_product_items_raw
 
 # Set up logging
 logging.basicConfig(

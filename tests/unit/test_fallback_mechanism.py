@@ -8,8 +8,8 @@ import logging
 
 from pyspark.sql import SparkSession
 
-from fabric_api.bronze_loader import _flatten_nested_structures, process_entity
-from fabric_api.client import ConnectWiseClient
+from unified_etl.bronze_loader import _flatten_nested_structures, process_entity
+from unified_etl.client import ConnectWiseClient
 
 # Configure logging
 logging.basicConfig(

@@ -9,7 +9,7 @@ import tempfile
 
 from pyspark.sql import SparkSession
 
-from fabric_api.orchestration import ETLOrchestrator, run_full_etl, run_incremental_etl
+from unified_etl.orchestration import ETLOrchestrator, run_full_etl, run_incremental_etl
 
 # Configure logging
 logging.basicConfig(

@@ -1,0 +1,158 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "DimensionValue-349",
+            "exhibitsTraits": [],
+            "displayName": "Dimension Value",
+            "description": "Represents the table Dimension Value",
+            "hasAttributes": [
+                {
+                    "name": "DimensionCode-1",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Code-2",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Name-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Name",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "DimensionValueType-4",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Value Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Totaling-5",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Totaling",
+                    "maximumLength": 250
+                },
+                {
+                    "name": "Blocked-6",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Blocked",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ConsolidationCode-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Consolidation Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Indentation-8",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Indentation",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "GlobalDimensionNo-9",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "MaptoICDimensionCode-10",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Map-to IC Dimension Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "MaptoICDimensionValueCode-11",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Map-to IC Dimension Value Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "DimensionValueID-12",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Value ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DimensionId-8002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Id",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

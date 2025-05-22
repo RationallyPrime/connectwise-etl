@@ -1,0 +1,755 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "CustLedgerEntry-21",
+            "exhibitsTraits": [],
+            "displayName": "Cust. Ledger Entry",
+            "description": "Represents the table Cust. Ledger Entry",
+            "hasAttributes": [
+                {
+                    "name": "EntryNo-1",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "CustomerNo-3",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "PostingDate-4",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Posting Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentType-5",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Document Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DocumentNo-6",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Document No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Description-7",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Description",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "CustomerName-8",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Name",
+                    "maximumLength": 100
+                },
+                {
+                    "name": "YourReference-10",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Your Reference",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "CurrencyCode-11",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "SalesLCY-18",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Sales (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "ProfitLCY-19",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Profit (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "InvDiscountLCY-20",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Inv. Discount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "SelltoCustomerNo-21",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Sell-to Customer No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "CustomerPostingGroup-22",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Customer Posting Group",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension1Code-23",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 1 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "GlobalDimension2Code-24",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Global Dimension 2 Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "SalespersonCode-25",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Salesperson Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "UserID-27",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "User ID",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "SourceCode-28",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Source Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "OnHold-33",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "On Hold",
+                    "maximumLength": 3
+                },
+                {
+                    "name": "AppliestoDocType-34",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Applies-to Doc. Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "AppliestoDocNo-35",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Applies-to Doc. No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "Open-36",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Open",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DueDate-37",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Due Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PmtDiscountDate-38",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Pmt. Discount Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "OriginalPmtDiscPossible-39",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Pmt. Disc. Possible",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PmtDiscGivenLCY-40",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Pmt. Disc. Given (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "OrigPmtDiscPossibleLCY-42",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Orig. Pmt. Disc. Possible(LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "Positive-43",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Positive",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ClosedbyEntryNo-44",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Closed by Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ClosedatDate-45",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Closed at Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ClosedbyAmount-46",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Closed by Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AppliestoID-47",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Applies-to ID",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "JournalTemplName-48",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Journal Templ. Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "JournalBatchName-49",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Journal Batch Name",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ReasonCode-50",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Reason Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "BalAccountType-51",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Bal. Account Type",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "BalAccountNo-52",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Bal. Account No.",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "TransactionNo-53",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Transaction No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ClosedbyAmountLCY-54",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Closed by Amount (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "DocumentDate-62",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Document Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ExternalDocumentNo-63",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "External Document No.",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "CalculateInterest-64",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Calculate Interest",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ClosingInterestCalculated-65",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Closing Interest Calculated",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "NoSeries-66",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "No. Series",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ClosedbyCurrencyCode-67",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Closed by Currency Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "ClosedbyCurrencyAmount-68",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Closed by Currency Amount",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AdjustedCurrencyFactor-73",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Adjusted Currency Factor",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "OriginalCurrencyFactor-74",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Original Currency Factor",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "RemainingPmtDiscPossible-77",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Remaining Pmt. Disc. Possible",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "PmtDiscToleranceDate-78",
+                    "dataFormat": "Date",
+                    "appliedTraits": [],
+                    "displayName": "Pmt. Disc. Tolerance Date",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "MaxPaymentTolerance-79",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Max. Payment Tolerance",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "LastIssuedReminderLevel-80",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Last Issued Reminder Level",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "AcceptedPaymentTolerance-81",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Accepted Payment Tolerance",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AcceptedPmtDiscTolerance-82",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Accepted Pmt. Disc. Tolerance",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PmtToleranceLCY-83",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Pmt. Tolerance (LCY)",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "AmounttoApply-84",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Amount to Apply",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "ICPartnerCode-85",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "IC Partner Code",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "ApplyingEntry-86",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Applying Entry",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Reversed-87",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Reversed",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ReversedbyEntryNo-88",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Reversed by Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "ReversedEntryNo-89",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Reversed Entry No.",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "Prepayment-90",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Prepayment",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PaymentReference-171",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Payment Reference",
+                    "maximumLength": 50
+                },
+                {
+                    "name": "PaymentMethodCode-172",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Payment Method Code",
+                    "maximumLength": 10
+                },
+                {
+                    "name": "AppliestoExtDocNo-173",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Applies-to Ext. Doc. No.",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "RecipientBankAccount-288",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Recipient Bank Account",
+                    "maximumLength": 20
+                },
+                {
+                    "name": "MessagetoRecipient-289",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Message to Recipient",
+                    "maximumLength": 140
+                },
+                {
+                    "name": "ExportedtoPaymentFile-290",
+                    "dataFormat": "Boolean",
+                    "appliedTraits": [],
+                    "displayName": "Exported to Payment File",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DimensionSetID-480",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Dimension Set ID",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "DirectDebitMandateID-1200",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "Direct Debit Mandate ID",
+                    "maximumLength": 35
+                },
+                {
+                    "name": "PaymentPrediction-1300",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Payment Prediction",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PredictionConfidence-1301",
+                    "dataFormat": "Int32",
+                    "appliedTraits": [],
+                    "displayName": "Prediction Confidence",
+                    "maximumLength": 4
+                },
+                {
+                    "name": "PredictionConfidence-1302",
+                    "dataFormat": "Decimal",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.dataFormat.numeric.shaped",
+                            "arguments": [
+                                {
+                                    "name": "scale",
+                                    "value": "5"
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Prediction Confidence %",
+                    "maximumLength": 12
+                },
+                {
+                    "name": "timestamp-0",
+                    "dataFormat": "Int64",
+                    "appliedTraits": [],
+                    "displayName": "timestamp",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "systemId-2000000000",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "$systemId",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemCreatedAt-2000000001",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemCreatedBy-2000000002",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemCreatedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "SystemModifiedAt-2000000003",
+                    "dataFormat": "DateTime",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedAt",
+                    "maximumLength": 8
+                },
+                {
+                    "name": "SystemModifiedBy-2000000004",
+                    "dataFormat": "Guid",
+                    "appliedTraits": [],
+                    "displayName": "SystemModifiedBy",
+                    "maximumLength": 16
+                },
+                {
+                    "name": "$Company",
+                    "dataFormat": "String",
+                    "appliedTraits": [],
+                    "displayName": "$Company",
+                    "maximumLength": 16
+                }
+            ]
+        }
+    ]
+}

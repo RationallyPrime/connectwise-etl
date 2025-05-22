@@ -10,7 +10,7 @@ import os
 import random
 from datetime import datetime, timedelta
 
-# Use the main entity models from fabric_api.connectwise_models
+# Use the main entity models from unified_etl.connectwise_models
 
 # Configure logging
 logging.basicConfig(

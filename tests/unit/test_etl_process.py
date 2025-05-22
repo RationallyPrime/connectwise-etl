@@ -9,7 +9,7 @@ import tempfile
 from pyspark.sql import SparkSession
 
 # Import from our fixed package
-from fabric_api.connectwise_models import Agreement
+from unified_etl.connectwise_models import Agreement
 
 print("=== Testing ETL Process with Fixed Models ===")
 

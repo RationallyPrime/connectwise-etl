@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 from pyspark.sql import SparkSession
 
-from fabric_api.bronze_loader import (
+from unified_etl.bronze_loader import (
     add_fabric_metadata,
     ensure_fabric_path,
     register_table_metadata,
