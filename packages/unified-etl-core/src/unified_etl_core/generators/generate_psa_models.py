@@ -18,7 +18,7 @@ if not logger.handlers:  # Avoid adding multiple handlers if reloaded
 
 # Default paths (relative to project root)
 DEFAULT_PSA_OPENAPI_SCHEMA_PATH = "/home/hakonf/psa-unified-clean/PSA_OpenAPI_schema.json"
-DEFAULT_PSA_OUTPUT_DIR = "packages/unified-etl-connectwise/src/unified_etl_connectwise/models/"
+DEFAULT_PSA_OUTPUT_DIR = "/home/hakonf/psa-unified-clean/packages/unified-etl-connectwise/src/unified_etl_connectwise/models/"
 
 
 def _load_openapi_schema(schema_path: pathlib.Path) -> dict[str, Any]:
@@ -152,39 +152,32 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
     lines = content.split("\n")
     processed_lines = []
 
-    # Remove existing imports and __future__
-    in_imports_section = True
+    # Remove existing imports, headers, and __future__
+    # Skip everything until we find the first class definition
+    found_first_class = False
     for line in lines:
-        if in_imports_section and (
-            line.startswith("from ") or line.startswith("import ") or line.strip() == ""
-        ):
-            continue
-        in_imports_section = False
-        processed_lines.append(line)
+        if line.strip().startswith("class "):
+            found_first_class = True
+        if found_first_class:
+            processed_lines.append(line)
 
     content = "\n".join(processed_lines)
 
     # Fix CustomFieldValue.value type hint (if class exists)
-    # value: Optional[Dict[str, Any]] = Field(default=None, alias="value") -> value: Optional[Any] ...
-    custom_field_value_pattern = r"(class CustomFieldValue\(.+?\):.*?value:\s*Optional\[)Dict\[str, Any\](\].*?# API inconsistency)?"
-    replace_with = r"\1Any\2"  # Keep the comment if it was there
-
+    # The value field in CustomFieldValue is polymorphic based on the 'type' field
+    # We use a union type to properly represent the possible value types
     if "class CustomFieldValue(" in content:  # Check if class exists
-        modified_content, num_subs = re.subn(
-            custom_field_value_pattern, replace_with, content, flags=re.DOTALL
-        )
+        # Handle modern Python union syntax: dict[str, Any] | None
+        pattern = r"(value:\s*)dict\[str,\s*Any\](\s*\|\s*None)"
+        # Use union of possible types based on CustomFieldValue.type field
+        replacement = r"\1str | float | bool\2"  # Union of possible value types
+        
+        modified_content, num_subs = re.subn(pattern, replacement, content)
         if num_subs > 0:
             content = modified_content
-            logger.info("Applied fix for CustomFieldValue.value type hint.")
+            logger.info("Applied fix for CustomFieldValue.value type hint (dict[str, Any] → str | float | bool)")
         else:
-            # If the above didn't match, try a simpler pattern for the type hint only
-            simple_pattern = r"(value:\s*Optional\[)Dict\[str, Any\](\])"
-            modified_content_simple, num_subs_simple = re.subn(simple_pattern, r"\1Any\2", content)
-            if num_subs_simple > 0:
-                content = modified_content_simple
-                logger.info("Applied simplified fix for CustomFieldValue.value type hint.")
-            else:
-                logger.warning("Could not apply CustomFieldValue.value fix; pattern not found.")
+            logger.warning("Could not apply CustomFieldValue.value fix; pattern not found.")
 
     # Add PostedInvoice = Invoice alias if Invoice model is present
     if "class Invoice(" in content:

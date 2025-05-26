@@ -51,13 +51,14 @@ class ConnectWiseClient:
     Optimized for Microsoft Fabric environment with simplified authentication.
     """
 
-    BASE_URL: str = os.getenv(
-        "CW_BASE_URL",
-        "https://verk.thekking.is/v4_6_release/apis/3.0",  # sensible default for Wise
-    )
-
     def __init__(self) -> None:
         """Initialize client using environment variables from Fabric."""
+        # Get base URL from environment or use default
+        self.base_url = os.getenv(
+            "CW_BASE_URL",
+            "https://verk.thekking.is/v4_6_release/apis/3.0",
+        )
+        
         # Get credentials from environment variables
         self.basic_username = os.getenv("CW_AUTH_USERNAME")
         self.basic_password = os.getenv("CW_AUTH_PASSWORD")
@@ -137,7 +138,7 @@ class ConnectWiseClient:
             all_params["orderBy"] = order_by
 
         # Build request URL and headers
-        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
         headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
@@ -158,7 +159,7 @@ class ConnectWiseClient:
         params: dict[str, Any] | None = None,
     ) -> Response:
         """Perform a POST request to the ConnectWise API."""
-        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
         headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
@@ -179,7 +180,7 @@ class ConnectWiseClient:
         params: dict[str, Any] | None = None,
     ) -> Response:
         """Perform a PUT request to the ConnectWise API."""
-        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
         headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
@@ -194,7 +195,7 @@ class ConnectWiseClient:
 
     def delete(self, endpoint: str, *, params: dict[str, Any] | None = None) -> Response:
         """Perform a DELETE request to the ConnectWise API."""
-        url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
         headers: dict[str, str] = self._headers()
 
         # These values are validated in __init__, so they're guaranteed to be non-None
@@ -275,7 +276,7 @@ class ConnectWiseClient:
             query = all_params.copy()
             query.update({"page": page, "pageSize": page_size})
 
-            url = f"{self.BASE_URL}/{endpoint.lstrip('/')}"
+            url = f"{self.base_url}/{endpoint.lstrip('/')}"
             logger.debug(f"Requesting {entity_name} page {page}: {url}")
 
             try:

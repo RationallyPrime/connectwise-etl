@@ -4,7 +4,6 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-import pandas as pd
 from pyspark.sql import DataFrame, SparkSession
 from unified_etl_core.extract.base_extractor import BaseExtractor
 
@@ -24,12 +23,8 @@ class ConnectWiseExtractor(BaseExtractor):
             config: Source configuration containing auth credentials
         """
         super().__init__(config)
-        self.client = ConnectWiseClient(
-            base_url=config["base_url"],
-            company=config["auth"]["credentials"]["company"],
-            public_key=config["auth"]["credentials"]["public_key"],
-            private_key=config["auth"]["credentials"]["private_key"],
-        )
+        # ConnectWiseClient reads credentials from environment variables
+        self.client = ConnectWiseClient()
         self._spark = None
         
     @property
@@ -109,45 +104,33 @@ class ConnectWiseExtractor(BaseExtractor):
             
         logger.info(f"Extracting {entity_name} from {endpoint}")
         
-        # Paginate through API results
-        all_data = []
-        page = 1
+        # Use the client's paginate method
+        all_data = self.client.paginate(
+            endpoint=endpoint,
+            entity_name=f"{entity_name}s",  # Pluralize for API logging
+            fields=fields_str,
+            conditions=conditions,
+            page_size=page_size,
+            **kwargs  # Pass through any additional parameters
+        )
         
-        while True:
-            response = self.client.get(
-                endpoint=endpoint,
-                params={
-                    "pageSize": page_size,
-                    "page": page,
-                    "fields": fields_str,
-                    "conditions": conditions,
-                }
-            )
-            
-            if response.status_code != 200:
-                raise Exception(f"API error: {response.status_code} - {response.text}")
-                
-            data = response.json()
-            if not data:
-                break
-                
-            all_data.extend(data)
-            
-            # Check if we got a full page
-            if len(data) < page_size:
-                break
-                
-            page += 1
-            
         logger.info(f"Extracted {len(all_data)} {entity_name} records")
         
-        # Convert to pandas then Spark DataFrame
-        if all_data:
-            df = pd.DataFrame(all_data)
-            return self._pandas_to_spark(df, self.spark)
-        else:
-            # Return empty DataFrame with correct schema
-            return self.spark.createDataFrame([], model_class.spark_schema())
+        # Validate data through Pydantic models
+        validated_data = []
+        for record in all_data:
+            try:
+                # Pydantic handles datetime parsing automatically!
+                model_instance = model_class(**record)
+                validated_data.append(model_instance.model_dump())
+            except Exception as e:
+                logger.warning(f"Validation error for {entity_name} record: {e}")
+                # Optionally skip invalid records or handle differently
+                continue
+        
+        # Create Spark DataFrame using SparkDantic schema
+        spark_schema = model_class.model_spark_schema()
+        return self.spark.createDataFrame(validated_data, schema=spark_schema)
             
     def _get_entity_name(self, endpoint: str) -> str:
         """Derive entity name from endpoint.
