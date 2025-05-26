@@ -1,13 +1,14 @@
 """Configuration loader."""
 import os
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-from .models import PipelineConfig
+from unified_etl_core.config.models import PipelineConfig
 
 
-def expand_env_vars(obj: any) -> any:
+def expand_env_vars(obj: Any) -> Any:
     """Recursively expand environment variables in strings."""
     if isinstance(obj, str):
         return os.path.expandvars(obj)

@@ -17,7 +17,7 @@ if not logger.handlers:  # Avoid adding multiple handlers if reloaded
     logger.setLevel(logging.INFO)
 
 # Default paths (relative to project root)
-DEFAULT_PSA_OPENAPI_SCHEMA_PATH = "PSA_OpenAPI_schema.json"
+DEFAULT_PSA_OPENAPI_SCHEMA_PATH = "/home/hakonf/psa-unified-clean/PSA_OpenAPI_schema.json"
 DEFAULT_PSA_OUTPUT_DIR = "packages/unified-etl-connectwise/src/unified_etl_connectwise/models/"
 
 
@@ -143,8 +143,8 @@ def _post_process_psa_models_file(models_file_path: pathlib.Path, reference_mode
         "# fmt: off\n\n"
         "from __future__ import annotations\n\n"
         "from datetime import datetime\n"
-        "from typing import Any, Dict, List, Optional, Literal\n"  # Ensure Literal is imported
-        "from uuid import UUID\n\n"  # Ensure UUID is imported
+        "from typing import Any, Literal\n"
+        "from uuid import UUID\n\n"
         "from pydantic import Field\n"
         "from sparkdantic import SparkModel\n\n"
     )

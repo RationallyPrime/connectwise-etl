@@ -1,0 +1,61 @@
+# Pipeline configuration
+sources:
+  connectwise:
+    base_url: "${CW_BASE_URL}"
+    auth:
+      type: "api_key"
+      credentials:
+        company: "${CW_COMPANY}"
+        public_key: "${CW_PUBLIC_KEY}"
+        private_key: "${CW_PRIVATE_KEY}"
+        
+  business_central:
+    base_url: "N/A"  # BC data comes from lakehouse
+    auth:
+      type: "oauth2"
+      credentials:
+        tenant_id: "${BC_TENANT_ID}"
+        client_id: "${BC_CLIENT_ID}"
+        client_secret: "${BC_CLIENT_SECRET}"
+
+entities:
+  agreement:
+    source: connectwise
+    endpoint: "/finance/agreements"
+    bronze_table: "bronze_cw_agreements"
+    silver_table: "silver_agreements"
+    gold_tables:
+      - "dim_agreement"
+      - "fact_agreement_revenue"
+    incremental_key: "lastUpdated"
+    
+  invoice:
+    source: connectwise
+    endpoint: "/finance/invoices"
+    bronze_table: "bronze_cw_invoices"
+    silver_table: "silver_invoices"
+    gold_tables:
+      - "fact_invoice"
+    incremental_key: "lastUpdated"
+    
+  time_entry:
+    source: connectwise
+    endpoint: "/time/entries"
+    bronze_table: "bronze_cw_time_entries"
+    silver_table: "silver_time_entries"
+    gold_tables:
+      - "fact_time_entry"
+    incremental_key: "dateEntered"
+    
+  customer:
+    source: business_central
+    endpoint: "N/A"  # Already in lakehouse
+    bronze_table: "bronze_bc_customer"
+    silver_table: "silver_customer"
+    gold_tables:
+      - "dim_customer"
+      
+# Paths
+bronze_path: "/lakehouse/default/Tables/bronze"
+silver_path: "/lakehouse/default/Tables/silver"
+gold_path: "/lakehouse/default/Tables/gold"
