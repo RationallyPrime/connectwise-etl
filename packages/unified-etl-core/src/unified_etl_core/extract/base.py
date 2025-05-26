@@ -13,7 +13,6 @@ from datetime import date, datetime
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, ValidationError
-from unified_etl.api.connectwise_client import ConnectWiseClient
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +62,7 @@ def validate_batch(
 
 
 def fetch_parallel(
-    client: ConnectWiseClient,
+    client: Any,  # Will be the actual client implementation
     endpoint_formatter: Callable[[Any], str],
     items: list[Any],
     max_workers: int = 5,

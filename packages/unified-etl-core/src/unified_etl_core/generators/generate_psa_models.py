@@ -17,8 +17,8 @@ if not logger.handlers:  # Avoid adding multiple handlers if reloaded
     logger.setLevel(logging.INFO)
 
 # Default paths (relative to project root)
-DEFAULT_PSA_OPENAPI_SCHEMA_PATH = "config/schemas/psa/PSA_OpenAPI_schema.json"
-DEFAULT_PSA_OUTPUT_DIR = "unified_etl/models/psa_models/"
+DEFAULT_PSA_OPENAPI_SCHEMA_PATH = "PSA_OpenAPI_schema.json"
+DEFAULT_PSA_OUTPUT_DIR = "packages/unified-etl-connectwise/src/unified_etl_connectwise/models/"
 
 
 def _load_openapi_schema(schema_path: pathlib.Path) -> dict[str, Any]:
@@ -288,14 +288,13 @@ def generate_psa_models(
         "3.11",
         "--use-standard-collections",
         "--use-schema-description",
-        "--use_field_description",  # Note: original script had this, check CLI option name
+        "--use-field-description",
         "--reuse-model",
         "--field-constraints",
         "--strict-nullable",
         "--use-union-operator",
         "--disable-timestamp",  # Avoid adding generation timestamp in the models file itself
-        "--custom-template-dir",
-        "unified_etl/generators/templates/psa",  # Path to custom templates
+        # Custom template dir removed - not needed
         # "--snake-case-field", # Usually false for PSA to keep original casing
     ]
 
@@ -353,10 +352,7 @@ if __name__ == "__main__":
     logger.info(f"Using schema: {default_schema}")
     logger.info(f"Outputting to: {default_output}")
 
-    # Create dummy template dir if it doesn't exist for direct run
-    # In real scenario, this path should be correct.
-    dummy_template_dir = project_root / "unified_etl/generators/templates/psa"
-    dummy_template_dir.mkdir(parents=True, exist_ok=True)
+    # No template dir needed anymore
 
     success = generate_psa_models(
         openapi_schema_path_str=str(default_schema),

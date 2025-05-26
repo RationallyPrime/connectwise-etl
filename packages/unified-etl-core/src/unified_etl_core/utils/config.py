@@ -71,10 +71,10 @@ def _expand_env_vars(data: Any) -> Any:
 def load_pipeline_config(path: str | None = None) -> PipelineConfig:
     """
     Load pipeline configuration from file or environment.
-    
+
     Args:
         path: Optional path to YAML config file
-        
+
     Returns:
         Loaded configuration
     """
