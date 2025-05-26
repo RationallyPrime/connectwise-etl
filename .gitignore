@@ -117,3 +117,22 @@ compiled/
 
 # Fabric integration test notebooks
 fabric_bc_integration_phase*.py
+
+# MCP configuration with API keys
+.mcp.json
+
+# Workspace-specific markdown files
+PIPELINE_MANIFESTO.md
+PACKAGE_ARCHITECTURE.md
+CLAUDE.md
+
+# Workspace setup scripts
+workspace_setup.sh
+
+# Dummy workspace package
+unified_etl_workspace/
+
+# uv lock files (can be regenerated)
+uv.lock
+.mcp.json
+pyproject.toml.backup

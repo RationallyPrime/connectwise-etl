@@ -1,0 +1,37 @@
+[project]
+name = "unified-etl-connectwise"
+version = "1.0.0"
+description = "ConnectWise PSA adapter for unified ETL framework"
+authors = [{name = "Hákon Freyr Gunnarsson", email = "hakonf@wise.is"}]
+requires-python = ">=3.11"
+dependencies = [
+    "unified-etl-core",
+    "requests>=2.28.0",
+    "tenacity>=8.0.0",
+]
+
+[tool.uv.sources]
+unified-etl-core = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.datamodel-codegen]
+# ConnectWise-specific configuration
+target-python-version = "3.11"
+base-class = "sparkdantic.SparkModel"
+input-file-type = "openapi"
+output-model-type = "pydantic_v2.BaseModel"
+
+# ConnectWise uses camelCase
+snake-case-field = false
+aliased-fields = true
+field-constraints = true
+field-include-all-keys = true
+use-standard-collections = true
+use-union-operator = true
+
+# Generate from OpenAPI
+input = "../../PSA_OpenAPI_schema.json"
+output = "src/unified_etl_connectwise/models/generated.py"
