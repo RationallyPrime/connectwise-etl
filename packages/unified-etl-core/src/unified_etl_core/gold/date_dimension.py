@@ -16,8 +16,8 @@ from pyspark.sql.types import (
     StructField,
     StructType,
 )
-from unified_etl.utils import logging
-from unified_etl.utils.naming import construct_table_path
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.naming import construct_table_path
 
 
 def create_date_dimension(

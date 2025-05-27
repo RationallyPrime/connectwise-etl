@@ -3,8 +3,8 @@
 
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl.utils import config_loader, logging
-from unified_etl.utils.exceptions import DimensionJoinError
+from unified_etl_core.utils import config, logging
+from unified_etl_core.utils.exceptions import DimensionJoinError
 
 
 def join_dimension(

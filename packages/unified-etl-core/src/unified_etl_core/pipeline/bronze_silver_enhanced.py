@@ -14,14 +14,14 @@ from datetime import datetime as dt
 
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl.silver.cleanse import apply_data_types
-from unified_etl.silver.flatten import flatten_nested_columns, strip_column_prefixes_suffixes
-from unified_etl.silver.scd import apply_scd_type_1, apply_scd_type_2
-from unified_etl.silver.standardize import add_standard_audit_columns, get_silver_table_name
-from unified_etl.silver.validate import apply_pydantic_validation
-from unified_etl.utils import logging, watermark_manager
-from unified_etl.utils.exceptions import ColumnStandardizationError
-from unified_etl.utils.naming import construct_table_path
+from unified_etl_core.silver.cleanse import apply_data_types
+from unified_etl_core.silver.flatten import flatten_nested_columns, strip_column_prefixes_suffixes
+from unified_etl_core.silver.scd import apply_scd_type_1, apply_scd_type_2
+from unified_etl_core.silver.standardize import add_standard_audit_columns, get_silver_table_name
+from unified_etl_core.silver.validate import apply_pydantic_validation
+from unified_etl_core.utils import logging, watermark_manager
+from unified_etl_core.utils.exceptions import ColumnStandardizationError
+from unified_etl_core.utils.naming import construct_table_path
 
 
 class SilverTransformation:

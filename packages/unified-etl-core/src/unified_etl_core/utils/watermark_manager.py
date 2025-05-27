@@ -5,7 +5,7 @@ from typing import Any
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, TimestampType
-from unified_etl.utils import logging
+from unified_etl_core.utils import logging
 
 WATERMARK_TABLE_PATH = "LH.metadata.etl_watermarks"  # Adjust schema/table name if needed
 

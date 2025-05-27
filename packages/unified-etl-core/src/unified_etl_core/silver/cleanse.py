@@ -11,8 +11,8 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
 )
-from unified_etl.utils import logging
-from unified_etl.utils.config_loader import get_column_schema
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.config import get_column_schema
 
 # Complete type mapping - no inference needed
 TYPE_MAPPING = {

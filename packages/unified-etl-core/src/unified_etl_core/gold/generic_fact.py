@@ -7,11 +7,11 @@ from typing import Any
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl.gold.keys import generate_surrogate_keys
-from unified_etl.gold.utils import add_audit_columns, join_dimension
-from unified_etl.utils import logging
-from unified_etl.utils.config_loader import get_table_config
-from unified_etl.utils.exceptions import FactTableError
+from unified_etl_core.gold.keys import generate_surrogate_keys
+from unified_etl_core.gold.utils import add_audit_columns, join_dimension
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.config import get_table_config
+from unified_etl_core.utils.exceptions import FactTableError
 
 
 def create_fact_table(

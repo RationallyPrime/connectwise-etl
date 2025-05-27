@@ -8,11 +8,11 @@ using the medallion architecture.
 
 import logging
 
-from unified_etl.pipeline.bronze_silver import BronzeSilverPipeline
-from unified_etl.pipeline.silver_gold import SilverGoldPipeline
-from unified_etl.utils.config_loader import ConfigManager
-from unified_etl.utils.logging import setup_logging
-from unified_etl.utils.spark_utils import get_spark_session
+from unified_etl_core.pipeline.bronze_silver import BronzeSilverPipeline
+from unified_etl_core.pipeline.silver_gold import SilverGoldPipeline
+from unified_etl_core.utils.config import ConfigManager
+from unified_etl_core.utils.logging import setup_logging
+from unified_etl_core.utils.spark import get_spark_session
 
 logger = logging.getLogger(__name__)
 

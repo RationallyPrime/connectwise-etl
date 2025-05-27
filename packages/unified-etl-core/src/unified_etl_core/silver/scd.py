@@ -2,8 +2,8 @@
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
-from unified_etl.utils import logging
-from unified_etl.utils.exceptions import SCDHandlingError
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.exceptions import SCDHandlingError
 
 
 def apply_scd_type_1(

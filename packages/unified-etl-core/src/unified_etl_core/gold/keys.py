@@ -3,9 +3,9 @@
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
-from unified_etl.utils import logging
-from unified_etl.utils.exceptions import SurrogateKeyError
-from unified_etl.utils.naming import standardize_table_reference
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.exceptions import SurrogateKeyError
+from unified_etl_core.utils.naming import standardize_table_reference
 
 
 def generate_surrogate_key(

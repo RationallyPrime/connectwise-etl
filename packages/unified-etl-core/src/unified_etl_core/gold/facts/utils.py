@@ -3,9 +3,9 @@ Utility functions for fact table processing.
 """
 
 from pyspark.sql import SparkSession
-from unified_etl.gold.generic_fact import create_fact_table
-from unified_etl.utils import logging
-from unified_etl.utils.config_utils import extract_table_config
+from unified_etl_core.gold.generic_fact import create_fact_table
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.config_utils import extract_table_config
 
 
 def get_fact_table_name(base_name: str) -> str:

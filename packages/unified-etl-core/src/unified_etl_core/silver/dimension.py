@@ -2,9 +2,9 @@
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl.utils import logging
-from unified_etl.utils.config_loader import get_table_config
-from unified_etl.utils.exceptions import DimensionResolutionError
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.config import get_table_config
+from unified_etl_core.utils.exceptions import DimensionResolutionError
 
 
 def detect_global_dimension_columns(df: DataFrame) -> tuple[str | None, str | None]:

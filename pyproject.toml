@@ -103,7 +103,7 @@ line-ending = "auto"
 pythonVersion = "3.11"
 pythonPlatform = "Linux"
 typeCheckingMode = "standard"
-include = ["packages/*/src"]
+include = ["packages/*/src/**"]
 exclude = [
     "**/.venv/**",
     "**/__pycache__/**",

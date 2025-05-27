@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 from unified_etl_core.extract.base_extractor import BaseExtractor
 
 from unified_etl_connectwise.api.client import ConnectWiseClient
@@ -28,10 +28,12 @@ class ConnectWiseExtractor(BaseExtractor):
         self._spark = None
         
     @property
-    def spark(self) -> SparkSession:
-        """Get or create SparkSession."""
+    def spark(self):
+        """Get SparkSession - assumes running in Fabric with global spark."""
         if self._spark is None:
-            self._spark = SparkSession.builder.appName("ConnectWiseExtractor").getOrCreate()
+            # In Fabric notebooks, spark is available globally
+            import sys
+            self._spark = sys.modules['__main__'].spark
         return self._spark
         
     def get_model_class(self, entity_name: str) -> type:

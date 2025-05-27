@@ -7,8 +7,8 @@ Applies Pydantic models for structure validation and type safety.
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 from sparkdantic import SparkModel
-from unified_etl.utils import logging
-from unified_etl.utils.exceptions import DataTypeConversionError
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.exceptions import DataTypeConversionError
 
 
 def validate_with_pydantic_model(
@@ -77,7 +77,7 @@ def get_pydantic_model_for_entity(entity_name: str) -> type[SparkModel] | None:
     """
     try:
         # Dynamic import based on entity name
-        from unified_etl.models import models
+        from unified_etl_core.models import models
 
         # Try to get the model class by name
         model_class = getattr(models, entity_name, None)

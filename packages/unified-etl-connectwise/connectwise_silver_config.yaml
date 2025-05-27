@@ -1,0 +1,327 @@
+# ConnectWise PSA Silver Layer Configuration
+# Defines standardization, data types, and SCD handling for each entity
+
+entities:
+  # AGREEMENTS
+  Agreement:
+    bronze_table: "bronze_cw_agreement"
+    silver_table: "silver_agreement"
+    scd_type: 2  # Track history of agreement changes
+    incremental_column: "_info.lastUpdated"
+    business_keys: ["id"]
+    
+    # Column standardization mappings
+    column_mappings:
+      # Rename complex nested fields
+      "_info.lastUpdated": "lastUpdated"
+      "_info.updatedBy": "updatedBy"
+      "_info.dateEntered": "dateEntered"
+      "_info.enteredBy": "enteredBy"
+      "company.id": "companyId"
+      "company.identifier": "companyIdentifier"
+      "company.name": "companyName"
+      "contact.id": "contactId"
+      "contact.name": "contactName"
+      "opportunity.id": "opportunityId"
+      "opportunity.name": "opportunityName"
+      "billCycle.id": "billCycleId"
+      "billCycle.identifier": "billCycleIdentifier"
+      
+    # Data type conversions
+    column_types:
+      id: "integer"
+      companyId: "integer"
+      contactId: "integer"
+      opportunityId: "integer"
+      billCycleId: "integer"
+      dateEntered: "timestamp"
+      lastUpdated: "timestamp"
+      startDate: "date"
+      endDate: "date"
+      noEndingDateFlag: "boolean"
+      cancelledFlag: "boolean"
+      billOneTimeFlag: "boolean"
+      restrictDownpaymentFlag: "boolean"
+      invoiceToCompanyFlag: "boolean"
+      applicationUnits: "string"  # Could be decimal, but API returns various formats
+      applicationLimit: "decimal"
+      applicationCycle: "string"
+      periodType: "string"
+      billAmount: "decimal"
+      
+  # TIME ENTRIES
+  TimeEntry:
+    bronze_table: "bronze_cw_timeentry"
+    silver_table: "silver_timeentry"
+    scd_type: 1  # Only keep latest version
+    incremental_column: "_info.lastUpdated"
+    business_keys: ["id"]
+    
+    column_mappings:
+      "_info.lastUpdated": "lastUpdated"
+      "_info.updatedBy": "updatedBy"
+      "_info.dateEntered": "dateEntered"
+      "chargeToId": "chargeToId"
+      "chargeToType": "chargeToType"
+      "company.id": "companyId"
+      "company.identifier": "companyIdentifier"
+      "member.id": "memberId"
+      "member.identifier": "memberIdentifier"
+      "member.name": "memberName"
+      "workRole.id": "workRoleId"
+      "workRole.name": "workRoleName"
+      "workType.id": "workTypeId"
+      "workType.name": "workTypeName"
+      "agreement.id": "agreementId"
+      "ticket.id": "ticketId"
+      "ticket.summary": "ticketSummary"
+      "project.id": "projectId"
+      "project.name": "projectName"
+      "phase.id": "phaseId"
+      "phase.name": "phaseName"
+      
+    column_types:
+      id: "integer"
+      chargeToId: "integer"
+      companyId: "integer" 
+      memberId: "integer"
+      workRoleId: "integer"
+      workTypeId: "integer"
+      agreementId: "integer"
+      ticketId: "integer"
+      projectId: "integer"
+      phaseId: "integer"
+      timeStart: "timestamp"
+      timeEnd: "timestamp"
+      dateEntered: "timestamp"
+      lastUpdated: "timestamp"
+      actualHours: "decimal"
+      billableHours: "decimal"
+      hourlyRate: "decimal"
+      hoursBilled: "decimal"
+      hoursDeduct: "decimal"
+      addToDetailDescriptionFlag: "boolean"
+      addToInternalAnalysisFlag: "boolean"
+      addToResolutionFlag: "boolean"
+      billableOption: "string"
+      
+  # EXPENSE ENTRIES
+  ExpenseEntry:
+    bronze_table: "bronze_cw_expenseentry"
+    silver_table: "silver_expenseentry"
+    scd_type: 1
+    incremental_column: "_info.lastUpdated"
+    business_keys: ["id"]
+    
+    column_mappings:
+      "_info.lastUpdated": "lastUpdated"
+      "_info.dateEntered": "dateEntered"
+      "company.id": "companyId"
+      "company.identifier": "companyIdentifier"
+      "member.id": "memberId"
+      "member.identifier": "memberIdentifier"
+      "member.name": "memberName"
+      "type.id": "typeId"
+      "type.name": "typeName"
+      "agreement.id": "agreementId"
+      "project.id": "projectId"
+      "phase.id": "phaseId"
+      "ticket.id": "ticketId"
+      "invoice.id": "invoiceId"
+      
+    column_types:
+      id: "integer"
+      companyId: "integer"
+      memberId: "integer"
+      typeId: "integer"
+      agreementId: "integer"
+      projectId: "integer"
+      phaseId: "integer"
+      ticketId: "integer"
+      invoiceId: "integer"
+      date: "date"
+      dateEntered: "timestamp"
+      lastUpdated: "timestamp"
+      amount: "decimal"
+      billAmount: "decimal"
+      agreementAmount: "decimal"
+      distance: "decimal"
+      mileageRate: "decimal"
+      unitQuantity: "decimal"
+      unitCost: "decimal"
+      invoicedFlag: "boolean"
+      exportFlag: "boolean"
+      approvedFlag: "boolean"
+      reimbursableFlag: "boolean"
+      
+  # PRODUCTS
+  ProductItem:
+    bronze_table: "bronze_cw_productitem"
+    silver_table: "silver_productitem"
+    scd_type: 2  # Track product changes
+    incremental_column: "_info.lastUpdated"
+    business_keys: ["id"]
+    
+    column_mappings:
+      "_info.lastUpdated": "lastUpdated"
+      "_info.dateEntered": "dateEntered"
+      "catalogItem.id": "catalogItemId"
+      "catalogItem.identifier": "catalogItemIdentifier"
+      "catalogItem.description": "catalogItemDescription"
+      "chargeToId": "chargeToId"
+      "chargeToType": "chargeToType"
+      "company.id": "companyId"
+      "vendor.id": "vendorId"
+      "vendor.identifier": "vendorIdentifier"
+      "vendor.name": "vendorName"
+      "manufacturer.id": "manufacturerId"
+      "manufacturer.identifier": "manufacturerIdentifier"
+      "manufacturer.name": "manufacturerName"
+      "agreement.id": "agreementId"
+      "opportunity.id": "opportunityId"
+      "invoice.id": "invoiceId"
+      
+    column_types:
+      id: "integer"
+      catalogItemId: "integer"
+      chargeToId: "integer"
+      companyId: "integer"
+      vendorId: "integer"
+      manufacturerId: "integer"
+      agreementId: "integer"
+      opportunityId: "integer"
+      invoiceId: "integer"
+      quantity: "decimal"
+      price: "decimal"
+      cost: "decimal"
+      discount: "decimal"
+      agreementAmount: "decimal"
+      billableOption: "string"
+      purchaseDate: "date"
+      dateEntered: "timestamp"
+      lastUpdated: "timestamp"
+      cancelledFlag: "boolean"
+      dropshipFlag: "boolean"
+      specialOrderFlag: "boolean"
+      
+  # INVOICES (Posted)
+  PostedInvoice:
+    bronze_table: "bronze_cw_postedinvoice"
+    silver_table: "silver_postedinvoice" 
+    scd_type: 1  # Invoices don't change after posting
+    incremental_column: "_info.lastUpdated"
+    business_keys: ["id"]
+    
+    column_mappings:
+      "_info.lastUpdated": "lastUpdated"
+      "_info.dateEntered": "dateEntered"
+      "billing.company.id": "billingCompanyId"
+      "billing.company.identifier": "billingCompanyIdentifier"
+      "billing.company.name": "billingCompanyName"
+      "billing.contact.id": "billingContactId"
+      "billing.site.id": "billingSiteId"
+      "billing.terms.id": "billingTermsId"
+      "billing.terms.name": "billingTermsName"
+      "status.id": "statusId"
+      "status.name": "statusName"
+      "agreement.id": "agreementId"
+      "project.id": "projectId"
+      "phase.id": "phaseId"
+      "currency.id": "currencyId"
+      "currency.symbol": "currencySymbol"
+      "currency.isoCode": "currencyIsoCode"
+      
+    column_types:
+      id: "integer"
+      billingCompanyId: "integer"
+      billingContactId: "integer"
+      billingSiteId: "integer"
+      billingTermsId: "integer"
+      statusId: "integer"
+      agreementId: "integer"
+      projectId: "integer"
+      phaseId: "integer"
+      currencyId: "integer"
+      invoiceNumber: "string"
+      invoiceDate: "date"
+      dueDate: "date"
+      dateEntered: "timestamp"
+      lastUpdated: "timestamp"
+      subtotal: "decimal"
+      total: "decimal"
+      taxTotal: "decimal"
+      adjustmentReason: "string"
+      adjustedBy: "integer"
+      purchaseOrderNumber: "string"
+      
+  # INVOICES (Unposted)
+  UnpostedInvoice:
+    bronze_table: "bronze_cw_unpostedinvoice"
+    silver_table: "silver_unpostedinvoice"
+    scd_type: 1
+    incremental_column: "_info.lastUpdated"
+    business_keys: ["id"]
+    
+    # Similar mappings to PostedInvoice
+    column_mappings:
+      "_info.lastUpdated": "lastUpdated"
+      "_info.dateEntered": "dateEntered"
+      "billing.company.id": "billingCompanyId"
+      "billing.company.identifier": "billingCompanyIdentifier"
+      "billing.company.name": "billingCompanyName"
+      "billing.contact.id": "billingContactId"
+      "billing.site.id": "billingSiteId"
+      "billing.terms.id": "billingTermsId"
+      "billing.terms.name": "billingTermsName"
+      "status.id": "statusId"
+      "status.name": "statusName"
+      "agreement.id": "agreementId"
+      "project.id": "projectId"
+      "phase.id": "phaseId"
+      
+    column_types:
+      id: "integer"
+      billingCompanyId: "integer"
+      billingContactId: "integer"
+      billingSiteId: "integer"
+      billingTermsId: "integer"
+      statusId: "integer"
+      agreementId: "integer"
+      projectId: "integer"
+      phaseId: "integer"
+      invoiceDate: "date"
+      dueDate: "date"
+      dateEntered: "timestamp"
+      lastUpdated: "timestamp"
+      subtotal: "decimal"
+      total: "decimal"
+      taxTotal: "decimal"
+
+# Global settings for all ConnectWise entities
+global:
+  # Columns to always preserve as-is
+  preserve_columns:
+    - "id"
+    - "customFields"  # Keep the full custom fields array
+    
+  # Standard prefixes/suffixes to strip
+  strip_prefixes:
+    - "_"
+    - "api_"
+    
+  strip_suffixes:
+    - "_ref"
+    - "_href"
+    
+  # Standard audit columns to add
+  audit_columns:
+    - name: "SilverCreatedAt"
+      type: "timestamp"
+      default: "current_timestamp()"
+    - name: "SilverModifiedAt" 
+      type: "timestamp"
+      default: "current_timestamp()"
+    - name: "etlEntity"
+      type: "string"
+    - name: "etlTimestamp"
+      type: "timestamp"

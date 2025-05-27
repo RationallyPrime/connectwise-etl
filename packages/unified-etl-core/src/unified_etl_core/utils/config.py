@@ -1,90 +1,42 @@
-"""Configuration management for unified ETL framework."""
-
-import os
-from pathlib import Path
-from typing import Any
-
-import yaml
-from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings
+"""Configuration utilities for the unified ETL framework."""
+from typing import Dict, Any, Optional
 
 
-class SourceConfig(BaseModel):
-    """Configuration for a data source."""
-
-    base_url: str
-    auth_type: str = "api_key"
-    credentials: dict[str, str] = Field(default_factory=dict)
-    retry_count: int = 3
-    timeout: int = 30
-
-
-class EntityConfig(BaseModel):
-    """Configuration for an entity/table."""
-
-    source: str
-    endpoint: str
-    bronze_table: str
-    silver_table: str
-    gold_tables: list[str] = Field(default_factory=list)
-    field_selection_mode: str = "pydantic"
-    include_nested: bool = True
-    transformations: dict[str, list[dict[str, Any]]] = Field(default_factory=dict)
-
-
-class PipelineConfig(BaseSettings):
-    """Main pipeline configuration."""
-
-    sources: dict[str, SourceConfig] = Field(default_factory=dict)
-    entities: dict[str, EntityConfig] = Field(default_factory=dict)
-    lakehouse_root: str = "/lakehouse/default/Tables"
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "allow"
-
-    @classmethod
-    def from_yaml(cls, path: str | Path) -> "PipelineConfig":
-        """Load configuration from YAML file."""
-        with open(path) as f:
-            data = yaml.safe_load(f)
-
-        # Expand environment variables
-        data = _expand_env_vars(data)
-
-        return cls(**data)
-
-
-def _expand_env_vars(data: Any) -> Any:
-    """Recursively expand environment variables in configuration."""
-    if isinstance(data, str) and data.startswith("${") and data.endswith("}"):
-        env_var = data[2:-1]
-        return os.getenv(env_var, data)
-    elif isinstance(data, dict):
-        return {k: _expand_env_vars(v) for k, v in data.items()}
-    elif isinstance(data, list):
-        return [_expand_env_vars(item) for item in data]
-    return data
-
-
-def load_pipeline_config(path: str | None = None) -> PipelineConfig:
+def get_table_config(table_name: str) -> Dict[str, Any]:
     """
-    Load pipeline configuration from file or environment.
-
+    Get configuration for a specific table.
+    
     Args:
-        path: Optional path to YAML config file
-
+        table_name: Name of the table
+        
     Returns:
-        Loaded configuration
+        Configuration dictionary for the table
     """
-    if path and Path(path).exists():
-        return PipelineConfig.from_yaml(path)
+    # For now, return basic default config
+    # This will be enhanced to load from actual config files
+    return {
+        "bronze_table_name": f"bronze_{table_name}",
+        "silver_table_name": f"silver_{table_name}",
+        "gold_table_name": f"gold_{table_name}",
+        "scd_type": 1,
+        "business_keys": ["id"],
+        "incremental_column": "lastModified"
+    }
 
-    # Try default locations
-    for default_path in ["config/pipeline.yaml", "pipeline.yaml", ".pipeline.yaml"]:
-        if Path(default_path).exists():
-            return PipelineConfig.from_yaml(default_path)
 
-    # Fall back to environment/defaults
-    return PipelineConfig()
+def extract_table_config(entity_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extract table-specific configuration from entity config.
+    
+    Args:
+        entity_name: Name of the entity
+        config: Full configuration dictionary
+        
+    Returns:
+        Table-specific configuration
+    """
+    if 'entities' in config and entity_name in config['entities']:
+        return config['entities'][entity_name]
+    
+    # Return default config if not found
+    return get_table_config(entity_name)

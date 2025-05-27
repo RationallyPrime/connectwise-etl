@@ -891,25 +891,30 @@ name = "unified-etl-core"
 version = "1.0.0"
 source = { editable = "packages/unified-etl-core" }
 dependencies = [
-    { name = "delta-spark" },
     { name = "pydantic" },
-    { name = "pyspark" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "sparkdantic" },
     { name = "tenacity" },
 ]
 
+[package.optional-dependencies]
+local = [
+    { name = "delta-spark" },
+    { name = "pyspark" },
+]
+
 [package.metadata]
 requires-dist = [
-    { name = "delta-spark", specifier = ">=2.2.0" },
+    { name = "delta-spark", marker = "extra == 'local'", specifier = ">=2.2.0" },
     { name = "pydantic", specifier = ">=2.11.4" },
-    { name = "pyspark", specifier = ">=3.3.0" },
+    { name = "pyspark", marker = "extra == 'local'", specifier = ">=3.3.0" },
     { name = "pyyaml", specifier = ">=6.0.0" },
     { name = "requests", specifier = ">=2.28.0" },
     { name = "sparkdantic" },
     { name = "tenacity", specifier = ">=8.0.0" },
 ]
+provides-extras = ["local"]
 
 [[package]]
 name = "unified-etl-workspace"

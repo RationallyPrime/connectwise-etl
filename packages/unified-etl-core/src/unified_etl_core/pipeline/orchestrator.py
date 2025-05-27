@@ -8,7 +8,7 @@ from pyspark.sql import SparkSession
 
 from unified_etl_core.config.loader import load_config
 from unified_etl_core.config.models import PipelineConfig
-from unified_etl_core.storage.fabric_delta import read_delta_table, write_delta_table
+from unified_etl_core.storage.fabric_delta import write_to_delta
 
 logger = logging.getLogger(__name__)
 

@@ -9,8 +9,8 @@ import json
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 from pyspark.sql.types import ArrayType, MapType, StringType, StructType
-from unified_etl.utils import logging
-from unified_etl.utils.exceptions import ColumnStandardizationError
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.exceptions import ColumnStandardizationError
 
 
 def flatten_nested_columns(df: DataFrame, max_depth: int = 3) -> DataFrame:

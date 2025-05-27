@@ -124,7 +124,6 @@ fabric_bc_integration_phase*.py
 # Workspace-specific markdown files
 PIPELINE_MANIFESTO.md
 PACKAGE_ARCHITECTURE.md
-CLAUDE.md
 
 # Workspace setup scripts
 workspace_setup.sh

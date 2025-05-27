@@ -4,8 +4,9 @@ from datetime import date, timedelta
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
-from unified_etl.utils import config_loader, construct_table_path, logging
-from unified_etl.utils.exceptions import DimensionResolutionError
+from unified_etl_core.utils import config, logging
+from unified_etl_core.utils.naming import construct_table_path
+from unified_etl_core.utils.exceptions import DimensionResolutionError
 
 
 def generate_date_dimension(
@@ -138,7 +139,7 @@ def generate_date_dimension(
             # Use the robust writer instead of direct write
             dim_date_target = construct_table_path("gold", "dim_Date")  # Construct full path
             logging.info(f"Writing Date Dimension using robust writer to {dim_date_target}")
-            from unified_etl.pipeline import write_with_schema_conflict_handling
+            from unified_etl_core.pipeline import write_with_schema_conflict_handling
 
             write_with_schema_conflict_handling(
                 df=date_df,
@@ -337,7 +338,7 @@ def create_dimension_bridge(
                 target_table_name = "dim_DimensionBridge"  # Default name if not specified in config
 
             # Write result to gold layer using the write_with_schema_conflict_handling utility
-            from unified_etl.pipeline import write_with_schema_conflict_handling
+            from unified_etl_core.pipeline import write_with_schema_conflict_handling
 
             # Use the utility function to construct the full path
             full_target_path = construct_table_path(gold_path, target_table_name)
@@ -518,7 +519,7 @@ def create_item_attribute_dimension(
 
             # Generate surrogate key
             try:
-                from unified_etl.gold.keys import generate_surrogate_key
+                from unified_etl_core.gold.keys import generate_surrogate_key
 
                 item_attributes = generate_surrogate_key(
                     df=item_attributes,
@@ -539,7 +540,7 @@ def create_item_attribute_dimension(
             # Write the dimension table
             try:
                 # Deferred import to avoid circular dependency
-                from unified_etl.pipeline import write_with_schema_conflict_handling
+                from unified_etl_core.pipeline import write_with_schema_conflict_handling
 
                 write_mode = "overwrite"  # Always use overwrite mode for dimensions
                 write_with_schema_conflict_handling(
@@ -692,7 +693,7 @@ def create_item_attribute_bridge(
 
             # Generate surrogate key
             try:
-                from unified_etl.gold.keys import generate_surrogate_key
+                from unified_etl_core.gold.keys import generate_surrogate_key
 
                 bridge_df = generate_surrogate_key(
                     df=bridge_df,
@@ -711,7 +712,7 @@ def create_item_attribute_bridge(
             # Write the bridge table
             try:
                 # Deferred import to avoid circular dependency
-                from unified_etl.pipeline import write_with_schema_conflict_handling
+                from unified_etl_core.pipeline import write_with_schema_conflict_handling
 
                 write_with_schema_conflict_handling(
                     df=bridge_df,

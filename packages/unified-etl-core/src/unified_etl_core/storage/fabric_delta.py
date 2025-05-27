@@ -19,7 +19,6 @@ from pyspark.sql.types import (
     StructField,
     StructType,
 )
-from unified_etl.utils.spark_utils import get_spark_session
 
 
 def get_table_path(entity_name: str, base_path: str | None = None) -> str:
@@ -153,8 +152,9 @@ def write_errors(
         logger.info(f"No validation errors for {entity_name}")
         return "", 0
 
-    # Get the spark session
-    spark = get_spark_session()
+    # Get spark session from Fabric global context
+    import sys
+    spark = sys.modules['__main__'].spark
 
     # Create a DataFrame from the errors
     # We need to provide a schema for empty DataFrames
@@ -235,7 +235,9 @@ def dataframe_from_models(models: list[Any], entity_name: str) -> DataFrame:
     Returns:
         Spark DataFrame
     """
-    spark = get_spark_session()
+    # Get spark session from Fabric global context
+    import sys
+    spark = sys.modules['__main__'].spark
 
     if not models:
         logger.warning(f"No models provided for {entity_name}")

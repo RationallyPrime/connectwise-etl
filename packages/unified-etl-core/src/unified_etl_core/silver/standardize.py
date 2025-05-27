@@ -6,10 +6,10 @@ Handles name standardization and table reference normalization.
 
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
-from unified_etl.utils import logging
-from unified_etl.utils.config_loader import get_column_schema, get_table_config
-from unified_etl.utils.exceptions import ColumnStandardizationError
-from unified_etl.utils.naming import standardize_table_reference
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.config import get_column_schema, get_table_config
+from unified_etl_core.utils.exceptions import ColumnStandardizationError
+from unified_etl_core.utils.naming import standardize_table_reference
 
 
 def standardize_dataframe_from_config(

@@ -1,3 +1,3 @@
-from .reader import _generate_table_name_candidates, read_bc_table
+from .reader import read_bronze_table
 
-__all__ = ["_generate_table_name_candidates", "read_bc_table"]
+__all__ = ["read_bronze_table"]

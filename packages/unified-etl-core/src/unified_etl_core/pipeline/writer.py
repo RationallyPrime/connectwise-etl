@@ -1,6 +1,6 @@
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl.utils import logging
-from unified_etl.utils.exceptions import AnalysisException
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.exceptions import AnalysisException
 
 
 def write_with_schema_conflict_handling(

@@ -6,14 +6,14 @@ Simplified approach that eliminates hardcoded entity-specific logic.
 from datetime import datetime as dt
 
 from pyspark.sql import SparkSession
-from unified_etl.gold.facts import create_fact_table
-from unified_etl.gold.hierarchy import build_account_hierarchy
-from unified_etl.gold.keys import generate_surrogate_key
-from unified_etl.pipeline.writer import write_with_schema_conflict_handling
-from unified_etl.silver.standardize import get_silver_table_name
-from unified_etl.utils import logging
-from unified_etl.utils.config_loader import get_table_config
-from unified_etl.utils.watermark_manager import manage_watermark
+from unified_etl_core.gold.facts import create_fact_table
+from unified_etl_core.gold.hierarchy import build_account_hierarchy
+from unified_etl_core.gold.keys import generate_surrogate_key
+from unified_etl_core.pipeline.writer import write_with_schema_conflict_handling
+from unified_etl_core.silver.standardize import get_silver_table_name
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.config import get_table_config
+from unified_etl_core.utils.watermark_manager import manage_watermark
 
 
 def process_silver_to_gold_table(

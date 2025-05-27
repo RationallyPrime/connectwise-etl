@@ -16,13 +16,13 @@ from typing import Any
 
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl.gold.date_dimension import (
+from unified_etl_core.gold.date_dimension import (
     add_date_dimension_joins,
     create_or_update_date_dimension_table,
 )
-from unified_etl.utils import logging
-from unified_etl.utils.exceptions import FactTableError
-from unified_etl.utils.naming import construct_table_path
+from unified_etl_core.utils import logging
+from unified_etl_core.utils.exceptions import FactTableError
+from unified_etl_core.utils.naming import construct_table_path
 
 
 class GoldLayerEnhancer:
