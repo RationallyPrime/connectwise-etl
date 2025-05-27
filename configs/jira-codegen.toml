@@ -15,8 +15,8 @@ use-model-config = true
 capitalize-enum-members = true
 use-union-operator = true
 
-# Jira-specific: Convert to snake_case
-snake-case-field = true
+# Jira-specific: Preserve camelCase (consistent with PSA/BC)
+snake-case-field = false
 aliased-fields = true
 use-annotated = false
 strip-default-none = false

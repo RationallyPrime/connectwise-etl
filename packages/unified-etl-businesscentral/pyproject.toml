@@ -18,20 +18,36 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.datamodel-codegen]
-# Business Central-specific configuration
 target-python-version = "3.11"
 base-class = "sparkdantic.SparkModel"
 input-file-type = "jsonschema"
 output-model-type = "pydantic_v2.BaseModel"
-
-# Business Central typically uses PascalCase
-snake-case-field = false
-aliased-fields = true
-field-constraints = true
-field-include-all-keys = true
 use-standard-collections = true
+use-schema-description = true
+use-field-description = true
+field-include-all-keys = true
+field-constraints = true
+strict-nullable = true
+collapse-root-models = true
+validate-configuration = true
+use-model-config = true
+capitalize-enum-members = true
 use-union-operator = true
 
-# CDM manifest pattern for BC
-# Will generate from cdm_manifests/*.cdm.json
-output = "src/unified_etl_businesscentral/models/generated.py"
+# BC-specific: Preserve camelCase (same as PSA)
+snake-case-field = false
+aliased-fields = true
+use-annotated = false
+strip-default-none = false
+
+# Output formatting
+output-model-sorted = true
+wrap-string-literal = false
+reuse-model = true
+
+# Enums handling
+reuse-enum = true
+enum-field-as-literal = "all"
+use-subclass-enum = true
+
+# Duplicate section removed - using the complete config above

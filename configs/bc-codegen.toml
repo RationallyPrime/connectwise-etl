@@ -15,8 +15,8 @@ use-model-config = true
 capitalize-enum-members = true
 use-union-operator = true
 
-# BC-specific: Convert to snake_case (BC uses PascalCase)
-snake-case-field = true
+# BC-specific: Preserve camelCase (same as PSA)
+snake-case-field = false
 aliased-fields = true
 use-annotated = false
 strip-default-none = false

@@ -18,6 +18,42 @@ unified-etl-core = { workspace = true }
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.datamodel-codegen]
+target-python-version = "3.11"
+base-class = "sparkdantic.SparkModel"
+input-file-type = "openapi"
+output-model-type = "pydantic_v2.BaseModel"
+use-standard-collections = true
+use-schema-description = true
+use-field-description = true
+field-include-all-keys = true
+field-constraints = true
+strict-nullable = true
+collapse-root-models = true
+validate-configuration = true
+use-model-config = true
+capitalize-enum-members = true
+use-union-operator = true
+
+# PSA-specific: Preserve camelCase field names
+snake-case-field = false
+aliased-fields = true
+use-annotated = false
+strip-default-none = false
+
+# Output formatting
+output-model-sorted = true
+wrap-string-literal = false
+reuse-model = true
+
+# Enums handling
+reuse-enum = true
+enum-field-as-literal = "all"
+use-subclass-enum = true
+
+# OpenAPI-specific options
+openapi-scopes = ["schemas"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/unified_etl_connectwise"]
 
@@ -27,21 +63,4 @@ include = [
     "src/unified_etl_connectwise/**/*.yaml",
 ]
 
-[tool.datamodel-codegen]
-# ConnectWise-specific configuration
-target-python-version = "3.11"
-base-class = "sparkdantic.SparkModel"
-input-file-type = "openapi"
-output-model-type = "pydantic_v2.BaseModel"
-
-# ConnectWise uses camelCase
-snake-case-field = false
-aliased-fields = true
-field-constraints = true
-field-include-all-keys = true
-use-standard-collections = true
-use-union-operator = true
-
-# Generate from OpenAPI
-input = "../../PSA_OpenAPI_schema.json"
-output = "src/unified_etl_connectwise/models/generated.py"
+# Duplicate section removed - using the first one with complete config
