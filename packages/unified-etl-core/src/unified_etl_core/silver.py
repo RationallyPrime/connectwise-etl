@@ -12,6 +12,7 @@ Following CLAUDE.md: Generic, configuration-driven, Pydantic+SparkDantic require
 No optional behaviors. No silent failures. Fail fast.
 """
 
+import logging
 import sys
 from datetime import datetime
 from typing import Any
@@ -66,7 +67,7 @@ def convert_models_to_dataframe(
 ) -> DataFrame:
     """Convert validated SparkModel instances to DataFrame using SparkDantic."""
     if not valid_models:
-        raise SilverTransformationError("No valid models to convert to DataFrame")
+        raise ValueError("No valid models to convert to DataFrame")
 
     # Get SparkDantic schema
     schema = model_class.model_spark_schema()
@@ -75,6 +76,8 @@ def convert_models_to_dataframe(
     model_dicts = [model.model_dump() for model in valid_models]
 
     # Create DataFrame with proper schema (using Fabric's global spark session)
+    import sys
+    spark = sys.modules["__main__"].spark
     return spark.createDataFrame(model_dicts, schema)
 
 
@@ -104,7 +107,7 @@ TYPE_MAPPING = {
 
 
 def validate_with_pydantic(
-    df: DataFrame, model_class: type[BaseModel], sample_size: int = 1000
+    df: DataFrame, model_class: type[SparkModel], sample_size: int = 1000
 ) -> tuple[int, int, list[dict[str, Any]]]:
     """Validate DataFrame against Pydantic model. Model is REQUIRED."""
     sample_data = df.limit(sample_size).toPandas().to_dict("records")
@@ -130,10 +133,10 @@ def validate_with_pydantic(
     return valid_count, invalid_count, validation_errors
 
 
-def generate_spark_schema_from_pydantic(model_class: type[BaseModel]) -> StructType:
+def generate_spark_schema_from_pydantic(model_class: type[SparkModel]) -> StructType:
     """Generate Spark schema from Pydantic model. SparkDantic is REQUIRED."""
     if not hasattr(model_class, "model_spark_schema"):
-        raise ETLValidationError(
+        raise ValueError(
             f"Model {model_class.__name__} must inherit from SparkModel. "
             f"All models must be auto-generated with SparkDantic support."
         )
@@ -141,7 +144,7 @@ def generate_spark_schema_from_pydantic(model_class: type[BaseModel]) -> StructT
     try:
         return model_class.model_spark_schema()
     except Exception as e:
-        raise ETLValidationError(
+        raise ValueError(
             f"Failed to generate Spark schema for {model_class.__name__}: {e}"
         ) from e
 
@@ -171,7 +174,7 @@ def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
                 result_df = result_df.withColumn(column, F.col(column).cast(spark_type))
         except Exception as e:
             logging.error(f"Type conversion failed for {column} -> {target_type}: {e}")
-            raise ColumnStandardizationError(f"Type conversion failed: {column}") from e
+            raise ValueError(f"Type conversion failed: {column}") from e
 
     return result_df
 
@@ -214,7 +217,7 @@ def flatten_nested_columns(df: DataFrame, max_depth: int = 3) -> DataFrame:
                     flattened_any = True
                 except Exception as e:
                     logging.error(f"Map flattening failed for {field_name}: {e}")
-                    raise ColumnStandardizationError(f"Map flattening failed: {field_name}") from e
+                    raise ValueError(f"Map flattening failed: {field_name}") from e
 
             elif isinstance(field_type, ArrayType):
                 try:
@@ -225,9 +228,7 @@ def flatten_nested_columns(df: DataFrame, max_depth: int = 3) -> DataFrame:
                     flattened_any = True
                 except Exception as e:
                     logging.error(f"Array flattening failed for {field_name}: {e}")
-                    raise ColumnStandardizationError(
-                        f"Array flattening failed: {field_name}"
-                    ) from e
+                    raise ValueError(f"Array flattening failed: {field_name}") from e
 
         if not flattened_any:
             break
@@ -273,14 +274,14 @@ def apply_scd_type_1(
 ) -> DataFrame:
     """Apply SCD Type 1 (overwrite) logic. Business keys are REQUIRED."""
     if not business_keys:
-        raise SCDHandlingError("SCD Type 1 requires business_keys to be specified")
+        raise ValueError("SCD Type 1 requires business_keys to be specified")
 
     missing_keys = [key for key in business_keys if key not in df.columns]
     if missing_keys:
-        raise SCDHandlingError(f"Business keys not found in DataFrame: {missing_keys}")
+        raise ValueError(f"Business keys not found in DataFrame: {missing_keys}")
 
     if timestamp_col not in df.columns:
-        raise SCDHandlingError(f"Timestamp column '{timestamp_col}' not found in DataFrame")
+        raise ValueError(f"Timestamp column '{timestamp_col}' not found in DataFrame")
 
     try:
         window = Window.partitionBy(*business_keys).orderBy(F.desc(timestamp_col))
@@ -294,7 +295,7 @@ def apply_scd_type_1(
         return result_df
 
     except Exception as e:
-        raise SCDHandlingError(f"SCD Type 1 processing failed: {e}") from e
+        raise ValueError(f"SCD Type 1 processing failed: {e}") from e
 
 
 def apply_scd_type_2(
@@ -307,14 +308,14 @@ def apply_scd_type_2(
 ) -> DataFrame:
     """Apply SCD Type 2 (historize) logic. Business keys are REQUIRED."""
     if not business_keys:
-        raise SCDHandlingError("SCD Type 2 requires business_keys to be specified")
+        raise ValueError("SCD Type 2 requires business_keys to be specified")
 
     missing_keys = [key for key in business_keys if key not in df.columns]
     if missing_keys:
-        raise SCDHandlingError(f"Business keys not found in DataFrame: {missing_keys}")
+        raise ValueError(f"Business keys not found in DataFrame: {missing_keys}")
 
     if timestamp_col not in df.columns:
-        raise SCDHandlingError(f"Timestamp column '{timestamp_col}' not found in DataFrame")
+        raise ValueError(f"Timestamp column '{timestamp_col}' not found in DataFrame")
 
     try:
         window = Window.partitionBy(*business_keys).orderBy(timestamp_col)
@@ -331,13 +332,13 @@ def apply_scd_type_2(
         return result_df
 
     except Exception as e:
-        raise SCDHandlingError(f"SCD Type 2 processing failed: {e}") from e
+        raise ValueError(f"SCD Type 2 processing failed: {e}") from e
 
 
 def add_etl_metadata(df: DataFrame, source: str) -> DataFrame:
     """Add ETL metadata columns. Source is REQUIRED."""
     if not source:
-        raise ETLValidationError("Source system name is required for ETL metadata")
+        raise ValueError("Source system name is required for ETL metadata")
 
     return (
         df.withColumn("_etl_processed_at", F.current_timestamp())
@@ -347,7 +348,7 @@ def add_etl_metadata(df: DataFrame, source: str) -> DataFrame:
 
 
 def apply_silver_transformations(
-    df: DataFrame, entity_config: dict[str, Any], model_class: type[BaseModel]
+    df: DataFrame, entity_config: dict[str, Any], model_class: type[SparkModel]
 ) -> DataFrame:
     """
     Apply comprehensive Silver transformations.
@@ -358,10 +359,10 @@ def apply_silver_transformations(
         model_class: REQUIRED Pydantic model for validation
     """
     if not entity_config:
-        raise ETLValidationError("Entity configuration is required")
+        raise ValueError("Entity configuration is required")
 
     if not model_class:
-        raise ETLValidationError("Pydantic model class is required")
+        raise ValueError("Pydantic model class is required")
 
     # Validate the model has SparkDantic support
     _ = generate_spark_schema_from_pydantic(model_class)
@@ -371,7 +372,7 @@ def apply_silver_transformations(
     # 1. Add ETL metadata (source is required)
     source = entity_config.get("source")
     if not source:
-        raise ETLValidationError("Source system must be specified in entity_config")
+        raise ValueError("Source system must be specified in entity_config")
     silver_df = add_etl_metadata(silver_df, source)
 
     # 2. Validate against Pydantic model (REQUIRED)
@@ -404,14 +405,14 @@ def apply_silver_transformations(
         business_keys = scd_config.get("business_keys")
 
         if not business_keys:
-            raise ETLValidationError("SCD configuration requires business_keys")
+            raise ValueError("SCD configuration requires business_keys")
 
         if scd_type == 1:
             silver_df = apply_scd_type_1(silver_df, business_keys)
         elif scd_type == 2:
             silver_df = apply_scd_type_2(silver_df, business_keys)
         else:
-            raise ETLValidationError(f"Unsupported SCD type: {scd_type}")
+            raise ValueError(f"Unsupported SCD type: {scd_type}")
 
     return silver_df
 
@@ -421,7 +422,7 @@ def process_bronze_to_silver(
     bronze_table_name: str,
     lakehouse_root: str,
     entity_config: dict[str, Any],
-    model_class: type[BaseModel],
+    model_class: type[SparkModel],
 ) -> None:
     """
     Process Bronze to Silver with unified transformations.
@@ -429,15 +430,15 @@ def process_bronze_to_silver(
     ALL parameters are REQUIRED. No optional behaviors.
     """
     if not entity_name:
-        raise ETLValidationError("entity_name is required")
+        raise ValueError("entity_name is required")
     if not bronze_table_name:
-        raise ETLValidationError("bronze_table_name is required")
+        raise ValueError("bronze_table_name is required")
     if not lakehouse_root:
-        raise ETLValidationError("lakehouse_root is required")
+        raise ValueError("lakehouse_root is required")
     if not entity_config:
-        raise ETLValidationError("entity_config is required")
+        raise ValueError("entity_config is required")
     if not model_class:
-        raise ETLValidationError("model_class is required")
+        raise ValueError("model_class is required")
 
     # Get Fabric global spark session
     spark = sys.modules["__main__"].spark
@@ -451,7 +452,7 @@ def process_bronze_to_silver(
         record_count = bronze_df.count()
         logging.info(f"Bronze records: {record_count}")
     except Exception as e:
-        raise ETLValidationError(f"Failed to read Bronze table {bronze_path}: {e}") from e
+        raise ValueError(f"Failed to read Bronze table {bronze_path}: {e}") from e
 
     # Apply Silver transformations
     silver_df = apply_silver_transformations(bronze_df, entity_config, model_class)
@@ -461,7 +462,7 @@ def process_bronze_to_silver(
     logging.info(f"Writing Silver: {silver_path}")
 
     try:
-        write_to_delta(df=silver_df, table_path=silver_path, mode="overwrite", merge_schema=True)
+        silver_df.write.format("delta").mode("overwrite").option("mergeSchema", "true").save(silver_path)
         logging.info(f"Silver written: {record_count} records")
     except Exception as e:
-        raise ETLValidationError(f"Failed to write Silver table {silver_path}: {e}") from e
+        raise ValueError(f"Failed to write Silver table {silver_path}: {e}") from e

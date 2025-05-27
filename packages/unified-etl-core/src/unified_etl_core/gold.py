@@ -26,12 +26,7 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 
-from unified_etl_core.utils import logging
-from unified_etl_core.utils.exceptions import (
-    DimensionResolutionError,
-    SurrogateKeyError,
-)
-from unified_etl_core.utils.naming import construct_table_path
+import logging
 
 
 def create_date_dimension(
@@ -50,15 +45,15 @@ def create_date_dimension(
         fiscal_year_start_month: Month when fiscal year starts (1-12)
     """
     if not spark:
-        raise DimensionResolutionError("SparkSession is required")
+        raise ValueError("SparkSession is required")
     if not start_date:
-        raise DimensionResolutionError("start_date is required")
+        raise ValueError("start_date is required")
     if not end_date:
-        raise DimensionResolutionError("end_date is required")
+        raise ValueError("end_date is required")
     if start_date > end_date:
-        raise DimensionResolutionError("start_date must be before end_date")
+        raise ValueError("start_date must be before end_date")
     if fiscal_year_start_month < 1 or fiscal_year_start_month > 12:
-        raise DimensionResolutionError("fiscal_year_start_month must be between 1 and 12")
+        raise ValueError("fiscal_year_start_month must be between 1 and 12")
 
     with logging.span("create_date_dimension"):
         # Generate date range
@@ -207,22 +202,22 @@ def generate_surrogate_key(
         start_value: Starting value for surrogate key
     """
     if not df:
-        raise SurrogateKeyError("DataFrame is required")
+        raise ValueError("DataFrame is required")
     if not business_keys:
-        raise SurrogateKeyError("business_keys list is required and cannot be empty")
+        raise ValueError("business_keys list is required and cannot be empty")
     if not key_name:
-        raise SurrogateKeyError("key_name is required")
+        raise ValueError("key_name is required")
 
     # Validate business keys exist
     missing_keys = [k for k in business_keys if k not in df.columns]
     if missing_keys:
-        raise SurrogateKeyError(f"Business key columns not found in DataFrame: {missing_keys}")
+        raise ValueError(f"Business key columns not found in DataFrame: {missing_keys}")
 
     # Validate partition columns if provided
     if partition_columns:
         missing_partitions = [k for k in partition_columns if k not in df.columns]
         if missing_partitions:
-            raise SurrogateKeyError(
+            raise ValueError(
                 f"Partition columns not found in DataFrame: {missing_partitions}"
             )
 
@@ -242,7 +237,7 @@ def generate_surrogate_key(
 
         # Verify key was generated
         if key_name not in result_df.columns:
-            raise SurrogateKeyError(f"Failed to generate surrogate key column: {key_name}")
+            raise ValueError(f"Failed to generate surrogate key column: {key_name}")
 
         # Log statistics
         key_count = result_df.select(key_name).distinct().count()
@@ -255,7 +250,7 @@ def generate_surrogate_key(
         return result_df
 
     except Exception as e:
-        raise SurrogateKeyError(f"Surrogate key generation failed: {e}") from e
+        raise ValueError(f"Surrogate key generation failed: {e}") from e
 
 
 def create_or_update_date_dimension_table(
@@ -278,9 +273,9 @@ def create_or_update_date_dimension_table(
         force_recreate: Whether to force recreation
     """
     if not spark:
-        raise DimensionResolutionError("SparkSession is required")
+        raise ValueError("SparkSession is required")
     if not lakehouse_root:
-        raise DimensionResolutionError("lakehouse_root is required")
+        raise ValueError("lakehouse_root is required")
 
     try:
         # Set default date range if not provided
@@ -289,7 +284,7 @@ def create_or_update_date_dimension_table(
         if end_date is None:
             end_date = date.today() + timedelta(days=365 * 10)
 
-        table_path = construct_table_path(lakehouse_root, "gold", table_name)
+        table_path = f"{lakehouse_root}gold/{table_name}"
         table_exists = spark.catalog.tableExists(table_path)
 
         if table_exists and not force_recreate:
@@ -323,11 +318,11 @@ def add_date_key_column(
         date_key_column: Target DateKey column name (defaults to f"{date_column}Key")
     """
     if not df:
-        raise DimensionResolutionError("DataFrame is required")
+        raise ValueError("DataFrame is required")
     if not date_column:
-        raise DimensionResolutionError("date_column is required")
+        raise ValueError("date_column is required")
     if date_column not in df.columns:
-        raise DimensionResolutionError(f"Date column '{date_column}' not found in DataFrame")
+        raise ValueError(f"Date column '{date_column}' not found in DataFrame")
 
     if date_key_column is None:
         date_key_column = f"{date_column}Key"
@@ -340,7 +335,7 @@ def add_date_key_column(
         return result_df
 
     except Exception as e:
-        raise DimensionResolutionError(f"DateKey generation failed: {e}") from e
+        raise ValueError(f"DateKey generation failed: {e}") from e
 
 
 def add_etl_metadata(df: DataFrame, layer: str = "gold", source: str | None = None) -> DataFrame:
@@ -353,7 +348,7 @@ def add_etl_metadata(df: DataFrame, layer: str = "gold", source: str | None = No
         source: Optional source system name
     """
     if not df:
-        raise DimensionResolutionError("DataFrame is required")
+        raise ValueError("DataFrame is required")
 
     metadata_df = df.withColumn(f"_etl_{layer}_processed_at", F.current_timestamp())
 
