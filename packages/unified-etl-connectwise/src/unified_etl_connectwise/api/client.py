@@ -58,7 +58,7 @@ class ConnectWiseClient:
             "CW_BASE_URL",
             "https://verk.thekking.is/v4_6_release/apis/3.0",
         )
-        
+
         # Get credentials from environment variables
         self.basic_username = os.getenv("CW_AUTH_USERNAME")
         self.basic_password = os.getenv("CW_AUTH_PASSWORD")

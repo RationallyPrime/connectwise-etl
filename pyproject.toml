@@ -8,14 +8,20 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    # Workspace packages
+    # Core package is always required
     "unified-etl-core",
-    "unified-etl-connectwise",
-    "unified-etl-businesscentral",
     "pydantic>=2.11.4",
 ]
 
 [project.optional-dependencies]
+# Integration packages (optional)
+connectwise = ["unified-etl-connectwise"]
+businesscentral = ["unified-etl-businesscentral"]
+all-integrations = [
+    "unified-etl-connectwise",
+    "unified-etl-businesscentral",
+]
+
 # Development dependencies
 dev = [
     "pytest>=7.0.0",
@@ -132,41 +138,10 @@ reportUnknownVariableType = "none"
 reportAttributeAccessIssue = "none"
 reportOptionalCall = "warning"
 
-[tool.datamodel-codegen]
-target-python-version = "3.11"
-base-class = "sparkdantic.SparkModel"
-input-file-type = "jsonschema"
-output-model-type = "pydantic_v2.BaseModel"
-use-standard-collections = true
-use-schema-description = true
-use-field-description = true
-field-include-all-keys = true
-field-constraints = true
-strict-nullable = true
-collapse-root-models = true
-validate-configuration = true
-use-model-config = true
-capitalize-enum-members = true
-use-union-operator = true
-
-# Field handling settings - preserve camelCase
-snake-case-field = false  # Preserve camelCase field names
-aliased-fields = true
-use-annotated = false
-strip-default-none = false
-
-# Output formatting settings
-output-model-sorted = true
-wrap-string-literal = false
-reuse-model = true
-
-# Enums handling
-reuse-enum = true
-enum-field-as-literal = "all"
-use-subclass-enum = true
-
-# Regular class generation settings
-class-name = "JsonSchema"
+# datamodel-codegen configuration moved to integration-specific config files:
+# - configs/psa-codegen.toml (ConnectWise PSA)  
+# - configs/bc-codegen.toml (Business Central)
+# - configs/jira-codegen.toml (Jira)
 
 [dependency-groups]
 dev = [

@@ -1,188 +1,103 @@
-"""
-Main orchestration module for the unified ETL framework.
-
-This module provides the primary entry point for running ETL processes
-across different data sources (ConnectWise PSA, Business Central, etc.)
-using the medallion architecture.
-"""
+"""Cross-integration ETL orchestration using dynamic integration detection."""
 
 import logging
+from typing import Any
 
-from unified_etl_core.pipeline.bronze_silver import BronzeSilverPipeline
-from unified_etl_core.pipeline.silver_gold import SilverGoldPipeline
-from unified_etl_core.utils.config import ConfigManager
-from unified_etl_core.utils.logging import setup_logging
-from unified_etl_core.utils.spark import get_spark_session
-
-logger = logging.getLogger(__name__)
+from unified_etl_core.integrations import detect_available_integrations, list_available_integrations
+from unified_etl_core import facts, gold, silver
 
 
-def run_etl(
-    config_path: str | None = None,
-    tables: list[str] | None = None,
-    lakehouse_root: str = "/lakehouse/default/Tables",
-    mode: str = "append",
-    log_level: str = "INFO",
-) -> dict[str, bool]:
+def run_etl_pipeline(
+    integrations: list[str] | None = None,
+    layers: list[str] | None = None,
+    config: dict[str, Any] | None = None,
+) -> None:
     """
-    Run the complete ETL pipeline for specified tables.
-
+    Run ETL pipeline across all available integrations.
+    
     Args:
-        config_path: Path to YAML configuration file
-        tables: List of table names to process (if None, processes all configured tables)
-        lakehouse_root: Root path for OneLake tables
-        mode: Write mode for Delta tables ("append", "overwrite")
-        log_level: Logging level
-
-    Returns:
-        Dictionary mapping table names to success status
+        integrations: List of integration names to process (default: all available)
+        layers: List of layers to process (default: ["bronze", "silver", "gold"])
+        config: Pipeline configuration
     """
-    setup_logging(level=log_level)
-    logger.info("Starting unified ETL pipeline")
-
-    # Initialize Spark session
-    spark = get_spark_session(app_name="UnifiedETL", log_level=log_level)
-
-    # Load configuration
-    config_manager = ConfigManager(config_path)
-
-    # Determine which tables to process
-    if tables is None:
-        tables_to_process = list(config_manager.get_all_table_configs().keys())
-    else:
-        tables_to_process = tables
-
-    logger.info(f"Processing tables: {', '.join(tables_to_process)}")
-
-    results = {}
-
-    try:
-        # Bronze to Silver pipeline
-        bronze_silver = BronzeSilverPipeline(
-            spark=spark, config_manager=config_manager, lakehouse_root=lakehouse_root
-        )
-
-        # Silver to Gold pipeline
-        silver_gold = SilverGoldPipeline(
-            spark=spark, config_manager=config_manager, lakehouse_root=lakehouse_root
-        )
-
-        for table in tables_to_process:
-            try:
-                logger.info(f"Processing table: {table}")
-
-                # Run Bronze → Silver
-                bronze_silver.process_table(table, mode=mode)
-                logger.info(f"Completed Bronze → Silver for {table}")
-
-                # Run Silver → Gold
-                silver_gold.process_table(table, mode=mode)
-                logger.info(f"Completed Silver → Gold for {table}")
-
-                results[table] = True
-
-            except Exception as e:
-                logger.error(f"Failed to process table {table}: {e}")
-                results[table] = False
-
-    except Exception as e:
-        logger.error(f"Pipeline failed: {e}")
-        raise
-
-    finally:
-        spark.stop()
-
-    logger.info("ETL pipeline completed")
-    return results
+    # Detect available integrations
+    available_integrations = detect_available_integrations()
+    integration_names = integrations or list_available_integrations()
+    layers = layers or ["bronze", "silver", "gold"]
+    
+    if not integration_names:
+        logging.warning("No integrations available! Install integration packages.")
+        return
+    
+    logging.info(f"Running ETL pipeline for integrations: {integration_names}")
+    logging.info(f"Processing layers: {layers}")
+    
+    for integration_name in integration_names:
+        if not available_integrations.get(integration_name, {}).get("available"):
+            logging.warning(f"Skipping {integration_name}: not available")
+            continue
+            
+        try:
+            process_integration(integration_name, available_integrations[integration_name], layers, config)
+        except Exception as e:
+            logging.error(f"Failed processing {integration_name}: {e}")
+            continue
 
 
-def run_bronze_only(
-    source: str,
-    tables: list[str] | None = None,
-    config_path: str | None = None,
-    lakehouse_root: str = "/lakehouse/default/Tables",
-    mode: str = "append",
-    log_level: str = "INFO",
-) -> dict[str, bool]:
-    """
-    Run only the bronze layer data ingestion for a specific source.
-
-    Args:
-        source: Data source name (e.g., "connectwise", "business_central")
-        tables: List of table names to process
-        config_path: Path to YAML configuration file
-        lakehouse_root: Root path for OneLake tables
-        mode: Write mode for Delta tables
-        log_level: Logging level
-
-    Returns:
-        Dictionary mapping table names to success status
-    """
-    setup_logging(level=log_level)
-    logger.info(f"Starting bronze ingestion for source: {source}")
-
-    # Implementation depends on source type
-    # This will be extended to support different sources
-    if source == "connectwise":
-        # ConnectWise-specific bronze ingestion logic
-        # This will be implemented in the next phase
-        pass
-    elif source == "business_central":
-        # Business Central-specific bronze ingestion logic
-        pass
-    else:
-        raise ValueError(f"Unsupported source: {source}")
-
-    return {}
+def process_integration(
+    integration_name: str, 
+    integration_info: dict[str, Any], 
+    layers: list[str],
+    config: dict[str, Any] | None = None
+) -> None:
+    """Process a single integration through specified layers."""
+    logging.info(f"Processing integration: {integration_name}")
+    
+    # Get integration-specific components
+    extractor = integration_info.get("extractor")
+    models = integration_info.get("models")
+    
+    if "bronze" in layers:
+        logging.info(f"Running bronze layer for {integration_name}")
+        if extractor:
+            # Bronze: Extract raw data
+            bronze_data = extractor.extract_all()
+            # Store in bronze tables (using Fabric's global spark session)
+            # spark.createDataFrame(bronze_data).write.saveAsTable(f"bronze_{integration_name}")
+    
+    if "silver" in layers:
+        logging.info(f"Running silver layer for {integration_name}")
+        if models:
+            # Silver: Universal validation and transformation
+            for entity_name, model_class in models.items():
+                # bronze_df = spark.table(f"bronze_{integration_name}_{entity_name}")
+                # valid_models, errors = silver.validate_batch(bronze_data, model_class)
+                # silver_df = silver.convert_models_to_dataframe(valid_models, model_class)
+                # silver_df.write.saveAsTable(f"silver_{integration_name}_{entity_name}")
+                pass
+    
+    if "gold" in layers:
+        logging.info(f"Running gold layer for {integration_name}")
+        # Gold: Universal fact table creation
+        entity_configs = config.get("entities", {}) if config else {}
+        for entity_name, entity_config in entity_configs.items():
+            if entity_config.get("source") == integration_name:
+                # silver_df = spark.table(f"silver_{integration_name}_{entity_name}")
+                # gold_df = facts.create_generic_fact_table(
+                #     silver_df=silver_df,
+                #     entity_name=entity_name,
+                #     surrogate_keys=entity_config["surrogate_keys"],
+                #     business_keys=entity_config["business_keys"],
+                #     calculated_columns=entity_config["calculated_columns"],
+                #     source=integration_name
+                # )
+                # gold_df.write.saveAsTable(f"gold_{integration_name}_{entity_name}")
+                pass
 
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Unified ETL Pipeline")
-    parser.add_argument("--config", help="Path to configuration file")
-    parser.add_argument("--tables", nargs="+", help="Specific tables to process")
-    parser.add_argument(
-        "--lakehouse-root", default="/lakehouse/default/Tables", help="Root path for OneLake tables"
-    )
-    parser.add_argument(
-        "--mode",
-        choices=["append", "overwrite"],
-        default="append",
-        help="Write mode for Delta tables",
-    )
-    parser.add_argument(
-        "--log-level",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        default="INFO",
-        help="Logging level",
-    )
-    parser.add_argument("--bronze-only", help="Run bronze ingestion only for specified source")
-
-    args = parser.parse_args()
-
-    if args.bronze_only:
-        results = run_bronze_only(
-            source=args.bronze_only,
-            tables=args.tables,
-            config_path=args.config,
-            lakehouse_root=args.lakehouse_root,
-            mode=args.mode,
-            log_level=args.log_level,
-        )
-    else:
-        results = run_etl(
-            config_path=args.config,
-            tables=args.tables,
-            lakehouse_root=args.lakehouse_root,
-            mode=args.mode,
-            log_level=args.log_level,
-        )
-
-    # Print results
-    failed_tables = [table for table, success in results.items() if not success]
-    if failed_tables:
-        print(f"Failed tables: {', '.join(failed_tables)}")
-        exit(1)
-    else:
-        print("All tables processed successfully")
+    # Example: Run pipeline for all available integrations
+    run_etl_pipeline()
+    
+    # Example: Run specific integrations and layers
+    # run_etl_pipeline(integrations=["connectwise", "businesscentral"], layers=["silver", "gold"])
