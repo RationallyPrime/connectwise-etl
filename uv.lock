@@ -922,12 +922,20 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
-    { name = "unified-etl-businesscentral" },
-    { name = "unified-etl-connectwise" },
     { name = "unified-etl-core" },
 ]
 
 [package.optional-dependencies]
+all-integrations = [
+    { name = "unified-etl-businesscentral" },
+    { name = "unified-etl-connectwise" },
+]
+businesscentral = [
+    { name = "unified-etl-businesscentral" },
+]
+connectwise = [
+    { name = "unified-etl-connectwise" },
+]
 dev = [
     { name = "basedpyright" },
     { name = "datamodel-code-generator" },
@@ -970,11 +978,13 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.9" },
     { name = "types-pyyaml", marker = "extra == 'dev'" },
     { name = "types-requests", marker = "extra == 'dev'" },
-    { name = "unified-etl-businesscentral", editable = "packages/unified-etl-businesscentral" },
-    { name = "unified-etl-connectwise", editable = "packages/unified-etl-connectwise" },
+    { name = "unified-etl-businesscentral", marker = "extra == 'all-integrations'", editable = "packages/unified-etl-businesscentral" },
+    { name = "unified-etl-businesscentral", marker = "extra == 'businesscentral'", editable = "packages/unified-etl-businesscentral" },
+    { name = "unified-etl-connectwise", marker = "extra == 'all-integrations'", editable = "packages/unified-etl-connectwise" },
+    { name = "unified-etl-connectwise", marker = "extra == 'connectwise'", editable = "packages/unified-etl-connectwise" },
     { name = "unified-etl-core", editable = "packages/unified-etl-core" },
 ]
-provides-extras = ["dev", "test"]
+provides-extras = ["connectwise", "businesscentral", "all-integrations", "dev", "test"]
 
 [package.metadata.requires-dev]
 dev = [

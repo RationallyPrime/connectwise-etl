@@ -34,14 +34,6 @@ from pyspark.sql.types import (
 from pyspark.sql.window import Window
 from sparkdantic import SparkModel
 
-from unified_etl_core.storage.fabric_delta import write_to_delta
-from unified_etl_core.utils import logging
-from unified_etl_core.utils.exceptions import (
-    ColumnStandardizationError,
-    SCDHandlingError,
-    ValidationError as ETLValidationError,
-)
-
 
 def validate_batch(
     data: list[dict[str, Any]], model_class: type[SparkModel]
@@ -259,7 +251,7 @@ def parse_json_columns(df: DataFrame, json_columns: list[str]) -> DataFrame:
             )
         except Exception as e:
             logging.error(f"JSON parsing failed for {col_name}: {e}")
-            raise ColumnStandardizationError(f"JSON parsing failed: {col_name}") from e
+            raise ValueError(f"JSON parsing failed: {col_name}") from e
 
     return result_df
 
