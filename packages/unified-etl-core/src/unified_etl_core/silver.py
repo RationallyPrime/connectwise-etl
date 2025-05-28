@@ -77,6 +77,7 @@ def convert_models_to_dataframe(
 
     # Create DataFrame with proper schema (using Fabric's global spark session)
     import sys
+
     spark = sys.modules["__main__"].spark
     return spark.createDataFrame(model_dicts, schema)
 
@@ -144,15 +145,18 @@ def generate_spark_schema_from_pydantic(model_class: type[SparkModel]) -> Struct
     try:
         return model_class.model_spark_schema()
     except Exception as e:
-        raise ValueError(
-            f"Failed to generate Spark schema for {model_class.__name__}: {e}"
-        ) from e
+        raise ValueError(f"Failed to generate Spark schema for {model_class.__name__}: {e}") from e
 
 
 def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
     """Apply data type conversions based on configuration."""
     result_df = df
     column_mappings = entity_config.get("column_mappings", {})
+
+    # If no mappings, just return as-is
+    if not column_mappings:
+        logging.info("No column mappings provided, skipping type conversions")
+        return result_df
 
     for column, mapping in column_mappings.items():
         if column not in result_df.columns:
@@ -168,6 +172,11 @@ def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
             continue
 
         try:
+            # Get the current column type
+            fields_dict = {field.name: field for field in result_df.schema.fields}
+            current_type = fields_dict[column].dataType
+            logging.info(f"Converting {column} from {current_type} to {spark_type}")
+
             if target_type.lower() in ["timestamp", "datetime", "datetime2"]:
                 result_df = result_df.withColumn(column, F.to_timestamp(F.col(column)))
             else:
@@ -181,60 +190,86 @@ def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
 
 def flatten_nested_columns(df: DataFrame, max_depth: int = 3) -> DataFrame:
     """Flatten nested columns (structs, maps, arrays) into separate columns."""
-    result_df = df
-    depth = 0
+    # Return early for empty DataFrames
+    if df.isEmpty():
+        return df
 
-    while depth < max_depth:
-        flattened_any = False
+    # Helper function to check if a column needs flattening
+    def needs_flattening(field_dtype):
+        return (
+            isinstance(field_dtype, StructType)
+            or (
+                isinstance(field_dtype, ArrayType)
+                and isinstance(field_dtype.elementType, StructType)
+            )
+            or isinstance(field_dtype, MapType)
+        )
 
-        for field in result_df.schema.fields:
-            field_name = field.name
-            field_type = field.dataType
+    # Check if there are nested structures that need flattening
+    fields = df.schema.fields
+    nested_cols = [field.name for field in fields if needs_flattening(field.dataType)]
 
-            if isinstance(field_type, StructType):
-                for sub_field in field_type.fields:
-                    new_col_name = f"{field_name}_{sub_field.name}"
-                    result_df = result_df.withColumn(
-                        new_col_name, F.col(f"{field_name}.{sub_field.name}")
+    # If no nested columns or max depth reached, return the DataFrame as is
+    if len(nested_cols) == 0 or max_depth <= 0:
+        return df
+
+    logging.info(f"Flattening {len(nested_cols)} nested columns: {nested_cols}")
+
+    # Process struct columns
+    struct_cols = [field.name for field in fields if isinstance(field.dataType, StructType)]
+    expanded_cols = []
+    generated_names = set()  # Track column names we've already generated
+
+    # First, track all top-level column names that aren't being flattened
+    top_level_names = {field.name for field in fields if field.name not in struct_cols}
+
+    # Handle all columns
+    for field in fields:
+        if field.name not in struct_cols:
+            # Non-struct columns - just keep them
+            expanded_cols.append(F.col(field.name))
+            generated_names.add(field.name)
+        else:
+            # For struct columns, flatten each field with camelCase naming
+            if isinstance(field.dataType, StructType):
+                for struct_field in field.dataType.fields:
+                    child_name = struct_field.name
+
+                    # Generate camelCase name for the flattened field
+                    if child_name.startswith("_"):
+                        base_name = f"{field.name}{child_name}"
+                    else:
+                        # CamelCase: parentField + ChildField (capitalize first letter)
+                        child_camel = child_name[0].upper() + child_name[1:] if child_name else ""
+                        base_name = f"{field.name}{child_camel}"
+
+                    # Handle naming conflicts
+                    final_name = base_name
+                    suffix = 1
+                    while final_name in generated_names or final_name in top_level_names:
+                        final_name = f"{base_name}_{suffix}"
+                        suffix += 1
+
+                    generated_names.add(final_name)
+                    expanded_cols.append(
+                        F.col(f"{field.name}.{struct_field.name}").alias(final_name)
                     )
-                result_df = result_df.drop(field_name)
-                flattened_any = True
 
-            elif isinstance(field_type, MapType):
-                try:
-                    sample_data = result_df.select(field_name).limit(100).collect()
-                    common_keys = set()
-                    for row in sample_data:
-                        if row[field_name]:
-                            common_keys.update(row[field_name].keys())
+    # Create DataFrame with expanded columns
+    expanded_df = df.select(expanded_cols)
 
-                    for key in common_keys:
-                        new_col_name = f"{field_name}_{key}"
-                        result_df = result_df.withColumn(
-                            new_col_name, F.col(field_name).getItem(key)
-                        )
-                    result_df = result_df.drop(field_name)
-                    flattened_any = True
-                except Exception as e:
-                    logging.error(f"Map flattening failed for {field_name}: {e}")
-                    raise ValueError(f"Map flattening failed: {field_name}") from e
+    # Handle arrays and maps
+    result_df = expanded_df
+    for field in result_df.schema.fields:
+        if isinstance(field.dataType, ArrayType):
+            # Convert arrays to JSON strings
+            result_df = result_df.withColumn(field.name, F.to_json(F.col(field.name)))
+        elif isinstance(field.dataType, MapType):
+            # Convert maps to JSON strings
+            result_df = result_df.withColumn(field.name, F.to_json(F.col(field.name)))
 
-            elif isinstance(field_type, ArrayType):
-                try:
-                    result_df = result_df.withColumn(
-                        f"{field_name}_json", F.to_json(F.col(field_name))
-                    )
-                    result_df = result_df.drop(field_name)
-                    flattened_any = True
-                except Exception as e:
-                    logging.error(f"Array flattening failed for {field_name}: {e}")
-                    raise ValueError(f"Array flattening failed: {field_name}") from e
-
-        if not flattened_any:
-            break
-        depth += 1
-
-    return result_df
+    # Recursively apply flattening
+    return flatten_nested_columns(result_df, max_depth - 1)
 
 
 def parse_json_columns(df: DataFrame, json_columns: list[str]) -> DataFrame:
@@ -375,12 +410,9 @@ def apply_silver_transformations(
         raise ValueError("Source system must be specified in entity_config")
     silver_df = add_etl_metadata(silver_df, source)
 
-    # 2. Validate against Pydantic model (REQUIRED)
-    valid_count, invalid_count, errors = validate_with_pydantic(silver_df, model_class)
-    if invalid_count > 0:
-        logging.warning(f"Validation errors found: {invalid_count}/{valid_count + invalid_count}")
-        for error in errors[:3]:  # Log first 3 errors
-            logging.warning(f"Validation error: {error}")
+    # 2. Skip validation for Silver - data was validated in Bronze
+    # Per CLAUDE.md: Bronze validates during API extraction, Silver transforms
+    logging.info("Skipping validation - data was validated in Bronze layer")
 
     # 3. Parse JSON columns if specified
     json_columns = entity_config.get("json_columns", [])
@@ -462,7 +494,9 @@ def process_bronze_to_silver(
     logging.info(f"Writing Silver: {silver_path}")
 
     try:
-        silver_df.write.format("delta").mode("overwrite").option("mergeSchema", "true").save(silver_path)
+        silver_df.write.format("delta").mode("overwrite").option("mergeSchema", "true").save(
+            silver_path
+        )
         logging.info(f"Silver written: {record_count} records")
     except Exception as e:
         raise ValueError(f"Failed to write Silver table {silver_path}: {e}") from e

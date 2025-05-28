@@ -12,6 +12,7 @@ Business-specific gold logic delegated to individual packages:
 Following CLAUDE.md: Generic where possible, specialized where necessary.
 """
 
+import logging
 from datetime import date, datetime, timedelta
 
 import pyspark.sql.functions as F  # noqa: N812
@@ -25,8 +26,6 @@ from pyspark.sql.types import (
     StructType,
 )
 from pyspark.sql.window import Window
-
-import logging
 
 
 def create_date_dimension(
@@ -55,119 +54,117 @@ def create_date_dimension(
     if fiscal_year_start_month < 1 or fiscal_year_start_month > 12:
         raise ValueError("fiscal_year_start_month must be between 1 and 12")
 
-    with logging.span("create_date_dimension"):
-        # Generate date range
-        dates = []
-        current_date = start_date
-        while current_date <= end_date:
-            dates.append(current_date)
-            current_date += timedelta(days=1)
+    # Create date dimension
+    # Generate date range
+    dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        dates.append(current_date)
+        current_date += timedelta(days=1)
 
-        logging.info(
-            f"Generating date dimension: {len(dates)} dates from {start_date} to {end_date}"
-        )
+    logging.info(f"Generating date dimension: {len(dates)} dates from {start_date} to {end_date}")
 
-        # Create date data with universal business attributes
-        date_data = []
-        for dt in dates:
-            # Basic attributes
-            date_key = int(dt.strftime("%Y%m%d"))
-            year = dt.year
-            month = dt.month
-            day = dt.day
-            quarter = (month - 1) // 3 + 1
+    # Create date data with universal business attributes
+    date_data = []
+    for dt in dates:
+        # Basic attributes
+        date_key = int(dt.strftime("%Y%m%d"))
+        year = dt.year
+        month = dt.month
+        day = dt.day
+        quarter = (month - 1) // 3 + 1
 
-            # Week attributes
-            week_of_year = dt.isocalendar()[1]
-            day_of_week = dt.weekday() + 1  # Monday = 1
-            day_of_year = dt.timetuple().tm_yday
+        # Week attributes
+        week_of_year = dt.isocalendar()[1]
+        day_of_week = dt.weekday() + 1  # Monday = 1
+        day_of_year = dt.timetuple().tm_yday
 
-            # Fiscal year calculation
-            if month >= fiscal_year_start_month:
-                fiscal_year = year
-            else:
-                fiscal_year = year - 1
-            fiscal_quarter = ((month - fiscal_year_start_month) % 12) // 3 + 1
+        # Fiscal year calculation
+        if month >= fiscal_year_start_month:
+            fiscal_year = year
+        else:
+            fiscal_year = year - 1
+        fiscal_quarter = ((month - fiscal_year_start_month) % 12) // 3 + 1
 
-            # Formatted names
-            month_name = dt.strftime("%B")
-            month_short = dt.strftime("%b")
-            day_name = dt.strftime("%A")
-            day_short = dt.strftime("%a")
-            quarter_name = f"Q{quarter}"
-            fiscal_quarter_name = f"FY{fiscal_year} Q{fiscal_quarter}"
+        # Formatted names
+        month_name = dt.strftime("%B")
+        month_short = dt.strftime("%b")
+        day_name = dt.strftime("%A")
+        day_short = dt.strftime("%a")
+        quarter_name = f"Q{quarter}"
+        fiscal_quarter_name = f"FY{fiscal_year} Q{fiscal_quarter}"
 
-            # Universal business indicators
-            is_weekend = day_of_week in [6, 7]
-            is_weekday = not is_weekend
-            is_holiday = _is_us_holiday(dt)  # Basic US holidays - can be extended
-            is_business_day = is_weekday and not is_holiday
+        # Universal business indicators
+        is_weekend = day_of_week in [6, 7]
+        is_weekday = not is_weekend
+        is_holiday = _is_us_holiday(dt)  # Basic US holidays - can be extended
+        is_business_day = is_weekday and not is_holiday
 
-            # Date formatting
-            date_string = dt.strftime("%Y-%m-%d")
-            date_display = dt.strftime("%B %d, %Y")
+        # Date formatting
+        date_string = dt.strftime("%Y-%m-%d")
+        date_display = dt.strftime("%B %d, %Y")
 
-            date_data.append(
-                (
-                    date_key,
-                    dt,
-                    date_string,
-                    date_display,
-                    year,
-                    month,
-                    day,
-                    quarter,
-                    fiscal_year,
-                    fiscal_quarter,
-                    week_of_year,
-                    day_of_week,
-                    day_of_year,
-                    month_name,
-                    month_short,
-                    day_name,
-                    day_short,
-                    quarter_name,
-                    fiscal_quarter_name,
-                    is_weekend,
-                    is_weekday,
-                    is_holiday,
-                    is_business_day,
-                )
+        date_data.append(
+            (
+                date_key,
+                dt,
+                date_string,
+                date_display,
+                year,
+                month,
+                day,
+                quarter,
+                fiscal_year,
+                fiscal_quarter,
+                week_of_year,
+                day_of_week,
+                day_of_year,
+                month_name,
+                month_short,
+                day_name,
+                day_short,
+                quarter_name,
+                fiscal_quarter_name,
+                is_weekend,
+                is_weekday,
+                is_holiday,
+                is_business_day,
             )
-
-        # Define universal schema
-        schema = StructType(
-            [
-                StructField("DateKey", IntegerType(), False),
-                StructField("Date", DateType(), False),
-                StructField("DateString", StringType(), False),
-                StructField("DateDisplay", StringType(), False),
-                StructField("Year", IntegerType(), False),
-                StructField("Month", IntegerType(), False),
-                StructField("Day", IntegerType(), False),
-                StructField("Quarter", IntegerType(), False),
-                StructField("FiscalYear", IntegerType(), False),
-                StructField("FiscalQuarter", IntegerType(), False),
-                StructField("WeekOfYear", IntegerType(), False),
-                StructField("DayOfWeek", IntegerType(), False),
-                StructField("DayOfYear", IntegerType(), False),
-                StructField("MonthName", StringType(), False),
-                StructField("MonthShort", StringType(), False),
-                StructField("DayName", StringType(), False),
-                StructField("DayShort", StringType(), False),
-                StructField("QuarterName", StringType(), False),
-                StructField("FiscalQuarterName", StringType(), False),
-                StructField("IsWeekend", BooleanType(), False),
-                StructField("IsWeekday", BooleanType(), False),
-                StructField("IsHoliday", BooleanType(), False),
-                StructField("IsBusinessDay", BooleanType(), False),
-            ]
         )
 
-        # Create DataFrame
-        date_df = spark.createDataFrame(date_data, schema)
-        logging.info(f"Date dimension created: {date_df.count()} records")
-        return date_df
+    # Define universal schema
+    schema = StructType(
+        [
+            StructField("DateKey", IntegerType(), False),
+            StructField("Date", DateType(), False),
+            StructField("DateString", StringType(), False),
+            StructField("DateDisplay", StringType(), False),
+            StructField("Year", IntegerType(), False),
+            StructField("Month", IntegerType(), False),
+            StructField("Day", IntegerType(), False),
+            StructField("Quarter", IntegerType(), False),
+            StructField("FiscalYear", IntegerType(), False),
+            StructField("FiscalQuarter", IntegerType(), False),
+            StructField("WeekOfYear", IntegerType(), False),
+            StructField("DayOfWeek", IntegerType(), False),
+            StructField("DayOfYear", IntegerType(), False),
+            StructField("MonthName", StringType(), False),
+            StructField("MonthShort", StringType(), False),
+            StructField("DayName", StringType(), False),
+            StructField("DayShort", StringType(), False),
+            StructField("QuarterName", StringType(), False),
+            StructField("FiscalQuarterName", StringType(), False),
+            StructField("IsWeekend", BooleanType(), False),
+            StructField("IsWeekday", BooleanType(), False),
+            StructField("IsHoliday", BooleanType(), False),
+            StructField("IsBusinessDay", BooleanType(), False),
+        ]
+    )
+
+    # Create DataFrame
+    date_df = spark.createDataFrame(date_data, schema)
+    logging.info(f"Date dimension created: {date_df.count()} records")
+    return date_df
 
 
 def _is_us_holiday(dt: date) -> bool:
@@ -217,9 +214,7 @@ def generate_surrogate_key(
     if partition_columns:
         missing_partitions = [k for k in partition_columns if k not in df.columns]
         if missing_partitions:
-            raise ValueError(
-                f"Partition columns not found in DataFrame: {missing_partitions}"
-            )
+            raise ValueError(f"Partition columns not found in DataFrame: {missing_partitions}")
 
     try:
         # Create window spec

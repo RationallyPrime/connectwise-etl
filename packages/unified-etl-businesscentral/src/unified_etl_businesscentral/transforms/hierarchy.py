@@ -1,12 +1,12 @@
 # unified_etl/gold/hierarchy.py
 
 
+import logging
+
 import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 from pyspark.sql.types import LongType
 from pyspark.sql.window import Window
-from unified_etl_core.utils import logging
-from unified_etl_core.utils.exceptions import HierarchyBuildError
 
 
 def build_account_hierarchy(
@@ -172,4 +172,4 @@ def build_account_hierarchy(
     except Exception as e:
         error_msg = f"Failed to build account hierarchy: {e!s}"
         logging.error(error_msg)
-        raise HierarchyBuildError(error_msg) from e
+        raise ValueError(error_msg) from e

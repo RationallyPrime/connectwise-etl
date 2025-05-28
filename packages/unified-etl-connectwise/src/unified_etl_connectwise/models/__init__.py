@@ -4,8 +4,7 @@
 
 from __future__ import annotations
 
-from datetime import date as date_aliased
-from datetime import datetime
+from datetime import date as date_aliased, datetime
 from typing import Any, Literal
 from uuid import UUID
 
@@ -20,7 +19,7 @@ class AccountingBatch(SparkModel):
     exportExpensesFlag: bool | None = None
     exportProductsFlag: bool | None = None
     closedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AccountingPackage(SparkModel):
@@ -31,11 +30,9 @@ class AccountingPackage(SparkModel):
 
 class AccountingPackageReference(SparkModel):
     id: int | None = None
-    identifier: (
-        Literal['QB99', 'Mas200', 'GPlains', 'SBA', 'Mas200v4', 'Other'] | None
-    ) = None
+    identifier: Literal["QB99", "Mas200", "GPlains", "SBA", "Mas200v4", "Other"] | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AccountingPackageSetup(SparkModel):
@@ -43,10 +40,10 @@ class AccountingPackageSetup(SparkModel):
     accountingPackage: AccountingPackageReference
     directTransferFlag: bool | None = None
     includeInvoicesFlag: bool | None = None
-    invoiceFormat: Literal['Default', 'Condensed', 'Detailed'] | None = None
+    invoiceFormat: Literal["Default", "Condensed", "Detailed"] | None = None
     includeExpensesFlag: bool | None = None
     transferExpensesAsBillFlag: bool | None = None
-    expenseFormat: Literal['Default', 'Condensed'] | None = None
+    expenseFormat: Literal["Default", "Condensed"] | None = None
     suppressMemoFlag: bool | None = None
     syncPaymentInfoFlag: bool | None = None
     syncWisePayPaymentInfoFlag: bool | None = None
@@ -59,13 +56,13 @@ class AccountingPackageSetup(SparkModel):
     sendUomFlag: bool | None = None
     includeCogsEntriesFlag: bool | None = None
     includeCogsDropShipFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ActivityReference(SparkModel):
     id: int | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ActivityStatus(SparkModel):
@@ -78,7 +75,7 @@ class ActivityStatus(SparkModel):
     inactiveFlag: bool | None = None
     spawnFollowupFlag: bool | None = None
     closedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ActivityStatusInfo(SparkModel):
@@ -87,7 +84,7 @@ class ActivityStatusInfo(SparkModel):
     inactiveFlag: bool | None = None
     closedFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ActivityStatusReference = ActivityReference
@@ -105,7 +102,7 @@ class ActivityType(SparkModel):
     emailFlag: bool | None = None
     memoFlag: bool | None = None
     historyFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ActivityTypeReference = ActivityReference
@@ -125,14 +122,14 @@ class AddressFormat(SparkModel):
     countryIds: list[int] | None = None
     addAllCountries: bool | None = None
     removeAllCountries: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AddressFormatInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 AddressFormatReference = ActivityReference
@@ -157,7 +154,7 @@ class AdjustmentType(SparkModel):
     auditTrailFlag: bool | None = None
     dateCreated: datetime | None = None
     createdBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 AdjustmentTypeInfo = ActivityReference
@@ -166,7 +163,7 @@ AdjustmentTypeInfo = ActivityReference
 class AdjustmentTypeReference(SparkModel):
     id: int | None = None
     identifier: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementApplicationAviablePer(SparkModel):
@@ -188,7 +185,7 @@ class AgreementBatchSetup(SparkModel):
     id: int | None = None
     nextRunDate: datetime
     daysInAdvance: int | None = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementBillingInfo(SparkModel):
@@ -225,7 +222,7 @@ class AgreementReference(SparkModel):
     name: str | None = None
     type: str | None = None
     chargeFirmFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementRevenueReference(SparkModel):
@@ -234,7 +231,7 @@ class AgreementRevenueReference(SparkModel):
     cost: float | None = None
     margin: float | None = None
     percentage: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 AgreementTabsCount = SparkModel
@@ -247,7 +244,7 @@ class AllowedFileType(SparkModel):
     id: int | None = None
     fileType: str
     sizeLimit: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AllowedOrigin(SparkModel):
@@ -262,7 +259,7 @@ class AllowedOrigin(SparkModel):
     """
     lastUpdateUtc: datetime | None = None
     updatedBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AuditTrailEntry(SparkModel):
@@ -278,7 +275,7 @@ class AuthAnvil(SparkModel):
     id: int | None = None
     serverLocationUrl: str
     siteId: int | None = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 AutomateScriptReference = ActivityReference
@@ -314,18 +311,18 @@ class BillingCycle(SparkModel):
     defaultFlag: bool | None = None
     billingOptions: (
         Literal[
-            'BiMonthly',
-            'BiWeekly',
-            'Monthly',
-            'NotRecurring',
-            'Quarterly',
-            'SemiAnnual',
-            'Weekly',
-            'Yearly',
+            "BiMonthly",
+            "BiWeekly",
+            "Monthly",
+            "NotRecurring",
+            "Quarterly",
+            "SemiAnnual",
+            "Weekly",
+            "Yearly",
         ]
         | None
     ) = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 BillingCycleInfo = AddressFormatInfo
@@ -351,7 +348,7 @@ class BillingStatus(SparkModel):
     closedFlag: bool | None = None
     inactiveFlag: bool | None = None
     sentFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingStatusInfo(SparkModel):
@@ -359,14 +356,14 @@ class BillingStatusInfo(SparkModel):
     name: str | None = None
     sortOrder: int | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingStatusReference(SparkModel):
     id: int | None = None
     name: str | None = None
     isClosed: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingTerm(SparkModel):
@@ -381,7 +378,7 @@ class BillingTerm(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 BillingTermInfo = AddressFormatInfo
@@ -405,7 +402,7 @@ class BoardExcludedMember(SparkModel):
     id: int | None = None
     memberId: int | None = None
     boardId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 BoardReference = ActivityReference
@@ -418,7 +415,7 @@ class BoardStatusInfo(SparkModel):
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
     closedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardSubType(SparkModel):
@@ -432,7 +429,7 @@ class BoardSubType(SparkModel):
     addAllTypesFlag: bool | None = None
     removeAllTypesFlag: bool | None = None
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardSubTypeInfo(SparkModel):
@@ -440,7 +437,7 @@ class BoardSubTypeInfo(SparkModel):
     name: str | None = None
     inactiveFlag: bool | None = None
     typeAssociationIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 BoardTeamInfo = ActivityReference
@@ -452,7 +449,7 @@ class BoardTypeInfo(SparkModel):
     board: BoardReference | None = None
     inactiveFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CalendarReference = ActivityReference
@@ -460,7 +457,7 @@ CalendarReference = ActivityReference
 
 class CalendarSetupReference(SparkModel):
     id: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CallbackEntry(SparkModel):
@@ -491,7 +488,7 @@ class CallbackEntry(SparkModel):
     isSoapCallbackFlag: bool | None = None
     isSelfSuppressedFlag: bool | None = None
     connectWiseID: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CampaignReference = ActivityReference
@@ -505,7 +502,7 @@ class CampaignStatus(SparkModel):
     """
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CampaignStatusReference = ActivityReference
@@ -521,7 +518,7 @@ class CampaignType(SparkModel):
      Max length: 100;
     """
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CampaignTypeInfo = ActivityReference
@@ -535,9 +532,9 @@ class CatalogItemInfo(SparkModel):
     identifier: str | None = None
     description: str | None = None
     inactiveFlag: bool | None = None
-    productClass: (
-        Literal['Agreement', 'Bundle', 'Inventory', 'NonInventory', 'Service'] | None
-    ) = None
+    productClass: Literal["Agreement", "Bundle", "Inventory", "NonInventory", "Service"] | None = (
+        None
+    )
     serializedCostFlag: bool | None = None
     price: float | None = None
     cost: float | None = None
@@ -547,17 +544,15 @@ class CatalogItemInfo(SparkModel):
     customerDescription: str | None = None
     manufacturerPartNumber: str | None = None
     vendorSku: str | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CatalogItemReference(SparkModel):
     id: int | None = None
     identifier: str | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CatalogVendors(SparkModel):
@@ -591,7 +586,7 @@ class Category(SparkModel):
     defaultFlag: bool | None = None
     addAllLocations: bool | None = None
     removeAllLocations: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CategoryInfo(SparkModel):
@@ -599,7 +594,7 @@ class CategoryInfo(SparkModel):
     name: str | None = None
     inactiveFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CertificationReference = ActivityReference
@@ -608,7 +603,7 @@ CertificationReference = ActivityReference
 class ChangeOrder(SparkModel):
     id: int | None = None
     purchaseHeaderRecId: int
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ChargeCodeReference = ActivityReference
@@ -621,7 +616,7 @@ class Classification(SparkModel):
     defaultFlag: bool | None = None
     companyFlag: bool | None = None
     employeeFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ClassificationReference = ActivityReference
@@ -631,7 +626,7 @@ class ClosedInvoice(SparkModel):
     id: int | None = None
     status: BillingStatusReference | None = None
     internalNotes: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Code(SparkModel):
@@ -644,7 +639,7 @@ class Code(SparkModel):
     boardId: int | None = None
     locationId: int | None = None
     businessUnitId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CommunicationType(SparkModel):
@@ -679,7 +674,7 @@ class CommunicationType(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CommunicationTypeInfo(SparkModel):
@@ -689,7 +684,7 @@ class CommunicationTypeInfo(SparkModel):
     faxFlag: bool | None = None
     emailFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CommunicationTypeReference = ActivityReference
@@ -697,47 +692,47 @@ CommunicationTypeReference = ActivityReference
 
 class CompanyMerge(SparkModel):
     toCompanyId: int
-    name: Literal['From', 'To'] | None = None
-    identifier: Literal['From', 'To'] | None = None
-    status: Literal['From', 'To'] | None = None
-    type: Literal['From', 'To'] | None = None
-    primaryAddress: Literal['From', 'To'] | None = None
-    primaryContact: Literal['From', 'To'] | None = None
-    phone: Literal['From', 'To'] | None = None
-    fax: Literal['From', 'To'] | None = None
-    website: Literal['From', 'To'] | None = None
-    market: Literal['From', 'To'] | None = None
-    territory: Literal['From', 'To'] | None = None
-    revenue: Literal['From', 'To'] | None = None
-    revenueYear: Literal['From', 'To'] | None = None
-    numberOfEmployees: Literal['From', 'To'] | None = None
-    sicCode: Literal['From', 'To'] | None = None
-    dateAcquired: Literal['From', 'To'] | None = None
-    timeZone: Literal['From', 'To'] | None = None
-    sourceList: Literal['From', 'To'] | None = None
-    userDefinedField1: Literal['From', 'To'] | None = None
-    userDefinedField2: Literal['From', 'To'] | None = None
-    userDefinedField3: Literal['From', 'To'] | None = None
-    userDefinedField4: Literal['From', 'To'] | None = None
-    userDefinedField5: Literal['From', 'To'] | None = None
-    userDefinedField6: Literal['From', 'To'] | None = None
-    userDefinedField7: Literal['From', 'To'] | None = None
-    userDefinedField8: Literal['From', 'To'] | None = None
-    userDefinedField9: Literal['From', 'To'] | None = None
-    userDefinedField10: Literal['From', 'To'] | None = None
-    billingAddress: Literal['From', 'To'] | None = None
-    billingContact: Literal['From', 'To'] | None = None
-    taxCode: Literal['From', 'To'] | None = None
-    accountNumber: Literal['From', 'To'] | None = None
-    billingTerms: Literal['From', 'To'] | None = None
-    notes: Literal['Discard', 'Merge'] | None = None
-    sites: Literal['Discard', 'Merge'] | None = None
-    activities: Literal['Discard', 'Merge'] | None = None
-    opportunities: Literal['Discard', 'Merge'] | None = None
-    services: Literal['Discard', 'Merge'] | None = None
-    projects: Literal['Discard', 'Merge'] | None = None
-    contacts: Literal['Discard', 'Merge'] | None = None
-    documents: Literal['Discard', 'Merge'] | None = None
+    name: Literal["From", "To"] | None = None
+    identifier: Literal["From", "To"] | None = None
+    status: Literal["From", "To"] | None = None
+    type: Literal["From", "To"] | None = None
+    primaryAddress: Literal["From", "To"] | None = None
+    primaryContact: Literal["From", "To"] | None = None
+    phone: Literal["From", "To"] | None = None
+    fax: Literal["From", "To"] | None = None
+    website: Literal["From", "To"] | None = None
+    market: Literal["From", "To"] | None = None
+    territory: Literal["From", "To"] | None = None
+    revenue: Literal["From", "To"] | None = None
+    revenueYear: Literal["From", "To"] | None = None
+    numberOfEmployees: Literal["From", "To"] | None = None
+    sicCode: Literal["From", "To"] | None = None
+    dateAcquired: Literal["From", "To"] | None = None
+    timeZone: Literal["From", "To"] | None = None
+    sourceList: Literal["From", "To"] | None = None
+    userDefinedField1: Literal["From", "To"] | None = None
+    userDefinedField2: Literal["From", "To"] | None = None
+    userDefinedField3: Literal["From", "To"] | None = None
+    userDefinedField4: Literal["From", "To"] | None = None
+    userDefinedField5: Literal["From", "To"] | None = None
+    userDefinedField6: Literal["From", "To"] | None = None
+    userDefinedField7: Literal["From", "To"] | None = None
+    userDefinedField8: Literal["From", "To"] | None = None
+    userDefinedField9: Literal["From", "To"] | None = None
+    userDefinedField10: Literal["From", "To"] | None = None
+    billingAddress: Literal["From", "To"] | None = None
+    billingContact: Literal["From", "To"] | None = None
+    taxCode: Literal["From", "To"] | None = None
+    accountNumber: Literal["From", "To"] | None = None
+    billingTerms: Literal["From", "To"] | None = None
+    notes: Literal["Discard", "Merge"] | None = None
+    sites: Literal["Discard", "Merge"] | None = None
+    activities: Literal["Discard", "Merge"] | None = None
+    opportunities: Literal["Discard", "Merge"] | None = None
+    services: Literal["Discard", "Merge"] | None = None
+    projects: Literal["Discard", "Merge"] | None = None
+    contacts: Literal["Discard", "Merge"] | None = None
+    documents: Literal["Discard", "Merge"] | None = None
 
 
 class CompanyNoteType(SparkModel):
@@ -752,7 +747,7 @@ class CompanyNoteType(SparkModel):
     """
     defaultFlag: bool | None = None
     importFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyNoteTypeInfo(SparkModel):
@@ -760,7 +755,7 @@ class CompanyNoteTypeInfo(SparkModel):
     identifier: str | None = None
     name: str | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CompanyReference = CatalogItemReference
@@ -782,14 +777,14 @@ class CompanyType(SparkModel):
     """
      Max length: 150;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyTypeInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     isVendor: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CompanyTypeReference = ActivityReference
@@ -804,16 +799,16 @@ class ConfigurationQuestion(SparkModel):
     numberOfDecimals: int | None = None
     fieldType: (
         Literal[
-            'TextArea',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'Text',
-            'Password',
+            "TextArea",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "Text",
+            "Password",
         ]
         | None
     ) = None
@@ -823,7 +818,7 @@ class ConfigurationQuestion(SparkModel):
 class ConfigurationReference(SparkModel):
     id: int | None = None
     deviceIdentifier: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationStatus(SparkModel):
@@ -834,7 +829,7 @@ class ConfigurationStatus(SparkModel):
     """
     closedFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationStatusInfo(SparkModel):
@@ -842,7 +837,7 @@ class ConfigurationStatusInfo(SparkModel):
     description: str | None = None
     closedFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ConfigurationStatusReference = ActivityReference
@@ -859,7 +854,7 @@ class ConfigurationType(SparkModel):
     """
     inactiveFlag: bool | None = None
     systemFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ConfigurationTypeCopy = BoardCopy
@@ -870,13 +865,13 @@ class ConfigurationTypeInfo(SparkModel):
     name: str | None = None
     inactiveFlag: bool | None = None
     systemFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationTypeQuestionReference(SparkModel):
     id: int | None = None
     question: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ConfigurationTypeReference = ActivityReference
@@ -902,7 +897,7 @@ class ConnectWiseHostedSetup(SparkModel):
     """
      Max length: 1024;
     """
-    type: Literal['Tab', 'Pod', 'ToolbarButton'] | None = Field(...)
+    type: Literal["Tab", "Pod", "ToolbarButton"] | None = Field(...)
     clientId: str | None = None
     """
     Only required if not already set. Max length: 36;
@@ -928,7 +923,7 @@ class ConnectWiseHostedSetup(SparkModel):
     locationsEnabledFlag: bool | None = None
     createdBy: str | None = None
     dateCreated: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactCommunication(SparkModel):
@@ -945,9 +940,9 @@ class ContactCommunication(SparkModel):
     """
     defaultFlag: bool | None = None
     mobileGuid: UUID | None = None
-    communicationType: Literal['Email', 'Fax', 'Phone'] | None = None
+    communicationType: Literal["Email", "Fax", "Phone"] | None = None
     domain: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactCommunicationItem(SparkModel):
@@ -957,7 +952,7 @@ class ContactCommunicationItem(SparkModel):
     extension: str | None = None
     defaultFlag: bool | None = None
     domain: str | None = None
-    communicationType: Literal['Email', 'Fax', 'Phone'] | None = None
+    communicationType: Literal["Email", "Fax", "Phone"] | None = None
 
 
 class ContactDepartment(SparkModel):
@@ -966,7 +961,7 @@ class ContactDepartment(SparkModel):
     """
      Max length: 30;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ContactDepartmentInfo = ActivityReference
@@ -984,7 +979,7 @@ class ContactRelationship(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactTrack(SparkModel):
@@ -998,7 +993,7 @@ class ContactTrack(SparkModel):
     startedBy: str | None = None
     company: CompanyReference | None = None
     contact: ContactReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactType(SparkModel):
@@ -1013,7 +1008,7 @@ class ContactType(SparkModel):
     """
      Max length: 150;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactTypeInfo(SparkModel):
@@ -1022,7 +1017,7 @@ class ContactTypeInfo(SparkModel):
     defaultFlag: bool | None = None
     serviceAlertFlag: bool | None = None
     serviceAlertMessage: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ContactTypeReference = ActivityReference
@@ -1094,7 +1089,7 @@ class CurrencyReference(SparkModel):
     displayIdFlag: bool | None = None
     rightAlign: bool | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CustomFieldValue(SparkModel):
@@ -1102,22 +1097,22 @@ class CustomFieldValue(SparkModel):
     caption: str | None = None
     type: (
         Literal[
-            'TextArea',
-            'Button',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'PhoneNumber',
-            'Text',
-            'Password',
+            "TextArea",
+            "Button",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "PhoneNumber",
+            "Text",
+            "Password",
         ]
         | None
     ) = None
-    entryMethod: Literal['Date', 'EntryField', 'List', 'Option'] | None = None
+    entryMethod: Literal["Date", "EntryField", "List", "Option"] | None = None
     numberOfDecimals: int | None = None
     value: dict[str, Any] | None = None
     connectWiseId: str | None = None
@@ -1132,14 +1127,14 @@ class CustomReport(SparkModel):
     """
     module: (
         Literal[
-            'Companies',
-            'Finance',
-            'Marketing',
-            'Procurement',
-            'Project',
-            'Sales',
-            'ServiceDesk',
-            'TimeExpense',
+            "Companies",
+            "Finance",
+            "Marketing",
+            "Procurement",
+            "Project",
+            "Sales",
+            "ServiceDesk",
+            "TimeExpense",
         ]
         | None
     ) = Field(...)
@@ -1291,7 +1286,7 @@ class CustomReport(SparkModel):
     Parameter unique identifier for the Custom Report's Invoice Type parameter.
     """
     invoiceOverride: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 CustomReportReference = ActivityReference
@@ -1311,7 +1306,7 @@ class CwTimeZone(SparkModel):
     Determined based on system library value for specified timeZone.
                 Not able to be used in query params at this time.
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class DeliveryMethod(SparkModel):
@@ -1325,7 +1320,7 @@ class DeliveryMethod(SparkModel):
     integrationEmailFlag: bool | None = None
     integrationPrintFlag: bool | None = None
     integrationActiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Department(SparkModel):
@@ -1338,7 +1333,7 @@ class Department(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 DepartmentInfo = ActivityReference
@@ -1383,7 +1378,7 @@ class DocumentSetup(SparkModel):
     """
      Max length: 200;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class DocumentType(SparkModel):
@@ -1392,7 +1387,7 @@ class DocumentType(SparkModel):
     icon: str | None = None
     mimeType: str | None = None
     description: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 DocumentTypeReference = ActivityReference
@@ -1408,7 +1403,7 @@ class EmailConnectorParsingVariableReference(SparkModel):
     id: int | None = None
     name: str | None = None
     identifier: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 EmailConnectorReference = ActivityReference
@@ -1420,7 +1415,7 @@ class EmailExclusion(SparkModel):
     """
      Max length: 100;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class EmailOpened(SparkModel):
@@ -1471,7 +1466,7 @@ ExistingTenantReference = ActivityReference
 class ExpenseDetailReference(SparkModel):
     id: int | None = None
     amount: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ExpenseReportReference = ActivityReference
@@ -1481,15 +1476,15 @@ class ExpenseReportTierUpdate(SparkModel):
     id: int | None = None
     approvalType: (
         Literal[
-            'DataEntry',
-            'Tier1Update',
-            'Tier2Update',
-            'Billing',
-            'Service',
-            'Project',
-            'MonthlySummary',
-            'SalesActivity',
-            'Schedule',
+            "DataEntry",
+            "Tier1Update",
+            "Tier2Update",
+            "Billing",
+            "Service",
+            "Project",
+            "MonthlySummary",
+            "SalesActivity",
+            "Schedule",
         ]
         | None
     ) = None
@@ -1502,7 +1497,7 @@ class ExpenseTaxTypeInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     inactive: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ExpenseTaxTypeReference = ActivityReference
@@ -1516,10 +1511,8 @@ class ExpenseType(SparkModel):
     """
     amountCaption: str
     reimbursementRate: float | None = None
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        Field(...)
-    )
-    invoiceMarkupOption: Literal['Amount', 'Mile', 'Percent'] | None = Field(...)
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = Field(...)
+    invoiceMarkupOption: Literal["Amount", "Mile", "Percent"] | None = Field(...)
     invoiceMarkupAmount: float | None = None
     advancedAmountFlag: bool | None = None
     mileageFlag: bool | None = None
@@ -1531,7 +1524,7 @@ class ExpenseType(SparkModel):
      Max length: 50;
     """
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ExpenseTypeInfo(SparkModel):
@@ -1540,7 +1533,7 @@ class ExpenseTypeInfo(SparkModel):
     inactiveFlag: bool | None = None
     amountCaption: str | None = None
     mileageFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ExpenseTypeReference = ActivityReference
@@ -1554,7 +1547,7 @@ class Experiment(SparkModel):
     properties: str | None = None
     inactiveFlag: bool | None = None
     memberInactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ExportAccountingBatchRequest(SparkModel):
@@ -1565,7 +1558,7 @@ class ExportAccountingBatchRequest(SparkModel):
     glInterfaceIdentifier: str | None = None
     thruDate: datetime | None = None
     locationId: int | None = None
-    summarizeInvoices: Literal['Default', 'Condensed', 'Detailed'] | None = None
+    summarizeInvoices: Literal["Default", "Condensed", "Detailed"] | None = None
     exportInvoicesFlag: bool | None = None
     """
     Batch export must include invoices, expenses, or products (procurement).
@@ -1595,7 +1588,7 @@ class FileUploadSetting(SparkModel):
     id: int | None = None
     restrictFileTypesFlag: bool | None = Field(...)
     globalFileSizeLimit: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class FilterValues(SparkModel):
@@ -1629,7 +1622,7 @@ class GenericBoardTeamReference(SparkModel):
     id: int | None = None
     name: str | None = None
     isProjectTeamFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 GenericIdIdentifierReference = AccountingPackage
@@ -1680,16 +1673,16 @@ class GLCaption(SparkModel):
     """
      Max length: 255;
     """
-    segment1type: Literal['Account', 'Class'] | None = None
-    segment2type: Literal['Account', 'Class'] | None = None
-    segment3type: Literal['Account', 'Class'] | None = None
-    segment4type: Literal['Account', 'Class'] | None = None
-    segment5type: Literal['Account', 'Class'] | None = None
-    segment6type: Literal['Account', 'Class'] | None = None
-    segment7type: Literal['Account', 'Class'] | None = None
-    segment8type: Literal['Account', 'Class'] | None = None
-    segment9type: Literal['Account', 'Class'] | None = None
-    segment10type: Literal['Account', 'Class'] | None = None
+    segment1type: Literal["Account", "Class"] | None = None
+    segment2type: Literal["Account", "Class"] | None = None
+    segment3type: Literal["Account", "Class"] | None = None
+    segment4type: Literal["Account", "Class"] | None = None
+    segment5type: Literal["Account", "Class"] | None = None
+    segment6type: Literal["Account", "Class"] | None = None
+    segment7type: Literal["Account", "Class"] | None = None
+    segment8type: Literal["Account", "Class"] | None = None
+    segment9type: Literal["Account", "Class"] | None = None
+    segment10type: Literal["Account", "Class"] | None = None
     cogs1: str | None = None
     """
      Max length: 255;
@@ -1730,7 +1723,7 @@ class GLCaption(SparkModel):
     """
      Max length: 255;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class GLEntry(SparkModel):
@@ -1835,7 +1828,7 @@ class GLEntry(SparkModel):
      Max length: 255;
     """
     isBatched: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class GLExportCustomerTaxLevel(SparkModel):
@@ -1924,7 +1917,7 @@ class GoogleEmailSetup(SparkModel):
     """
     inactiveFlag: bool | None = None
     emailConnector: EmailConnectorReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 GoogleEmailSetupReference = ActivityReference
@@ -1939,7 +1932,7 @@ class Group(SparkModel):
     """
     publicFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 GroupInfo = ActivityReference
@@ -2009,14 +2002,14 @@ class Imap(SparkModel):
     port: int | None = Field(...)
     sslFlag: bool | None = None
     emailConnector: EmailConnectorReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ImapInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     emailConnector: EmailConnectorReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ImapSetupReference = ActivityReference
@@ -2030,7 +2023,7 @@ class Impact(SparkModel):
      Max length: 200;
     """
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ImportMassMaintenance(SparkModel):
@@ -2049,13 +2042,13 @@ class InOutType(SparkModel):
     """
      Max length: 30;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InOutTypeInfo(SparkModel):
     id: int | None = None
     description: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 InOutTypeReference = ActivityReference
@@ -2070,7 +2063,7 @@ class IntegratorTag(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class IntegratorTagCollection(SparkModel):
@@ -2088,7 +2081,7 @@ class InvoiceGrouping(SparkModel):
     showPriceFlag: bool | None = None
     showSubItemsFlag: bool | None = None
     groupParentChildAdditionsFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InvoiceGroupingReference(SparkModel):
@@ -2098,7 +2091,7 @@ class InvoiceGroupingReference(SparkModel):
     showPriceFlag: bool | None = None
     showSubItemsFlag: bool | None = None
     groupParentChildAdditionsFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InvoiceReference(SparkModel):
@@ -2108,7 +2101,7 @@ class InvoiceReference(SparkModel):
     applyToType: str | None = None
     invoiceDate: str | None = None
     chargeFirmFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InvoiceTemplate(SparkModel):
@@ -2122,23 +2115,23 @@ class InvoiceTemplate(SparkModel):
     marginTop: float | None = None
     marginBottom: float | None = None
     logoVisibleFlag: bool | None = None
-    headerLogoPosition: Literal['Center', 'LeftSide', 'RightSide'] | None = None
+    headerLogoPosition: Literal["Center", "LeftSide", "RightSide"] | None = None
     remitToVisibleFlag: bool | None = None
-    headerAddressPosition: Literal['Center', 'LeftSide', 'RightSide'] | None = None
+    headerAddressPosition: Literal["Center", "LeftSide", "RightSide"] | None = None
     headerTitleVisibleFlag: bool | None = None
     headerTitleCaption: str | None = None
     """
      Max length: 50;
     """
-    headerTitlePosition: Literal['Center', 'LeftSide', 'RightSide'] | None = None
+    headerTitlePosition: Literal["Center", "LeftSide", "RightSide"] | None = None
     headerTitleFont: (
         Literal[
-            'Regular',
-            'RegularBold',
-            'Large',
-            'LargeBold',
-            'ExtraLarge',
-            'ExtraLargeBold',
+            "Regular",
+            "RegularBold",
+            "Large",
+            "LargeBold",
+            "ExtraLarge",
+            "ExtraLargeBold",
         ]
         | None
     ) = None
@@ -2445,7 +2438,7 @@ class InvoiceTemplate(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 InvoiceTemplateDetailReference = ActivityReference
@@ -2457,14 +2450,14 @@ class InvoiceTemplateReference(SparkModel):
     Gets or sets invoice Template Setup Id.
     """
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InvoiceTemplateSetup(SparkModel):
     id: int | None = None
     name: str | None = None
     customFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class IRestIdentifiedItem(SparkModel):
@@ -2475,7 +2468,7 @@ class IvItemReference(SparkModel):
     id: int | None = None
     identifier: str | None = None
     serializedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 KBCategoryReference = ActivityReference
@@ -2493,7 +2486,7 @@ class KnowledgeBaseArticle(SparkModel):
     subCategoryId: int | None = None
     dateCreated: str | None = None
     createdBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class KPICategory(SparkModel):
@@ -2522,7 +2515,7 @@ class LdapConfiguration(SparkModel):
     """
     Domain Name of the server. Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 LdapConfigurationInfo = ActivityReference
@@ -2532,7 +2525,7 @@ class LdapConfigurationReference(SparkModel):
     id: int | None = None
     name: str | None = None
     server: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class LdapConfigurationTestLink(SparkModel):
@@ -2549,14 +2542,14 @@ class LegacySubCategory(SparkModel):
      Max length: 50;
     """
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class LegacySubCategoryInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class LicenseBit(SparkModel):
@@ -2576,12 +2569,9 @@ class Link(SparkModel):
      Max length: 1000;
     """
     screenLink: (
-        Literal[
-            'Company', 'Contact', 'Service', 'Invoice', 'PurchaseOrder', 'SalesOrder'
-        ]
-        | None
+        Literal["Company", "Contact", "Service", "Invoice", "PurchaseOrder", "SalesOrder"] | None
     ) = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class LinkClicked(SparkModel):
@@ -2600,12 +2590,9 @@ class LinkInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     screenLink: (
-        Literal[
-            'Company', 'Contact', 'Service', 'Invoice', 'PurchaseOrder', 'SalesOrder'
-        ]
-        | None
+        Literal["Company", "Contact", "Service", "Invoice", "PurchaseOrder", "SalesOrder"] | None
     ) = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class LinkResolveUrlInfo(SparkModel):
@@ -2627,7 +2614,7 @@ class LocationInfo(SparkModel):
     name: str | None = None
     location_flag: bool | None = None
     structureLevel: CorporateStructureLevelReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 LostRevenueReference = AgreementRevenueReference
@@ -2648,7 +2635,7 @@ class M365Contact(SparkModel):
     groups: str | None = None
     directoryRoles: str | None = None
     assignedLicenses: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 M365ContactSyncInfo = ActivityReference
@@ -2660,33 +2647,33 @@ class M365ContactSyncMonitoring(SparkModel):
     emailAddress: str | None = None
     serviceBoardId: int | None = None
     serviceBoardStatusId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class M365ContactSyncProperty(SparkModel):
     id: int | None = None
-    includeExcludeType: Literal['All', 'M365Property', 'None'] | None = None
+    includeExcludeType: Literal["All", "M365Property", "None"] | None = None
     propertyType: (
         Literal[
-            'City',
-            'DepartmentContactSync',
-            'Email',
-            'DistributionGroup',
-            'JobTitle',
-            'AssignedLicenses',
-            'DisplayName',
-            'OfficeLocation',
-            'ReportManager',
-            'State',
-            'EmployeeType',
-            'UserType',
+            "City",
+            "DepartmentContactSync",
+            "Email",
+            "DistributionGroup",
+            "JobTitle",
+            "AssignedLicenses",
+            "DisplayName",
+            "OfficeLocation",
+            "ReportManager",
+            "State",
+            "EmployeeType",
+            "UserType",
         ]
         | None
     ) = None
     excludeIncludeFlag: bool | None = None
     wildCard: str | None = None
     companyRecID: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagedDevicesIntegrationInfo(SparkModel):
@@ -2694,7 +2681,7 @@ class ManagedDevicesIntegrationInfo(SparkModel):
     name: str | None = None
     solution: str | None = None
     managementItSetupType: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ManagedDevicesIntegrationReference = ActivityReference
@@ -2732,15 +2719,15 @@ class Management(SparkModel):
     Gets or sets
                 this is only required when scheduleExecutiveSummaryReportFlag = true.
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementBackup(SparkModel):
     id: int | None = None
     type: AgreementTypeReference
     item: CatalogItemReference
-    billingLevel: Literal['Detail', 'Summary'] | None = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    billingLevel: Literal["Detail", "Summary"] | None = Field(...)
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementItSolution(SparkModel):
@@ -2749,9 +2736,9 @@ class ManagementItSolution(SparkModel):
     """
      Max length: 30;
     """
-    managementItSolutionType: (
-        Literal['LevelPlatforms', 'NAble', 'Continuum', 'Custom'] | None
-    ) = Field(...)
+    managementItSolutionType: Literal["LevelPlatforms", "NAble", "Continuum", "Custom"] | None = (
+        Field(...)
+    )
     managementSolutionName: str | None = None
     """
     Gets or sets
@@ -2822,7 +2809,7 @@ class ManagementItSolution(SparkModel):
                 this is only required for Level Platforms solution. Max length: 100;
     """
     noDisplayFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementItSolutionAgreementInterfaceParameter(SparkModel):
@@ -2832,7 +2819,7 @@ class ManagementItSolutionAgreementInterfaceParameter(SparkModel):
     serverProduct: IvItemReference | None = None
     workstationProduct: IvItemReference | None = None
     spamStatsProduct: IvItemReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementLogDocumentInfo(SparkModel):
@@ -2858,20 +2845,20 @@ class ManagementNetworkSecurity(SparkModel):
     """
      Max length: 100;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementReportSetup(SparkModel):
     id: int | None = None
     scheduledReportDisabledFlag: bool
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementSolutionReference(SparkModel):
     id: int | None = None
     name: str | None = None
     setupName: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 Manufacturer = LegacySubCategory
@@ -2893,27 +2880,27 @@ class MappedType(SparkModel):
     recIdField: str | None = None
     glType: (
         Literal[
-            'AP',
-            'AR',
-            'EE',
-            'EI',
-            'EO',
-            'IA',
-            'IT',
-            'P',
-            'PF',
-            'R',
-            'RA',
-            'RD',
-            'RE',
-            'RP',
-            'ST',
-            'SD',
-            'ET',
-            'FT',
-            'PT',
-            'WP',
-            'WR',
+            "AP",
+            "AR",
+            "EE",
+            "EI",
+            "EO",
+            "IA",
+            "IT",
+            "P",
+            "PF",
+            "R",
+            "RA",
+            "RD",
+            "RE",
+            "RP",
+            "ST",
+            "SD",
+            "ET",
+            "FT",
+            "PT",
+            "WP",
+            "WR",
         ]
         | None
     ) = None
@@ -2938,7 +2925,7 @@ class MarketingCompany(SparkModel):
     defaultContactFlag: bool | None = None
     allContactsFlag: bool | None = None
     unsubscribeFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MarketingContact(SparkModel):
@@ -2949,26 +2936,26 @@ class MarketingContact(SparkModel):
      Max length: 50;
     """
     unsubscribeFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MarketplaceImport(SparkModel):
     id: int | None = None
     marketplaceImportType: (
         Literal[
-            'Agreements',
-            'Configurations',
-            'CRMSurveys',
-            'CustomReports',
-            'CustomerPortalTypes',
-            'HTMLEmailTemplates',
-            'Products',
-            'ProjectBoards',
-            'ProjectTemplates',
-            'ReportWriterReports',
-            'ServiceBoards',
-            'TicketTemplates',
-            'Views',
+            "Agreements",
+            "Configurations",
+            "CRMSurveys",
+            "CustomReports",
+            "CustomerPortalTypes",
+            "HTMLEmailTemplates",
+            "Products",
+            "ProjectBoards",
+            "ProjectTemplates",
+            "ReportWriterReports",
+            "ServiceBoards",
+            "TicketTemplates",
+            "Views",
         ]
         | None
     ) = None
@@ -2993,12 +2980,12 @@ class MemberInfo(SparkModel):
     fullName: str | None = None
     defaultEmail: str | None = None
     photo: DocumentReference | None = None
-    licenseClass: Literal['A', 'C', 'F', 'X'] | None = None
+    licenseClass: Literal["A", "C", "F", "X"] | None = None
     """
     F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member
     """
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberLinkSsoUser(SparkModel):
@@ -3010,22 +2997,22 @@ class MemberLinkSsoUser(SparkModel):
 
 class MemberNotificationSetting(SparkModel):
     id: int | None = None
-    notificationType: Literal['Email', 'Push'] | None = Field(...)
+    notificationType: Literal["Email", "Push"] | None = Field(...)
     notificationTrigger: (
         Literal[
-            'ActivityStatusReq',
-            'CustomerUpdated',
-            'ExpenseReport',
-            'TicketStatusChange',
-            'TicketStatusRequest',
-            'TimeNagApprover',
-            'TimeNagMember',
-            'TimeSheet',
-            'WorkflowRules',
+            "ActivityStatusReq",
+            "CustomerUpdated",
+            "ExpenseReport",
+            "TicketStatusChange",
+            "TicketStatusRequest",
+            "TimeNagApprover",
+            "TimeNagMember",
+            "TimeSheet",
+            "WorkflowRules",
         ]
         | None
     ) = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberOffice365(SparkModel):
@@ -3038,7 +3025,7 @@ class MemberReference(SparkModel):
     identifier: str | None = None
     name: str | None = None
     dailyCapacity: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberSsoSettingsReference(SparkModel):
@@ -3046,7 +3033,7 @@ class MemberSsoSettingsReference(SparkModel):
     ssoUserId: str | None = None
     userName: str | None = None
     email: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberSsoToken(SparkModel):
@@ -3060,7 +3047,7 @@ class MemberType(SparkModel):
      Max length: 30;
     """
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 MemberTypeInfo = LegacySubCategoryInfo
@@ -3074,10 +3061,10 @@ MenuLocationReference = ActivityReference
 
 class MySecurity(SparkModel):
     id: int | None = None
-    addLevel: Literal['None', 'My', 'All'] | None = None
-    editLevel: Literal['None', 'My', 'All'] | None = None
-    deleteLevel: Literal['None', 'My', 'All'] | None = None
-    inquireLevel: Literal['None', 'My', 'All'] | None = None
+    addLevel: Literal["None", "My", "All"] | None = None
+    editLevel: Literal["None", "My", "All"] | None = None
+    deleteLevel: Literal["None", "My", "All"] | None = None
+    inquireLevel: Literal["None", "My", "All"] | None = None
     moduleFunctionName: str | None = None
     moduleFunctionDescription: str | None = None
     myAllFlag: bool | None = None
@@ -3090,31 +3077,31 @@ class MySecurity(SparkModel):
     moduleName: str | None = None
     sortOrder: int | None = None
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MySecurityCustomizeItem(SparkModel):
     id: int | None = None
     customizeIdentifier: (
         Literal[
-            'CompanyReports',
-            'FinanceReports',
-            'MarketingReports',
-            'ProcurementReports',
-            'ProjectReports',
-            'SalesReports',
-            'ServiceReports',
-            'SystemReports',
-            'TimeAndExpenseReports',
-            'CompanyConfigurations',
-            'FinanceAgreements',
-            'ProjectScheduling',
-            'ServiceResourceScheduling',
-            'SystemManageHostedApi',
-            'SystemMyAccount',
-            'SystemCustomMenuEntry',
-            'SystemMassMaintenance',
-            'SystemTableSetup',
+            "CompanyReports",
+            "FinanceReports",
+            "MarketingReports",
+            "ProcurementReports",
+            "ProjectReports",
+            "SalesReports",
+            "ServiceReports",
+            "SystemReports",
+            "TimeAndExpenseReports",
+            "CompanyConfigurations",
+            "FinanceAgreements",
+            "ProjectScheduling",
+            "ServiceResourceScheduling",
+            "SystemManageHostedApi",
+            "SystemMyAccount",
+            "SystemCustomMenuEntry",
+            "SystemMassMaintenance",
+            "SystemTableSetup",
         ]
         | None
     ) = None
@@ -3140,7 +3127,7 @@ class NotificationRecipient(SparkModel):
     projectFlag: bool | None = None
     procurementFlag: bool | None = None
     knowledgeBaseFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 NotificationRecipientReference = CatalogItemReference
@@ -3192,7 +3179,7 @@ class Office365EmailSetup(SparkModel):
     useExistingTenantFlag: bool | None = None
     existingTenant: ExistingTenantReference | None = None
     emailConnector: EmailConnectorReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 Office365EmailSetupReference = ActivityReference
@@ -3201,13 +3188,13 @@ Office365EmailSetupReference = ActivityReference
 class OnHandSerialNumberReference(SparkModel):
     id: int | None = None
     serialNumber: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OnPremiseSearchSetting(SparkModel):
     id: int | None = None
     password: str
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpenRevenueReference = AgreementRevenueReference
@@ -3221,7 +3208,7 @@ class OpportunityNote(SparkModel):
     flagged: bool | None = None
     enteredBy: str | None = None
     mobileGuid: UUID | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpportunityPriorityReference = ActivityReference
@@ -3237,14 +3224,14 @@ class OpportunityRating(SparkModel):
      Max length: 50;
     """
     sortOrder: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OpportunityRatingInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     sortOrder: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpportunityRatingReference = ActivityReference
@@ -3268,7 +3255,7 @@ class OpportunityStage(SparkModel):
      Max length: 25;
     """
     sequenceNumber: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OpportunityStageInfo(SparkModel):
@@ -3277,7 +3264,7 @@ class OpportunityStageInfo(SparkModel):
     probability: OpportunityProbabilityReference | None = None
     color: str | None = None
     sequenceNumber: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpportunityStageReference = ActivityReference
@@ -3296,7 +3283,7 @@ class OpportunityStatus(SparkModel):
     defaultFlag: bool | None = None
     enteredBy: str | None = None
     dateEntered: datetime | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OpportunityStatusInfo(SparkModel):
@@ -3304,7 +3291,7 @@ class OpportunityStatusInfo(SparkModel):
     closedFlag: bool | None = None
     inactiveFlag: bool | None = None
     name: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpportunityStatusReference = ActivityReference
@@ -3358,14 +3345,14 @@ class OpportunityType(SparkModel):
      Max length: 50;
     """
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OpportunityTypeInfo(SparkModel):
     id: int | None = None
     description: str | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OpportunityTypeReference = ActivityReference
@@ -3384,7 +3371,7 @@ class OsGradeWeight(SparkModel):
     id: int | None = None
     osGradeWeight: float | None = None
     osName: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 Other1RevenueReference = AgreementRevenueReference
@@ -3402,7 +3389,7 @@ class OwnershipType(SparkModel):
     """
      Max length: 200;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 OwnershipTypeInfo = ActivityReference
@@ -3422,14 +3409,14 @@ class ParsingType(SparkModel):
     name: str | None = None
     parseRule: str | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ParsingVariable(SparkModel):
     id: int | None = None
     name: str | None = None
     code: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PatchOperation(SparkModel):
@@ -3450,7 +3437,7 @@ class PaymentType(SparkModel):
     classification: ClassificationReference
     defaultFlag: bool | None = None
     companyFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 PaymentTypeInfo = AddressFormatInfo
@@ -3467,7 +3454,7 @@ class PhaseStatusInfo(SparkModel):
     collapsedFlag: bool | None = None
     closedFlag: bool | None = None
     boardAssociationIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 PhaseStatusReference = ActivityReference
@@ -3476,10 +3463,7 @@ PhaseStatusReference = ActivityReference
 class PortalCalendar(SparkModel):
     id: int | None = None
     weekStart: (
-        Literal[
-            'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
-        ]
-        | None
+        Literal["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] | None
     ) = Field(...)
     adjust1Start: str | None = None
     adjust1End: str | None = None
@@ -3490,7 +3474,7 @@ class PortalCalendar(SparkModel):
     adjust3Start: str | None = None
     adjust3End: str | None = None
     adjust3Hours: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfiguration(SparkModel):
@@ -3531,16 +3515,16 @@ class PortalConfiguration(SparkModel):
     """
     language: (
         Literal[
-            'English',
-            'Spanish',
-            'French',
-            'British',
-            'Australian',
-            'BrazilianPortuguese',
-            'CanadianFrench',
-            'German',
-            'NewZealand',
-            'Dutch',
+            "English",
+            "Spanish",
+            "French",
+            "British",
+            "Australian",
+            "BrazilianPortuguese",
+            "CanadianFrench",
+            "German",
+            "NewZealand",
+            "Dutch",
         ]
         | None
     ) = None
@@ -3554,7 +3538,7 @@ class PortalConfiguration(SparkModel):
     locationIds: list[int] | None = None
     portalImageCopySuccessFlag: bool | None = None
     displayVendorFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfigurationOpportunitySetup(SparkModel):
@@ -3608,7 +3592,7 @@ class PortalConfigurationOpportunitySetup(SparkModel):
     """
     confirmationEmailSubject: str | None = None
     confirmationEmailBody: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfigurationPasswordEmailSetup(SparkModel):
@@ -3633,7 +3617,7 @@ class PortalConfigurationPasswordEmailSetup(SparkModel):
     """
     invalidPasswordEmailSubject: str | None = None
     invalidPasswordEmailBody: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfigurationPaymentProcessor(SparkModel):
@@ -3662,7 +3646,7 @@ class PortalReport(SparkModel):
     openSameWindowFlag: bool | None = None
     customFlag: bool | None = None
     displayFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalSecurity(SparkModel):
@@ -3678,7 +3662,7 @@ class PortalSecurityLevel(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalSecuritySetting(SparkModel):
@@ -3691,7 +3675,7 @@ class PortalSecuritySetting(SparkModel):
     levelFour: bool | None = None
     levelFive: bool | None = None
     levelSix: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PricingBreak(SparkModel):
@@ -3703,14 +3687,14 @@ class PricingBreak(SparkModel):
     unlimited: bool | None = None
     priceMethod: (
         Literal[
-            'FlatRateForRange',
-            'PercentMarkupFromCost',
-            'PercentMarkdownFromPrice',
-            'PricePerUnit',
+            "FlatRateForRange",
+            "PercentMarkupFromCost",
+            "PercentMarkdownFromPrice",
+            "PricePerUnit",
         ]
         | None
     ) = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PricingSchedule(SparkModel):
@@ -3725,7 +3709,7 @@ class PricingSchedule(SparkModel):
     companies: list[int] | None = None
     setAllCompaniesFlag: bool | None = None
     removeAllCompaniesFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 PricingScheduleReference = ActivityReference
@@ -3739,19 +3723,19 @@ class Priority(SparkModel):
     """
     color: (
         Literal[
-            'Black',
-            'Blue',
-            'Cyan',
-            'Gray',
-            'Green',
-            'Lime',
-            'Orange',
-            'Pink',
-            'Purple',
-            'Red',
-            'White',
-            'Yellow',
-            'Custom',
+            "Black",
+            "Blue",
+            "Cyan",
+            "Gray",
+            "Green",
+            "Lime",
+            "Orange",
+            "Pink",
+            "Purple",
+            "Red",
+            "White",
+            "Yellow",
+            "Custom",
         ]
         | None
     ) = Field(...)
@@ -3759,8 +3743,8 @@ class Priority(SparkModel):
     defaultFlag: bool | None = None
     imageLink: str | None = None
     urgencySortOrder: str | None = None
-    level: Literal['Critical', 'High', 'Medium', 'Low'] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    level: Literal["Critical", "High", "Medium", "Low"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PriorityInfo(SparkModel):
@@ -3768,19 +3752,19 @@ class PriorityInfo(SparkModel):
     name: str | None = None
     color: (
         Literal[
-            'Black',
-            'Blue',
-            'Cyan',
-            'Gray',
-            'Green',
-            'Lime',
-            'Orange',
-            'Pink',
-            'Purple',
-            'Red',
-            'White',
-            'Yellow',
-            'Custom',
+            "Black",
+            "Blue",
+            "Cyan",
+            "Gray",
+            "Green",
+            "Lime",
+            "Orange",
+            "Pink",
+            "Purple",
+            "Red",
+            "White",
+            "Yellow",
+            "Custom",
         ]
         | None
     ) = None
@@ -3788,8 +3772,8 @@ class PriorityInfo(SparkModel):
     defaultFlag: bool | None = None
     imageLink: str | None = None
     urgencySortOrder: str | None = None
-    level: Literal['Critical', 'High', 'Medium', 'Low'] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    level: Literal["Critical", "High", "Medium", "Low"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PriorityReference(SparkModel):
@@ -3797,7 +3781,7 @@ class PriorityReference(SparkModel):
     name: str | None = None
     sort: int | None = None
     level: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProcurementSetting(SparkModel):
@@ -3811,10 +3795,10 @@ class ProcurementSetting(SparkModel):
     """
      Max length: 5;
     """
-    prefixSuffixType: Literal['Prefix', 'Suffix'] | None = None
+    prefixSuffixType: Literal["Prefix", "Suffix"] | None = None
     disableCostUpdatesFlag: bool | None = None
     disableNegativeInventoryFlag: bool | None = None
-    costingMethod: Literal['FIFO', 'LIFO', 'AverageCosting'] | None = Field(...)
+    costingMethod: Literal["FIFO", "LIFO", "AverageCosting"] | None = Field(...)
     autoClosePurchaseOrderFlag: bool | None = None
     autoClosePurchaseOrderItemFlag: bool | None = None
     autoApprovePurchaseOrderFlag: bool | None = None
@@ -3828,7 +3812,7 @@ class ProcurementSetting(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     notificationForChangesInShippingInfoFlag: bool | None = None
     shippingInfoNotificationEmail: str | None = None
     """
@@ -3868,7 +3852,7 @@ class ProductRecurring(SparkModel):
     billCycleId: int | None = None
     billCycle: BillingCycleReference | None = None
     cycles: int | None = None
-    cycleType: Literal['ContractYear', 'CalendarYear'] | None = None
+    cycleType: Literal["ContractYear", "CalendarYear"] | None = None
     agreementType: AgreementTypeReference | None = None
 
 
@@ -3888,11 +3872,9 @@ class ProductType(SparkModel):
      Max length: 50;
     """
     inactiveFlag: bool | None = None
-    typeXref: (
-        Literal['InventoryPart', 'NonInventoryPart', 'OtherCharge', 'Service'] | None
-    ) = None
+    typeXref: Literal["InventoryPart", "NonInventoryPart", "OtherCharge", "Service"] | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ProductTypeInfo = CategoryInfo
@@ -3918,7 +3900,7 @@ class ProjectContact(SparkModel):
     id: int | None = None
     projectId: int | None = None
     contact: ContactReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectNote(SparkModel):
@@ -3927,7 +3909,7 @@ class ProjectNote(SparkModel):
     text: str
     type: NoteTypeReference | None = None
     flagged: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ProjectPhaseReference = ActivityReference
@@ -3947,7 +3929,7 @@ class ProjectSecurityRole(SparkModel):
     """
     managerRoleFlag: bool | None = None
     defaultContactFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectSecurityRoleInfo(SparkModel):
@@ -3955,21 +3937,21 @@ class ProjectSecurityRoleInfo(SparkModel):
     name: str | None = None
     managerRoleFlag: bool | None = None
     defaultContactFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectSecurityRoleSetting(SparkModel):
     id: int | None = None
-    addLevel: Literal['None', 'My', 'All'] | None = None
-    editLevel: Literal['None', 'My', 'All'] | None = None
-    deleteLevel: Literal['None', 'My', 'All'] | None = None
-    inquireLevel: Literal['None', 'My', 'All'] | None = None
+    addLevel: Literal["None", "My", "All"] | None = None
+    editLevel: Literal["None", "My", "All"] | None = None
+    deleteLevel: Literal["None", "My", "All"] | None = None
+    inquireLevel: Literal["None", "My", "All"] | None = None
     moduleIdentifier: str | None = None
     """
      Max length: 50;
     """
     myFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectStatusInfo(SparkModel):
@@ -3979,7 +3961,7 @@ class ProjectStatusInfo(SparkModel):
     inactiveFlag: bool | None = None
     noTimeFlag: bool | None = None
     closedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ProjectStatusReference = ActivityReference
@@ -3998,7 +3980,7 @@ class ProjectTemplatePhase(SparkModel):
     connectWiseId: str | None = None
     parentId: int | None = None
     parentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ProjectTemplatePhaseReference = ActivityReference
@@ -4016,7 +3998,7 @@ class ProjectType(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectTypeInfo(SparkModel):
@@ -4024,7 +4006,7 @@ class ProjectTypeInfo(SparkModel):
     name: str | None = None
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ProjectTypeReference = ActivityReference
@@ -4049,14 +4031,14 @@ class ProjectWorkplanProjectPhase(SparkModel):
     scheduled_End: str | None = None
     scheduled_Duration: int | None = None
     billPhaseSeparately: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
 class PurchaseOrderInfo(SparkModel):
     id: int | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 PurchaseOrderLineItemReference = AdjustmentTypeReference
@@ -4069,7 +4051,7 @@ class PurchaseOrderNote(SparkModel):
     type: NoteTypeReference | None = None
     flagged: bool | None = None
     enteredBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 PurchaseOrderReference = ActivityReference
@@ -4086,7 +4068,7 @@ class PurchaseOrderStatusInfo(SparkModel):
     inactiveFlag: bool | None = None
     defaultClosedFlag: bool | None = None
     sortOrder: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 PurchaseOrderStatusReference = ActivityReference
@@ -4140,7 +4122,7 @@ class ReportingService(SparkModel):
     """
      Max length: 100;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class RequestPasswordRequest(SparkModel):
@@ -4154,7 +4136,7 @@ class RmaAction(SparkModel):
      Max length: 50;
     """
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 RmaActionInfo = ActivityReference
@@ -4187,7 +4169,7 @@ Role = ContactRelationship
 class SalesConversion(SparkModel):
     parentType: str | None = None
     convertedTo: ConversionTypeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SalesOrderRecap(SparkModel):
@@ -4211,19 +4193,19 @@ class SalesOrdersLineItem(SparkModel):
     billStatus: str | None = None
     quantity: int | None = None
     quantityCancelled: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SalesProbability(SparkModel):
     id: int | None = None
     probability: int
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SalesProbabilityInfo(SparkModel):
     id: int | None = None
     probability: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SalesTeamReference = AdjustmentTypeReference
@@ -4243,7 +4225,7 @@ class ScheduleColor(SparkModel):
     """
     Must be a valid Hexadecimal Color Code.
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ScheduleEntryReference = InOutTypeInfo
@@ -4260,7 +4242,7 @@ class ScheduleReminderTime(SparkModel):
      Max length: 10;
     """
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ScheduleSpanReference = AdjustmentTypeReference
@@ -4274,7 +4256,7 @@ class ScheduleStatus(SparkModel):
     """
     defaultFlag: bool | None = None
     showAsTentativeFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ScheduleStatusInfo(SparkModel):
@@ -4282,7 +4264,7 @@ class ScheduleStatusInfo(SparkModel):
     name: str | None = None
     defaultFlag: bool | None = None
     showAsTentativeFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ScheduleStatusReference = ActivityReference
@@ -4300,7 +4282,7 @@ class SchedulingMemberInfo(SparkModel):
     fullName: str | None = None
     defaultEmail: str | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SecurityRole(SparkModel):
@@ -4315,7 +4297,7 @@ class SecurityRole(SparkModel):
     """
     adminFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SecurityRoleInfo(SparkModel):
@@ -4323,7 +4305,7 @@ class SecurityRoleInfo(SparkModel):
     name: str | None = None
     roleType: str | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SecurityRoleReference = ActivityReference
@@ -4331,10 +4313,10 @@ SecurityRoleReference = ActivityReference
 
 class SecurityRoleSetting(SparkModel):
     id: int | None = None
-    addLevel: Literal['None', 'My', 'All'] | None = None
-    editLevel: Literal['None', 'My', 'All'] | None = None
-    deleteLevel: Literal['None', 'My', 'All'] | None = None
-    inquireLevel: Literal['None', 'My', 'All'] | None = None
+    addLevel: Literal["None", "My", "All"] | None = None
+    editLevel: Literal["None", "My", "All"] | None = None
+    deleteLevel: Literal["None", "My", "All"] | None = None
+    inquireLevel: Literal["None", "My", "All"] | None = None
     moduleFunctionName: str | None = None
     moduleFunctionDescription: str | None = None
     myAllFlag: bool | None = None
@@ -4346,22 +4328,22 @@ class SecurityRoleSetting(SparkModel):
     moduleIdentifier: str | None = None
     moduleName: str | None = None
     sortOrder: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Service(SparkModel):
     id: int | None = None
     srNotify: (
         Literal[
-            'All',
-            'NewAndClosedRequests',
-            'ClosedRequestsOnly',
-            'NewRequestsOnly',
-            'None',
+            "All",
+            "NewAndClosedRequests",
+            "ClosedRequestsOnly",
+            "NewRequestsOnly",
+            "None",
         ]
         | None
     ) = Field(...)
-    scheduleSpan: Literal['Standard', 'OfficeHours', 'Overnight']
+    scheduleSpan: Literal["Standard", "OfficeHours", "Overnight"]
     hideDelimiterFlag: bool | None = None
     allowCCFlag: bool | None = None
     allowTOFlag: bool | None = None
@@ -4386,7 +4368,7 @@ class Service(SparkModel):
     memberColorDisableFlag: bool | None = None
     contactColorDisableFlag: bool | None = None
     unknownColorDisableFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceCodeReference = ActivityReference
@@ -4397,7 +4379,7 @@ class ServiceEmailTemplateReference(SparkModel):
     identifier: str | None = None
     name: str | None = None
     type: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceInfo(SparkModel):
@@ -4406,7 +4388,7 @@ class ServiceInfo(SparkModel):
     memberColor: str | None = None
     contactColor: str | None = None
     unknownColor: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceItemReference = ActivityReference
@@ -4418,9 +4400,9 @@ class ServiceLocation(SparkModel):
     """
      Max length: 30;
     """
-    where: Literal['OnSite', 'Remote', 'InHouse'] | None = Field(...)
+    where: Literal["OnSite", "Remote", "InHouse"] | None = Field(...)
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceLocationInfo = AddressFormatInfo
@@ -4446,7 +4428,7 @@ class ServiceNote(SparkModel):
     internalFlag: bool | None = None
     externalFlag: bool | None = None
     sentimentScore: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceRevenueReference = AgreementRevenueReference
@@ -4468,7 +4450,7 @@ class ServiceSignoff(SparkModel):
     """
     On add/post, if this is set to true but no value is set for task, task is defaulted to ServiceTasks.All.
     """
-    task: Literal['All', 'Closed', 'Open'] | None = None
+    task: Literal["All", "Closed", "Open"] | None = None
     """
     On add/post, if this is set but no value is set for taskFlag, taskFlag is set to true.
     """
@@ -4539,7 +4521,7 @@ class ServiceSignoff(SparkModel):
     """
     creditCardFieldsFlag: bool | None = None
     defaultFFFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceSignoffInfo = AddressFormatInfo
@@ -4555,7 +4537,7 @@ class ServiceStatusReference(SparkModel):
     id: int | None = None
     name: str | None = None
     sort: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceSubTypeReference = ActivityReference
@@ -4586,7 +4568,7 @@ class ServiceSurvey(SparkModel):
     notifyWho: GenericIdIdentifierReference | None = None
     notifyWhoVisibleFlag: bool | None = None
     notifyMember: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceSurveyQuestionOption(SparkModel):
@@ -4608,10 +4590,10 @@ class ServiceTask(SparkModel):
     code: ServiceCodeReference | None = None
     member: MemberReference | None = None
     resolution: str | None = None
-    childScheduleAction: Literal['Transfer', 'Delete', 'Done'] | None = None
+    childScheduleAction: Literal["Transfer", "Delete", "Done"] | None = None
     childTicketId: int | None = None
     summary: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceTeamReference = ActivityReference
@@ -4621,14 +4603,14 @@ class ServiceTemplateInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     templateFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceTemplateReference(SparkModel):
     id: int | None = None
     name: str | None = None
     summary: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceTicketLink(SparkModel):
@@ -4646,7 +4628,7 @@ class ServiceTicketLink(SparkModel):
     """
      Max length: 1000;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceTicketLinkInfo(SparkModel):
@@ -4654,7 +4636,7 @@ class ServiceTicketLinkInfo(SparkModel):
     name: str | None = None
     linkText: str | None = None
     url: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ServiceTypeReference = ActivityReference
@@ -4668,7 +4650,7 @@ class SetupScreen(SparkModel):
     moduleDescription: str | None = None
     moduleIdentifier: str | None = None
     moduleName: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 Severity = Impact
@@ -4685,7 +4667,7 @@ class ShipmentMethod(SparkModel):
     """
      Max length: 200;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ShipmentMethodInfo(SparkModel):
@@ -4693,7 +4675,7 @@ class ShipmentMethodInfo(SparkModel):
     name: str | None = None
     defaultFlag: bool | None = None
     trackingUrl: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ShipmentMethodReference = ActivityReference
@@ -4723,7 +4705,7 @@ class SLA(SparkModel):
     """
      Max length: 25;
     """
-    basedOn: Literal['AllHours', 'Customer', 'MyCalendar', 'Custom'] | None = Field(...)
+    basedOn: Literal["AllHours", "Customer", "MyCalendar", "Custom"] | None = Field(...)
     customCalendar: CalendarReference | None = None
     defaultFlag: bool | None = None
     applicationOrder: int | None = None
@@ -4742,7 +4724,7 @@ class SLA(SparkModel):
     planWithinPercent: int | None = None
     resolutionHours: float | None = None
     resolutionPercent: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SLAInfo = ActivityReference
@@ -4760,7 +4742,7 @@ class Source(SparkModel):
     defaultFlag: bool | None = None
     enteredBy: str | None = None
     dateEntered: datetime | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SourceInfo = AddressFormatInfo
@@ -4775,7 +4757,7 @@ class SsoConfiguration(SparkModel):
     """
     Descriptor of the SSO Configuration Max length: 100;
     """
-    ssoType: Literal['CWSSO', 'SAML'] | None = Field(...)
+    ssoType: Literal["CWSSO", "SAML"] | None = Field(...)
     """
     Type of SSO Configuration
     """
@@ -4834,7 +4816,7 @@ class SsoConfiguration(SparkModel):
     token: str | None = None
     submittedMemberCount: int | None = None
     allMembersSubmitted: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     isSsoOnByDefault: bool | None = None
 
 
@@ -4864,7 +4846,7 @@ class State(SparkModel):
      Max length: 50;
     """
     country: CountryReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class StateInfo(SparkModel):
@@ -4872,7 +4854,7 @@ class StateInfo(SparkModel):
     name: str | None = None
     identifier: str | None = None
     country: CountryReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 StateReference = CatalogItemReference
@@ -4884,7 +4866,7 @@ class StatusIndicator(SparkModel):
     name: str | None = None
     color: str | None = None
     icon: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 StatusIndicatorReference = CatalogItemReference
@@ -4906,7 +4888,7 @@ class SubCategory(SparkModel):
     """
     defaultFlag: bool | None = None
     category: ProductCategoryReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SubCategoryInfo(SparkModel):
@@ -4915,7 +4897,7 @@ class SubCategoryInfo(SparkModel):
     category: ProductCategoryReference | None = None
     inactiveFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SuccessResponse(SparkModel):
@@ -4934,7 +4916,7 @@ class Survey(SparkModel):
      Max length: 1000;
     """
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SurveyInfo = LegacySubCategoryInfo
@@ -4948,7 +4930,7 @@ class SurveyOption(SparkModel):
     """
     points: int | None = Field(...)
     visibleflag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 SurveyQuestionReference = ConfigurationTypeQuestionReference
@@ -4979,7 +4961,7 @@ class SystemSetting(SparkModel):
     description: str | None = None
     value: str
     valueType: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxCode(SparkModel):
@@ -5003,7 +4985,7 @@ class TaxCode(SparkModel):
     canadaCalculateGSTFlag: bool | None = None
     cancelDate: datetime | None = None
     levelOneRate: float | None = None
-    levelOneRateType: Literal['Amount', 'Percent'] | None = None
+    levelOneRateType: Literal["Amount", "Percent"] | None = None
     levelOneTaxableMax: float | None = None
     levelOneCaption: str | None = None
     """
@@ -5024,7 +5006,7 @@ class TaxCode(SparkModel):
     levelOneApplySingleUnitMin: float | None = None
     levelOneApplySingleUnitMax: float | None = None
     levelTwoRate: float | None = None
-    levelTwoRateType: Literal['Amount', 'Percent'] | None = None
+    levelTwoRateType: Literal["Amount", "Percent"] | None = None
     levelTwoTaxableMax: float | None = None
     levelTwoCaption: str | None = None
     """
@@ -5045,7 +5027,7 @@ class TaxCode(SparkModel):
     levelTwoApplySingleUnitMin: float | None = None
     levelTwoApplySingleUnitMax: float | None = None
     levelThreeRate: float | None = None
-    levelThreeRateType: Literal['Amount', 'Percent'] | None = None
+    levelThreeRateType: Literal["Amount", "Percent"] | None = None
     levelThreeTaxableMax: float | None = None
     levelThreeCaption: str | None = None
     """
@@ -5066,7 +5048,7 @@ class TaxCode(SparkModel):
     levelThreeApplySingleUnitMin: float | None = None
     levelThreeApplySingleUnitMax: float | None = None
     levelFourRate: float | None = None
-    levelFourRateType: Literal['Amount', 'Percent'] | None = None
+    levelFourRateType: Literal["Amount", "Percent"] | None = None
     levelFourTaxableMax: float | None = None
     levelFourCaption: str | None = None
     """
@@ -5087,7 +5069,7 @@ class TaxCode(SparkModel):
     levelFourApplySingleUnitMin: float | None = None
     levelFourApplySingleUnitMax: float | None = None
     levelFiveRate: float | None = None
-    levelFiveRateType: Literal['Amount', 'Percent'] | None = None
+    levelFiveRateType: Literal["Amount", "Percent"] | None = None
     levelFiveTaxableMax: float | None = None
     levelFiveCaption: str | None = None
     """
@@ -5108,7 +5090,7 @@ class TaxCode(SparkModel):
     levelFiveApplySingleUnitMin: float | None = None
     levelFiveApplySingleUnitMax: float | None = None
     levelSixRate: float | None = None
-    levelSixRateType: Literal['Amount', 'Percent'] | None = None
+    levelSixRateType: Literal["Amount", "Percent"] | None = None
     levelSixTaxableMax: float | None = None
     levelSixCaption: str | None = None
     """
@@ -5146,7 +5128,7 @@ class TaxCode(SparkModel):
     """
     addAllProductTypes: bool | None = None
     removeAllProductTypes: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxCodeInfo(SparkModel):
@@ -5162,14 +5144,14 @@ class TaxCodeInfo(SparkModel):
     levelFourRate: float | None = None
     levelFiveRate: float | None = None
     levelSixRate: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxCodeLevel(SparkModel):
     id: int | None = None
     taxLevel: int | None = None
     taxRate: float | None = Field(...)
-    rateType: Literal['Amount', 'Percent'] | None = Field(...)
+    rateType: Literal["Amount", "Percent"] | None = Field(...)
     taxableMax: float | None = None
     caption: str | None = None
     """
@@ -5189,7 +5171,7 @@ class TaxCodeLevel(SparkModel):
     singleUnitFlag: bool | None = None
     singleUnitMinimum: float | None = None
     singleUnitMaximum: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TaxCodeLevelReference = ActivityReference
@@ -5205,19 +5187,19 @@ class TaxCodeXRef(SparkModel):
      Max length: 50;
     """
     defaultFlag: bool | None = None
-    levelOne: Literal['NonTaxable', 'Taxable'] | None = None
-    levelTwo: Literal['NonTaxable', 'Taxable'] | None = None
-    levelThree: Literal['NonTaxable', 'Taxable'] | None = None
-    levelFour: Literal['NonTaxable', 'Taxable'] | None = None
-    levelFive: Literal['NonTaxable', 'Taxable'] | None = None
-    levelSix: Literal['NonTaxable', 'Taxable'] | None = None
+    levelOne: Literal["NonTaxable", "Taxable"] | None = None
+    levelTwo: Literal["NonTaxable", "Taxable"] | None = None
+    levelThree: Literal["NonTaxable", "Taxable"] | None = None
+    levelFour: Literal["NonTaxable", "Taxable"] | None = None
+    levelFive: Literal["NonTaxable", "Taxable"] | None = None
+    levelSix: Literal["NonTaxable", "Taxable"] | None = None
     taxCode: TaxCodeReference | None = None
     taxableLevels: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxIntegration(SparkModel):
-    taxIntegrationType: Literal['Avalara'] | None = None
+    taxIntegrationType: Literal["Avalara"] | None = None
     id: int | None = None
     accountNumber: str | None = None
     """
@@ -5260,26 +5242,26 @@ class TaxIntegration(SparkModel):
     """
     accountingIntegrationFlag: bool | None = None
     taxLineFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxIntegrationInfo(SparkModel):
     id: int | None = None
     enabledFlag: bool | None = None
-    taxIntegrationType: Literal['Avalara'] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    taxIntegrationType: Literal["Avalara"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Team(SparkModel):
     id: int | None = None
-    type: Literal['Individual', 'Team'] | None = Field(...)
+    type: Literal["Individual", "Team"] | None = Field(...)
     member: MemberReference | None = None
     salesTeam: SalesTeamReference | None = None
     commissionPercent: int | None = None
     referralFlag: bool | None = None
     opportunityId: int | None = None
     responsibleFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TeamMember(SparkModel):
@@ -5288,7 +5270,7 @@ class TeamMember(SparkModel):
     team: ServiceTeamReference
     member: MemberReference
     teamLeaderFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TeamRole(SparkModel):
@@ -5300,7 +5282,7 @@ class TeamRole(SparkModel):
     accountManagerFlag: bool | None = None
     techFlag: bool | None = None
     salesFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TeamRoleInfo = ActivityReference
@@ -5323,7 +5305,7 @@ class TemplatePhase(SparkModel):
     markAsMilestoneFlag: bool | None = None
     billPhaseSeparately: bool | None = None
     wbsCode: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TicketBundle(SparkModel):
@@ -5455,14 +5437,14 @@ class TicketChangeLog(SparkModel):
     """
     Merged Parent Ticket ID.
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TicketInfo(SparkModel):
     id: int | None = None
     summary: str | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TicketMerge(SparkModel):
@@ -5484,13 +5466,13 @@ class TicketNote(SparkModel):
     processNotifications: bool | None = None
     internalFlag: bool | None = None
     externalFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TicketReference(SparkModel):
     id: int | None = None
     summary: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TicketSync(SparkModel):
@@ -5499,7 +5481,7 @@ class TicketSync(SparkModel):
     """
      Max length: 80;
     """
-    vendorType: Literal['Zenith'] | None = Field(...)
+    vendorType: Literal["Zenith"] | None = Field(...)
     integratorLogin: IntegratorLoginReference
     company: CompanyReference
     url: str
@@ -5509,7 +5491,7 @@ class TicketSync(SparkModel):
     problemDescriptionFlag: bool | None = None
     internalAnalysisFlag: bool | None = None
     resolutionFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TicketTask(SparkModel):
@@ -5523,9 +5505,9 @@ class TicketTask(SparkModel):
     member: MemberReference | None = None
     resolution: str | None = None
     summary: str | None = None
-    childScheduleAction: Literal['Transfer', 'Delete', 'Done'] | None = None
+    childScheduleAction: Literal["Transfer", "Delete", "Done"] | None = None
     childTicketId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TimeAccrual(SparkModel):
@@ -5535,31 +5517,31 @@ class TimeAccrual(SparkModel):
     """
     if vacationFlag is set to false, system will clear out or ingore the values of vacationAvailableType, vacationCarryoverAllowedFlag, vacationCarryoverLimit
     """
-    vacationAvailableType: Literal['AnniversaryYear', 'CalendarYear'] | None = None
+    vacationAvailableType: Literal["AnniversaryYear", "CalendarYear"] | None = None
     vacationCarryoverAllowedFlag: bool | None = None
     vacationCarryoverLimit: float | None = None
     sickFlag: bool | None = None
     """
     if sickFlag is set to false, system will clear out or ignore the values of sickAvailableType, sickCarryoverAllowedFlag, sickCarryoverLimit
     """
-    sickAvailableType: Literal['AnniversaryYear', 'CalendarYear'] | None = None
+    sickAvailableType: Literal["AnniversaryYear", "CalendarYear"] | None = None
     sickCarryoverAllowedFlag: bool | None = None
     sickCarryoverLimit: float | None = None
     ptoFlag: bool | None = None
     """
     if ptoFlag is set to false, system will clear out or ignore the values of ptoAvailableType, ptoCarryoverAllowedFlag, ptoCarryoverLimit
     """
-    ptoAvailableType: Literal['AnniversaryYear', 'CalendarYear'] | None = None
+    ptoAvailableType: Literal["AnniversaryYear", "CalendarYear"] | None = None
     ptoCarryoverAllowedFlag: bool | None = None
     ptoCarryoverLimit: float | None = None
     holidayFlag: bool | None = None
     """
     if holidayFlag is set to false, system will clear out or ignore the values of holidayAvailableType, holidayCarryoverAllowedFlag, holidayCarryoverLimit
     """
-    holidayAvailableType: Literal['AnniversaryYear', 'CalendarYear'] | None = None
+    holidayAvailableType: Literal["AnniversaryYear", "CalendarYear"] | None = None
     holidayCarryoverAllowedFlag: bool | None = None
     holidayCarryoverLimit: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TimeAccrualReference = ActivityReference
@@ -5570,146 +5552,146 @@ class TimeEntryAudit(SparkModel):
     member: MemberReference | None = None
     source: (
         Literal[
-            'None',
-            'Member',
-            'API',
-            'Workflow',
-            'Portal',
-            'Mobile',
-            'Network',
-            'EmailConnector',
-            'MassMaintenance',
-            'Application',
-            'SystemAPI',
-            'Conversion',
+            "None",
+            "Member",
+            "API",
+            "Workflow",
+            "Portal",
+            "Mobile",
+            "Network",
+            "EmailConnector",
+            "MassMaintenance",
+            "Application",
+            "SystemAPI",
+            "Conversion",
         ]
         | None
     ) = None
     type: (
         Literal[
-            'Activity',
-            'CloseDate',
-            'Company',
-            'Contact',
-            'Conversion',
-            'Document',
-            'Forecast',
-            'Note',
-            'Notes',
-            'Opportunity',
-            'Products',
-            'Stage',
-            'Status',
-            'Surveys',
-            'Team',
-            'Tracks',
-            'Configuration',
-            'ConfigurationQuestions',
-            'DeviceBackupDetails',
-            'Tickets',
-            'Subject',
-            'ActivityOverview',
-            'Schedule',
-            'Resources',
-            'ExpenseEntry',
-            'Member',
-            'Date',
-            'Classification',
-            'Amount',
-            'ExpenseType',
-            'WorkType',
-            'WorkRole',
-            'Mileage',
-            'Billing',
-            'ExpenseHeader',
-            'Project',
-            'TimeEntry',
-            'TicketStatus',
-            'DateTime',
-            'DeductHours',
-            'ActualHours',
-            'Invoice',
-            'CompanyFinance',
-            'Billable',
-            'SalesOrder',
-            'Shipping',
-            'Profile',
-            'Group',
-            'GroupContact',
-            'GroupCompany',
-            'Options',
-            'Site',
-            'Agreement',
-            'Addition',
-            'Adjustment',
-            'Microsoft365',
-            'API',
-            'ProjectFinance',
-            'CompanyProfile',
-            'CompanyTeam',
-            'CompanyMgmt',
-            'InvoiceTotal',
-            'BillingInformation',
-            'ShippingInformation',
-            'BillingStatus',
-            'Location',
-            'Department',
-            'Territory',
-            'Payment',
-            'Credit',
-            'SubcontractorInformation',
-            'InvoicingParameters',
-            'ApplicationParameters',
-            'Finance',
-            'Invoicing',
-            'Email',
-            'Batching',
-            'KnowledgeBase',
-            'KbArticle',
-            'KnowledgeBaseApproval',
-            'KnowledgeBaseTicket',
-            'ManageNetwork',
-            'Tasks',
-            'CustomField',
-            'ScreenConnect',
-            'SLA',
-            'Ticket',
-            'Workflow',
-            'Record',
-            'CombinedTickets',
-            'Template',
-            'PurchaseOrder',
-            'Meeting',
-            'RmaOverview',
-            'ReturnedBy',
-            'PurchasedFromVendor',
-            'WarrantyVendor',
-            'RepairVendor',
-            'AdditionalDetails',
-            'TicketTemplate',
-            'AutoGeneration',
-            'TimeInternalNote',
-            'TimeDiscussion',
-            'TimeInternal',
-            'TimeResolution',
-            'MemberTemplate',
-            'Delegation',
-            'Skill',
-            'Certification',
-            'Accrual',
-            'ApiKey',
-            'Login',
-            'Notifications',
-            'System',
-            'ServiceBoard',
-            'ProjectBoard',
-            'Scheduling',
-            'TimeBillingExpense',
-            'CRM',
-            'Procurement',
-            'JobRole',
-            'Details',
-            'Authentication',
+            "Activity",
+            "CloseDate",
+            "Company",
+            "Contact",
+            "Conversion",
+            "Document",
+            "Forecast",
+            "Note",
+            "Notes",
+            "Opportunity",
+            "Products",
+            "Stage",
+            "Status",
+            "Surveys",
+            "Team",
+            "Tracks",
+            "Configuration",
+            "ConfigurationQuestions",
+            "DeviceBackupDetails",
+            "Tickets",
+            "Subject",
+            "ActivityOverview",
+            "Schedule",
+            "Resources",
+            "ExpenseEntry",
+            "Member",
+            "Date",
+            "Classification",
+            "Amount",
+            "ExpenseType",
+            "WorkType",
+            "WorkRole",
+            "Mileage",
+            "Billing",
+            "ExpenseHeader",
+            "Project",
+            "TimeEntry",
+            "TicketStatus",
+            "DateTime",
+            "DeductHours",
+            "ActualHours",
+            "Invoice",
+            "CompanyFinance",
+            "Billable",
+            "SalesOrder",
+            "Shipping",
+            "Profile",
+            "Group",
+            "GroupContact",
+            "GroupCompany",
+            "Options",
+            "Site",
+            "Agreement",
+            "Addition",
+            "Adjustment",
+            "Microsoft365",
+            "API",
+            "ProjectFinance",
+            "CompanyProfile",
+            "CompanyTeam",
+            "CompanyMgmt",
+            "InvoiceTotal",
+            "BillingInformation",
+            "ShippingInformation",
+            "BillingStatus",
+            "Location",
+            "Department",
+            "Territory",
+            "Payment",
+            "Credit",
+            "SubcontractorInformation",
+            "InvoicingParameters",
+            "ApplicationParameters",
+            "Finance",
+            "Invoicing",
+            "Email",
+            "Batching",
+            "KnowledgeBase",
+            "KbArticle",
+            "KnowledgeBaseApproval",
+            "KnowledgeBaseTicket",
+            "ManageNetwork",
+            "Tasks",
+            "CustomField",
+            "ScreenConnect",
+            "SLA",
+            "Ticket",
+            "Workflow",
+            "Record",
+            "CombinedTickets",
+            "Template",
+            "PurchaseOrder",
+            "Meeting",
+            "RmaOverview",
+            "ReturnedBy",
+            "PurchasedFromVendor",
+            "WarrantyVendor",
+            "RepairVendor",
+            "AdditionalDetails",
+            "TicketTemplate",
+            "AutoGeneration",
+            "TimeInternalNote",
+            "TimeDiscussion",
+            "TimeInternal",
+            "TimeResolution",
+            "MemberTemplate",
+            "Delegation",
+            "Skill",
+            "Certification",
+            "Accrual",
+            "ApiKey",
+            "Login",
+            "Notifications",
+            "System",
+            "ServiceBoard",
+            "ProjectBoard",
+            "Scheduling",
+            "TimeBillingExpense",
+            "CRM",
+            "Procurement",
+            "JobRole",
+            "Details",
+            "Authentication",
         ]
         | None
     ) = None
@@ -5717,7 +5699,7 @@ class TimeEntryAudit(SparkModel):
     oldValue: str | None = None
     newValue: str | None = None
     value: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TimeEntryReference = CalendarSetupReference
@@ -5734,25 +5716,25 @@ class TimeExpense(SparkModel):
     invoiceStart: int | None = None
     defaultSpecialInvoiceType: (
         Literal[
-            'Agreement',
-            'CreditMemo',
-            'DownPayment',
-            'Miscellaneous',
-            'Progress',
-            'Standard',
+            "Agreement",
+            "CreditMemo",
+            "DownPayment",
+            "Miscellaneous",
+            "Progress",
+            "Standard",
         ]
         | None
     ) = None
     internalCompany: CompanyReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TimePeriodSetup(SparkModel):
     id: int | None = None
-    periodApplyTo: Literal['Both', 'Expense', 'Time'] | None = Field(...)
+    periodApplyTo: Literal["Both", "Expense", "Time"] | None = Field(...)
     year: int | None = Field(...)
     numberFuturePeriods: int | None = Field(...)
-    type: Literal['Weekly', 'BiWeekly', 'SemiMonthly', 'Monthly'] | None = Field(...)
+    type: Literal["Weekly", "BiWeekly", "SemiMonthly", "Monthly"] | None = Field(...)
     description: str | None = None
     """
      Max length: 100;
@@ -5776,7 +5758,7 @@ class TimePeriodSetup(SparkModel):
     Only needed when type is monthly
     """
     daysPastEndDate: int | None = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TimePeriodSetupDefaults = AgreementTabsCount
@@ -5797,24 +5779,24 @@ class TimeSheet(SparkModel):
     dateEnd: str | None = None
     status: (
         Literal[
-            'Open',
-            'Rejected',
-            'PendingApproval',
-            'ErrorsCorrected',
-            'PendingProjectApproval',
-            'ApprovedByTierOne',
-            'RejectBySecondTier',
-            'ApprovedByTierTwo',
-            'ReadyToBill',
-            'Billed',
-            'WrittenOff',
-            'BilledAgreement',
+            "Open",
+            "Rejected",
+            "PendingApproval",
+            "ErrorsCorrected",
+            "PendingProjectApproval",
+            "ApprovedByTierOne",
+            "RejectBySecondTier",
+            "ApprovedByTierTwo",
+            "ReadyToBill",
+            "Billed",
+            "WrittenOff",
+            "BilledAgreement",
         ]
         | None
     ) = None
     hours: float | None = None
     deadline: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TimeSheetAudit = TimeEntryAudit
@@ -5849,14 +5831,14 @@ class TimeZoneSetup(SparkModel):
     Determined based on system library value for specified timeZone.
                 Not able to be used in query params at this time
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TimeZoneSetupInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     offset: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TimeZoneSetupReference = ActivityReference
@@ -5870,7 +5852,7 @@ class TodayPageCategory(SparkModel):
     """
     sortOrder: int | None = Field(...)
     location: SystemLocationReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Token(SparkModel):
@@ -5887,7 +5869,7 @@ class Track(SparkModel):
     """
     inactiveFlag: bool | None = None
     notifyActionIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TrackReference = ActivityReference
@@ -5905,7 +5887,7 @@ class UnitOfMeasure(SparkModel):
     """
      Max length: 31;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 UnitOfMeasureReference = ActivityReference
@@ -5920,30 +5902,30 @@ class UnpostedExpense(SparkModel):
     creditAccount: str | None = None
     expenseDetailId: int | None = None
     expenseType: ExpenseTypeReference | None = None
-    classification: Literal['NonReimbursable', 'Reimbursable', 'Personal'] | None = None
+    classification: Literal["NonReimbursable", "Reimbursable", "Personal"] | None = None
     glType: (
         Literal[
-            'AP',
-            'AR',
-            'EE',
-            'EI',
-            'EO',
-            'IA',
-            'IT',
-            'P',
-            'PF',
-            'R',
-            'RA',
-            'RD',
-            'RE',
-            'RP',
-            'ST',
-            'SD',
-            'ET',
-            'FT',
-            'PT',
-            'WP',
-            'WR',
+            "AP",
+            "AR",
+            "EE",
+            "EI",
+            "EO",
+            "IA",
+            "IT",
+            "P",
+            "PF",
+            "R",
+            "RA",
+            "RD",
+            "RE",
+            "RP",
+            "ST",
+            "SD",
+            "ET",
+            "FT",
+            "PT",
+            "WP",
+            "WR",
         ]
         | None
     ) = None
@@ -6006,7 +5988,7 @@ class UnpostedExpense(SparkModel):
     levelSixTaxXref: str | None = None
     levelSixTaxAmount: float | None = None
     dateClosed: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class UnpostedExpenseTaxableLevel(SparkModel):
@@ -6014,7 +5996,7 @@ class UnpostedExpenseTaxableLevel(SparkModel):
     taxLevel: int | None = None
     taxCodeXref: str | None = None
     taxAmount: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class UnpostedInvoice(SparkModel):
@@ -6034,12 +6016,12 @@ class UnpostedInvoice(SparkModel):
     invoiceDate: str | None = None
     invoiceType: (
         Literal[
-            'Agreement',
-            'CreditMemo',
-            'DownPayment',
-            'Miscellaneous',
-            'Progress',
-            'Standard',
+            "Agreement",
+            "CreditMemo",
+            "DownPayment",
+            "Miscellaneous",
+            "Progress",
+            "Standard",
         ]
         | None
     ) = None
@@ -6099,7 +6081,7 @@ class UnpostedInvoice(SparkModel):
     levelSixTaxAmount: float | None = None
     createdBy: str | None = None
     dateClosed: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 UnpostedInvoiceTaxableLevel = UnpostedExpenseTaxableLevel
@@ -6111,7 +6093,7 @@ class UnpostedProcurement(SparkModel):
     unpostedProductId: str | None = None
     locationId: int | None = None
     departmentId: int | None = None
-    procurementType: Literal['Purchase', 'Adjustment', 'Transfer'] | None = None
+    procurementType: Literal["Purchase", "Adjustment", "Transfer"] | None = None
     purchaseOrder: PurchaseOrderReference | None = None
     purchaseDate: str | None = None
     trackingNumber: str | None = None
@@ -6171,7 +6153,7 @@ class UnpostedProcurement(SparkModel):
     freightTaxTotal: float | None = None
     freightCost: float | None = None
     dateClosed: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 UnpostedProcurementTaxableLevel = UnpostedExpenseTaxableLevel
@@ -6259,7 +6241,7 @@ class Warehouse(SparkModel):
     inactiveFlag: bool | None = None
     lockedFlag: bool | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 WarehouseBinReference = ActivityReference
@@ -6271,14 +6253,14 @@ class WarehouseInfo(SparkModel):
     inactiveFlag: bool | None = None
     overallDefaultFlag: bool | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WarehouseReference(SparkModel):
     id: int | None = None
     name: str | None = None
     lockedFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WisePayBatchPayment(SparkModel):
@@ -6351,7 +6333,7 @@ class WorkflowAction(SparkModel):
     attachments: list[int] | None = None
     serviceSurvey: ServiceSurveyReference | None = None
     specificTeamTo: GenericBoardTeamReference | None = None
-    attachConfigurationsFor: Literal['Company', 'Contact'] | None = None
+    attachConfigurationsFor: Literal["Company", "Contact"] | None = None
     """
     Required when notifyType is set to: "Attach Configuration"
     """
@@ -6368,7 +6350,7 @@ class WorkflowAction(SparkModel):
     """
     parentConnectWiseId: str | None = None
     grandParentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowActionAutomateParameter(SparkModel):
@@ -6381,7 +6363,7 @@ class WorkflowActionAutomateParameter(SparkModel):
     WF_NotifyActions_RecID
     """
     parentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowActionUserDefinedField(SparkModel):
@@ -6408,7 +6390,7 @@ class WorkflowActionUserDefinedField(SparkModel):
     """
     parentConnectWiseId: str | None = None
     grandParentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowAttachment(SparkModel):
@@ -6420,14 +6402,14 @@ class WorkflowAttachment(SparkModel):
     WF_NotifyHeader_RecID
     """
     parentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowEvent(SparkModel):
     id: int | None = None
     name: str | None = None
     eventCondition: str
-    frequencyUnit: Literal['Minutes', 'Hours', 'Days', 'Months'] | None = None
+    frequencyUnit: Literal["Minutes", "Hours", "Days", "Months"] | None = None
     """
     Required when exectionTimes is set to MultipleTimes or Continuously
     """
@@ -6439,7 +6421,7 @@ class WorkflowEvent(SparkModel):
     """
     Required when exectionTimes is set to MultipleTimes
     """
-    executionTime: Literal['Once', 'MultipleTimes', 'Continuously'] | None = None
+    executionTime: Literal["Once", "MultipleTimes", "Continuously"] | None = None
     """
     Defaults to Once when not specified
     """
@@ -6451,7 +6433,7 @@ class WorkflowEvent(SparkModel):
     WF_NotifyHeader_RecID
     """
     parentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowNotifyType(SparkModel):
@@ -6472,7 +6454,7 @@ class WorkflowNotifyType(SparkModel):
     WF_NotifyHeader_RecID
     """
     parentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowNotifyTypeInfo(SparkModel):
@@ -6480,7 +6462,7 @@ class WorkflowNotifyTypeInfo(SparkModel):
     identifier: str | None = None
     name: str | None = None
     isSetupFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowTableType(SparkModel):
@@ -6488,7 +6470,7 @@ class WorkflowTableType(SparkModel):
     identifier: str | None = None
     name: str | None = None
     connectWiseID: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 WorkflowTableTypeInfo = CatalogItemReference
@@ -6508,7 +6490,7 @@ class WorkflowTrigger(SparkModel):
     connectWiseID: str | None = None
     parentId: int | None = None
     parentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkflowTriggerOption(SparkModel):
@@ -6520,7 +6502,7 @@ class WorkflowTriggerOption(SparkModel):
     grandParentId: int | None = None
     parentConnectWiseId: str | None = None
     grandParentConnectWiseId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkRole(SparkModel):
@@ -6542,7 +6524,7 @@ class WorkRole(SparkModel):
     Used only on create to add the work role to all agreement and agreement type exclusion lists
     """
     locationIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 WorkRoleInfo = LegacySubCategoryInfo
@@ -6557,13 +6539,13 @@ class WorkType(SparkModel):
     """
      Max length: 50;
     """
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge'] | None = Field(...)
-    rateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = Field(...)
+    billTime: Literal["Billable", "DoNotBill", "NoCharge"] | None = Field(...)
+    rateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = Field(...)
     rate: float | None = Field(...)
     hoursMin: float | None = None
     hoursMax: float | None = None
     roundBillHoursTo: float | None = None
-    accrualType: Literal['Holiday', 'PTO', 'Sick', 'Vacation'] | None = None
+    accrualType: Literal["Holiday", "PTO", "Sick", "Vacation"] | None = None
     inactiveFlag: bool | None = None
     overallDefaultFlag: bool | None = None
     activityDefaultFlag: bool | None = None
@@ -6577,7 +6559,7 @@ class WorkType(SparkModel):
     """
     Used only on create to add the work type to all agreement and agreement type exclusion lists
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkTypeInfo(SparkModel):
@@ -6586,14 +6568,14 @@ class WorkTypeInfo(SparkModel):
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
     activityDefaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkTypeReference(SparkModel):
     id: int | None = None
     name: str | None = None
     utilizationFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Activity(SparkModel):
@@ -6629,7 +6611,7 @@ class Activity(SparkModel):
     notifyFlag: bool | None = None
     mobileGuid: UUID | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -6637,9 +6619,7 @@ class ActivityStopwatch(SparkModel):
     activityId: int | None = Field(...)
     activityMobileGuid: UUID | None = None
     agreement: AgreementReference | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     businessUnitId: int | None = None
     dateEntered: datetime | None = None
     endTime: datetime | None = None
@@ -6653,11 +6633,11 @@ class ActivityStopwatch(SparkModel):
      Max length: 4000;
     """
     startTime: datetime | None = None
-    status: Literal['Reset', 'Running', 'Paused', 'Stopped'] | None = Field(...)
+    status: Literal["Reset", "Running", "Paused", "Stopped"] | None = Field(...)
     totalPauseTime: int | None = None
     workRole: WorkRoleReference | None = None
     workType: WorkTypeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Addition(SparkModel):
@@ -6667,7 +6647,7 @@ class Addition(SparkModel):
     lessIncluded: float | None = None
     unitPrice: float | None = None
     unitCost: float | None = None
-    billCustomer: Literal['Billable', 'DoNotBill', 'NoCharge'] | None = Field(...)
+    billCustomer: Literal["Billable", "DoNotBill", "NoCharge"] | None = Field(...)
     effectiveDate: datetime | None = None
     cancelledDate: datetime | None = None
     taxableFlag: bool | None = None
@@ -6695,9 +6675,9 @@ class Addition(SparkModel):
     extendedProratePrice: float | None = None
     prorateCurrentPeriodFlag: bool | None = None
     opportunity: OpportunityReference | None = None
-    agreementStatus: Literal['Active', 'Cancelled', 'Expired', 'Inactive'] | None = None
+    agreementStatus: Literal["Active", "Cancelled", "Expired", "Inactive"] | None = None
     invoiceGrouping: InvoiceGroupingReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -6718,7 +6698,7 @@ class AdjustmentDetail(SparkModel):
      Max length: 1000;
     """
     adjustment: AdjustmentReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Agreement(SparkModel):
@@ -6758,18 +6738,18 @@ class Agreement(SparkModel):
      Max length: 20;
     """
     internalNotes: str | None = None
-    applicationUnits: Literal['Amount', 'Hours', 'Incidents'] | None = None
+    applicationUnits: Literal["Amount", "Hours", "Incidents"] | None = None
     applicationLimit: float | None = None
     applicationCycle: (
         Literal[
-            'Contract2Weeks',
-            'Contract4Weeks',
-            'ContractYear',
-            'CalendarMonth',
-            'CalendarQuarter',
-            'CalendarWeek',
-            'ContractQuarter',
-            'CalendarYear',
+            "Contract2Weeks",
+            "Contract4Weeks",
+            "ContractYear",
+            "CalendarMonth",
+            "CalendarQuarter",
+            "CalendarWeek",
+            "ContractQuarter",
+            "CalendarYear",
         ]
         | None
     ) = None
@@ -6785,17 +6765,17 @@ class Agreement(SparkModel):
     limit: int | None = None
     expireWhenZero: bool | None = None
     chargeToFirm: bool | None = None
-    employeeCompRate: Literal['Actual', 'Hourly'] | None = None
+    employeeCompRate: Literal["Actual", "Hourly"] | None = None
     """
      Required On Updates;
     """
-    employeeCompNotExceed: Literal['Billing', 'Amount', 'Percent'] | None = None
+    employeeCompNotExceed: Literal["Billing", "Amount", "Percent"] | None = None
     compHourlyRate: float | None = None
     compLimitAmount: float | None = None
     billingCycle: BillingCycleReference | None = None
     billOneTimeFlag: bool | None = None
     billingTerms: BillingTermsReference | None = None
-    invoicingCycle: Literal['ContractYear', 'CalendarYear'] | None = None
+    invoicingCycle: Literal["ContractYear", "CalendarYear"] | None = None
     """
      Required On Updates;
     """
@@ -6817,19 +6797,15 @@ class Agreement(SparkModel):
     workType: WorkTypeReference | None = None
     projectType: ProjectTypeReference | None = None
     invoiceTemplate: InvoiceTemplateReference | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -6837,15 +6813,15 @@ class Agreement(SparkModel):
     billableExpenseInvoice: bool | None = None
     billableProductInvoice: bool | None = None
     currency: CurrencyReference | None = None
-    periodType: Literal['Current', 'Future', 'Both', 'Undefined'] | None = None
+    periodType: Literal["Current", "Future", "Both", "Undefined"] | None = None
     autoInvoiceFlag: bool | None = None
     nextInvoiceDate: str | None = None
     companyLocation: SystemLocationReference | None = None
     shipToCompany: CompanyReference | None = None
     shipToContact: ContactReference | None = None
     shipToSite: SiteReference | None = None
-    agreementStatus: Literal['Active', 'Cancelled', 'Expired', 'Inactive'] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    agreementStatus: Literal["Active", "Cancelled", "Expired", "Inactive"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -6894,7 +6870,7 @@ class AgreementSite(SparkModel):
     company: CompanyReference
     site: SiteReference | None = None
     agreementId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -6904,7 +6880,7 @@ class AgreementType(SparkModel):
     """
      Max length: 50;
     """
-    prefixSuffixOption: Literal['Prefix', 'Suffix'] | None = None
+    prefixSuffixOption: Literal["Prefix", "Suffix"] | None = None
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
     prePaymentFlag: bool | None = None
@@ -6917,18 +6893,18 @@ class AgreementType(SparkModel):
     restrictLocationFlag: bool | None = None
     restrictDepartmentFlag: bool | None = None
     sla: SLAReference | None = None
-    applicationUnits: Literal['Amount', 'Hours', 'Incidents'] | None = None
+    applicationUnits: Literal["Amount", "Hours", "Incidents"] | None = None
     applicationLimit: float | None = None
     applicationCycle: (
         Literal[
-            'Contract2Weeks',
-            'Contract4Weeks',
-            'ContractYear',
-            'CalendarMonth',
-            'CalendarQuarter',
-            'CalendarWeek',
-            'ContractQuarter',
-            'CalendarYear',
+            "Contract2Weeks",
+            "Contract4Weeks",
+            "ContractYear",
+            "CalendarMonth",
+            "CalendarQuarter",
+            "CalendarWeek",
+            "ContractQuarter",
+            "CalendarYear",
         ]
         | None
     ) = None
@@ -6944,14 +6920,14 @@ class AgreementType(SparkModel):
     limit: int | None = None
     expireWhenZero: bool | None = None
     chargeToFirmFlag: bool | None = None
-    employeeCompRate: Literal['Actual', 'Hourly'] | None = Field(...)
-    employeeCompNotExceed: Literal['Billing', 'Amount', 'Percent'] | None = Field(...)
+    employeeCompRate: Literal["Actual", "Hourly"] | None = Field(...)
+    employeeCompNotExceed: Literal["Billing", "Amount", "Percent"] | None = Field(...)
     compHourlyRate: float | None = None
     compLimitAmount: float | None = None
     billingCycle: BillingCycleReference | None = None
     billOneTimeFlag: bool | None = None
     billingTerms: BillingTermsReference | None = None
-    invoicingCycle: Literal['ContractYear', 'CalendarYear'] | None = Field(...)
+    invoicingCycle: Literal["ContractYear", "CalendarYear"] | None = Field(...)
     billAmount: float | None = None
     taxableFlag: bool | None = None
     restrictDownPaymentFlag: bool | None = None
@@ -6965,15 +6941,9 @@ class AgreementType(SparkModel):
     workType: WorkTypeReference | None = None
     projectType: ProjectTypeReference | None = None
     invoiceTemplate: InvoiceTemplateReference | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = Field(
-        ...
-    )
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        Field(...)
-    )
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        Field(...)
-    )
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = Field(...)
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = Field(...)
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = Field(...)
     billableTimeInvoiceFlag: bool | None = None
     billableExpenseInvoiceFlag: bool | None = None
     billableProductInvoiceFlag: bool | None = None
@@ -6993,7 +6963,7 @@ class AgreementType(SparkModel):
     emailTemplate: EmailTemplateReference | None = None
     autoInvoiceFlag: bool | None = None
     invoiceProratedAdditionsFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeBoardDefault(SparkModel):
@@ -7004,16 +6974,16 @@ class AgreementTypeBoardDefault(SparkModel):
     board: BoardReference | None = None
     serviceType: ServiceTypeReference | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeInfo(SparkModel):
     id: int | None = None
     name: str | None = None
     inactiveFlag: bool | None = None
-    applicationUnits: Literal['Amount', 'Hours', 'Incidents'] | None = None
+    applicationUnits: Literal["Amount", "Hours", "Incidents"] | None = None
     billingTerms: BillingTermsReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeWorkRole(SparkModel):
@@ -7023,23 +6993,23 @@ class AgreementTypeWorkRole(SparkModel):
     effectiveDate: datetime | None = None
     endingDate: datetime | None = None
     rate: float | None = None
-    rateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = Field(...)
+    rateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = Field(...)
     limitTo: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeWorkRoleExclusion(SparkModel):
     id: int | None = None
     type: AgreementTypeReference | None = None
     workRole: WorkRoleReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeWorkRoleInfo(SparkModel):
     id: int | None = None
     type: AgreementTypeReference | None = None
     workRole: WorkRoleReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeWorkType(SparkModel):
@@ -7049,24 +7019,22 @@ class AgreementTypeWorkType(SparkModel):
     effectiveDate: datetime | None = None
     endingDate: datetime | None = None
     rate: float | None = None
-    rateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = Field(...)
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = Field(
-        ...
-    )
+    rateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = Field(...)
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = Field(...)
     hoursMin: float | None = None
     hoursMax: float | None = None
     roundBillHours: float | None = None
     overageRate: float | None = None
-    overageRateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = Field(...)
+    overageRateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = Field(...)
     limitTo: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementTypeWorkTypeExclusion(SparkModel):
     id: int | None = None
     type: AgreementTypeReference | None = None
     workType: WorkTypeReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementWorkRole(SparkModel):
@@ -7074,21 +7042,21 @@ class AgreementWorkRole(SparkModel):
     workRole: WorkRoleReference | None = None
     locationId: int | None = None
     location: OwnerLevelReference | None = None
-    rateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = Field(...)
+    rateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = Field(...)
     rate: float | None = None
     limitTo: float | None = None
     effectiveDate: datetime | None = None
     endingDate: datetime | None = None
     agreementId: int | None = None
     agreement: AgreementReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementWorkRoleExclusion(SparkModel):
     id: int | None = None
     workRole: WorkRoleReference
     agreementId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementWorkType(SparkModel):
@@ -7096,16 +7064,14 @@ class AgreementWorkType(SparkModel):
     workType: WorkTypeReference | None = None
     location: OwnerLevelReference | None = None
     locationId: int | None = None
-    rateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = Field(...)
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = Field(
-        ...
-    )
+    rateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = Field(...)
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = Field(...)
     rate: float | None = None
     hoursMax: float | None = None
     hoursMin: float | None = None
     roundBillHours: float | None = None
     overageRate: float | None = None
-    overageRateType: Literal['AdjAmount', 'Custom', 'Multiplier'] | None = None
+    overageRateType: Literal["AdjAmount", "Custom", "Multiplier"] | None = None
     agreementLimit: float | None = None
     site: SiteReference | None = None
     effectiveDate: datetime | None = None
@@ -7113,14 +7079,14 @@ class AgreementWorkType(SparkModel):
     agreement: AgreementReference | None = None
     agreementId: int | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class AgreementWorkTypeExclusion(SparkModel):
     id: int | None = None
     workType: WorkTypeReference
     agreementId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ApiMember(SparkModel):
@@ -7151,7 +7117,7 @@ class ApiMember(SparkModel):
     excludedServiceBoardIds: list[int] | None = None
     blockPriceFlag: bool | None = None
     blockCostFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ApiRequest(SparkModel):
@@ -7172,7 +7138,7 @@ class AutoSyncTime(SparkModel):
     id: int | None = None
     syncTime: str
     timeZone: TimeZoneSetupReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BatchEntry(SparkModel):
@@ -7192,7 +7158,7 @@ class BatchEntry(SparkModel):
     transfer: str | None = None
     expense: ExpenseDetailReference | None = None
     adjustmentDetail: AdjustmentDetailReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingSetup(SparkModel):
@@ -7256,7 +7222,7 @@ class BillingSetup(SparkModel):
     excludeDoNotBillTimeFlag: bool | None = None
     excludeDoNotBillExpenseFlag: bool | None = None
     excludeDoNotBillProductFlag: bool | None = None
-    prefixSuffixFlag: Literal['Prefix', 'Suffix'] | None = None
+    prefixSuffixFlag: Literal["Prefix", "Suffix"] | None = None
     prefixSuffixText: str | None = None
     """
      Max length: 5;
@@ -7303,7 +7269,7 @@ class BillingSetup(SparkModel):
      Max length: 250;
     """
     excludeAvalaraFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingSetupInfo(SparkModel):
@@ -7311,28 +7277,28 @@ class BillingSetupInfo(SparkModel):
     remitName: str | None = None
     location: SystemLocationReference | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BillingSetupRouting(SparkModel):
     id: int | None = None
     sequenceNumber: int | None = Field(...)
-    invoiceRule: Literal['All', 'Standard', 'Project', 'Agreement'] | None = Field(...)
+    invoiceRule: Literal["All", "Standard", "Project", "Agreement"] | None = Field(...)
     routingRule: (
         Literal[
-            'Account',
-            'Territory',
-            'Creator',
-            'Department',
-            'Location',
-            'Member',
-            'Project',
-            'Sales',
+            "Account",
+            "Territory",
+            "Creator",
+            "Department",
+            "Location",
+            "Member",
+            "Project",
+            "Sales",
         ]
         | None
     ) = Field(...)
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Board(SparkModel):
@@ -7369,9 +7335,9 @@ class Board(SparkModel):
     oncallMember: MemberReference | None = None
     workRole: WorkRoleReference | None = None
     workType: WorkTypeReference | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    billExpense: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    billProduct: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billExpense: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billProduct: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     autoCloseStatus: ServiceStatusReference | None = None
     autoAssignNewTicketsFlag: bool | None = None
     autoAssignNewECTicketsFlag: bool | None = None
@@ -7392,9 +7358,9 @@ class Board(SparkModel):
     timeEntryDiscussionFlag: bool | None = None
     timeEntryResolutionFlag: bool | None = None
     timeEntryInternalAnalysisFlag: bool | None = None
-    problemSort: Literal['Ascending', 'Descending'] | None = None
-    resolutionSort: Literal['Ascending', 'Descending'] | None = None
-    internalAnalysisSort: Literal['Ascending', 'Descending'] | None = None
+    problemSort: Literal["Ascending", "Descending"] | None = None
+    resolutionSort: Literal["Ascending", "Descending"] | None = None
+    internalAnalysisSort: Literal["Ascending", "Descending"] | None = None
     emailConnectorAllowReopenClosedFlag: bool | None = None
     emailConnectorReopenStatus: ServiceStatusReference | None = None
     emailConnectorReopenResourcesFlag: bool | None = None
@@ -7433,20 +7399,20 @@ class Board(SparkModel):
     """
     closedLoopAllFlag: bool | None = None
     percentageCalculation: (
-        Literal['ActualHours', 'Manual', 'ClosedPhases', 'ClosedTickets'] | None
+        Literal["ActualHours", "Manual", "ClosedPhases", "ClosedTickets"] | None
     ) = None
-    allSort: Literal['Ascending', 'Descending'] | None = None
+    allSort: Literal["Ascending", "Descending"] | None = None
     markFirstNoteIssueFlag: bool | None = None
     restrictBoardByDefaultFlag: bool | None = None
     sendToBundledFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardAutoAssignResource(SparkModel):
     id: int | None = None
     notifyWho: NotificationRecipientReference
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardAutoTemplate(SparkModel):
@@ -7456,20 +7422,20 @@ class BoardAutoTemplate(SparkModel):
     item: ServiceItemReference
     serviceTemplate: ServiceTemplateReference
     board: BoardReference | None = None
-    summarySetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    discussionSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    internalAnalysisSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    resolutionSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    tasksSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    documentsSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    resourcesSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    budgetHoursSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    financeInformationSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    sendNotesAsEmailSetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    impactUrgencySetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
-    templatePrioritySetting: Literal['Append', 'Overwrite', 'Ignore'] | None = None
+    summarySetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    discussionSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    internalAnalysisSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    resolutionSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    tasksSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    documentsSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    resourcesSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    budgetHoursSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    financeInformationSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    sendNotesAsEmailSetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    impactUrgencySetting: Literal["Append", "Overwrite", "Ignore"] | None = None
+    templatePrioritySetting: Literal["Append", "Overwrite", "Ignore"] | None = None
     autoApplyFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardDefault(SparkModel):
@@ -7478,7 +7444,7 @@ class BoardDefault(SparkModel):
     serviceType: ServiceTypeReference | None = None
     defaultFlag: bool | None = None
     agreementId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardInfo(SparkModel):
@@ -7495,14 +7461,14 @@ class BoardInfo(SparkModel):
     overrideBillingSetupFlag: bool | None = None
     billTicketsAfterClosedFlag: bool | None = None
     billUnapprovedTimeExpenseFlag: bool | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    billExpense: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    billProduct: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    problemSort: Literal['Ascending', 'Descending'] | None = None
-    internalAnalysisSort: Literal['Ascending', 'Descending'] | None = None
-    resolutionSort: Literal['Ascending', 'Descending'] | None = None
-    allSort: Literal['Ascending', 'Descending'] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billExpense: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billProduct: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    problemSort: Literal["Ascending", "Descending"] | None = None
+    internalAnalysisSort: Literal["Ascending", "Descending"] | None = None
+    resolutionSort: Literal["Ascending", "Descending"] | None = None
+    allSort: Literal["Ascending", "Descending"] | None = None
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardItem(SparkModel):
@@ -7513,7 +7479,7 @@ class BoardItem(SparkModel):
     """
     inactiveFlag: bool | None = None
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardItemAssociation(SparkModel):
@@ -7526,7 +7492,7 @@ class BoardItemAssociation(SparkModel):
     removeAllSubTypesFlag: bool | None = None
     item: ServiceItemReference | None = None
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardNotification(SparkModel):
@@ -7537,7 +7503,7 @@ class BoardNotification(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardSkillMapping(SparkModel):
@@ -7548,7 +7514,7 @@ class BoardSkillMapping(SparkModel):
     skillCategory: SkillCategoryReference
     skill: SkillReference
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardStatus(SparkModel):
@@ -7566,10 +7532,7 @@ class BoardStatus(SparkModel):
     roundRobinCatchall: bool | None = None
     defaultFlag: bool | None = None
     escalationStatus: (
-        Literal[
-            'NotResponded', 'Responded', 'ResolutionPlan', 'Resolved', 'NoEscalation'
-        ]
-        | None
+        Literal["NotResponded", "Responded", "ResolutionPlan", "Resolved", "NoEscalation"] | None
     ) = None
     customerPortalDescription: str | None = None
     """
@@ -7582,7 +7545,7 @@ class BoardStatus(SparkModel):
     """
      Max length: 30;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     saveTimeAsNote: bool | None = None
 
 
@@ -7596,7 +7559,7 @@ class BoardStatusNotification(SparkModel):
     Service Status Notification email must be entered if the notify type is "Email Address". Max length: 255;
     """
     workflowStep: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardTeam(SparkModel):
@@ -7614,7 +7577,7 @@ class BoardTeam(SparkModel):
     boardId: int | None = None
     locationId: int | None = None
     businessUnitId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardType(SparkModel):
@@ -7623,7 +7586,7 @@ class BoardType(SparkModel):
     """
      Max length: 50;
     """
-    category: Literal['Reactive', 'Proactive'] | None = None
+    category: Literal["Reactive", "Proactive"] | None = None
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
     requestForChangeFlag: bool | None = None
@@ -7636,7 +7599,7 @@ class BoardType(SparkModel):
     board: BoardReference | None = None
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BoardTypeSubTypeItemAssociation(SparkModel):
@@ -7645,7 +7608,7 @@ class BoardTypeSubTypeItemAssociation(SparkModel):
     subType: ServiceSubTypeReference | None = None
     item: ServiceItemReference | None = None
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BundleRequest(SparkModel):
@@ -7677,7 +7640,7 @@ class Calendar(SparkModel):
     saturdayEndTime: str | None = None
     sundayStartTime: str | None = None
     sundayEndTime: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CalendarInfo(SparkModel):
@@ -7698,7 +7661,7 @@ class CalendarInfo(SparkModel):
     saturdayEndTime: str | None = None
     sundayStartTime: str | None = None
     sundayEndTime: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Campaign(SparkModel):
@@ -7730,7 +7693,7 @@ class Campaign(SparkModel):
     actualGrossMargin: float | None = None
     actualROI: float | None = None
     emailsSent: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CampaignAudit(SparkModel):
@@ -7761,7 +7724,7 @@ class CatalogComponent(SparkModel):
     parentCatalogItem: CatalogItemReference | None = None
     price: float | None = None
     cost: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CatalogInventory(SparkModel):
@@ -7771,7 +7734,7 @@ class CatalogInventory(SparkModel):
     warehouseBin: WarehouseBinReference | None = None
     onHand: int | None = None
     serialNumbers: list[OnHandSerialNumberReference] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CatalogItem(SparkModel):
@@ -7787,9 +7750,9 @@ class CatalogItem(SparkModel):
     inactiveFlag: bool | None = None
     subcategory: ProductSubCategoryReference
     type: ProductTypeReference
-    productClass: (
-        Literal['Agreement', 'Bundle', 'Inventory', 'NonInventory', 'Service'] | None
-    ) = None
+    productClass: Literal["Agreement", "Bundle", "Inventory", "NonInventory", "Service"] | None = (
+        None
+    )
     """
     Defaults to Non-Inventory.
     """
@@ -7801,7 +7764,7 @@ class CatalogItem(SparkModel):
     price: float | None = None
     cost: float | None = None
     priceAttribute: (
-        Literal['FixedFee', 'NotToExceed', 'OverrideRate', 'TimeAndMaterials'] | None
+        Literal["FixedFee", "NotToExceed", "OverrideRate", "TimeAndMaterials"] | None
     ) = None
     taxableFlag: bool | None = None
     dropShipFlag: bool | None = None
@@ -7832,22 +7795,20 @@ class CatalogItem(SparkModel):
     recurringCost: float | None = None
     recurringOneTimeFlag: bool | None = None
     recurringBillCycle: BillingCycleReference | None = None
-    recurringCycleType: Literal['ContractYear', 'CalendarYear'] | None = None
+    recurringCycleType: Literal["ContractYear", "CalendarYear"] | None = None
     calculatedPriceFlag: bool | None = None
     calculatedCostFlag: bool | None = None
     category: ProductCategoryReference | None = None
     calculatedPrice: float | None = None
     calculatedCost: float | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     connectWiseID: str | None = None
     agreementType: AgreementTypeReference | None = None
     markupPercentage: float | None = None
     markupFlag: bool | None = None
     autoUpdateUnitCostFlag: bool | None = None
     autoUpdateUnitPriceFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -7867,7 +7828,7 @@ class Certification(SparkModel):
      Max length: 50;
     """
     company: CompanyReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ChargeCode(SparkModel):
@@ -7879,7 +7840,7 @@ class ChargeCode(SparkModel):
     company: CompanyReference
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     expenseEntryFlag: bool | None = None
     allowAllExpenseTypeFlag: bool | None = None
     timeEntryFlag: bool | None = None
@@ -7890,14 +7851,14 @@ class ChargeCode(SparkModel):
      Max length: 50;
     """
     expenseTypeIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ChargeCodeExpenseType(SparkModel):
     id: int | None = None
     type: ExpenseTypeReference
     chargeCode: ChargeCodeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ChargeCodeInfo(SparkModel):
@@ -7911,12 +7872,12 @@ class ChargeCodeInfo(SparkModel):
     workType: WorkTypeReference | None = None
     workRole: WorkRoleReference | None = None
     expenseTypeIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ClearPickerRequest(SparkModel):
     member: MemberReference | None = None
-    type: Literal['Company', 'Vendor'] | None = None
+    type: Literal["Company", "Vendor"] | None = None
 
 
 class Commission(SparkModel):
@@ -7936,12 +7897,12 @@ class Commission(SparkModel):
     territory: SystemLocationReference | None = None
     billingMethod: (
         Literal[
-            'Agreement',
-            'CreditMemo',
-            'DownPayment',
-            'Miscellaneous',
-            'Progress',
-            'Standard',
+            "Agreement",
+            "CreditMemo",
+            "DownPayment",
+            "Miscellaneous",
+            "Progress",
+            "Standard",
         ]
         | None
     ) = None
@@ -7953,13 +7914,13 @@ class Commission(SparkModel):
     productCategory: ProductCategoryReference | None = None
     productSubCategory: ProductSubCategoryReference | None = None
     item: IvItemReference | None = None
-    commissionBasis: Literal['GrossProfit', 'SalesAmount'] | None = None
-    invoiceOption: Literal['AllInvoices', 'PaidInvoices'] | None = None
+    commissionBasis: Literal["GrossProfit", "SalesAmount"] | None = None
+    invoiceOption: Literal["AllInvoices", "PaidInvoices"] | None = None
     servicesFlag: bool | None = None
     agreementsFlag: bool | None = None
     productsFlag: bool | None = None
     myOpportunitiesFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Company(SparkModel):
@@ -8097,7 +8058,7 @@ class Company(SparkModel):
     """
     site: SiteReference | None = None
     integratorTags: list[str] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -8109,7 +8070,7 @@ class CompanyCustomNote(SparkModel):
     """
     status: CompanyStatusReference
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyFinance(SparkModel):
@@ -8123,7 +8084,7 @@ class CompanyFinance(SparkModel):
     billUnapprovedPmFlag: bool | None = None
     emailTemplate: EmailTemplateReference | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -8139,7 +8100,7 @@ class CompanyGroup(SparkModel):
     removeAllContactsFlag: bool | None = None
     unsubscribeFlag: bool | None = None
     contactIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyInfo(SparkModel):
@@ -8174,7 +8135,7 @@ class CompanyInfo(SparkModel):
     facebookUrl: str | None = None
     twitterUrl: str | None = None
     linkedInUrl: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyManagementSummary(SparkModel):
@@ -8185,8 +8146,7 @@ class CompanyManagementSummary(SparkModel):
      Max length: 100;
     """
     deviceType: (
-        Literal['WorkstationsAndServers', 'BackupStats', 'Servers', 'Workstations']
-        | None
+        Literal["WorkstationsAndServers", "BackupStats", "Servers", "Workstations"] | None
     ) = None
     """
     Gets or sets deviceType is required if the managementSolution is Legacy.
@@ -8221,7 +8181,7 @@ class CompanyManagementSummary(SparkModel):
     cpuUtilization: float | None = None
     memoryUtilization: float | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyNote(SparkModel):
@@ -8231,7 +8191,7 @@ class CompanyNote(SparkModel):
     flagged: bool | None = None
     enteredBy: str | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyPickerItem(SparkModel):
@@ -8247,7 +8207,7 @@ class CompanyPickerItem(SparkModel):
     """
     Gets or sets if true, this record was created by the vendor picker component. Otherwise, the record was created by the company picker component.
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanySite(SparkModel):
@@ -8300,7 +8260,7 @@ class CompanySite(SparkModel):
     calendar: CalendarReference | None = None
     timeZone: TimeZoneSetupReference | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -8321,7 +8281,7 @@ class CompanySiteInfo(SparkModel):
     primaryAddressFlag: bool | None = None
     taxCode: TaxCodeReference | None = None
     phoneNumberExt: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyStatus(SparkModel):
@@ -8341,7 +8301,7 @@ class CompanyStatus(SparkModel):
     customNoteFlag: bool | None = None
     cancelOpenTracksFlag: bool | None = None
     track: TrackReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CompanyTeam(SparkModel):
@@ -8355,7 +8315,7 @@ class CompanyTeam(SparkModel):
     accountManagerFlag: bool | None = None
     techFlag: bool | None = None
     salesFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationTypeQuestion(SparkModel):
@@ -8363,20 +8323,20 @@ class ConfigurationTypeQuestion(SparkModel):
     configurationType: ConfigurationTypeReference | None = None
     fieldType: (
         Literal[
-            'TextArea',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'Text',
-            'Password',
+            "TextArea",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "Text",
+            "Password",
         ]
         | None
     ) = Field(...)
-    entryType: Literal['Date', 'EntryField', 'List', 'Option'] | None = Field(...)
+    entryType: Literal["Date", "EntryField", "List", "Option"] | None = Field(...)
     sequenceNumber: float | None = Field(...)
     question: str
     """
@@ -8385,7 +8345,7 @@ class ConfigurationTypeQuestion(SparkModel):
     numberOfDecimals: int | None = None
     requiredFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationTypeQuestionInfo(SparkModel):
@@ -8393,26 +8353,26 @@ class ConfigurationTypeQuestionInfo(SparkModel):
     configurationType: ConfigurationTypeReference | None = None
     fieldType: (
         Literal[
-            'TextArea',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'Text',
-            'Password',
+            "TextArea",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "Text",
+            "Password",
         ]
         | None
     ) = None
-    entryType: Literal['Date', 'EntryField', 'List', 'Option'] | None = None
+    entryType: Literal["Date", "EntryField", "List", "Option"] | None = None
     sequenceNumber: float | None = None
     question: str | None = None
     numberOfDecimals: int | None = None
     requiredFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationTypeQuestionValue(SparkModel):
@@ -8425,7 +8385,7 @@ class ConfigurationTypeQuestionValue(SparkModel):
     """
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConfigurationTypeQuestionValueInfo(SparkModel):
@@ -8435,7 +8395,7 @@ class ConfigurationTypeQuestionValueInfo(SparkModel):
     value: str | None = None
     defaultFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Contact(SparkModel):
@@ -8469,12 +8429,10 @@ class Contact(SparkModel):
     portalSecurityLevel: int | None = None
     disablePortalLoginFlag: bool | None = None
     unsubscribeFlag: bool | None = None
-    gender: Literal['Female', 'Male'] | None = None
+    gender: Literal["Female", "Male"] | None = None
     birthDay: str | None = None
     anniversary: str | None = None
-    presence: Literal['NoAgent', 'Online', 'DoNotDisturb', 'Away', 'Offline'] | None = (
-        None
-    )
+    presence: Literal["NoAgent", "Online", "DoNotDisturb", "Away", "Offline"] | None = None
     mobileGuid: UUID | None = None
     facebookUrl: str | None = None
     twitterUrl: str | None = None
@@ -8531,7 +8489,7 @@ class Contact(SparkModel):
     customFields: list[CustomFieldValue] | None = None
     photo: DocumentReference | None = None
     ignoreDuplicates: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     typeIds: list[int] | None = None
     """
     Gets or sets integrer array of Contact_Type_Recids to be assigned to contact that can be passed in only during new contact creation (post)
@@ -8552,7 +8510,7 @@ class ContactGroup(SparkModel):
     companyGroupUnsubscribedEmailMessage: str | None = None
     contactUnsubscribedEmailMessage: str | None = None
     contactGroupUnsubscribedEmailMessage: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactInfo(SparkModel):
@@ -8580,7 +8538,7 @@ class ContactInfo(SparkModel):
     facebookUrl: str | None = None
     twitterUrl: str | None = None
     linkedInUrl: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ContactNote(SparkModel):
@@ -8590,7 +8548,7 @@ class ContactNote(SparkModel):
     type: NoteTypeReference | None = None
     flagged: bool | None = None
     enteredBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Conversion(SparkModel):
@@ -8598,14 +8556,12 @@ class Conversion(SparkModel):
     quantity: float | None = None
     uomType: UnitOfMeasureReference
     parentUOM: UnitOfMeasureReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ConvertItem(SparkModel):
     id: int | None = None
-    recordType: Literal['ProjectIssue', 'ProjectTicket', 'ServiceTicket'] | None = (
-        Field(...)
-    )
+    recordType: Literal["ProjectIssue", "ProjectTicket", "ServiceTicket"] | None = Field(...)
     project: ProjectReference | None = None
     phase: ProjectPhaseReference | None = None
     wbsCode: str | None = None
@@ -8613,7 +8569,7 @@ class ConvertItem(SparkModel):
 
 class ConvertToProject(SparkModel):
     id: int | None = None
-    recordType: Literal['ProjectIssue', 'ProjectTicket', 'ServiceTicket'] | None = None
+    recordType: Literal["ProjectIssue", "ProjectTicket", "ServiceTicket"] | None = None
     project: ProjectReference | None = None
     phase: ProjectPhaseReference
     wbsCode: str
@@ -8621,7 +8577,7 @@ class ConvertToProject(SparkModel):
 
 class CorporateStructure(SparkModel):
     id: int | None = None
-    levelCount: Literal['Level1', 'Level2', 'Level3', 'Level4', 'Level5'] | None = None
+    levelCount: Literal["Level1", "Level2", "Level3", "Level4", "Level5"] | None = None
     level1Name: str | None = None
     """
      Max length: 20;
@@ -8644,18 +8600,18 @@ class CorporateStructure(SparkModel):
     """
     fiscalYearStart: (
         Literal[
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December',
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
         ]
         | None
     ) = Field(...)
@@ -8674,7 +8630,7 @@ class CorporateStructure(SparkModel):
     dispatcher: MemberReference | None = None
     serviceManager: MemberReference | None = None
     dutyManager: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CorporateStructureInfo(SparkModel):
@@ -8682,7 +8638,7 @@ class CorporateStructureInfo(SparkModel):
     locationCaption: str | None = None
     groupCaption: str | None = None
     baseCurrency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Country(SparkModel):
@@ -8717,258 +8673,258 @@ class Country(SparkModel):
     """
     coreEntityCountryCode: (
         Literal[
-            'AF',
-            'AX',
-            'AL',
-            'DZ',
-            'AS',
-            'AD',
-            'AO',
-            'AI',
-            'AQ',
-            'AR',
-            'AM',
-            'AW',
-            'AT',
-            'AZ',
-            'BH',
-            'BD',
-            'BB',
-            'BY',
-            'BZ',
-            'BJ',
-            'BM',
-            'BT',
-            'BO',
-            'BQ',
-            'BA',
-            'BW',
-            'BV',
-            'IO',
-            'BN',
-            'BG',
-            'BF',
-            'BI',
-            'CM',
-            'CV',
-            'KY',
-            'CF',
-            'TD',
-            'CL',
-            'CX',
-            'CC',
-            'CO',
-            'KM',
-            'CG',
-            'CK',
-            'CI',
-            'HR',
-            'CU',
-            'CW',
-            'CY',
-            'CZ',
-            'CD',
-            'DK',
-            'DJ',
-            'DM',
-            'EC',
-            'EG',
-            'GQ',
-            'ER',
-            'EE',
-            'ET',
-            'FK',
-            'FO',
-            'FJ',
-            'FI',
-            'FR',
-            'GF',
-            'PF',
-            'TF',
-            'GA',
-            'GM',
-            'GE',
-            'GH',
-            'GI',
-            'GR',
-            'GL',
-            'GD',
-            'GP',
-            'GU',
-            'GT',
-            'GG',
-            'GN',
-            'GW',
-            'GY',
-            'HT',
-            'HM',
-            'HN',
-            'HK',
-            'HU',
-            'IS',
-            'IN',
-            'IR',
-            'IQ',
-            'IE',
-            'IM',
-            'IT',
-            'JM',
-            'JP',
-            'JE',
-            'JO',
-            'KZ',
-            'KE',
-            'KI',
-            'XK',
-            'KW',
-            'KG',
-            'LA',
-            'LV',
-            'LB',
-            'LS',
-            'LR',
-            'LY',
-            'LI',
-            'LT',
-            'LU',
-            'MO',
-            'MK',
-            'MG',
-            'MW',
-            'MY',
-            'ML',
-            'MT',
-            'MH',
-            'MQ',
-            'MR',
-            'MU',
-            'YT',
-            'FM',
-            'MD',
-            'MC',
-            'MN',
-            'ME',
-            'MS',
-            'MZ',
-            'NA',
-            'NR',
-            'NP',
-            'NC',
-            'NZ',
-            'NI',
-            'NE',
-            'NG',
-            'NU',
-            'NF',
-            'KP',
-            'MP',
-            'OM',
-            'PK',
-            'PW',
-            'PS',
-            'PG',
-            'PY',
-            'PE',
-            'PN',
-            'PL',
-            'PT',
-            'PR',
-            'RE',
-            'RO',
-            'RU',
-            'RW',
-            'BL',
-            'SH',
-            'PM',
-            'VC',
-            'WS',
-            'SM',
-            'ST',
-            'SN',
-            'RS',
-            'SC',
-            'SL',
-            'SX',
-            'SK',
-            'SI',
-            'SB',
-            'SO',
-            'ZA',
-            'GS',
-            'KR',
-            'SS',
-            'ES',
-            'LK',
-            'SD',
-            'SR',
-            'SJ',
-            'SZ',
-            'SE',
-            'SY',
-            'TJ',
-            'TZ',
-            'TH',
-            'TL',
-            'TG',
-            'TK',
-            'TO',
-            'TN',
-            'TR',
-            'TV',
-            'UG',
-            'UA',
-            'GB',
-            'UM',
-            'UZ',
-            'VU',
-            'VN',
-            'WF',
-            'EH',
-            'YE',
-            'ZM',
-            'ZW',
-            'US',
-            'CR',
-            'MX',
-            'AE',
-            'VI',
-            'VG',
-            'SA',
-            'KH',
-            'AU',
-            'ID',
-            'CA',
-            'BR',
-            'TW',
-            'TM',
-            'TC',
-            'QA',
-            'MM',
-            'CN',
-            'SG',
-            'IL',
-            'VA',
-            'DE',
-            'NL',
-            'AG',
-            'BE',
-            'LC',
-            'UY',
-            'PH',
-            'BS',
-            'VE',
-            'CH',
-            'MF',
-            'KN',
-            'TT',
-            'DO',
-            'PA',
-            'MV',
-            'SV',
-            'NO',
-            'MA',
-            'AC',
-            'TA',
+            "AF",
+            "AX",
+            "AL",
+            "DZ",
+            "AS",
+            "AD",
+            "AO",
+            "AI",
+            "AQ",
+            "AR",
+            "AM",
+            "AW",
+            "AT",
+            "AZ",
+            "BH",
+            "BD",
+            "BB",
+            "BY",
+            "BZ",
+            "BJ",
+            "BM",
+            "BT",
+            "BO",
+            "BQ",
+            "BA",
+            "BW",
+            "BV",
+            "IO",
+            "BN",
+            "BG",
+            "BF",
+            "BI",
+            "CM",
+            "CV",
+            "KY",
+            "CF",
+            "TD",
+            "CL",
+            "CX",
+            "CC",
+            "CO",
+            "KM",
+            "CG",
+            "CK",
+            "CI",
+            "HR",
+            "CU",
+            "CW",
+            "CY",
+            "CZ",
+            "CD",
+            "DK",
+            "DJ",
+            "DM",
+            "EC",
+            "EG",
+            "GQ",
+            "ER",
+            "EE",
+            "ET",
+            "FK",
+            "FO",
+            "FJ",
+            "FI",
+            "FR",
+            "GF",
+            "PF",
+            "TF",
+            "GA",
+            "GM",
+            "GE",
+            "GH",
+            "GI",
+            "GR",
+            "GL",
+            "GD",
+            "GP",
+            "GU",
+            "GT",
+            "GG",
+            "GN",
+            "GW",
+            "GY",
+            "HT",
+            "HM",
+            "HN",
+            "HK",
+            "HU",
+            "IS",
+            "IN",
+            "IR",
+            "IQ",
+            "IE",
+            "IM",
+            "IT",
+            "JM",
+            "JP",
+            "JE",
+            "JO",
+            "KZ",
+            "KE",
+            "KI",
+            "XK",
+            "KW",
+            "KG",
+            "LA",
+            "LV",
+            "LB",
+            "LS",
+            "LR",
+            "LY",
+            "LI",
+            "LT",
+            "LU",
+            "MO",
+            "MK",
+            "MG",
+            "MW",
+            "MY",
+            "ML",
+            "MT",
+            "MH",
+            "MQ",
+            "MR",
+            "MU",
+            "YT",
+            "FM",
+            "MD",
+            "MC",
+            "MN",
+            "ME",
+            "MS",
+            "MZ",
+            "NA",
+            "NR",
+            "NP",
+            "NC",
+            "NZ",
+            "NI",
+            "NE",
+            "NG",
+            "NU",
+            "NF",
+            "KP",
+            "MP",
+            "OM",
+            "PK",
+            "PW",
+            "PS",
+            "PG",
+            "PY",
+            "PE",
+            "PN",
+            "PL",
+            "PT",
+            "PR",
+            "RE",
+            "RO",
+            "RU",
+            "RW",
+            "BL",
+            "SH",
+            "PM",
+            "VC",
+            "WS",
+            "SM",
+            "ST",
+            "SN",
+            "RS",
+            "SC",
+            "SL",
+            "SX",
+            "SK",
+            "SI",
+            "SB",
+            "SO",
+            "ZA",
+            "GS",
+            "KR",
+            "SS",
+            "ES",
+            "LK",
+            "SD",
+            "SR",
+            "SJ",
+            "SZ",
+            "SE",
+            "SY",
+            "TJ",
+            "TZ",
+            "TH",
+            "TL",
+            "TG",
+            "TK",
+            "TO",
+            "TN",
+            "TR",
+            "TV",
+            "UG",
+            "UA",
+            "GB",
+            "UM",
+            "UZ",
+            "VU",
+            "VN",
+            "WF",
+            "EH",
+            "YE",
+            "ZM",
+            "ZW",
+            "US",
+            "CR",
+            "MX",
+            "AE",
+            "VI",
+            "VG",
+            "SA",
+            "KH",
+            "AU",
+            "ID",
+            "CA",
+            "BR",
+            "TW",
+            "TM",
+            "TC",
+            "QA",
+            "MM",
+            "CN",
+            "SG",
+            "IL",
+            "VA",
+            "DE",
+            "NL",
+            "AG",
+            "BE",
+            "LC",
+            "UY",
+            "PH",
+            "BS",
+            "VE",
+            "CH",
+            "MF",
+            "KN",
+            "TT",
+            "DO",
+            "PA",
+            "MV",
+            "SV",
+            "NO",
+            "MA",
+            "AC",
+            "TA",
         ]
         | None
     ) = None
@@ -8980,7 +8936,7 @@ class Country(SparkModel):
     """
      Max length: 50;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CountryInfo(SparkModel):
@@ -8993,7 +8949,7 @@ class CountryInfo(SparkModel):
     dialingPrefix: str | None = None
     localizationCaptionOne: str | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Crm(SparkModel):
@@ -9062,7 +9018,7 @@ class Crm(SparkModel):
      Max length: 50;
     """
     defaultYear: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CrmInfo(SparkModel):
@@ -9082,7 +9038,7 @@ class CrmInfo(SparkModel):
     field10Caption: str | None = None
     primaryRepCaption: str | None = None
     secondaryRepCaption: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class CustomReportParameter(SparkModel):
@@ -9096,7 +9052,7 @@ class CustomReportParameter(SparkModel):
     Either a caption name or parameter name is required. Max length: 50;
     """
     customReport: CustomReportReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class DepartmentLocation(SparkModel):
@@ -9110,14 +9066,14 @@ class DepartmentLocation(SparkModel):
     ldapConfig: LdapConfigurationReference | None = None
     addAllLocations: bool | None = None
     removeAllLocations: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class DepartmentLocationInfo(SparkModel):
     id: int | None = None
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class DocumentInfo(SparkModel):
@@ -9135,13 +9091,13 @@ class DocumentInfo(SparkModel):
     urlFlag: bool | None = None
     createdOnDate: str | None = None
     documentType: DocumentTypeReference | None = None
-    guid: UUID | None = Field(None, examples=['00000000-0000-0000-0000-000000000000'])
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    guid: UUID | None = Field(None, examples=["00000000-0000-0000-0000-000000000000"])
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class EmailConnector(SparkModel):
     id: int | None = None
-    emailServerType: Literal['IMAP', 'Office365', 'Google', 'Asio365'] | None = None
+    emailServerType: Literal["IMAP", "Office365", "Google", "Asio365"] | None = None
     imapSetup: ImapSetupReference | None = None
     office365EmailSetup: Office365EmailSetupReference | None = None
     asio365EmailSetup: Office365EmailSetupReference | None = None
@@ -9180,14 +9136,14 @@ class EmailConnector(SparkModel):
     addCcFlag: bool | None = None
     inboundTicketMailboxId: str | None = None
     useEmailMessageIdFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class EmailConnectorInfo(SparkModel):
     id: int | None = None
     defaultCompany: CompanyReference | None = None
     imapSetup: ImapSetupReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class EmailConnectorParsingRule(SparkModel):
@@ -9205,7 +9161,7 @@ class EmailConnectorParsingRule(SparkModel):
     serviceSubType: ServiceSubTypeReference | None = None
     serviceItem: ServiceItemReference | None = None
     serviceBoard: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class EmailConnectorParsingStyle(SparkModel):
@@ -9216,7 +9172,7 @@ class EmailConnectorParsingStyle(SparkModel):
      Max length: 500;
     """
     priority: int | None = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class EPayConfiguration(SparkModel):
@@ -9239,7 +9195,7 @@ class EPayConfiguration(SparkModel):
     """
      Max length: 500;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ErrorResponseMessage(SparkModel):
@@ -9260,24 +9216,24 @@ class ExpenseReport(SparkModel):
     dateEnd: str | None = None
     status: (
         Literal[
-            'Open',
-            'Rejected',
-            'PendingApproval',
-            'ErrorsCorrected',
-            'PendingProjectApproval',
-            'ApprovedByTierOne',
-            'RejectBySecondTier',
-            'ApprovedByTierTwo',
-            'ReadyToBill',
-            'Billed',
-            'WrittenOff',
-            'BilledAgreement',
+            "Open",
+            "Rejected",
+            "PendingApproval",
+            "ErrorsCorrected",
+            "PendingProjectApproval",
+            "ApprovedByTierOne",
+            "RejectBySecondTier",
+            "ApprovedByTierTwo",
+            "ReadyToBill",
+            "Billed",
+            "WrittenOff",
+            "BilledAgreement",
         ]
         | None
     ) = None
     total: float | None = None
     dueDate: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 ExpenseReportAudit = TimeEntryAudit
@@ -9293,7 +9249,7 @@ class ExpenseTypeExemption(SparkModel):
     id: int | None = None
     expenseType: ExpenseTypeReference
     taxableLevels: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ForecastItem(SparkModel):
@@ -9322,9 +9278,7 @@ class ForecastItem(SparkModel):
      Max length: 255;
     """
     quoteWerksQuantity: int | None = None
-    forecastType: (
-        Literal['Other1', 'Other2', 'Agreement', 'Product', 'Service'] | None
-    ) = Field(...)
+    forecastType: Literal["Other1", "Other2", "Agreement", "Product", "Service"] | None = Field(...)
     linkFlag: bool | None = None
     recurringRevenue: float | None = None
     recurringCost: float | None = None
@@ -9337,34 +9291,34 @@ class ForecastItem(SparkModel):
     sequenceNumber: float | None = None
     subNumber: int | None = None
     taxableFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class GLAccount(SparkModel):
     id: int | None = None
     glType: (
         Literal[
-            'AP',
-            'AR',
-            'EE',
-            'EI',
-            'EO',
-            'IA',
-            'IT',
-            'P',
-            'PF',
-            'R',
-            'RA',
-            'RD',
-            'RE',
-            'RP',
-            'ST',
-            'SD',
-            'ET',
-            'FT',
-            'PT',
-            'WP',
-            'WR',
+            "AP",
+            "AR",
+            "EE",
+            "EI",
+            "EO",
+            "IA",
+            "IT",
+            "P",
+            "PF",
+            "R",
+            "RA",
+            "RD",
+            "RE",
+            "RP",
+            "ST",
+            "SD",
+            "ET",
+            "FT",
+            "PT",
+            "WP",
+            "WR",
         ]
         | None
     ) = Field(...)
@@ -9462,7 +9416,7 @@ class GLAccount(SparkModel):
     """
      Max length: 255;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class GLExportAdjustmentTransactionDetail(SparkModel):
@@ -9760,7 +9714,7 @@ class GLPath(SparkModel):
     """
     lastPaymentSync: datetime | None = None
     lastPaymentSyncBy: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Holiday(SparkModel):
@@ -9777,7 +9731,7 @@ class Holiday(SparkModel):
     timeStart: str | None = None
     timeEnd: str | None = None
     holidayList: HolidayListReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class HolidayInfo(SparkModel):
@@ -9791,7 +9745,7 @@ class HolidayInfo(SparkModel):
     timeStart: str | None = None
     timeEnd: str | None = None
     holidayList: HolidayListReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class HttpRequestMessage(SparkModel):
@@ -9808,53 +9762,53 @@ class HttpResponseMessage(SparkModel):
     content: HttpContent | None = None
     statusCode: (
         Literal[
-            'Continue',
-            'SwitchingProtocols',
-            'OK',
-            'Created',
-            'Accepted',
-            'NonAuthoritativeInformation',
-            'NoContent',
-            'ResetContent',
-            'PartialContent',
-            'MultipleChoices',
-            'Ambiguous',
-            'MovedPermanently',
-            'Moved',
-            'Found',
-            'Redirect',
-            'SeeOther',
-            'RedirectMethod',
-            'NotModified',
-            'UseProxy',
-            'Unused',
-            'TemporaryRedirect',
-            'RedirectKeepVerb',
-            'BadRequest',
-            'Unauthorized',
-            'PaymentRequired',
-            'Forbidden',
-            'NotFound',
-            'MethodNotAllowed',
-            'NotAcceptable',
-            'ProxyAuthenticationRequired',
-            'RequestTimeout',
-            'Conflict',
-            'Gone',
-            'LengthRequired',
-            'PreconditionFailed',
-            'RequestEntityTooLarge',
-            'RequestUriTooLong',
-            'UnsupportedMediaType',
-            'RequestedRangeNotSatisfiable',
-            'ExpectationFailed',
-            'UpgradeRequired',
-            'InternalServerError',
-            'NotImplemented',
-            'BadGateway',
-            'ServiceUnavailable',
-            'GatewayTimeout',
-            'HttpVersionNotSupported',
+            "Continue",
+            "SwitchingProtocols",
+            "OK",
+            "Created",
+            "Accepted",
+            "NonAuthoritativeInformation",
+            "NoContent",
+            "ResetContent",
+            "PartialContent",
+            "MultipleChoices",
+            "Ambiguous",
+            "MovedPermanently",
+            "Moved",
+            "Found",
+            "Redirect",
+            "SeeOther",
+            "RedirectMethod",
+            "NotModified",
+            "UseProxy",
+            "Unused",
+            "TemporaryRedirect",
+            "RedirectKeepVerb",
+            "BadRequest",
+            "Unauthorized",
+            "PaymentRequired",
+            "Forbidden",
+            "NotFound",
+            "MethodNotAllowed",
+            "NotAcceptable",
+            "ProxyAuthenticationRequired",
+            "RequestTimeout",
+            "Conflict",
+            "Gone",
+            "LengthRequired",
+            "PreconditionFailed",
+            "RequestEntityTooLarge",
+            "RequestUriTooLong",
+            "UnsupportedMediaType",
+            "RequestedRangeNotSatisfiable",
+            "ExpectationFailed",
+            "UpgradeRequired",
+            "InternalServerError",
+            "NotImplemented",
+            "BadGateway",
+            "ServiceUnavailable",
+            "GatewayTimeout",
+            "HttpVersionNotSupported",
         ]
         | None
     ) = None
@@ -9882,7 +9836,7 @@ class InOutBoard(SparkModel):
      Max length: 100;
     """
     dateBack: datetime
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class IntegratorLogin(SparkModel):
@@ -10002,7 +9956,7 @@ class IntegratorLogin(SparkModel):
     """
     agreementCallbackLegacyFlag: bool | None = None
     documentApiFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 InventoryOnHand = CatalogInventory
@@ -10016,12 +9970,12 @@ class Invoice(SparkModel):
     """
     type: (
         Literal[
-            'Agreement',
-            'CreditMemo',
-            'DownPayment',
-            'Miscellaneous',
-            'Progress',
-            'Standard',
+            "Agreement",
+            "CreditMemo",
+            "DownPayment",
+            "Miscellaneous",
+            "Progress",
+            "Standard",
         ]
         | None
     ) = Field(...)
@@ -10031,8 +9985,7 @@ class Invoice(SparkModel):
     shipToCompany: CompanyReference | None = None
     accountNumber: str | None = None
     applyToType: (
-        Literal['All', 'Agreement', 'Project', 'ProjectPhase', 'SalesOrder', 'Ticket']
-        | None
+        Literal["All", "Agreement", "Project", "ProjectPhase", "SalesOrder", "Ticket"] | None
     ) = None
     applyToId: int | None = None
     attention: str | None = None
@@ -10125,7 +10078,7 @@ class Invoice(SparkModel):
     agreement: AgreementReference | None = None
     glBatch: BatchReference | None = None
     unbatchedBatch: BatchReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -10147,7 +10100,7 @@ class InvoiceCommission(SparkModel):
     adjustedBy: str | None = None
     adjustedDate: str | None = None
     adjustmentReason: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InvoiceEmailTemplate(SparkModel):
@@ -10178,13 +10131,13 @@ class InvoiceEmailTemplate(SparkModel):
     copySenderFlag: bool | None = None
     invoiceStatus: BillingStatusReference | None = None
     attachInvoiceFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class InvoicePayment(SparkModel):
     id: int | None = None
     type: str | None = None
-    source: Literal['Default', 'WisePay'] | None = None
+    source: Literal["Default", "WisePay"] | None = None
     invoice: InvoiceReference | None = None
     credit: InvoiceReference | None = None
     amount: float | None = None
@@ -10193,9 +10146,9 @@ class InvoicePayment(SparkModel):
     invoiceTotal: float | None = None
     paymentDate: datetime | None = None
     appliedBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     wisePayPayment: WisePayPayment | None = None
-    paymentSyncStatus: Literal['Unapplied', 'Applied', 'Synced'] | None = None
+    paymentSyncStatus: Literal["Unapplied", "Applied", "Synced"] | None = None
     glBatchID: str | None = None
     """
      Max length: 50;
@@ -10212,7 +10165,7 @@ class InvoiceRouting(SparkModel):
     member: MemberReference | None = None
     reviewedFlag: bool | None = None
     dateReviewedUTC: datetime | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class KnowledgeBaseCategory(SparkModel):
@@ -10224,14 +10177,14 @@ class KnowledgeBaseCategory(SparkModel):
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
     approver: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class KnowledgeBaseSettings(SparkModel):
     id: int | None = None
     requireApproval: bool | None = Field(...)
     defaultApprover: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class KnowledgeBaseSubCategory(SparkModel):
@@ -10243,7 +10196,7 @@ class KnowledgeBaseSubCategory(SparkModel):
     category: KBCategoryReference
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class KPI(SparkModel):
@@ -10312,7 +10265,7 @@ class Location(SparkModel):
     clientFlag: bool | None = None
     workRoleIds: list[int] | None = None
     departmentIds: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 LocationDepartment = DepartmentLocationInfo
@@ -10323,7 +10276,7 @@ class LocationWorkRole(SparkModel):
     location: SystemLocationReference | None = None
     workRole: WorkRoleReference | None = None
     workRoleInactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagedDeviceAccount(SparkModel):
@@ -10331,7 +10284,7 @@ class ManagedDeviceAccount(SparkModel):
     username: str | None = None
     password: str | None = None
     managedDevicesIntegration: ManagedDevicesIntegrationReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagedDevicesIntegration(SparkModel):
@@ -10348,7 +10301,7 @@ class ManagedDevicesIntegration(SparkModel):
     """
      Max length: 200;
     """
-    loginBy: Literal['Global', 'Member'] | None = Field(...)
+    loginBy: Literal["Global", "Member"] | None = Field(...)
     globalLoginUsername: str | None = None
     """
     Gets or sets
@@ -10359,7 +10312,7 @@ class ManagedDevicesIntegration(SparkModel):
     Gets or sets
                 this is only required when globalLoginFlag = true. Max length: 50;
     """
-    defaultBillingLevel: Literal['Detail', 'Summary'] | None = Field(...)
+    defaultBillingLevel: Literal["Detail", "Summary"] | None = Field(...)
     managementItSetupType: str | None = None
     defaultLocation: SystemLocationReference | None = None
     defaultDepartment: SystemDepartmentReference | None = None
@@ -10367,7 +10320,7 @@ class ManagedDevicesIntegration(SparkModel):
     matchOnSerialNumberFlag: bool | None = None
     disableNewCrossReferencesFlag: bool | None = None
     configBillCustomerFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagedDevicesIntegrationCrossReference(SparkModel):
@@ -10385,7 +10338,7 @@ class ManagedDevicesIntegrationCrossReference(SparkModel):
     product: IvItemReference | None = None
     configurationType: ConfigurationTypeReference | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagedDevicesIntegrationLogin(SparkModel):
@@ -10400,7 +10353,7 @@ class ManagedDevicesIntegrationLogin(SparkModel):
      Max length: 50;
     """
     member: MemberReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagedDevicesIntegrationNotification(SparkModel):
@@ -10410,17 +10363,17 @@ class ManagedDevicesIntegrationNotification(SparkModel):
     member: MemberReference | None = None
     logType: (
         Literal[
-            'All',
-            'Error',
-            'NewManagedSolution',
-            'NewDeviceType',
-            'NewConfiguration',
-            'NewAddition',
-            'Info',
+            "All",
+            "Error",
+            "NewManagedSolution",
+            "NewDeviceType",
+            "NewConfiguration",
+            "NewAddition",
+            "Info",
         ]
         | None
     ) = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ManagementReportNotification(SparkModel):
@@ -10433,7 +10386,7 @@ class ManagementReportNotification(SparkModel):
     """
     globalFlag: bool | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Member(SparkModel):
@@ -10447,7 +10400,7 @@ class Member(SparkModel):
     ConditionallyRequired. API Member will get random password generated Max length: 60;
     """
     disableOnlineFlag: bool | None = None
-    licenseClass: Literal['A', 'C', 'F', 'X'] | None = Field(...)
+    licenseClass: Literal["A", "C", "F", "X"] | None = Field(...)
     """
     F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member
     """
@@ -10490,7 +10443,7 @@ class Member(SparkModel):
     """
      Max length: 250;
     """
-    defaultEmail: Literal['Office', 'Mobile', 'Home'] | None = Field(...)
+    defaultEmail: Literal["Office", "Mobile", "Home"] | None = Field(...)
     primaryEmail: str | None = None
     """
      Max length: 250;
@@ -10519,14 +10472,12 @@ class Member(SparkModel):
     """
      Max length: 10;
     """
-    defaultPhone: Literal['Office', 'Mobile', 'Home'] | None = Field(...)
+    defaultPhone: Literal["Office", "Mobile", "Home"] | None = Field(...)
     securityRole: SecurityRoleReference
     office365: MemberOffice365 | None = None
     mapiName: str | None = None
     calendarSyncIntegrationFlag: bool | None = None
-    authenticationServiceType: (
-        Literal['AuthAnvil', 'GoogleAuthenticator', 'Email'] | None
-    ) = None
+    authenticationServiceType: Literal["AuthAnvil", "GoogleAuthenticator", "Email"] | None = None
     timebasedOneTimePasswordActivated: bool | None = None
     enableLdapAuthenticationFlag: bool | None = None
     ldapConfiguration: LdapConfigurationReference | None = None
@@ -10537,9 +10488,7 @@ class Member(SparkModel):
     directionalSync: DirectionalSyncReference | None = None
     ssoSettings: MemberSsoSettingsReference | None = None
     signature: str | None = None
-    phoneIntegrationType: Literal['TAPI', 'SKYPE', 'TEL', 'CALLTO', 'NONE'] | None = (
-        None
-    )
+    phoneIntegrationType: Literal["TAPI", "SKYPE", "TEL", "CALLTO", "NONE"] | None = None
     useBrowserLanguageFlag: bool | None = None
     title: str | None = None
     reportCard: ReportCardReference | None = None
@@ -10604,30 +10553,25 @@ class Member(SparkModel):
     warehouseBin: WarehouseBinReference | None = None
     restrictDefaultWarehouseFlag: bool | None = None
     restrictDefaultWarehouseBinFlag: bool | None = None
-    companyActivityTabFormat: Literal['SummaryList', 'DetailList'] | None = None
-    invoiceTimeTabFormat: Literal['SummaryList', 'DetailList'] | None = None
+    companyActivityTabFormat: Literal["SummaryList", "DetailList"] | None = None
+    invoiceTimeTabFormat: Literal["SummaryList", "DetailList"] | None = None
     invoiceScreenDefaultTabFormat: (
-        Literal['ShowInvoicingTab', 'ShowAgreementInvoicingTab'] | None
+        Literal["ShowInvoicingTab", "ShowAgreementInvoicingTab"] | None
     ) = None
-    invoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
-    ) = None
+    invoicingDisplayOptions: Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None = None
     agreementInvoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
+        Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None
     ) = None
     autoStartStopwatch: bool | None = None
     autoPopupQuickNotesWithStopwatch: bool | None = None
     globalSearchDefaultTicketFilter: (
-        Literal['OpenRecords', 'ClosedRecords', 'AllRecords'] | None
+        Literal["OpenRecords", "ClosedRecords", "AllRecords"] | None
     ) = None
     globalSearchDefaultSort: (
-        Literal[
-            'None', 'LastUpdatedDesc', 'LastUpdatedAsc', 'CreatedDesc', 'CreatedAsc'
-        ]
-        | None
+        Literal["None", "LastUpdatedDesc", "LastUpdatedAsc", "CreatedDesc", "CreatedAsc"] | None
     ) = None
     phoneSource: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     copyPodLayouts: bool | None = None
     copySharedDefaultViews: bool | None = None
     copyColumnLayoutsAndFilters: bool | None = None
@@ -10638,12 +10582,12 @@ class Member(SparkModel):
 
 class MemberAccrual(SparkModel):
     id: int | None = None
-    accrualType: Literal['Holiday', 'PTO', 'Sick', 'Vacation'] | None = Field(...)
+    accrualType: Literal["Holiday", "PTO", "Sick", "Vacation"] | None = Field(...)
     year: int | None = Field(...)
     hours: float | None = Field(...)
     reason: str
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberCertification(SparkModel):
@@ -10659,7 +10603,7 @@ class MemberCertification(SparkModel):
     notes: str | None = None
     member: MemberReference | None = None
     company: CompanyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberDeactivationCompanyTeam(SparkModel):
@@ -10684,12 +10628,12 @@ class MemberDeactivationStatusWorkflow(SparkModel):
 
 class MemberDelegation(SparkModel):
     id: int | None = None
-    delegationType: Literal['Approval', 'Project'] | None = Field(...)
+    delegationType: Literal["Approval", "Project"] | None = Field(...)
     delegatedTo: MemberReference
     dateStart: datetime
     dateEnd: datetime
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberPersona(SparkModel):
@@ -10701,20 +10645,18 @@ class MemberPersona(SparkModel):
     """
     personaId: int
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberSkill(SparkModel):
     id: int | None = None
     skill: SkillReference
-    skillLevel: Literal['Beginner', 'Intermediate', 'Advanced', 'Expert'] | None = (
-        Field(...)
-    )
+    skillLevel: Literal["Beginner", "Intermediate", "Advanced", "Expert"] | None = Field(...)
     certifiedFlag: bool | None = None
     yearsExperience: int | None = None
     notes: str | None = None
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberTemplate(SparkModel):
@@ -10790,30 +10732,25 @@ class MemberTemplate(SparkModel):
     warehouseBin: WarehouseBinReference | None = None
     restrictDefaultWarehouseFlag: bool | None = None
     restrictDefaultWarehouseBinFlag: bool | None = None
-    companyActivityTabFormat: Literal['SummaryList', 'DetailList'] | None = None
-    invoiceTimeTabFormat: Literal['SummaryList', 'DetailList'] | None = None
+    companyActivityTabFormat: Literal["SummaryList", "DetailList"] | None = None
+    invoiceTimeTabFormat: Literal["SummaryList", "DetailList"] | None = None
     invoiceScreenDefaultTabFormat: (
-        Literal['ShowInvoicingTab', 'ShowAgreementInvoicingTab'] | None
+        Literal["ShowInvoicingTab", "ShowAgreementInvoicingTab"] | None
     ) = None
-    invoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
-    ) = None
+    invoicingDisplayOptions: Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None = None
     agreementInvoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
+        Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None
     ) = None
     autoStartStopwatch: bool | None = None
     autoPopupQuickNotesWithStopwatch: bool | None = None
     globalSearchDefaultTicketFilter: (
-        Literal['OpenRecords', 'ClosedRecords', 'AllRecords'] | None
+        Literal["OpenRecords", "ClosedRecords", "AllRecords"] | None
     ) = None
     globalSearchDefaultSort: (
-        Literal[
-            'None', 'LastUpdatedDesc', 'LastUpdatedAsc', 'CreatedDesc', 'CreatedAsc'
-        ]
-        | None
+        Literal["None", "LastUpdatedDesc", "LastUpdatedAsc", "CreatedDesc", "CreatedAsc"] | None
     ) = None
     phoneSource: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     copyPodLayouts: bool | None = None
     copySharedDefaultViews: bool | None = None
     copyColumnLayoutsAndFilters: bool | None = None
@@ -10847,21 +10784,21 @@ class MenuEntry(SparkModel):
     removeAllLocations: bool | None = None
     smallMenuIconId: int | None = None
     largeMenuIconId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MenuEntryLocation(SparkModel):
     id: int | None = None
     location: SystemLocationReference
     menuEntry: SystemMenuEntryReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MinimumStockByWarehouse(SparkModel):
     id: int | None = None
     warehouse: WarehouseReference
     minimumStock: int | None = Field(...)
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MyAccount(SparkModel):
@@ -10891,7 +10828,7 @@ class MyAccount(SparkModel):
      Max length: 50;
     """
     reportCard: ReportCardReference | None = None
-    licenseClass: Literal['A', 'C', 'F', 'X'] | None = Field(...)
+    licenseClass: Literal["A", "C", "F", "X"] | None = Field(...)
     """
     F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member
     """
@@ -10955,12 +10892,12 @@ class MyAccount(SparkModel):
     """
      Max length: 10;
     """
-    defaultEmail: Literal['Office', 'Mobile', 'Home'] | None = Field(...)
+    defaultEmail: Literal["Office", "Mobile", "Home"] | None = Field(...)
     primaryEmail: str | None = None
     """
      Max length: 250;
     """
-    defaultPhone: Literal['Office', 'Mobile', 'Home'] | None = Field(...)
+    defaultPhone: Literal["Office", "Mobile", "Home"] | None = Field(...)
     defaultLocation: SystemLocationReference
     defaultDepartment: SystemDepartmentReference
     reportsTo: MemberReference | None = None
@@ -10999,40 +10936,33 @@ class MyAccount(SparkModel):
     warehouseBin: WarehouseBinReference | None = None
     mapiName: str | None = None
     calendarSyncIntegrationFlag: bool | None = None
-    companyActivityTabFormat: Literal['SummaryList', 'DetailList'] | None = Field(...)
-    invoiceTimeTabFormat: Literal['SummaryList', 'DetailList'] | None = Field(...)
+    companyActivityTabFormat: Literal["SummaryList", "DetailList"] | None = Field(...)
+    invoiceTimeTabFormat: Literal["SummaryList", "DetailList"] | None = Field(...)
     invoiceScreenDefaultTabFormat: (
-        Literal['ShowInvoicingTab', 'ShowAgreementInvoicingTab'] | None
+        Literal["ShowInvoicingTab", "ShowAgreementInvoicingTab"] | None
     ) = Field(...)
-    invoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
-    ) = Field(...)
+    invoicingDisplayOptions: Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None = (
+        Field(...)
+    )
     agreementInvoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
+        Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None
     ) = Field(...)
-    authenticationServiceType: (
-        Literal['AuthAnvil', 'GoogleAuthenticator', 'Email'] | None
-    ) = None
+    authenticationServiceType: Literal["AuthAnvil", "GoogleAuthenticator", "Email"] | None = None
     timebasedOneTimePasswordActivated: bool | None = None
     directionalSync: DirectionalSyncReference | None = None
     autoStartStopwatch: bool | None = None
     autoPopupQuickNotesWithStopwatch: bool | None = None
     signature: str | None = None
     globalSearchDefaultTicketFilter: (
-        Literal['OpenRecords', 'ClosedRecords', 'AllRecords'] | None
+        Literal["OpenRecords", "ClosedRecords", "AllRecords"] | None
     ) = None
     globalSearchDefaultSort: (
-        Literal[
-            'None', 'LastUpdatedDesc', 'LastUpdatedAsc', 'CreatedDesc', 'CreatedAsc'
-        ]
-        | None
+        Literal["None", "LastUpdatedDesc", "LastUpdatedAsc", "CreatedDesc", "CreatedAsc"] | None
     ) = None
     phoneSource: str | None = None
-    phoneIntegrationType: Literal['TAPI', 'SKYPE', 'TEL', 'CALLTO', 'NONE'] | None = (
-        None
-    )
+    phoneIntegrationType: Literal["TAPI", "SKYPE", "TEL", "CALLTO", "NONE"] | None = None
     useBrowserLanguageFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     copyPodLayouts: bool | None = None
     copySharedDefaultViews: bool | None = None
     copyColumnLayoutsAndFilters: bool | None = None
@@ -11052,7 +10982,7 @@ class MyMember(SparkModel):
     lastName: str | None = None
     title: str | None = None
     reportCard: ReportCardReference | None = None
-    licenseClass: Literal['A', 'C', 'F', 'X'] | None = None
+    licenseClass: Literal["A", "C", "F", "X"] | None = None
     """
     F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member
     """
@@ -11080,8 +11010,8 @@ class MyMember(SparkModel):
     homeEmail: str | None = None
     homePhone: str | None = None
     homeExtension: str | None = None
-    defaultEmail: Literal['Office', 'Mobile', 'Home'] | None = None
-    defaultPhone: Literal['Office', 'Mobile', 'Home'] | None = None
+    defaultEmail: Literal["Office", "Mobile", "Home"] | None = None
+    defaultPhone: Literal["Office", "Mobile", "Home"] | None = None
     securityRole: SecurityRoleReference | None = None
     adminFlag: bool | None = None
     structureLevel: StructureReference | None = None
@@ -11141,27 +11071,23 @@ class MyMember(SparkModel):
     enableLdapAuthenticationFlag: bool | None = None
     ldapConfiguration: LdapConfigurationReference | None = None
     ldapUserName: str | None = None
-    companyActivityTabFormat: Literal['SummaryList', 'DetailList'] | None = None
-    invoiceTimeTabFormat: Literal['SummaryList', 'DetailList'] | None = None
+    companyActivityTabFormat: Literal["SummaryList", "DetailList"] | None = None
+    invoiceTimeTabFormat: Literal["SummaryList", "DetailList"] | None = None
     invoiceScreenDefaultTabFormat: (
-        Literal['ShowInvoicingTab', 'ShowAgreementInvoicingTab'] | None
+        Literal["ShowInvoicingTab", "ShowAgreementInvoicingTab"] | None
     ) = None
-    invoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
-    ) = None
+    invoicingDisplayOptions: Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None = None
     agreementInvoicingDisplayOptions: (
-        Literal['RemainOnInvoicingScreen', 'ShowRecentInvoices'] | None
+        Literal["RemainOnInvoicingScreen", "ShowRecentInvoices"] | None
     ) = None
     corelyticsUsername: str | None = None
     corelyticsPassword: str | None = None
-    authenticationServiceType: (
-        Literal['AuthAnvil', 'GoogleAuthenticator', 'Email'] | None
-    ) = None
+    authenticationServiceType: Literal["AuthAnvil", "GoogleAuthenticator", "Email"] | None = None
     timebasedOneTimePasswordActivated: bool | None = None
     directionalSync: DirectionalSyncReference | None = None
     ssoSessionFlag: bool | None = None
     ssoClientId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MyMemberInfo(SparkModel):
@@ -11173,7 +11099,7 @@ class MyMemberInfo(SparkModel):
     fullName: str | None = None
     defaultEmail: str | None = None
     photo: DocumentReference | None = None
-    licenseClass: Literal['A', 'C', 'F', 'X'] | None = None
+    licenseClass: Literal["A", "C", "F", "X"] | None = None
     """
     F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member
     """
@@ -11213,7 +11139,7 @@ class MyMemberInfo(SparkModel):
     restrictDefaultWarehouseBinFlag: bool | None = None
     ssoSessionFlag: bool | None = None
     ssoClientId: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OnHandSerialNumber(SparkModel):
@@ -11222,7 +11148,7 @@ class OnHandSerialNumber(SparkModel):
     catalogItem: CatalogItemReference | None = None
     warehouse: WarehouseReference | None = None
     warehouseBin: WarehouseBinReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Opportunity(SparkModel):
@@ -11280,7 +11206,7 @@ class Opportunity(SparkModel):
     currency: CurrencyReference | None = None
     companyLocationId: int | None = None
     technicalContact: ContactReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -11294,7 +11220,7 @@ class OpportunityContact(SparkModel):
     opportunityId: int | None = None
     phoneNumber: str | None = None
     emailAddress: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OpportunityToProjectConversion(SparkModel):
@@ -11358,7 +11284,7 @@ class Order(SparkModel):
     currency: CurrencyReference | None = None
     companyLocation: SystemLocationReference | None = None
     subTotal: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -11373,7 +11299,7 @@ class OrderStatus(SparkModel):
     sortOrder: int | None = None
     closedFlag: bool | None = None
     emailTemplate: OrderStatusEmailTemplateReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OrderStatusEmailTemplate(SparkModel):
@@ -11398,7 +11324,7 @@ class OrderStatusEmailTemplate(SparkModel):
     """
     body: str
     copySenderFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class OrderStatusNotification(SparkModel):
@@ -11411,7 +11337,7 @@ class OrderStatusNotification(SparkModel):
     Order Status Notification sendEmail must be entered if the notify type is "Email Address". Max length: 50;
     """
     workflowStep: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Other(SparkModel):
@@ -11433,7 +11359,7 @@ class Other(SparkModel):
     """
      Max length: 200;
     """
-    contactSync: Literal['FL', 'LF', 'CFL', 'CLF'] | None = None
+    contactSync: Literal["FL", "LF", "CFL", "CLF"] | None = None
     serverTimeZone: TimeZoneSetupReference
     defaultCalendar: CalendarReference
     defaultAddressFormat: AddressFormatReference
@@ -11448,7 +11374,7 @@ class Other(SparkModel):
     """
     If true, all Members time zone will also be set to serverTimeZone. Otherwise, only My Company time zone will be updated.
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PhaseStatus(SparkModel):
@@ -11467,7 +11393,7 @@ class PhaseStatus(SparkModel):
     """
     Required when statusIndicator is Custom. Max length: 30;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfigurationInvoiceSetup(SparkModel):
@@ -11483,7 +11409,7 @@ class PortalConfigurationInvoiceSetup(SparkModel):
     billingStatusIds: list[int] | None = None
     addAllStatuses: bool | None = None
     removeAllStatuses: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfigurationProjectSetup(SparkModel):
@@ -11501,12 +11427,12 @@ class PortalConfigurationProjectSetup(SparkModel):
     lastUpdatedFlag: bool | None = None
     onlyDisplay: (
         Literal[
-            'DoNotDisplay',
-            'Closed30Days',
-            'Closed60Days',
-            'Closed90Days',
-            'Closed120Days',
-            'AllClosed',
+            "DoNotDisplay",
+            "Closed30Days",
+            "Closed60Days",
+            "Closed90Days",
+            "Closed120Days",
+            "AllClosed",
         ]
         | None
     ) = Field(...)
@@ -11541,7 +11467,7 @@ class PortalConfigurationProjectSetup(SparkModel):
     projectIssueStatusFlag: bool | None = None
     projectIssueAssignedFlag: bool | None = None
     projectDetailTotalHoursFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PortalConfigurationServiceSetup(SparkModel):
@@ -11566,18 +11492,18 @@ class PortalConfigurationServiceSetup(SparkModel):
     enableChatAssistFlag: bool | None = None
     displayClosedTicketsOption: (
         Literal[
-            'DoNotDisplay',
-            'Closed30Days',
-            'Closed60Days',
-            'Closed90Days',
-            'Closed120Days',
-            'AllClosed',
+            "DoNotDisplay",
+            "Closed30Days",
+            "Closed60Days",
+            "Closed90Days",
+            "Closed120Days",
+            "AllClosed",
         ]
         | None
     ) = Field(...)
     timeMaterialsTicketTemplate: ServiceSignoffReference
     fixedFeeTicketTemplate: ServiceSignoffReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PricingDetail(SparkModel):
@@ -11588,7 +11514,7 @@ class PricingDetail(SparkModel):
     startDate: datetime
     endDate: datetime | None = None
     noEndDate: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProcurementAdjustment(SparkModel):
@@ -11607,7 +11533,7 @@ class ProcurementAdjustment(SparkModel):
     closedBy: str | None = None
     closedDate: datetime | None = None
     adjustmentDetails: list[AdjustmentDetail] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProductComponent(SparkModel):
@@ -11628,7 +11554,7 @@ class ProductComponent(SparkModel):
     productItem: ProductItemReference | None = None
     price: float | None = None
     cost: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProductItem(SparkModel):
@@ -11650,14 +11576,14 @@ class ProductItem(SparkModel):
     agreementAmount: float | None = None
     priceMethod: (
         Literal[
-            'FlatRateForRange',
-            'PercentMarkupFromCost',
-            'PercentMarkdownFromPrice',
-            'PricePerUnit',
+            "FlatRateForRange",
+            "PercentMarkupFromCost",
+            "PercentMarkdownFromPrice",
+            "PricePerUnit",
         ]
         | None
     ) = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge'] | None = Field(...)
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge"] | None = Field(...)
     agreement: AgreementReference | None = None
     locationId: int | None = None
     """
@@ -11723,9 +11649,9 @@ class ProductItem(SparkModel):
     serialNumbers: list[str] | None = None
     company: CompanyReference | None = None
     forecastStatus: OpportunityStatusReference | None = None
-    productClass: (
-        Literal['Agreement', 'Bundle', 'Inventory', 'NonInventory', 'Service'] | None
-    ) = None
+    productClass: Literal["Agreement", "Bundle", "Inventory", "NonInventory", "Service"] | None = (
+        None
+    )
     needToPurchaseFlag: bool | None = None
     needToOrderQuantity: int | None = None
     minimumStockFlag: bool | None = None
@@ -11741,7 +11667,7 @@ class ProductItem(SparkModel):
     addComponentsFlag: bool | None = None
     ignorePricingSchedulesFlag: bool | None = None
     asioSubscriptionsID: UUID | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     bypassForecastUpdate: bool | None = None
     customFields: list[CustomFieldValue] | None = None
 
@@ -11761,14 +11687,14 @@ class ProductPickingShippingDetail(SparkModel):
     quantity: int | None = None
     expectedArrivalDate: datetime | None = None
     shipmentDate: datetime | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProductTypeExemption(SparkModel):
     id: int | None = None
     productType: ProductTypeReference
     taxableLevels: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Project(SparkModel):
@@ -11777,9 +11703,7 @@ class Project(SparkModel):
     actualHours: float | None = None
     actualStart: datetime | None = None
     agreement: AgreementReference | None = None
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -11788,22 +11712,20 @@ class Project(SparkModel):
     """
      Max length: 50;
     """
-    billingMethod: (
-        Literal['ActualRates', 'FixedFee', 'NotToExceed', 'OverrideRate'] | None
-    ) = Field(...)
-    billingRateType: Literal['StaffMember', 'WorkRole'] | None = None
+    billingMethod: Literal["ActualRates", "FixedFee", "NotToExceed", "OverrideRate"] | None = Field(
+        ...
+    )
+    billingRateType: Literal["StaffMember", "WorkRole"] | None = None
     """
      Required On Updates;
     """
     billingTerms: BillingTermsReference | None = None
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
     billProjectAfterClosedFlag: bool | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -11812,7 +11734,7 @@ class Project(SparkModel):
     billToSite: SiteReference | None = None
     billUnapprovedTimeAndExpense: bool | None = None
     board: ProjectBoardReference
-    budgetAnalysis: Literal['ActualHours', 'BillableHours'] | None = None
+    budgetAnalysis: Literal["ActualHours", "BillableHours"] | None = None
     """
      Required On Updates;
     """
@@ -11866,7 +11788,7 @@ class Project(SparkModel):
     estimatedProductCost: float | None = None
     taxCode: TaxCodeReference | None = None
     companyLocation: SystemLocationReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -11878,7 +11800,7 @@ class ProjectBillingRate(SparkModel):
     activityClassRecId: int | None = None
     member: MemberReference | None = None
     memberRecId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectBoardKanbanSetting(SparkModel):
@@ -11909,7 +11831,7 @@ class ProjectBoardTeam(SparkModel):
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectBoardTeamMember(SparkModel):
@@ -11917,7 +11839,7 @@ class ProjectBoardTeamMember(SparkModel):
     member: MemberReference
     projectRole: ProjectRoleReference
     workRole: WorkRoleReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectPhase(SparkModel):
@@ -11937,19 +11859,15 @@ class ProjectPhase(SparkModel):
     """
      Max length: 50;
     """
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -11957,9 +11875,7 @@ class ProjectPhase(SparkModel):
     notes: str | None = None
     deadlineDate: datetime | None = None
     billSeparatelyFlag: bool | None = None
-    billingMethod: (
-        Literal['ActualRates', 'FixedFee', 'NotToExceed', 'OverrideRate'] | None
-    ) = None
+    billingMethod: Literal["ActualRates", "FixedFee", "NotToExceed", "OverrideRate"] | None = None
     """
     billingMethod is required if the phase billSeparatelyFlag is true.
     """
@@ -12005,7 +11921,7 @@ class ProjectPhase(SparkModel):
     shipToSite: SiteReference | None = None
     billingTerms: BillingTermsReference | None = None
     taxCode: TaxCodeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -12024,7 +11940,7 @@ class ProjectStatus(SparkModel):
     """
     Required when statusIndicator is Custom. Max length: 30;
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectTeamMember(SparkModel):
@@ -12036,7 +11952,7 @@ class ProjectTeamMember(SparkModel):
     workRole: WorkRoleReference | None = None
     startDate: datetime | None = None
     endDate: datetime | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectTemplate(SparkModel):
@@ -12048,7 +11964,7 @@ class ProjectTemplate(SparkModel):
     description: str | None = None
     connectWiseId: str | None = None
     type: ProjectTypeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectTemplateTask(SparkModel):
@@ -12063,7 +11979,7 @@ class ProjectTemplateTask(SparkModel):
     grandParentConnectWiseId: str | None = None
     summary: str | None = None
     code: ServiceCodeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectTemplateTicket(SparkModel):
@@ -12095,7 +12011,7 @@ class ProjectTemplateTicket(SparkModel):
      Max length: 1;
     """
     pmTmpProjectRecID: int | None = None
-    predecessorType: Literal['Ticket', 'Phase'] | None = None
+    predecessorType: Literal["Ticket", "Phase"] | None = None
     predecessorId: int | None = None
     predecessorClosedFlag: bool | None = None
     lagDays: int | None = None
@@ -12104,7 +12020,7 @@ class ProjectTemplateTicket(SparkModel):
     source: ServiceSourceReference | None = None
     workRole: WorkRoleReference | None = None
     workType: WorkTypeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectTemplateWorkPlan(SparkModel):
@@ -12190,12 +12106,12 @@ class ProjectTicket(SparkModel):
     knowledgeBaseLinkId: int | None = None
     knowledgeBaseLinkType: (
         Literal[
-            'Activity',
-            'ProjectIssue',
-            'KnowledgeBaseArticle',
-            'ProjectTicket',
-            'ServiceTicket',
-            'Time',
+            "Activity",
+            "ProjectIssue",
+            "KnowledgeBaseArticle",
+            "ProjectTicket",
+            "ServiceTicket",
+            "Time",
         ]
         | None
     ) = None
@@ -12213,20 +12129,16 @@ class ProjectTicket(SparkModel):
     closedFlag: bool | None = None
     actualHours: float | None = None
     approved: bool | None = None
-    subBillingMethod: (
-        Literal['ActualRates', 'FixedFee', 'NotToExceed', 'OverrideRate'] | None
-    ) = None
+    subBillingMethod: Literal["ActualRates", "FixedFee", "NotToExceed", "OverrideRate"] | None = (
+        None
+    )
     subBillingAmount: float | None = None
     subDateAccepted: str | None = None
     resources: str | None = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
-    predecessorType: Literal['Ticket', 'Phase'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    predecessorType: Literal["Ticket", "Phase"] | None = None
     predecessorId: int | None = None
     predecessorClosedFlag: bool | None = None
     lagDays: int | None = None
@@ -12239,7 +12151,7 @@ class ProjectTicket(SparkModel):
     scheduleEndDate: datetime | None = None
     mobileGuid: UUID | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     tasks: list[TicketTask] | None = None
     initialDescription: str | None = None
     """
@@ -12264,7 +12176,7 @@ class ProjectTicket(SparkModel):
 
 class ProjectTicketNote(SparkModel):
     id: int | None = None
-    noteType: Literal['TicketNote', 'TimeEntryNote', 'MeetingNote'] | None = None
+    noteType: Literal["TicketNote", "TimeEntryNote", "MeetingNote"] | None = None
     ticket: TicketReference | None = None
     text: str | None = None
     detailDescriptionFlag: bool | None = None
@@ -12278,7 +12190,7 @@ class ProjectTicketNote(SparkModel):
     originalAuthor: str | None = None
     member: MemberReference | None = None
     contact: ContactReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ProjectWorkplan(SparkModel):
@@ -12364,7 +12276,7 @@ class PurchaseOrder(SparkModel):
     warehouse: WarehouseReference | None = None
     warehouseContact: ContactReference | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -12430,14 +12342,14 @@ class PurchaseOrderLineItem(SparkModel):
     dateReceived: datetime | None = None
     receivedStatus: (
         Literal[
-            'Waiting',
-            'FullyReceived',
-            'PartiallyReceiveCancelRest',
-            'PartiallyReceiveCloneRest',
+            "Waiting",
+            "FullyReceived",
+            "PartiallyReceiveCancelRest",
+            "PartiallyReceiveCloneRest",
         ]
         | None
     ) = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     extCost: float | None = None
     expectedArrivalDate: datetime | None = None
     isDetachAvailable: bool | None = None
@@ -12459,7 +12371,7 @@ class PurchaseOrderStatus(SparkModel):
     defaultClosedFlag: bool | None = None
     sortOrder: int | None = None
     emailTemplate: PurchaseOrderStatusEmailTemplateReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PurchaseOrderStatusEmailTemplate(SparkModel):
@@ -12484,7 +12396,7 @@ class PurchaseOrderStatusEmailTemplate(SparkModel):
     """
     body: str | None = None
     copySenderFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PurchaseOrderStatusNotification(SparkModel):
@@ -12497,7 +12409,7 @@ class PurchaseOrderStatusNotification(SparkModel):
     Purchase Order Status Notification email must be entered if the notify type is "Email Address". Max length: 50;
     """
     workflowStep: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class PurchasingDemand(SparkModel):
@@ -12516,7 +12428,7 @@ class QuoteLink(SparkModel):
     """
     allLocationsFlag: bool | None = None
     newWindowFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ReportCardDetail(SparkModel):
@@ -12524,7 +12436,7 @@ class ReportCardDetail(SparkModel):
     kpi: KPIReference
     sortOrder: int | None = None
     reportCard: ReportCardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ResultInfo(SparkModel):
@@ -12545,7 +12457,7 @@ class RmaStatus(SparkModel):
     sortOrder: int | None = None
     closedFlag: bool | None = None
     emailTemplate: RmaStatusEmailTemplateReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class RmaStatusEmailTemplate(SparkModel):
@@ -12570,7 +12482,7 @@ class RmaStatusEmailTemplate(SparkModel):
     """
     body: str
     copySenderFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class RmaStatusNotification(SparkModel):
@@ -12583,7 +12495,7 @@ class RmaStatusNotification(SparkModel):
     RMA Status Notification sendEmail must be entered if the notify type is "Email Address". Max length: 50;
     """
     workflowStep: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class RmaTag(SparkModel):
@@ -12779,7 +12691,7 @@ class RmaTag(SparkModel):
     technicalContact: MemberReference | None = None
     currency: CurrencyReference | None = None
     closedBy: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -12816,7 +12728,7 @@ class SalesQuota(SparkModel):
     decemberRevenue: float | None = None
     decemberMargin: float | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SalesTeam(SparkModel):
@@ -12831,7 +12743,7 @@ class SalesTeam(SparkModel):
     """
     salesTeamLocation: SystemLocationReference
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SalesTeamMember(SparkModel):
@@ -12840,7 +12752,7 @@ class SalesTeamMember(SparkModel):
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
     allowAccessFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ScheduleDetail(SparkModel):
@@ -12849,7 +12761,7 @@ class ScheduleDetail(SparkModel):
     dateStart: str | None = None
     dateEnd: str | None = None
     member: MemberReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ScheduleEntry(SparkModel):
@@ -12883,7 +12795,7 @@ class ScheduleEntry(SparkModel):
     hours: float | None = None
     startTimeSet: bool | None = None
     endTimeSet: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ScheduleEntryDetail(SparkModel):
@@ -12892,15 +12804,13 @@ class ScheduleEntryDetail(SparkModel):
     dateStart: str | None = None
     dateEnd: str | None = None
     hoursScheduled: float | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ScheduleStopwatch(SparkModel):
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     agreement: AgreementReference | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     businessUnitId: int | None = None
     dateEntered: datetime | None = None
     endTime: datetime | None = None
@@ -12916,7 +12826,7 @@ class ScheduleStopwatch(SparkModel):
     scheduleId: int | None = Field(...)
     scheduleMobileGuid: UUID | None = None
     startTime: datetime | None = None
-    status: Literal['Reset', 'Running', 'Paused', 'Stopped'] | None = Field(...)
+    status: Literal["Reset", "Running", "Paused", "Stopped"] | None = Field(...)
     totalPauseTime: int | None = None
     workRole: WorkRoleReference | None = None
     workType: WorkTypeReference | None = None
@@ -12935,7 +12845,7 @@ class ScheduleType(SparkModel):
     chargeCode: ChargeCodeReference | None = None
     where: ServiceLocationReference | None = None
     systemFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ScheduleTypeInfo(SparkModel):
@@ -12945,21 +12855,21 @@ class ScheduleTypeInfo(SparkModel):
     chargeCode: ChargeCodeReference | None = None
     where: ServiceLocationReference | None = None
     systemFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceEmailTemplate(SparkModel):
     id: int | None = None
     type: (
         Literal[
-            'Any',
-            'Closed',
-            'Invoice',
-            'New',
-            'SalesOrder',
-            'PurchaseOrder',
-            'RMA',
-            'Specific',
+            "Any",
+            "Closed",
+            "Invoice",
+            "New",
+            "SalesOrder",
+            "PurchaseOrder",
+            "RMA",
+            "Specific",
         ]
         | None
     ) = Field(...)
@@ -12989,7 +12899,7 @@ class ServiceEmailTemplate(SparkModel):
     externalContactNotifications: bool | None = None
     internalContactNotifications: bool | None = None
     serviceStatus: ServiceStatusReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceSignoffCustomField(SparkModel):
@@ -12997,28 +12907,28 @@ class ServiceSignoffCustomField(SparkModel):
     sequenceNumber: float | None = Field(...)
     displaySection: (
         Literal[
-            'CustomerInformation',
-            'Detail',
-            'Expenses',
-            'Configurations',
-            'AdditionalSignOffFields',
-            'InternalNotes',
-            'Time',
-            'Products',
-            'Resolution',
-            'Summary',
-            'Tasks',
+            "CustomerInformation",
+            "Detail",
+            "Expenses",
+            "Configurations",
+            "AdditionalSignOffFields",
+            "InternalNotes",
+            "Time",
+            "Products",
+            "Resolution",
+            "Summary",
+            "Tasks",
         ]
         | None
     ) = Field(...)
     userDefinedField: UserDefinedFieldReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceSurveyQuestion(SparkModel):
     id: int | None = None
     sequenceNumber: int | None = None
-    type: Literal['OpenEnded', 'Selection'] | None = Field(...)
+    type: Literal["OpenEnded", "Selection"] | None = Field(...)
     question: str
     """
      Max length: 1000;
@@ -13028,7 +12938,7 @@ class ServiceSurveyQuestion(SparkModel):
     requiredFlag: bool | None = None
     noAnswerPoints: int | None = None
     surveyId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceTeam(SparkModel):
@@ -13038,7 +12948,7 @@ class ServiceTeam(SparkModel):
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
     deleteNotifyFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceTemplate(SparkModel):
@@ -13076,11 +12986,9 @@ class ServiceTemplate(SparkModel):
     expenseInvoiceFlag: bool | None = None
     productInvoiceFlag: bool | None = None
     agreement: AgreementReference | None = None
-    billingMethod: (
-        Literal['ActualRates', 'FixedFee', 'NotToExceed', 'OverrideRate'] | None
-    ) = None
-    severity: Literal['Low', 'Medium', 'High'] | None = None
-    impact: Literal['Low', 'Medium', 'High'] | None = None
+    billingMethod: Literal["ActualRates", "FixedFee", "NotToExceed", "OverrideRate"] | None = None
+    severity: Literal["Low", "Medium", "High"] | None = None
+    impact: Literal["Low", "Medium", "High"] | None = None
     assignedBy: MemberReference | None = None
     scheduleDaysBefore: int | None = None
     serviceDaysBefore: int | None = None
@@ -13091,12 +12999,12 @@ class ServiceTemplate(SparkModel):
     emailCCFlag: bool | None = None
     emailCC: str | None = None
     restrictDownpaymentFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ServiceTicketNote(SparkModel):
     id: int | None = None
-    noteType: Literal['TicketNote', 'TimeEntryNote', 'MeetingNote'] | None = None
+    noteType: Literal["TicketNote", "TimeEntryNote", "MeetingNote"] | None = None
     ticket: TicketReference | None = None
     text: str | None = None
     isMarkdownFlag: bool | None = None
@@ -13112,7 +13020,7 @@ class ServiceTicketNote(SparkModel):
     createdByParentFlag: bool | None = None
     member: MemberReference | None = None
     contact: ContactReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Skill(SparkModel):
@@ -13122,7 +13030,7 @@ class Skill(SparkModel):
      Max length: 50;
     """
     category: SkillCategoryReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SLAPriority(SparkModel):
@@ -13135,7 +13043,7 @@ class SLAPriority(SparkModel):
     resolutionHours: float | None = None
     resolutionPercent: int | None = None
     sla: SLAReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class StandardNote(SparkModel):
@@ -13148,7 +13056,7 @@ class StandardNote(SparkModel):
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class StandardNoteInfo(SparkModel):
@@ -13158,7 +13066,7 @@ class StandardNoteInfo(SparkModel):
     location: SystemLocationReference | None = None
     department: SystemDepartmentReference | None = None
     board: BoardReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SurveyQuestion(SparkModel):
@@ -13166,21 +13074,21 @@ class SurveyQuestion(SparkModel):
     survey: SurveyReference | None = None
     fieldType: (
         Literal[
-            'TextArea',
-            'Button',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'Text',
-            'Password',
+            "TextArea",
+            "Button",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "Text",
+            "Password",
         ]
         | None
     ) = Field(...)
-    entryType: Literal['Date', 'EntryField', 'List', 'Option'] | None = Field(...)
+    entryType: Literal["Date", "EntryField", "List", "Option"] | None = Field(...)
     sequenceNumber: float | None = Field(...)
     question: str
     """
@@ -13189,7 +13097,7 @@ class SurveyQuestion(SparkModel):
     numberOfDecimals: int | None = None
     requiredFlag: bool | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SurveyQuestionValue(SparkModel):
@@ -13203,7 +13111,7 @@ class SurveyQuestionValue(SparkModel):
     defaultFlag: bool | None = None
     pointValue: int | None = None
     inactiveFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class SurveyResult(SparkModel):
@@ -13217,13 +13125,13 @@ class SurveyResult(SparkModel):
     totalPoints: int | None = None
     company: CompanyReference | None = None
     surveyId: int | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TaxableExpenseTypeLevel(SparkModel):
     id: int | None = None
     taxCodeLevel: TaxCodeLevelReference
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 TaxableProductTypeLevel = TaxableExpenseTypeLevel
@@ -13241,7 +13149,7 @@ class Ticket(SparkModel):
     """
      Max length: 100;
     """
-    recordType: Literal['ProjectIssue', 'ProjectTicket', 'ServiceTicket'] | None = None
+    recordType: Literal["ProjectIssue", "ProjectTicket", "ServiceTicket"] | None = None
     board: BoardReference | None = None
     status: ServiceStatusReference | None = None
     workRole: WorkRoleReference | None = None
@@ -13303,11 +13211,11 @@ class Ticket(SparkModel):
     opportunity: OpportunityReference | None = None
     agreement: AgreementReference | None = None
     agreementType: str | None = None
-    severity: Literal['Low', 'Medium', 'High'] | None = None
+    severity: Literal["Low", "Medium", "High"] | None = None
     """
      Required On Updates;
     """
-    impact: Literal['Low', 'Medium', 'High'] | None = None
+    impact: Literal["Low", "Medium", "High"] | None = None
     """
      Required On Updates;
     """
@@ -13360,14 +13268,12 @@ class Ticket(SparkModel):
     estimatedProductRevenue: float | None = None
     estimatedTimeCost: float | None = None
     estimatedTimeRevenue: float | None = None
-    billingMethod: (
-        Literal['ActualRates', 'FixedFee', 'NotToExceed', 'OverrideRate'] | None
-    ) = None
+    billingMethod: Literal["ActualRates", "FixedFee", "NotToExceed", "OverrideRate"] | None = None
     billingAmount: float | None = None
     hourlyRate: float | None = None
-    subBillingMethod: (
-        Literal['ActualRates', 'FixedFee', 'NotToExceed', 'OverrideRate'] | None
-    ) = None
+    subBillingMethod: Literal["ActualRates", "FixedFee", "NotToExceed", "OverrideRate"] | None = (
+        None
+    )
     subBillingAmount: float | None = None
     subDateAccepted: str | None = None
     dateResolved: str | None = None
@@ -13384,23 +13290,19 @@ class Ticket(SparkModel):
     hasMergedChildTicketFlag: bool | None = None
     knowledgeBaseLinkType: (
         Literal[
-            'Activity',
-            'ProjectIssue',
-            'KnowledgeBaseArticle',
-            'ProjectTicket',
-            'ServiceTicket',
-            'Time',
+            "Activity",
+            "ProjectIssue",
+            "KnowledgeBaseArticle",
+            "ProjectTicket",
+            "ServiceTicket",
+            "Time",
         ]
         | None
     ) = None
-    billTime: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = None
-    billExpenses: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
-    billProducts: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
-    predecessorType: Literal['Ticket', 'Phase'] | None = None
+    billTime: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billExpenses: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    billProducts: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
+    predecessorType: Literal["Ticket", "Phase"] | None = None
     predecessorId: int | None = None
     predecessorClosedFlag: bool | None = None
     lagDays: int | None = None
@@ -13416,7 +13318,7 @@ class Ticket(SparkModel):
     currency: CurrencyReference | None = None
     mergedParentTicket: TicketReference | None = None
     integratorTags: list[str] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     escalationStartDateUTC: str | None = None
     escalationLevel: int | None = None
     minutesBeforeWaiting: int | None = None
@@ -13433,11 +13335,9 @@ class Ticket(SparkModel):
 
 
 class TicketStopwatch(SparkModel):
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     agreement: AgreementReference | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     businessUnitId: int | None = None
     dateEntered: datetime | None = None
     endTime: datetime | None = None
@@ -13452,7 +13352,7 @@ class TicketStopwatch(SparkModel):
     """
     serviceStatus: ServiceStatusReference | None = None
     startTime: datetime | None = None
-    status: Literal['Reset', 'Running', 'Paused', 'Stopped'] | None = Field(...)
+    status: Literal["Reset", "Running", "Paused", "Stopped"] | None = Field(...)
     ticket: TicketReference
     ticketMobileGuid: UUID | None = None
     totalPauseTime: int | None = None
@@ -13467,7 +13367,7 @@ class TicketStopwatch(SparkModel):
 
 class TimeAccrualDetail(SparkModel):
     id: int | None = None
-    accrualType: Literal['Holiday', 'PTO', 'Sick', 'Vacation'] | None = Field(...)
+    accrualType: Literal["Holiday", "PTO", "Sick", "Vacation"] | None = Field(...)
     """
     Available types are: Holiday, PTO, Sick and Vacation.
     """
@@ -13475,7 +13375,7 @@ class TimeAccrualDetail(SparkModel):
     endYear: int | None = Field(...)
     hours: float | None = Field(...)
     timeAccrual: TimeAccrualReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TimeEntry(SparkModel):
@@ -13487,8 +13387,7 @@ class TimeEntry(SparkModel):
     If chargeToId is not specified, we asume you enter time against the company specified
     """
     chargeToType: (
-        Literal['Company', 'ServiceTicket', 'ProjectTicket', 'ChargeCode', 'Activity']
-        | None
+        Literal["Company", "ServiceTicket", "ProjectTicket", "ChargeCode", "Activity"] | None
     ) = None
     """
     If chargeToId is not specified, we asume you enter time against the company specified
@@ -13511,9 +13410,7 @@ class TimeEntry(SparkModel):
     timeEnd: datetime | None = None
     hoursDeduct: float | None = None
     actualHours: float | None = None
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
      Required On Updates;
     """
@@ -13558,18 +13455,18 @@ class TimeEntry(SparkModel):
     timeSheet: TimeSheetReference | None = None
     status: (
         Literal[
-            'Open',
-            'Rejected',
-            'PendingApproval',
-            'ErrorsCorrected',
-            'PendingProjectApproval',
-            'ApprovedByTierOne',
-            'RejectBySecondTier',
-            'ApprovedByTierTwo',
-            'ReadyToBill',
-            'Billed',
-            'WrittenOff',
-            'BilledAgreement',
+            "Open",
+            "Rejected",
+            "PendingApproval",
+            "ErrorsCorrected",
+            "PendingProjectApproval",
+            "ApprovedByTierOne",
+            "RejectBySecondTier",
+            "ApprovedByTierTwo",
+            "ReadyToBill",
+            "Billed",
+            "WrittenOff",
+            "BilledAgreement",
         ]
         | None
     ) = None
@@ -13584,7 +13481,7 @@ class TimeEntry(SparkModel):
     extendedInvoiceAmount: float | None = None
     locationName: str | None = None
     taxCode: TaxCodeReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -13649,9 +13546,7 @@ class TimeEntryChangeLog(SparkModel):
     """
     Member Daily Capacity.
     """
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     """
     Billable Option.
     """
@@ -13672,8 +13567,7 @@ class TimeEntryChangeLog(SparkModel):
     Charge To.
     """
     chargeToType: (
-        Literal['Company', 'ServiceTicket', 'ProjectTicket', 'ChargeCode', 'Activity']
-        | None
+        Literal["Company", "ServiceTicket", "ProjectTicket", "ChargeCode", "Activity"] | None
     ) = None
     """
     Charge To Type.
@@ -13864,7 +13758,7 @@ class TimeEntryChangeLog(SparkModel):
     project: ProjectReference | None = None
     phase: ProjectPhaseReference | None = None
     activity: ActivityReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TimePeriod(SparkModel):
@@ -13874,18 +13768,18 @@ class TimePeriod(SparkModel):
     startDate: str | None = None
     endDate: str | None = None
     deadlineDate: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class TrackAction(SparkModel):
     id: int | None = None
     notifyType: Literal[
-        'CreateActivity',
-        'SendEmail',
-        'AddToGroup',
-        'AttachTrack',
-        'ChangeCompanyStatus',
-        'CreateServiceTicket',
+        "CreateActivity",
+        "SendEmail",
+        "AddToGroup",
+        "AttachTrack",
+        "ChangeCompanyStatus",
+        "CreateServiceTicket",
     ]
     serviceTemplate: ServiceTemplateReference | None = None
     specificMemberTo: MemberReference | None = None
@@ -13914,18 +13808,18 @@ class TrackAction(SparkModel):
     daysToExecute: int | None = None
     notifyWho: NotificationRecipientReference | None = None
     notifyFrom: NotificationRecipientReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class UnpostedPayments(SparkModel):
     id: int | None = None
     type: str | None = None
-    source: Literal['Default', 'WisePay'] | None = None
+    source: Literal["Default", "WisePay"] | None = None
     invoice: InvoiceReference | None = None
     amount: float | None = None
     paymentDate: str | None = None
     appliedBy: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     wisePayPayment: WisePayPayment | None = None
     paymentSyncStatus: str | None = None
     paymentSyncDate: str | None = None
@@ -13960,18 +13854,18 @@ class UserDefinedField(SparkModel):
     """
     fieldTypeIdentifier: (
         Literal[
-            'TextArea',
-            'Button',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'PhoneNumber',
-            'Text',
-            'Password',
+            "TextArea",
+            "Button",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "PhoneNumber",
+            "Text",
+            "Password",
         ]
         | None
     ) = Field(...)
@@ -13979,7 +13873,7 @@ class UserDefinedField(SparkModel):
     """
     Only valid for Number or percent
     """
-    entryTypeIdentifier: Literal['Date', 'EntryField', 'List', 'Option'] | None = None
+    entryTypeIdentifier: Literal["Date", "EntryField", "List", "Option"] | None = None
     requiredFlag: bool | None = None
     displayOnScreenFlag: bool | None = None
     readOnlyFlag: bool | None = None
@@ -14003,7 +13897,7 @@ class UserDefinedField(SparkModel):
     """
     Date in UTC the custom field was created
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class UserDefinedFieldInfo(SparkModel):
@@ -14029,18 +13923,18 @@ class UserDefinedFieldInfo(SparkModel):
     """
     fieldTypeIdentifier: (
         Literal[
-            'TextArea',
-            'Button',
-            'Currency',
-            'Date',
-            'Hyperlink',
-            'IPAddress',
-            'Checkbox',
-            'Number',
-            'Percent',
-            'PhoneNumber',
-            'Text',
-            'Password',
+            "TextArea",
+            "Button",
+            "Currency",
+            "Date",
+            "Hyperlink",
+            "IPAddress",
+            "Checkbox",
+            "Number",
+            "Percent",
+            "PhoneNumber",
+            "Text",
+            "Password",
         ]
         | None
     ) = None
@@ -14048,7 +13942,7 @@ class UserDefinedFieldInfo(SparkModel):
     """
     Only valid for Number or percent
     """
-    entryTypeIdentifier: Literal['Date', 'EntryField', 'List', 'Option'] | None = None
+    entryTypeIdentifier: Literal["Date", "EntryField", "List", "Option"] | None = None
     requiredFlag: bool | None = None
     displayOnScreenFlag: bool | None = None
     readOnlyFlag: bool | None = None
@@ -14073,7 +13967,7 @@ class UserDefinedFieldInfo(SparkModel):
     """
     Date in UTC the custom field was created
     """
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WarehouseBin(SparkModel):
@@ -14098,7 +13992,7 @@ class WarehouseBin(SparkModel):
     quantityOnHand: int | None = None
     company: CompanyReference | None = None
     transferBin: WarehouseBinReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WarehouseBinInfo(SparkModel):
@@ -14107,7 +14001,7 @@ class WarehouseBinInfo(SparkModel):
     warehouse: WarehouseReference | None = None
     inactiveFlag: bool | None = None
     defaultFlag: bool | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class Workflow(SparkModel):
@@ -14124,25 +14018,25 @@ class Workflow(SparkModel):
     Batches can not be turned on until after the workflow is created and it has atleast one event associated with it
     """
     batchInterval: int | None = None
-    batchFrequencyUnit: Literal['Minutes', 'Hours', 'Days'] | None = None
+    batchFrequencyUnit: Literal["Minutes", "Hours", "Days"] | None = None
     """
     If not specified, defaults to Minutes. Months is not supported as month length varies
     """
     batchLastRan: datetime | None = None
-    batchSchedule: Literal['AnyTime', 'MyCompanyOfficeHours', 'SlaHours'] | None = None
+    batchSchedule: Literal["AnyTime", "MyCompanyOfficeHours", "SlaHours"] | None = None
     """
     If activateFlag is true, batchSchedule is required
     """
     board: BoardReference | None = None
     connectWiseID: str | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkRoleExemption(SparkModel):
     id: int | None = None
     workRole: WorkRoleReference
     taxableLevels: list[int] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class WorkRoleLocation(SparkModel):
@@ -14150,12 +14044,12 @@ class WorkRoleLocation(SparkModel):
     location: SystemLocationReference
     hourlyRate: float | None = None
     workRole: WorkRoleReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BulkResult(SparkModel):
     payload: list[ResultInfo] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class BundleResult(SparkModel):
@@ -14171,7 +14065,7 @@ class BundleResult(SparkModel):
 
 class BundleResultsCollection(SparkModel):
     results: list[BundleResult] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class ExpenseEntry(SparkModel):
@@ -14180,8 +14074,7 @@ class ExpenseEntry(SparkModel):
     company: CompanyReference | None = None
     chargeToId: int | None = None
     chargeToType: (
-        Literal['Company', 'ServiceTicket', 'ProjectTicket', 'ChargeCode', 'Activity']
-        | None
+        Literal["Company", "ServiceTicket", "ProjectTicket", "ChargeCode", "Activity"] | None
     ) = None
     """
     Gets or sets
@@ -14192,9 +14085,7 @@ class ExpenseEntry(SparkModel):
     paymentMethod: PaymentMethodReference | None = None
     classification: ClassificationReference | None = None
     amount: float | None = Field(...)
-    billableOption: Literal['Billable', 'DoNotBill', 'NoCharge', 'NoDefault'] | None = (
-        None
-    )
+    billableOption: Literal["Billable", "DoNotBill", "NoCharge", "NoDefault"] | None = None
     date: datetime
     locationId: int | None = None
     businessUnitId: int | None = None
@@ -14207,18 +14098,18 @@ class ExpenseEntry(SparkModel):
     currency: CurrencyReference | None = None
     status: (
         Literal[
-            'Open',
-            'Rejected',
-            'PendingApproval',
-            'ErrorsCorrected',
-            'PendingProjectApproval',
-            'ApprovedByTierOne',
-            'RejectBySecondTier',
-            'ApprovedByTierTwo',
-            'ReadyToBill',
-            'Billed',
-            'WrittenOff',
-            'BilledAgreement',
+            "Open",
+            "Rejected",
+            "PendingApproval",
+            "ErrorsCorrected",
+            "PendingProjectApproval",
+            "ApprovedByTierOne",
+            "RejectBySecondTier",
+            "ApprovedByTierTwo",
+            "ReadyToBill",
+            "Billed",
+            "WrittenOff",
+            "BilledAgreement",
         ]
         | None
     ) = None
@@ -14229,7 +14120,7 @@ class ExpenseEntry(SparkModel):
     ticket: TicketReference | None = None
     project: ProjectReference | None = None
     phase: ProjectPhaseReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
     customFields: list[CustomFieldValue] | None = None
 
 
@@ -14255,7 +14146,7 @@ class Forecast(SparkModel):
     taxCode: TaxCodeReference | None = None
     billingTerms: BillingTermsReference | None = None
     currency: CurrencyReference | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class GLExportAdjustmentTransaction(SparkModel):
@@ -14414,7 +14305,7 @@ class InvoiceInfo(SparkModel):
     logo: DocumentInfo | None = None
     billingSetup: BillingSetup | None = None
     agreementBillingInfo: list[AgreementBillingInfo] | None = None
-    field_info: dict[str, str] | None = Field(None, alias='_info')
+    field_info: dict[str, str] | None = Field(None, alias="_info")
 
 
 class MemberDeactivation(SparkModel):

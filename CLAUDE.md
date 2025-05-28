@@ -17,29 +17,29 @@ After comprehensive consolidation, the project now follows a clean unified struc
 
 ## Medallion Architecture - Separation of Concerns
 
-### Bronze Layer (Raw Data Landing)
-**Purpose**: Land raw data exactly as received from source systems
-- Store raw JSON/API responses without transformation
-- Preserve original data types and structures
-- Add only extraction metadata (timestamp, source, batch_id)
-- No validation or transformation applied
+### Bronze Layer (Validated Raw Data)
+**Purpose**: Extract and land validated raw data from source systems
+- **Pydantic validation during extraction**: Validate API responses with Pydantic models
+- Store validated raw data with original structure
+- Preserve original field names and data types
+- Add extraction metadata (timestamp, source, batch_id)
+- **Key insight**: API data is small enough for row-by-row Pydantic validation
 
 **Files**:
-- `unified_etl/bronze/reader.py`
+- `unified_etl/extract/` (API clients with Pydantic validation)
+- `unified_etl/bronze/writer.py` (Write validated data to bronze tables)
 
-### Silver Layer (Validation & Standardization)
-**Purpose**: Clean, validate, and standardize data while preserving business meaning
-- **Validate with Pydantic**: Apply data models for type safety and structure validation
-- **Convert data types**: String dates → timestamps, numeric strings → numbers
+### Silver Layer (Schema Transformation & Standardization)
+**Purpose**: Transform and standardize data structure using Spark (no row-by-row processing)
+- **Apply SparkDantic schema**: Use model's Spark schema for type casting
 - **Flatten nested columns**: Expand complex objects into flat table structure
-- **Strip prefixes/suffixes**: Remove API artifacts from column names if needed
-- **Preserve all business data**: No column removal, only structure improvement
+- **Convert data types**: Cast columns to proper types (string dates → timestamps)
+- **Standardize column names**: Apply naming conventions if needed
+- **Column mappings**: Rename/reorganize columns per configuration
+- **No validation**: Data already validated in Bronze, use distributed Spark operations
 
 **Files**:
-- `unified_etl/silver/cleanse.py`
-- `unified_etl/silver/standardize.py`
-- `unified_etl/silver/scd.py`
-- `unified_etl/silver/dimension.py`
+- `unified_etl/silver.py` (Schema transformations, flattening, type conversions)
 - `unified_etl/pipeline/bronze_silver.py`
 
 ### Gold Layer (Business Enhancement)
@@ -53,11 +53,9 @@ After comprehensive consolidation, the project now follows a clean unified struc
 - **No column removal**: Only addition and enrichment
 
 **Files**:
-- `unified_etl/gold/dimensions.py`
-- `unified_etl/gold/hierarchy.py`
-- `unified_etl/gold/keys.py`
-- `unified_etl/gold/generic_fact.py`
-- `unified_etl/gold/facts/` (specific business logic)
+- `unified_etl/gold.py` (Generic gold transformations)
+- `unified_etl/facts.py` (Generic fact table creator)
+- `unified_etl/transforms.py` (Business-specific logic)
 - `unified_etl/pipeline/silver_gold.py`
 
 ## Implementation Status
@@ -195,22 +193,30 @@ python -m build --wheel
 ## Data Flow
 
 ```
-Source APIs → Bronze (Raw) → Silver (Validated) → Gold (Enhanced)
-     ↓              ↓              ↓               ↓
-  Raw JSON    Pydantic Valid   Flattened      Dimensional
-              + Type Cast      + Cleaned      + Surrogate Keys
-              + Structure      + Standards    + Business Logic
+Source APIs → Bronze (Validated) → Silver (Transformed) → Gold (Enhanced)
+     ↓              ↓                    ↓                   ↓
+  Paginated    Pydantic Valid      Spark Schema        Dimensional
+  API Calls    Raw Structure       Flattened           + Surrogate Keys
+               Original Fields     Type Casted         + Business Logic
+                                  Column Mapped        + Calculated Metrics
 ```
+
+**Key Performance Insight**: 
+- Bronze validation happens during API extraction (small, paginated datasets)
+- Silver uses distributed Spark operations (no collect(), no row-by-row processing)
+- This architecture scales to millions of rows in Silver/Gold layers
 
 ## Key Features
 
 - **Medallion Architecture**: Proper separation of concerns across Bronze→Silver→Gold
+- **Scalable Validation**: Pydantic validation in Bronze (small API data), Spark transformations in Silver (large datasets)
 - **Generic Processing**: Configuration-driven, not entity-specific
 - **CamelCase Preservation**: Maintains source system naming conventions
 - **SparkDantic Integration**: Automatic Spark schema generation from Pydantic models
 - **Schema Evolution**: Graceful handling of API changes
 - **Fabric Optimization**: Native OneLake integration with Delta tables
 - **Resilient Processing**: Retry logic, error handling, and recovery strategies
+- **Performance at Scale**: No collect() or row-by-row processing after Bronze layer
 
 ## Running the Pipeline
 

@@ -1,14 +1,16 @@
-from __future__ import annotations
-
-"""unified_etl.api.connectwise_client
+"""ConnectWise client and extractor - unified API access and data extraction.
 
 Enhanced ConnectWise REST client optimized for Microsoft Fabric environment.
+Combines low-level API access with high-level data extraction capabilities.
 
 Key features:
 * **Simplified authentication** - Uses environment variables directly from Fabric
 * **Robust retry/back-off** - Shared HTTP session transparently retries 5× on 429/50x
+* **Pydantic integration** - Automatic field selection and validation
 * **Clean logging** - Detailed logging of API interactions
 """
+
+from __future__ import annotations
 
 import logging
 import os
@@ -16,20 +18,12 @@ from datetime import datetime
 from typing import Any
 
 import requests
+from pyspark.sql import DataFrame
 from requests.adapters import HTTPAdapter
 from requests.models import Response
 from urllib3.util.retry import Retry
 
-# Local utility functions
-
-__all__ = [
-    "ApiErrorRecord",
-    "ConnectWiseClient",
-]
-
-# Logger setup
-logger = logging.getLogger(name=__name__)
-logger.addHandler(logging.NullHandler())
+logger = logging.getLogger(__name__)
 
 
 class ApiErrorRecord(dict):
@@ -46,13 +40,20 @@ class ApiErrorRecord(dict):
 
 
 class ConnectWiseClient:
-    """Thin, resilient wrapper around the ConnectWise Manage REST API.
+    """Unified ConnectWise client providing both API access and data extraction.
 
+    Combines low-level HTTP operations with high-level data extraction capabilities.
     Optimized for Microsoft Fabric environment with simplified authentication.
     """
 
-    def __init__(self) -> None:
-        """Initialize client using environment variables from Fabric."""
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
+        """Initialize client using environment variables from Fabric.
+
+        Args:
+            config: Optional configuration (currently unused, credentials from env)
+        """
+        self.config = config or {}
+
         # Get base URL from environment or use default
         self.base_url = os.getenv(
             "CW_BASE_URL",
@@ -79,6 +80,17 @@ class ConnectWiseClient:
             status_forcelist=[429, 500, 502, 503, 504],
         )
         self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+        self._spark = None
+
+    @property
+    def spark(self):
+        """Get SparkSession - assumes running in Fabric with global spark."""
+        if self._spark is None:
+            # In Fabric notebooks, spark is available globally
+            import sys
+
+            self._spark = sys.modules["__main__"].spark
+        return self._spark
 
     def _headers(self) -> dict[str, str]:
         """Return the headers needed for API requests."""
@@ -305,3 +317,190 @@ class ConnectWiseClient:
 
         logger.info(f"Total {entity_name} retrieved from {endpoint}: {len(items)}")
         return items
+
+    def get_model_class(self, entity_name: str) -> type:
+        """Get Pydantic model class for entity.
+
+        Args:
+            entity_name: Name of the entity
+
+        Returns:
+            Pydantic model class
+        """
+        # Dynamic import to avoid importing all models upfront
+        import importlib
+
+        models_module = importlib.import_module("unified_etl_connectwise.models")
+
+        # Map entity names to model class names
+        model_name_mapping = {
+            "Agreement": "Agreement",
+            "TimeEntry": "TimeEntry",
+            "ExpenseEntry": "ExpenseEntry",
+            "ProductItem": "ProductItem",
+            "PostedInvoice": "PostedInvoice",
+            "UnpostedInvoice": "Invoice",  # Note: UnpostedInvoice uses Invoice model
+        }
+
+        model_name = model_name_mapping.get(entity_name)
+        if not model_name:
+            raise ValueError(
+                f"Unknown entity: {entity_name}. Available entities: {list(model_name_mapping.keys())}"
+            )
+
+        # Get the model class from the module
+        model_class = getattr(models_module, model_name, None)
+        if not model_class:
+            raise ValueError(f"Model class {model_name} not found in models module")
+
+        return model_class
+
+    def extract(
+        self,
+        endpoint: str,
+        page_size: int = 1000,
+        conditions: str | None = None,
+        fields: list[str] | None = None,
+        **kwargs,
+    ) -> DataFrame:
+        """Extract data from ConnectWise API and return as Spark DataFrame.
+
+        Args:
+            endpoint: API endpoint (e.g., "/finance/agreements")
+            page_size: Number of records per page
+            conditions: API query conditions
+            fields: Fields to request (if None, derives from model)
+            **kwargs: Additional parameters
+
+        Returns:
+            Spark DataFrame with extracted data
+        """
+        # Determine entity name from endpoint
+        entity_name = self._get_entity_name(endpoint)
+
+        # Get model class
+        model_class = self.get_model_class(entity_name)
+
+        # Generate fields string if not provided
+        if fields is None:
+            from unified_etl_connectwise.api_utils import get_fields_for_api_call
+
+            fields_str = get_fields_for_api_call(model_class, max_depth=2)
+        else:
+            fields_str = ",".join(fields)
+
+        logger.info(f"Extracting {entity_name} from {endpoint}")
+
+        # Use the client's paginate method
+        all_data = self.paginate(
+            endpoint=endpoint,
+            entity_name=f"{entity_name}s",  # Pluralize for API logging
+            fields=fields_str,
+            conditions=conditions,
+            page_size=page_size,
+            **kwargs,  # Pass through any additional parameters
+        )
+
+        logger.info(f"Extracted {len(all_data)} {entity_name} records")
+
+        # Validate data through Pydantic models
+        validated_data = []
+        for record in all_data:
+            try:
+                # Pydantic handles datetime parsing automatically!
+                model_instance = model_class(**record)
+                validated_data.append(model_instance.model_dump())
+            except Exception as e:
+                logger.warning(f"Validation error for {entity_name} record: {e}")
+                # Optionally skip invalid records or handle differently
+                continue
+
+        # Create Spark DataFrame using SparkDantic schema
+        spark_schema = model_class.model_spark_schema()
+        return self.spark.createDataFrame(validated_data, schema=spark_schema)
+
+    def _get_entity_name(self, endpoint: str) -> str:
+        """Derive entity name from endpoint.
+
+        Args:
+            endpoint: API endpoint
+
+        Returns:
+            Entity name
+        """
+        # Comprehensive endpoint mapping
+        endpoint_mapping = {
+            "/finance/agreements": "Agreement",
+            "/finance/invoices": "UnpostedInvoice",  # Unposted invoices
+            "/finance/invoices/posted": "PostedInvoice",  # Posted invoices
+            "/time/entries": "TimeEntry",
+            "/expense/entries": "ExpenseEntry",
+            "/procurement/products": "ProductItem",
+        }
+
+        # Try exact match first
+        if endpoint in endpoint_mapping:
+            return endpoint_mapping[endpoint]
+
+        # Try to extract entity name from endpoint
+        # e.g., "/finance/invoices/123" -> "invoice"
+        for ep, entity in endpoint_mapping.items():
+            if endpoint.startswith(ep):
+                return entity
+
+        raise ValueError(f"Cannot determine entity name from endpoint: {endpoint}")
+
+    def extract_all(self) -> dict[str, list[dict[str, Any]]]:
+        """Extract all supported entities and return as dictionary of entity data.
+
+        Returns:
+            Dictionary mapping entity names to lists of record dictionaries
+        """
+        # Define all supported endpoints
+        endpoints = {
+            "agreement": "/finance/agreements",
+            "time_entry": "/time/entries",
+            "invoice": "/finance/invoices",
+            "expense_entry": "/expense/entries",
+            "product_item": "/procurement/products",
+        }
+
+        results = {}
+
+        for entity_name, endpoint in endpoints.items():
+            try:
+                logger.info(f"Extracting {entity_name} from {endpoint}")
+
+                # Get model class for field selection
+                model_class = self.get_model_class(self._get_entity_name(endpoint))
+                from unified_etl_connectwise.api_utils import get_fields_for_api_call
+
+                fields_str = get_fields_for_api_call(model_class, max_depth=2)
+
+                # Extract raw data using client
+                raw_data = self.paginate(
+                    endpoint=endpoint,
+                    entity_name=f"{entity_name}s",
+                    fields=fields_str,
+                    page_size=1000,
+                )
+
+                results[entity_name] = raw_data
+                logger.info(f"Extracted {len(raw_data)} {entity_name} records")
+
+            except Exception as e:
+                logger.error(f"Failed to extract {entity_name}: {e}")
+                results[entity_name] = []  # Empty list for failed extractions
+
+        return results
+
+
+# Alias for backwards compatibility
+ConnectWiseExtractor = ConnectWiseClient
+
+
+__all__ = [
+    "ApiErrorRecord",
+    "ConnectWiseClient",
+    "ConnectWiseExtractor",
+]

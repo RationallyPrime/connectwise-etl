@@ -10,6 +10,7 @@ Contains BC-specific business logic that was moved from unified-etl-core:
 Following CLAUDE.md: Business logic is specialized, not generic.
 """
 
+import logging
 from typing import Any
 
 import pyspark.sql.functions as F  # noqa: N812
@@ -17,7 +18,6 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import LongType
 from pyspark.sql.window import Window
 from unified_etl_core.gold import generate_surrogate_key
-from unified_etl_core.utils import logging
 from unified_etl_core.utils.exceptions import (
     DimensionJoinError,
     DimensionResolutionError,
