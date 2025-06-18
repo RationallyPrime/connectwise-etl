@@ -14,9 +14,11 @@ Business-specific logic delegated to individual packages.
 __version__ = "1.0.0"
 
 # Core consolidated modules
-from . import facts, gold, main, silver
+from . import date_utils, dimensions, facts, gold, main, silver
 
 __all__ = [
+    "date_utils",
+    "dimensions",
     "facts",
     "gold",
     "main",
