@@ -846,6 +846,199 @@ def resolve_agreement_hierarchy(
     return result
 
 
+def create_time_entry_fact(
+    spark: SparkSession,
+    time_entry_df: DataFrame,
+    agreement_df: DataFrame | None = None,
+    member_df: DataFrame | None = None,
+    config: dict[str, Any] | None = None,
+) -> DataFrame:
+    """Create comprehensive time entry fact table capturing ALL work.
+    
+    This creates one row per time entry, enabling:
+    - Complete cost tracking (including internal work)
+    - Billable vs non-billable analysis
+    - Tímapottur consumption tracking
+    - Real-time profitability before invoicing
+    - Employee utilization metrics
+    
+    Args:
+        spark: SparkSession
+        time_entry_df: All time entries from silver layer
+        agreement_df: Optional agreement data for type resolution
+        member_df: Optional member data for cost rates
+        config: Optional configuration
+        
+    Returns:
+        DataFrame with comprehensive time entry facts
+    """
+    # Validate required columns
+    required_columns = [
+        "id",
+        "chargeToType",
+        "chargeToId",
+        "memberId",
+        "memberName",
+        "workTypeId",
+        "workTypeName",
+        "workRoleId",
+        "workRoleName",
+        "timeStart",
+        "actualHours",
+        "billableOption",
+        "agreementId",
+        "invoiceId",
+        "hourlyRate",
+    ]
+    
+    missing_columns = [col for col in required_columns if col not in time_entry_df.columns]
+    if missing_columns:
+        raise ValueError(f"Missing required columns for time entry fact: {missing_columns}")
+    
+    # Start with all time entries
+    fact_df = time_entry_df.select(
+        # Keys
+        F.sha2(F.col("id").cast("string"), 256).alias("TimeEntrySK"),
+        F.col("id").alias("timeEntryId"),
+        
+        # Foreign keys
+        F.col("memberId"),
+        F.col("agreementId"),
+        F.col("chargeToId"),
+        F.col("chargeToType"),
+        F.col("invoiceId"),
+        F.col("ticketId"),
+        F.col("projectId"),
+        
+        # Dimensions
+        F.col("memberName"),
+        F.col("workTypeId"),
+        F.col("workTypeName"),
+        F.col("workRoleId"),
+        F.col("workRoleName"),
+        F.col("billableOption"),
+        F.col("status"),
+        
+        # Time attributes
+        F.col("timeStart"),
+        F.col("timeEnd"),
+        F.date_format("timeStart", "yyyyMMdd").cast("int").alias("WorkDateSK"),
+        
+        # Metrics
+        F.col("actualHours"),
+        F.col("hourlyRate"),
+        F.coalesce("hourlyCost", F.lit(0)).alias("hourlyCost"),
+        
+        # Calculate amounts
+        (F.col("actualHours") * F.col("hourlyRate")).alias("potentialRevenue"),
+        (F.col("actualHours") * F.coalesce("hourlyCost", F.lit(0))).alias("actualCost"),
+        
+        # Notes and metadata
+        F.col("notes"),
+        F.col("internalNotes"),
+        F.col("addToDetailDescriptionFlag"),
+        F.col("addToInternalAnalysisFlag"),
+        F.col("addToResolutionFlag"),
+    )
+    
+    # Calculate margin
+    fact_df = fact_df.withColumn(
+        "margin",
+        F.col("potentialRevenue") - F.col("actualCost")
+    ).withColumn(
+        "marginPercentage",
+        F.when(F.col("potentialRevenue") > 0,
+            (F.col("margin") / F.col("potentialRevenue") * 100)
+        ).otherwise(0)
+    )
+    
+    # Add status flags
+    fact_df = fact_df.withColumn(
+        "isInvoiced",
+        F.col("invoiceId").isNotNull()
+    ).withColumn(
+        "isBillable",
+        F.col("billableOption") == "Billable"
+    ).withColumn(
+        "isNoCharge",
+        F.col("billableOption") == "NoCharge"
+    ).withColumn(
+        "isDoNotBill",
+        F.col("billableOption") == "DoNotBill"
+    )
+    
+    # If agreements provided, resolve agreement types
+    if agreement_df is not None:
+        # Get agreement types with hierarchy resolution
+        fact_df = resolve_agreement_hierarchy(
+            fact_df,
+            agreement_df,
+            entity_agreement_col="agreementId",
+            entity_type="time_entries"
+        )
+        
+        # Add agreement type flags based on business rules
+        fact_df = fact_df.withColumn(
+            "isBillableWork",
+            F.when(
+                F.trim(F.col("agreement_type")).isin(["yÞjónusta", "yþjónusta"]),
+                True
+            ).otherwise(False)
+        ).withColumn(
+            "isTimapottur",
+            F.when(
+                F.trim(F.col("agreement_type")).isin(["Tímapottur", "Timapottur"]),
+                True
+            ).otherwise(False)
+        ).withColumn(
+            "isInternalWork",
+            F.when(
+                F.trim(F.col("agreement_type")).isin(["Innri verkefni"]),
+                True
+            ).otherwise(False)
+        )
+        
+        # Calculate effective billing status combining agreement type and billableOption
+        fact_df = fact_df.withColumn(
+            "effectiveBillingStatus",
+            F.when(F.col("isInvoiced"), "Invoiced")
+            .when(F.col("isInternalWork"), "Internal")
+            .when(F.col("isTimapottur"), "Prepaid")
+            .when(F.col("isBillableWork") & F.col("isBillable"), "Billable")
+            .when(F.col("isNoCharge"), "NoCharge")
+            .when(F.col("isDoNotBill"), "DoNotBill")
+            .otherwise("Unknown")
+        )
+    
+    # Add utilization calculations
+    fact_df = fact_df.withColumn(
+        "utilizationType",
+        F.when(F.col("isInternalWork"), "Internal")
+        .when(F.col("isBillable") | F.col("isTimapottur"), "Billable")
+        .otherwise("Non-Billable")
+    )
+    
+    # Add date calculations for aging
+    fact_df = fact_df.withColumn(
+        "daysSinceWork",
+        F.datediff(F.current_date(), F.col("timeStart"))
+    ).withColumn(
+        "isCurrentMonth",
+        F.date_format("timeStart", "yyyy-MM") == F.date_format(F.current_date(), "yyyy-MM")
+    )
+    
+    # Add invoice aging for billable but not invoiced
+    fact_df = fact_df.withColumn(
+        "daysUninvoiced",
+        F.when(
+            (F.col("effectiveBillingStatus") == "Billable") & (~F.col("isInvoiced")),
+            F.col("daysSinceWork")
+        ).otherwise(None)
+    )
+    
+    return fact_df
+
+
 def create_invoice_facts(
     spark: SparkSession,
     invoice_df: DataFrame,

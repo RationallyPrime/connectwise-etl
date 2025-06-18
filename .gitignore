@@ -135,3 +135,6 @@ unified_etl_workspace/
 uv.lock
 .mcp.json
 pyproject.toml.backup
+
+# Reference files
+Src/ManageAPI/

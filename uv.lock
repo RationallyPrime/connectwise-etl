@@ -891,11 +891,14 @@ name = "unified-etl-core"
 version = "1.0.0"
 source = { editable = "packages/unified-etl-core" }
 dependencies = [
+    { name = "click" },
+    { name = "datamodel-code-generator" },
     { name = "pydantic" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "sparkdantic" },
     { name = "tenacity" },
+    { name = "tomli" },
 ]
 
 [package.optional-dependencies]
@@ -906,6 +909,8 @@ local = [
 
 [package.metadata]
 requires-dist = [
+    { name = "click", specifier = ">=8.0.0" },
+    { name = "datamodel-code-generator", specifier = ">=0.29.1" },
     { name = "delta-spark", marker = "extra == 'local'", specifier = ">=2.2.0" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "pyspark", marker = "extra == 'local'", specifier = ">=3.3.0" },
@@ -913,6 +918,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.28.0" },
     { name = "sparkdantic" },
     { name = "tenacity", specifier = ">=8.0.0" },
+    { name = "tomli", specifier = ">=2.0.0" },
 ]
 provides-extras = ["local"]
 
