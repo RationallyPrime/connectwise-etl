@@ -11,7 +11,6 @@ import logging
 from typing import List, Tuple
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
-from datetime import datetime
 
 # Import ETL metadata function from facts module
 from .facts import _add_etl_metadata

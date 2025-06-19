@@ -59,7 +59,7 @@ class ModelGenerator(ABC):
         """Convert source to format datamodel-codegen understands."""
         pass
     
-    def generate(self, source: Path, output: Path) -> None:
+    def generate(self, source: Path, output: Path, validate: bool = True) -> None:
         """Common generation logic."""
         logger.info(f"Generating models from {source} → {output}")
         
@@ -87,12 +87,13 @@ class ModelGenerator(ABC):
         # Post-process
         self._post_process(output)
         
-        # Validate
-        errors = self._validate_output(output)
-        if errors:
-            raise RuntimeError(f"Validation failed: {', '.join(errors)}")
-            
-        logger.info("✅ Models validated successfully")
+        # Validate if requested
+        if validate:
+            errors = self._validate_output(output)
+            if errors:
+                raise RuntimeError(f"Validation failed: {', '.join(errors)}")
+                
+            logger.info("✅ Models validated successfully")
     
     @abstractmethod
     def _get_format_args(self) -> list[str]:
@@ -106,9 +107,21 @@ class ModelGenerator(ABC):
             self._add_header(output)
     
     def _add_header(self, output: Path) -> None:
-        """Add header comment to generated file."""
-        with open(output, "r") as f:
-            content = f.read()
+        """Add header comment to generated file(s)."""
+        # Check if output exists
+        if not output.exists():
+            logger.warning(f"Output {output} does not exist")
+            return
+            
+        # Handle both file and directory outputs
+        if output.is_file():
+            files_to_process = [output]
+        elif output.is_dir():
+            # Add header to all .py files in directory
+            files_to_process = list(output.glob("*.py"))
+        else:
+            logger.warning(f"Output {output} is neither file nor directory")
+            return
             
         header = '''"""
 Auto-generated models from schema.
@@ -117,24 +130,46 @@ DO NOT EDIT MANUALLY - regenerate using regenerate_models.py
 
 '''
         
-        if not content.startswith('"""'):
-            with open(output, "w") as f:
-                f.write(header + content)
+        for file_path in files_to_process:
+            try:
+                with open(file_path, "r") as f:
+                    content = f.read()
+                    
+                if not content.startswith('"""'):
+                    with open(file_path, "w") as f:
+                        f.write(header + content)
+            except Exception as e:
+                logger.warning(f"Failed to add header to {file_path}: {e}")
     
     def _validate_output(self, output: Path) -> list[str]:
         """Basic validation of generated models."""
         errors = []
         
-        # Check file exists
+        # Check output exists
         if not output.exists():
-            errors.append(f"Output file not created: {output}")
+            errors.append(f"Output not created: {output}")
+            return errors
+        
+        # Get files to validate
+        if output.is_file():
+            files_to_validate = [output]
+        elif output.is_dir():
+            files_to_validate = list(output.glob("*.py"))
+            if not files_to_validate:
+                errors.append(f"No Python files found in output directory: {output}")
+                return errors
+        else:
+            errors.append(f"Output is neither file nor directory: {output}")
             return errors
             
-        # Try to compile the Python file
-        try:
-            with open(output, "r") as f:
-                compile(f.read(), str(output), "exec")
-        except SyntaxError as e:
-            errors.append(f"Syntax error in generated file: {e}")
+        # Try to compile each Python file
+        for file_path in files_to_validate:
+            try:
+                with open(file_path, "r") as f:
+                    compile(f.read(), str(file_path), "exec")
+            except SyntaxError as e:
+                errors.append(f"Syntax error in {file_path}: {e}")
+            except Exception as e:
+                errors.append(f"Failed to validate {file_path}: {e}")
             
         return errors

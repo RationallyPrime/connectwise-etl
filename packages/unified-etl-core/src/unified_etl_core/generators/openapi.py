@@ -55,6 +55,11 @@ class OpenAPIGenerator(ModelGenerator):
         """Post-process OpenAPI generated models."""
         super()._post_process(output)
         
+        # Skip if output is a directory (modular references)
+        if output.is_dir():
+            logger.debug("Skipping duplicate import cleanup for directory output")
+            return
+            
         # Fix any known issues with OpenAPI generation
         with open(output, "r") as f:
             content = f.read()
