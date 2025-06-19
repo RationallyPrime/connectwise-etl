@@ -8,11 +8,13 @@ The Unified ETL Framework integrates company data from ConnectWise PSA and Micro
 
 ## Current Architecture
 
-After comprehensive consolidation, the project now follows a clean unified structure:
+After comprehensive consolidation, the project now follows a clean package-based structure:
 
-- **unified_etl/**: Single consolidated ETL framework
+- **packages/unified-etl-core/**: Foundation framework with generic patterns
+- **packages/unified-etl-connectwise/**: ConnectWise PSA adapter with business logic
+- **packages/unified-etl-businesscentral/**: Business Central adapter (in progress)
 - **Eliminated duplication**: Removed fabric_api/ and BC_ETL-main/ (180+ files, ~40k lines)
-- **Generic processing**: Single fact creator replaces 9 entity-specific implementations
+- **Fail-fast philosophy**: ALL parameters required, no optional behaviors
 - **CamelCase preservation**: Configured to maintain source system naming conventions
 
 ## Medallion Architecture - Separation of Concerns
@@ -25,57 +27,110 @@ After comprehensive consolidation, the project now follows a clean unified struc
 - Add extraction metadata (timestamp, source, batch_id)
 - **Key insight**: API data is small enough for row-by-row Pydantic validation
 
-**Files**:
-- `unified_etl/extract/` (API clients with Pydantic validation)
-- `unified_etl/bronze/writer.py` (Write validated data to bronze tables)
+**Implementation Details**:
+- API clients in integration packages (e.g., `unified_etl_connectwise/client.py`)
+- Model validation via `model_class.model_validate(item)`
+- Structured error records with raw data preserved
 
 ### Silver Layer (Schema Transformation & Standardization)
 **Purpose**: Transform and standardize data structure using Spark (no row-by-row processing)
-- **Apply SparkDantic schema**: Use model's Spark schema for type casting
-- **Flatten nested columns**: Expand complex objects into flat table structure
-- **Convert data types**: Cast columns to proper types (string dates → timestamps)
-- **Standardize column names**: Apply naming conventions if needed
-- **Column mappings**: Rename/reorganize columns per configuration
-- **No validation**: Data already validated in Bronze, use distributed Spark operations
+- **SKIP validation**: Data already validated in Bronze layer (see `silver.py` line 415)
+- **Apply SparkDantic schema**: Models MUST inherit from SparkModel (runtime validated)
+- **Flatten nested columns**: CamelCase preserved as `parentFieldChildField`
+- **Convert data types**: Comprehensive TYPE_MAPPING with 16+ type conversions
+- **SCD Type 1/2**: Slowly Changing Dimension with REQUIRED business keys
+- **Fail-fast approach**: ALL parameters required, explicit ValueError on missing
+
+**Implementation Details**:
+- Assumes Fabric global spark: `sys.modules["__main__"].spark`
+- No optional entity_config fields - all required
+- Naming conflict resolution with suffix counters
+- JSON columns converted to strings for nested data
 
 **Files**:
-- `unified_etl/silver.py` (Schema transformations, flattening, type conversions)
-- `unified_etl/pipeline/bronze_silver.py`
+- `packages/unified-etl-core/src/unified_etl_core/silver.py`
 
 ### Gold Layer (Business Enhancement)
 **Purpose**: Add business intelligence constructs and dimensional modeling
-- **Add surrogate keys**: Generate business-meaningful unique identifiers
-- **Create date dimension**: Standard calendar table with business periods
-- **Build dimension bridge**: Connect facts to multiple dimensions
-- **Add dimension tables**: Normalize entities not present in source (geography, categories)
-- **Table-specific transforms**: Account hierarchy, organizational structures
-- **Calculated columns**: Business metrics and derived values
-- **No column removal**: Only addition and enrichment
+- **Add surrogate keys**: Window-based dense_rank with required business keys
+- **Generic fact creation**: ALL parameters required (no defaults)
+- **Entity type tagging**: Add EntityType column for multi-entity facts
+- **ETL metadata**: Universal tracking (_etl_gold_processed_at, _etl_batch_id)
+- **Custom exceptions**: FactTableError, SurrogateKeyError for granular handling
+
+**Implementation Details**:
+- Inline implementations to avoid circular imports
+- Business-specific logic in integration packages (e.g., `create_time_entry_fact`)
+- Model naming convention: "timeentry" not "time_entry" (no underscores)
 
 **Files**:
-- `unified_etl/gold.py` (Generic gold transformations)
-- `unified_etl/facts.py` (Generic fact table creator)
-- `unified_etl/transforms.py` (Business-specific logic)
-- `unified_etl/pipeline/silver_gold.py`
+- `packages/unified-etl-core/src/unified_etl_core/gold.py`
+- `packages/unified-etl-core/src/unified_etl_core/facts.py`
+- `packages/unified-etl-core/src/unified_etl_core/dimensions.py`
+- `packages/unified-etl-core/src/unified_etl_core/date_utils.py`
 
 ## Implementation Status
 
-### ✅ Completed: Consolidation & Framework
-- Eliminated code duplication across multiple directories
-- Created generic fact table creator
-- Updated pyproject.toml for camelCase preservation
-- Fixed import paths and dependencies
-- Comprehensive documentation and README
+### ✅ Completed: Phase 1 - Consolidation & Framework
+- Eliminated code duplication (180+ files, ~40k lines)
+- Created generic fact table creator with fail-fast approach
+- Updated pyproject.toml for camelCase preservation  
+- Fixed import paths and modularized packages
+- Comprehensive documentation for both packages
 
-### 🔄 Current Phase: Model Regeneration & Layer Refinement
-1. **Regenerate Models**: Use updated datamodel-codegen configuration
-2. **Layer Specification**: Implement clear medallion architecture boundaries
-3. **Field Selection**: Dynamic API field selection from Pydantic models
+### ✅ Completed: Phase 2 - Business Logic & Modularization
+- Fixed Tímapottur detection (`r"Tímapottur\s*:?"` regex pattern)
+- Modularized transforms.py (1000+ → 350 lines) via aikido refactor:
+  - `date_utils.py` → core package
+  - `agreement_utils.py` → ConnectWise package
+- Created dimension generator in core package
+- Fixed regenerate_models_v2.py to handle directory outputs
+- Reorganized project structure (/docs, /scripts, /sql)
+
+### 🔄 Current Phase: Data Refresh & Testing
+1. **Refresh stale Fabric data** (2 weeks old)
+2. **Test all fact creators** with new business logic
+3. **Validate $18M cost recovery** via comprehensive time entry facts
 
 ### 📋 Next Phase: Advanced Features
+- Business Central integration completion
 - Schema evolution handling
-- Multi-source integration (Jira, ServiceNow, etc.)
+- Multi-source integration (Jira, ServiceNow)
 - Performance optimization for large datasets
+
+## Key Business Logic & Patterns
+
+### ConnectWise Agreement Types (Icelandic)
+- **yÞjónusta**: Billable service agreements
+- **Tímapottur**: Prepaid hours (special handling - excluded from invoices)
+- **Innri verkefni**: Internal projects (non-billable)
+- **Rekstrarþjónusta/Alrekstur**: Operations/maintenance
+- **Hugbúnaðarþjónusta/Office 365**: Software service agreements
+
+### Critical Implementation Patterns
+1. **Fail-Fast Philosophy**: ALL function parameters required, no defaults
+   ```python
+   # WRONG: def create_fact(df, config=None)
+   # RIGHT: def create_fact(df: DataFrame, config: dict[str, Any])
+   ```
+
+2. **Model Naming Convention**: No underscores in table names
+   ```python
+   models = {
+       "timeentry": models.TimeEntry,    # NOT "time_entry"
+       "expenseentry": models.ExpenseEntry  # NOT "expense_entry"
+   }
+   ```
+
+3. **Tímapottur Detection**: Must match exact pattern with space/colon
+   ```python
+   r"Tímapottur\s*:?"  # Matches "Tímapottur :" in data
+   ```
+
+4. **Cost Recovery Strategy**: Create comprehensive fact_time_entry including ALL work
+   - Captures internal projects (missing $18M)
+   - Includes non-billable work
+   - Tracks Tímapottur consumption
 
 ## Development Setup
 
@@ -101,24 +156,44 @@ uv pip install -e ".[azure]"
 
 ## Model Generation
 
-### Current Configuration (pyproject.toml)
+### Current Configuration (configs/generation.toml)
 ```toml
-[tool.datamodel-codegen]
+[datamodel-codegen]
 input-file-type = "openapi"
 output-file-type = "pydantic_v2"
 base-class = "sparkdantic.SparkModel"
-snake-case-field = false  # Preserve camelCase
+snake-case-field = false  # Preserve camelCase - CRITICAL
 aliased-fields = true
 field-constraints = true
+use-schema-description = true
+enable-version-header = true
+disable-timestamp = true
+openapi-scopes = "schemas"
+
+[validation]
+strict-nullable = true
+use-standard-collections = true
 ```
 
 ### Regenerating Models
 ```bash
-# For ConnectWise PSA models
-datamodel-codegen --input PSA_OpenAPI_schema.json --output unified_etl/models/models.py
+# Using the v2 generator with auto-detection
+python scripts/regenerate_models_v2.py \
+    PSA_OpenAPI_schema.json \
+    packages/unified-etl-connectwise/src/unified_etl_connectwise/models/models.py
 
-# For Business Central models (when available)
-datamodel-codegen --input BC_OpenAPI_schema.json --output unified_etl/models/bc_models.py
+# Or with explicit format
+python scripts/regenerate_models_v2.py \
+    BC_CDM_manifest.json \
+    packages/unified-etl-businesscentral/src/unified_etl_businesscentral/models/ \
+    --format cdm
+
+# Direct datamodel-codegen (fallback)
+datamodel-codegen \
+    --input PSA_OpenAPI_schema.json \
+    --output models.py \
+    --base-class sparkdantic.SparkModel \
+    --snake-case-field false
 ```
 
 ## Testing
@@ -175,20 +250,25 @@ python -m build --wheel
 
 ## Core Components
 
-### Extract Layer
-- **Generic Extractor** (`unified_etl/extract/generic.py`): Unified API client with retry logic
-- **Field Selection** (`unified_etl/utils/api_utils.py`): Dynamic field selection from Pydantic models
-- **Source Adapters**: ConnectWise PSA, Business Central, extensible for new sources
+### unified-etl-core Package
+- **Silver Processing** (`silver.py`): Schema transformation, NO validation (already done in Bronze)
+- **Fact Creation** (`facts.py`): Generic fact table creator, ALL parameters required
+- **Dimensions** (`dimensions.py`): Generic dimension generator from enum columns
+- **Date Utils** (`date_utils.py`): Date dimension and spine generation
+- **Gold Utils** (`gold.py`): Surrogate keys, ETL metadata, date dimensions
+- **Generators** (`generators/`): Model generation framework (OpenAPI, CDM)
 
-### Transform Layer
-- **Bronze→Silver** (`unified_etl/pipeline/bronze_silver.py`): Validation and standardization
-- **Silver→Gold** (`unified_etl/pipeline/silver_gold.py`): Business enhancement
-- **Generic Processing** (`unified_etl/gold/generic_fact.py`): Configuration-driven fact creation
+### unified-etl-connectwise Package  
+- **Client** (`client.py`): Unified API client with field selection & pagination
+- **API Utils** (`api_utils.py`): Field generation from Pydantic models
+- **Agreement Utils** (`agreement_utils.py`): Icelandic business logic
+- **Transforms** (`transforms.py`): Fact creators (time_entry, invoice_line, agreement_period)
+- **Config** (`config.py`): Silver layer configurations
+- **Models** (`models/models.py`): Auto-generated from OpenAPI, inherit SparkModel
 
-### Storage Layer
-- **Delta Tables** (`unified_etl/storage/fabric_delta.py`): OneLake integration
-- **Schema Management** (`unified_etl/utils/schema_utils.py`): Evolution and compatibility
-- **Partitioning Strategy**: Optimized for query performance
+### unified-etl-businesscentral Package
+- **Gold Transforms** (`transforms/gold.py`): BC-specific dimensional modeling
+- Account hierarchy, dimension bridges, item attributes
 
 ## Data Flow
 

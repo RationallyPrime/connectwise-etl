@@ -1,6 +1,6 @@
 # Unified ETL Framework
 
-A modern Python ETL framework designed for JSON-based data sources targeting Microsoft Fabric OneLake. Built around the synergy of automated model generation, Pydantic validation, and SparkDantic schema conversion for seamless Spark integration.
+A modern, package-based ETL framework implementing medallion architecture (Bronze → Silver → Gold) for Microsoft Fabric OneLake. Built with a fail-fast philosophy, generic patterns, and business-specific adapters.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Pydantic V2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://docs.pydantic.dev/latest/)
@@ -8,53 +8,62 @@ A modern Python ETL framework designed for JSON-based data sources targeting Mic
 
 ## 🚀 Overview
 
-This ETL framework implements a **configuration-driven medallion architecture** that transforms raw JSON data from various sources into analytics-ready datasets in Microsoft Fabric OneLake. It currently supports **ConnectWise PSA** and **Microsoft Business Central**, but the generic design makes adding new sources (Jira, Salesforce, etc.) straightforward.
+The framework provides a **configuration-driven, fail-fast ETL pipeline** that transforms raw API data into analytics-ready datasets. It follows the principle of "generic where possible, specialized where necessary" with clear separation between core functionality and source-specific logic.
 
 ### Key Features
 
-- 🏗️ **Automated Model Generation**: From OpenAPI specs, Common Data Model schemas, or JSON samples
-- ⚡ **Generic Processing**: Single codebase handles all entities via configuration
+- 🏗️ **Package-Based Architecture**: Clean separation between core and integrations
+- ⚡ **Fail-Fast Philosophy**: All parameters required, explicit errors, no silent failures
 - 🔄 **SparkDantic Integration**: Automatic Spark schema generation from Pydantic models  
-- 🏛️ **Medallion Architecture**: Bronze (raw) → Silver (clean) → Gold (enriched)
-- 🎯 **Zero Column Pruning**: Gold layer preserves all data; views handle selection
+- 🏛️ **True Medallion Architecture**: Bronze (validated) → Silver (transformed) → Gold (enriched)
+- 🎯 **Business Logic Support**: Handles complex rules like Icelandic agreement types
 - 🔧 **Microsoft Fabric Optimized**: Built for Fabric Spark runtime environment
-- 📊 **Configuration-Driven**: Add new entities without code changes
+- 📊 **Generic Patterns**: Reusable dimension and fact creators
 
 ## 🏛️ Architecture
+
+### Package Structure
+
+```
+psa-unified-clean/
+├── packages/
+│   ├── unified-etl-core/          # Foundation framework
+│   │   ├── silver.py             # Schema transformation (NO validation)
+│   │   ├── facts.py              # Generic fact creator
+│   │   ├── dimensions.py         # Dimension generator
+│   │   └── generators/           # Model generation framework
+│   │
+│   ├── unified-etl-connectwise/   # ConnectWise adapter
+│   │   ├── client.py             # API client with field selection
+│   │   ├── agreement_utils.py    # Icelandic business logic
+│   │   └── transforms.py         # Fact table creators
+│   │
+│   └── unified-etl-businesscentral/ # BC adapter (in progress)
+│
+├── configs/
+│   └── generation.toml           # Model generation config
+├── scripts/
+│   └── regenerate_models_v2.py   # Unified model generator
+└── docs/                         # Documentation
+```
 
 ### Data Flow
 
 ```mermaid
 graph LR
-    A[JSON Sources] --> B[Bronze Layer]
+    A[APIs] --> B[Bronze Layer]
     B --> C[Silver Layer] 
     C --> D[Gold Layer]
-    D --> E[Analytics Views]
+    D --> E[PowerBI]
     
     A1[ConnectWise PSA] --> B
     A2[Business Central] --> B
-    A3[Jira/Others] --> B
+    A3[Future Sources] --> B
     
-    B --> B1[Raw Delta Tables]
-    C --> C1[Validated & Standardized]
-    D --> D1[Enriched with Keys & Joins]
-    E --> E1[Reporting & BI]
-```
-
-### Component Structure
-
-```
-unified_etl/
-├── models/              # Generated Pydantic models
-├── generators/          # Model code generators  
-├── extract/            # Generic data extraction
-├── bronze/             # Raw data ingestion
-├── silver/             # Data validation & cleansing
-├── gold/               # Data enrichment & analytics
-│   └── generic_fact.py # Universal fact table creator
-├── pipeline/           # ETL orchestration
-├── storage/            # Delta table operations
-└── utils/              # Shared utilities
+    B --> B1[Validated with Pydantic]
+    C --> C1[Transformed with Spark]
+    D --> D1[Facts & Dimensions]
+    E --> E1[Analytics & Reporting]
 ```
 
 ## 🛠️ Installation
@@ -63,242 +72,200 @@ unified_etl/
 
 - **Python 3.11+**
 - **Microsoft Fabric workspace** (for production)
-- **PySpark 3.3+** (for local development)
-
-### Using uv (Recommended)
-
-```bash
-# Install uv if needed
-pip install uv
-
-# Install the package
-uv pip install -e .
-
-# Install with optional dependencies
-uv pip install -e ".[local]"  # For local development with PySpark
-uv pip install -e ".[azure]"  # For Azure Key Vault integration
-```
+- **uv** package manager (recommended)
 
 ### Development Setup
 
 ```bash
-# Clone and install
+# Clone repository
 git clone <repository-url>
-cd unified-etl
-uv pip install -e ".[dev]"
+cd psa-unified-clean
+
+# Install uv if needed
+pip install uv
+
+# Install all packages in development mode
+uv pip install -e packages/unified-etl-core[azure]
+uv pip install -e packages/unified-etl-connectwise
+uv pip install -e packages/unified-etl-businesscentral
 
 # Run tests
 uv run pytest
 
 # Type checking
-uv run basedpyright
+uv run pyright
 
 # Linting
-uv run ruff check
+uv run ruff check .
 ```
 
 ## 📖 Quick Start
 
 ### 1. Generate Models
 
-Generate Pydantic models from your data source schemas:
+Use the unified model generator with auto-detection:
 
-```python
-# For ConnectWise PSA (from OpenAPI)
-from unified_etl.generators.generate_psa_models import generate_psa_models
+```bash
+# Generate ConnectWise models from OpenAPI
+python scripts/regenerate_models_v2.py \
+    PSA_OpenAPI_schema.json \
+    packages/unified-etl-connectwise/src/unified_etl_connectwise/models/models.py
 
-generate_psa_models(
-    openapi_schema_path="PSA_OpenAPI_schema.json",
-    output_dir="unified_etl/models/"
-)
-
-# For Business Central (from CDM schemas)  
-from unified_etl.generators.generate_bc_models import generate_bc_models
-
-generate_bc_models(
-    input_dir="cdm_manifests/",
-    output_file="unified_etl/models/bc_models.py"
-)
+# Generate BC models from CDM
+python scripts/regenerate_models_v2.py \
+    BC_CDM_manifest.json \
+    packages/unified-etl-businesscentral/src/unified_etl_businesscentral/models/ \
+    --format cdm
 ```
 
 ### 2. Extract Data
 
-Use the generic extractor to pull data from APIs:
+Use the ConnectWise client with automatic field selection:
 
 ```python
-from unified_etl.extract.generic import extract_entity_data
-from unified_etl.api.connectwise_client import ConnectWiseClient
+from unified_etl_connectwise import ConnectWiseClient
 
-# Initialize client
-client = ConnectWiseClient(
-    company="YourCompany",
-    public_key="your_public_key", 
-    private_key="your_private_key",
-    client_id="your_client_id"
+# Initialize with environment variables
+client = ConnectWiseClient()
+
+# Extract with pagination and validation
+time_entries = client.extract(
+    endpoint="/time/entries",
+    page_size=1000,
+    conditions=["dateEntered > '2024-01-01'"]
 )
 
-# Extract data for any entity
-data = extract_entity_data(
-    client=client,
-    entity_name="Agreement",
-    start_date="2024-01-01",
-    max_pages=10
+# Extract all supported entities
+all_data = client.extract_all()
+```
+
+### 3. Create Fact Tables
+
+Apply business logic and create dimensional facts:
+
+```python
+from unified_etl_connectwise import create_time_entry_fact
+from unified_etl_core.dimensions import create_all_dimensions
+
+# Create comprehensive time entry fact (captures ALL work)
+fact_df = create_time_entry_fact(
+    spark=spark,
+    time_entry_df=time_entries,
+    agreement_df=agreements,
+    config={
+        "include_internal": True,  # Capture missing $18M
+        "add_cost_metrics": True
+    }
+)
+
+# Create dimensions from enum columns
+dimensions = create_all_dimensions(
+    spark=spark,
+    dimension_configs=[
+        {"source_table": "silver.time_entries", "column": "billableOption"},
+        {"source_table": "silver.agreements", "column": "billingCycle"}
+    ]
 )
 ```
 
-### 3. Run ETL Pipeline
+### 4. Run Complete Pipeline
 
-Process data through the medallion architecture:
+Process through medallion architecture:
 
 ```python
-from unified_etl.main import run_etl
+from unified_etl_core.main import run_etl_pipeline
 
 # Run complete pipeline
-results = run_etl(
-    tables=["Agreement", "TimeEntry", "Customer"],
-    lakehouse_root="/lakehouse/default/Tables",
-    mode="append"
+run_etl_pipeline(
+    sources=["connectwise"],
+    layers=["bronze", "silver", "gold"],
+    lakehouse_root="/lakehouse/default/Tables/"
 )
-
-# Check results
-for table, success in results.items():
-    print(f"{table}: {'✓' if success else '✗'}")
-```
-
-### 4. Create Analytics
-
-The gold layer provides enriched data ready for analysis:
-
-```sql
--- Query unified fact tables
-SELECT 
-    entity_type,
-    COUNT(*) as record_count,
-    SUM(amount) as total_amount
-FROM gold.fact_unified
-WHERE created_date >= '2024-01-01'
-GROUP BY entity_type
 ```
 
 ## 🔧 Configuration
 
-### Entity Configuration
+### Model Generation (configs/generation.toml)
 
-Define entity behavior via YAML configuration:
-
-```yaml
-# config.yaml
-entities:
-  Agreement:
-    gold_name: "fact_agreements"
-    surrogate_keys:
-      - name: "AgreementKey"
-        source_columns: ["id", "companyId"]
-    dimension_joins:
-      - dimension: "Customer"
-        join_keys: {"companyId": "id"}
-    calculated_columns:
-      monthly_value: "totalAmount / agreementTermMonths"
+```toml
+[datamodel-codegen]
+base-class = "sparkdantic.SparkModel"
+snake-case-field = false  # CRITICAL: Preserve camelCase
+field-constraints = true
+use-schema-description = true
 ```
 
-### Data Source Configuration
+### Environment Variables
 
-Configure API connections and extraction parameters:
+```bash
+# ConnectWise authentication
+CW_AUTH_USERNAME=your_username
+CW_AUTH_PASSWORD=your_password
+CW_CLIENTID=your_client_id
+
+# Business Central
+BC_TENANT_ID=xxx
+BC_CLIENT_ID=xxx
+BC_CLIENT_SECRET=xxx
+```
+
+## 💡 Key Concepts
+
+### Fail-Fast Philosophy
+
+All functions require ALL parameters - no optional behaviors:
 
 ```python
-# In your notebook or script
-import os
+# WRONG - optional parameters
+def create_fact(df, config=None):
+    config = config or {}  # Silent default
 
-# Set connection parameters
-os.environ['CW_COMPANY'] = 'YourCompany'
-os.environ['CW_PUBLIC_KEY'] = 'your_public_key'
-os.environ['CW_PRIVATE_KEY'] = 'your_private_key'
-os.environ['CW_CLIENTID'] = 'your_client_id'
+# RIGHT - explicit requirements
+def create_fact(df: DataFrame, config: dict[str, Any]):
+    if not df:
+        raise FactTableError("df is required")
+    if not config:
+        raise FactTableError("config is required")
+```
+
+### Layer Responsibilities
+
+1. **Bronze**: Validate with Pydantic during API extraction
+2. **Silver**: Transform with Spark, SKIP validation (already done)
+3. **Gold**: Add business intelligence (facts, dimensions, metrics)
+
+### Business Logic Examples
+
+Icelandic agreement type handling:
+
+```python
+AGREEMENT_TYPE_PATTERNS = {
+    r"Tímapottur\s*:?": (AgreementType.PREPAID_HOURS, "prepaid"),
+    r"yÞjónusta": (AgreementType.BILLABLE_SERVICE, "billable"),
+    r"Innri verkefni": (AgreementType.INTERNAL_PROJECT, "internal")
+}
 ```
 
 ## 🏭 Production Deployment
 
-### Microsoft Fabric
+### Build Packages
 
-1. **Build Package**:
 ```bash
-python -m build --wheel
+# Build all packages
+cd packages/unified-etl-core && python -m build --wheel
+cd ../unified-etl-connectwise && python -m build --wheel
 ```
 
-2. **Upload to Fabric**:
-   - Upload wheel file to lakehouse Files
-   - Create notebook in your workspace
-   - Install package: `%pip install /lakehouse/default/Files/unified_etl-0.1.0-py3-none-any.whl`
+### Deploy to Microsoft Fabric
 
-3. **Configure Secrets**:
-   - Add credentials to workspace Key Vault
-   - Reference in your pipeline code
-
-4. **Run Pipeline**:
-```python
-from unified_etl.main import run_etl
-
-# Fabric-optimized run
-results = run_etl(
-    lakehouse_root="/lakehouse/default/Tables",
-    mode="append",
-    log_level="INFO"
-)
-```
-
-### Incremental Processing
-
-For production workloads, use incremental processing:
-
-```python
-from unified_etl.pipeline.silver_gold import run_silver_to_gold_pipeline
-
-# Process only recent changes
-results = run_silver_to_gold_pipeline(
-    spark=spark,
-    silver_db="silver",
-    gold_db="gold", 
-    is_full_refresh=False,  # Incremental mode
-    tables=["Agreement", "TimeEntry"]
-)
-```
-
-## 🔍 Key Concepts
-
-### Generic Fact Creation
-
-Instead of writing separate fact functions for each entity, use the universal creator:
-
-```python
-from unified_etl.gold.generic_fact import create_fact_table
-
-# Works for ANY entity
-fact_df = create_fact_table(
-    spark=spark,
-    silver_df=silver_data,
-    entity_name="Agreement",  # Or "Customer", "Invoice", etc.
-    gold_path="gold"
-)
-```
-
-### Model Generation
-
-The framework uses datamodel-code-generator with SparkDantic:
-
-```toml
-# pyproject.toml configuration
-[tool.datamodel-codegen]
-base-class = "sparkdantic.SparkModel"
-snake-case-field = false  # Preserve camelCase
-output-model-type = "pydantic_v2.BaseModel"
-```
-
-### Medallion Architecture
-
-- **Bronze**: Raw JSON data as Delta tables
-- **Silver**: Validated, standardized with Pydantic models  
-- **Gold**: Enriched with surrogate keys, dimension joins, business logic
-- **Views**: Column selection, aggregations, reporting formats
+1. Upload wheel files to lakehouse
+2. Install in notebook:
+   ```python
+   %pip install /lakehouse/Files/unified-etl-core-1.0.0-py3-none-any.whl
+   %pip install /lakehouse/Files/unified-etl-connectwise-1.0.0-py3-none-any.whl
+   ```
+3. Configure Key Vault secrets
+4. Run pipeline with Fabric spark
 
 ## 🧪 Testing
 
@@ -306,95 +273,37 @@ output-model-type = "pydantic_v2.BaseModel"
 # Run all tests
 uv run pytest
 
-# Run specific test categories
-uv run pytest tests/unit/           # Unit tests
-uv run pytest tests/test_*_validation.py  # Validation tests
+# Test specific package
+uv run pytest packages/unified-etl-core/tests/
 
-# Run with coverage
-uv run pytest --cov=unified_etl
+# Type checking
+uv run pyright packages/
+
+# Linting
+uv run ruff check packages/
 ```
 
-## 📚 API Reference
+## 📊 Business Value
 
-### Core Classes
+The framework addresses critical business needs:
 
-- **`ConnectWiseClient`**: HTTP client with retry logic and rate limiting
-- **`create_fact_table()`**: Universal fact table creator for all entities
-- **`run_etl()`**: Main pipeline orchestrator
-- **`generate_psa_models()`**: PSA model generator from OpenAPI
-- **`generate_bc_models()`**: BC model generator from CDM schemas
-
-### Configuration Options
-
-- **Entity Config**: Surrogate keys, dimension joins, calculated columns
-- **Pipeline Config**: Batch sizes, retry logic, error handling
-- **Spark Config**: Optimizations for Fabric runtime
+- **$18M Cost Recovery**: Captures ALL work including internal projects
+- **Tímapottur Tracking**: Proper handling of prepaid hours
+- **Generic Patterns**: Add new sources without rewriting core logic
+- **Performance**: Leverages Spark for large-scale processing
 
 ## 🤝 Contributing
 
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make changes and add tests**
-4. **Run quality checks**: `uv run ruff check && uv run basedpyright`
-5. **Commit changes**: `git commit -m 'Add amazing feature'`
-6. **Push to branch**: `git push origin feature/amazing-feature`
-7. **Open a Pull Request**
-
-### Code Standards
-
-- **Python 3.11+** with modern typing
-- **Pydantic V2** for all data models
-- **camelCase** for model fields (matching source systems)
-- **snake_case** for Python function/variable names
-- **100% type hints** with basedpyright validation
-
-## 📊 Supported Data Sources
-
-| Source | Status | Generator | API Type |
-|--------|--------|-----------|----------|
-| ConnectWise PSA | ✅ Production | `generate_psa_models` | REST API |
-| Microsoft Business Central | ✅ Production | `generate_bc_models` | CDM/OData |
-| Jira | 🔄 Planned | `generate_jira_models` | REST API |
-| Salesforce | 🔄 Planned | `generate_sf_models` | REST API |
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Import Errors**: Ensure all dependencies installed with `uv pip install -e ".[local]"`
-
-**Schema Mismatches**: Regenerate models after API changes:
-```bash
-python unified_etl/generators/generate_psa_models.py
-```
-
-**Performance Issues**: Check Spark configuration and partition strategy:
-```python
-# Optimize for Fabric
-spark.conf.set("spark.sql.adaptive.enabled", "true")
-spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
-```
-
-### Getting Help
-
-- 📖 **Documentation**: Check inline docstrings and type hints
-- 🐛 **Issues**: Report bugs via GitHub Issues  
-- 💬 **Discussions**: Ask questions in GitHub Discussions
-- 📧 **Email**: Contact maintainers for enterprise support
+1. Follow the fail-fast philosophy - no optional parameters
+2. Maintain clear layer boundaries (Bronze/Silver/Gold)
+3. Keep business logic in integration packages
+4. Preserve camelCase for API compatibility
+5. Add comprehensive tests for new features
 
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **Microsoft Fabric Team** for the excellent Spark runtime
-- **Pydantic & SparkDantic** for seamless data validation  
-- **ConnectWise** for comprehensive API documentation
-- **datamodel-code-generator** for automated model generation
-
 ---
 
-**Built with ❤️ for modern data engineering**
-
-Ready to transform your JSON data into analytics gold? Get started with the [Quick Start](#-quick-start) guide!
+**Built with the philosophy: Generic where possible, specialized where necessary**
