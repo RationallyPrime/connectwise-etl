@@ -137,4 +137,23 @@ uv.lock
 pyproject.toml.backup
 
 # Reference files
-Src/ManageAPI/
+Src/
+
+# Temporary analysis files
+dims.txt
+schema.txt
+explore_dimensions.ipynb
+refresh_data_and_create_dimensions.ipynb
+
+# Temporary images
+image001.png
+*.png:Zone.Identifier
+
+# Exploratory notebooks (keep test_unified_etl.ipynb as it's the main test)
+explore_*.ipynb
+refresh_*.ipynb
+
+# VS Code settings (keep project settings, ignore local)
+.vscode/settings.json
+
+# Build artifacts are in dist/.gitignore already

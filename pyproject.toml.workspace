@@ -1,6 +1,0 @@
-[tool.uv]
-workspace = ["packages/*"]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
