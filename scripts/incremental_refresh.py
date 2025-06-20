@@ -217,10 +217,12 @@ for entity, df in results.items():
 client = ConnectWiseClient()
 spark = client.spark
 
-# Debug: Check what tables exist in bronze schema
+# Debug: Check what tables exist
 print("\n=== Checking Bronze Tables ===")
 try:
-    bronze_tables = spark.sql("SHOW TABLES IN bronze")
+    # List all tables that start with bronze_cw_
+    all_tables = spark.sql("SHOW TABLES")
+    bronze_tables = all_tables.filter("tableName LIKE 'bronze_cw_%'")
     bronze_tables.show(100, truncate=False)
 except Exception as e:
     print(f"Error listing bronze tables: {e}")
@@ -230,7 +232,8 @@ print("\n=== Writing to Bronze Tables ===")
 for entity_name, df in results.items():
     if df is not None and df.count() > 0:
         try:
-            bronze_table = f"bronze.{entity_name}"
+            # Use the correct table naming convention: bronze_cw_<entity> (lowercase)
+            bronze_table = f"bronze_cw_{entity_name.lower()}"
             
             # The DataFrame from client.extract() is already validated
             # Use append mode with mergeSchema to handle evolution
