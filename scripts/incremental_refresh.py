@@ -219,8 +219,8 @@ for entity_name, df in results.items():
             bronze_table = f"bronze.{entity_name}"
             
             # The DataFrame from client.extract() is already validated
-            # Use append mode - Bronze layer preserves all raw data history
-            df.write.mode("append").saveAsTable(bronze_table)
+            # Use append mode with mergeSchema to handle evolution
+            df.write.mode("append").option("mergeSchema", "true").saveAsTable(bronze_table)
             
             print(f"  Appended {df.count()} records to {bronze_table}")
             
