@@ -78,11 +78,17 @@ def refresh_recent_data(days_back: int = 30) -> dict[str, DataFrame]:
                 page_size=1000
             )
             
-            # Add ETL metadata columns to match existing Bronze schema
+            # Add ETL metadata columns per CLAUDE.md philosophy
+            # Note: Legacy tables have old column names, but we should use proper naming
             from pyspark.sql import functions as F
-            df = df.withColumn("etl_timestamp", F.current_timestamp().cast("string"))
+            df = df.withColumn("_etl_timestamp", F.current_timestamp())
+            df = df.withColumn("_etl_source", F.lit("connectwise"))
+            df = df.withColumn("_etl_batch_id", F.lit(datetime.now().strftime("%Y%m%d_%H%M%S")))
+            
+            # Also add legacy columns for backward compatibility with existing schema
+            df = df.withColumn("etl_timestamp", F.col("_etl_timestamp").cast("string"))
             df = df.withColumn("etl_entity", F.lit(entity_name))
-            df = df.withColumn("etlTimestamp", F.current_timestamp().cast("string"))
+            df = df.withColumn("etlTimestamp", F.col("_etl_timestamp").cast("string"))
             df = df.withColumn("etlEntity", F.lit(entity_name))
             
             results[entity_name] = df
