@@ -240,8 +240,22 @@ for entity_name, df in results.items():
             
         except Exception as e:
             print(f"  ERROR writing {entity_name}: {e}")
-            # Try to understand the error better
-            if "doesn't exist" in str(e) or "Table or view not found" in str(e):
+            
+            # For schema merge errors, try to understand the conflict
+            if "Failed to merge fields" in str(e) or "DELTA_FAILED_TO_MERGE_FIELDS" in str(e):
+                print(f"  Schema conflict detected. Checking schema differences...")
+                try:
+                    # Get existing table schema
+                    existing_df = spark.table(bronze_table)
+                    print(f"\n  Existing {entity_name} schema:")
+                    existing_df.printSchema()
+                    print(f"\n  New {entity_name} schema:")
+                    df.printSchema()
+                except Exception as schema_e:
+                    print(f"  Could not compare schemas: {schema_e}")
+            
+            # Try to understand other errors
+            elif "doesn't exist" in str(e) or "Table or view not found" in str(e):
                 print(f"  Table {bronze_table} doesn't exist. Creating it...")
                 try:
                     df.write.mode("overwrite").saveAsTable(bronze_table)
