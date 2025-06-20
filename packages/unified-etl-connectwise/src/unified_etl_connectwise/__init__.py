@@ -1,7 +1,7 @@
 """ConnectWise PSA adapter for Unified ETL Framework."""
 
 from .client import ConnectWiseClient, ConnectWiseExtractor
-from .models import models
+from .models import models as models_module
 from .transforms import (
     create_agreement_period_fact,
     create_expense_entry_fact,
@@ -19,12 +19,12 @@ except Exception:
     extractor = None
 
 models = {
-    "agreement": models.Agreement,
-    "timeentry": models.TimeEntry,  # No underscore - matches table name
-    "invoice": models.Invoice,
-    "expenseentry": models.ExpenseEntry,  # No underscore - matches table name
-    "productitem": models.ProductItem,  # No underscore - matches table name
-    # "productrecurring": models.ProductRecurring,  # Commenting out - table doesn't exist in bronze
+    "agreement": models_module.Agreement,
+    "timeentry": models_module.TimeEntry,  # No underscore - matches table name
+    "invoice": models_module.Invoice,
+    "expenseentry": models_module.ExpenseEntry,  # No underscore - matches table name
+    "productitem": models_module.ProductItem,  # No underscore - matches table name
+    # "productrecurring": models_module.ProductRecurring,  # Commenting out - table doesn't exist in bronze
 }
 
 __all__ = [
