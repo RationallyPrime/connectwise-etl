@@ -77,6 +77,14 @@ def refresh_recent_data(days_back: int = 30) -> dict[str, DataFrame]:
                 order_by=order_by,
                 page_size=1000
             )
+            
+            # Add ETL metadata columns to match existing Bronze schema
+            from pyspark.sql import functions as F
+            df = df.withColumn("etl_timestamp", F.current_timestamp().cast("string"))
+            df = df.withColumn("etl_entity", F.lit(entity_name))
+            df = df.withColumn("etlTimestamp", F.current_timestamp().cast("string"))
+            df = df.withColumn("etlEntity", F.lit(entity_name))
+            
             results[entity_name] = df
             print(f"  Found {df.count()} {entity_name} records")
         except Exception as e:
