@@ -269,41 +269,166 @@ for entity_name, df in results.items():
 print("\n=== Incremental Refresh Complete ===")
 print("Next steps:")
 print("1. Verify the data looks correct")
-print("2. Merge (don't overwrite!) the fresh data to Bronze tables")
-print("3. Run Silver transformations for the refreshed entities")
-print("4. Run Gold transformations (fact tables) that depend on updated Silver tables")
+print("2. Run the cascade update cell below to update Silver and Gold layers")
+print("3. Monitor for any schema evolution issues")
 
-# CASCADE UPDATE EXAMPLE:
-# After merging to Bronze, you need to update Silver and Gold layers
-#
-# # 1. Update Silver layer for refreshed entities
-# from unified_etl_core.silver import process_silver_layer
-# from unified_etl_connectwise.config import ENTITY_CONFIGS
-#
-# # Process only the entities we refreshed
-# refreshed_entities = [name for name, df in results.items() if df is not None]
-# for entity in refreshed_entities:
-#     if entity in ENTITY_CONFIGS:
-#         config = ENTITY_CONFIGS[entity]
-#         process_silver_layer(
-#             bronze_table=config["bronze_table"],
-#             silver_table=config["silver_table"],
-#             # ... other config params
-#         )
-#
-# # 2. Update Gold layer (fact tables that depend on Silver)
-# from unified_etl_connectwise.transforms import (
-#     create_time_entry_fact,
-#     create_invoice_line_fact,
-#     create_expense_entry_fact,
-#     create_agreement_period_fact
-# )
-#
-# # Update fact tables based on what was refreshed
-# if "time_entry" in refreshed_entities or "agreement" in refreshed_entities:
-#     # fact_time_entry depends on silver_timeentry + silver_agreement
-#     create_time_entry_fact(spark, "silver_", "gold_")
-#
-# if "invoice" in refreshed_entities or "time_entry" in refreshed_entities:
-#     # fact_invoice_line depends on multiple silver tables
-#     create_invoice_line_fact(spark, "silver_", "gold_")
+# Store refreshed entities for the next cell
+refreshed_entities = [name for name, df in results.items() if df is not None and df.count() > 0]
+print(f"\nRefreshed entities stored: {refreshed_entities}")
+
+
+# %%
+# ==============================================================================
+# CASCADE UPDATE CELL - Run this after successful Bronze refresh
+# ==============================================================================
+"""
+This cell updates Silver and Gold layers after Bronze incremental refresh.
+Prerequisites:
+- Run the incremental refresh cell above first
+- Ensure 'refreshed_entities' variable contains the entities to update
+"""
+
+# CASCADE UPDATE - SILVER LAYER
+print("\n=== Updating Silver Layer ===")
+from unified_etl_core.silver import apply_silver_transformations
+from unified_etl_connectwise.config import SILVER_CONFIG
+from unified_etl_connectwise import models
+
+# Get the model classes
+model_mapping = {
+    "Agreement": models.Agreement,
+    "TimeEntry": models.TimeEntry,
+    "ExpenseEntry": models.ExpenseEntry,
+    "UnpostedInvoice": models.Invoice,  # UnpostedInvoice uses Invoice model
+    "PostedInvoice": models.PostedInvoice,
+}
+
+# Process only entities that had new data
+refreshed_entities = [name for name, df in results.items() if df is not None and df.count() > 0]
+print(f"Entities to update in Silver: {refreshed_entities}")
+
+for entity_name in refreshed_entities:
+    # Check if entity has Silver config
+    if entity_name in SILVER_CONFIG["entities"]:
+        entity_config = SILVER_CONFIG["entities"][entity_name]
+        bronze_table = f"bronze_cw_{entity_name.lower()}"
+        silver_table = f"silver_cw_{entity_name.lower()}"
+        
+        print(f"\nProcessing {entity_name}: {bronze_table} -> {silver_table}")
+        
+        try:
+            # Read Bronze data
+            bronze_df = spark.table(bronze_table)
+            print(f"  Bronze records: {bronze_df.count()}")
+            
+            # Get model class
+            model_class = model_mapping.get(entity_name)
+            if not model_class:
+                print(f"  WARNING: No model class found for {entity_name}")
+                continue
+            
+            # Apply Silver transformations
+            silver_df = apply_silver_transformations(
+                df=bronze_df,
+                entity_config={
+                    "source": "connectwise",
+                    "flatten_nested": True,
+                    "flatten_max_depth": 2,
+                    "scd": {
+                        "type": entity_config.get("scd_type", 1),
+                        "business_keys": entity_config.get("business_keys", ["id"])
+                    }
+                },
+                model_class=model_class
+            )
+            
+            # Write to Silver table
+            silver_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(silver_table)
+            print(f"  Updated {silver_table} with {silver_df.count()} records")
+            
+        except Exception as e:
+            print(f"  ERROR processing {entity_name}: {e}")
+    else:
+        print(f"\n{entity_name} not found in SILVER_CONFIG, skipping Silver update")
+
+# CASCADE UPDATE - GOLD LAYER
+print("\n\n=== Updating Gold Layer ===")
+from unified_etl_connectwise.transforms import (
+    create_time_entry_fact,
+    create_invoice_line_fact,
+    create_expense_entry_fact,
+    create_agreement_period_fact
+)
+
+# Check which Gold fact tables need updating based on refreshed entities
+print("\nDetermining which fact tables to update...")
+
+if "TimeEntry" in refreshed_entities or "Agreement" in refreshed_entities:
+    print("\nCreating fact_time_entry (depends on TimeEntry + Agreement)...")
+    try:
+        # Load required DataFrames
+        time_entry_silver = spark.table("silver_cw_timeentry")
+        agreement_silver = spark.table("silver_cw_agreement")
+        fact_df = create_time_entry_fact(
+            spark=spark,
+            time_entry_df=time_entry_silver,
+            agreement_df=agreement_silver
+        )
+        fact_df.write.mode("overwrite").saveAsTable("gold_fact_time_entry")
+        print(f"  Created fact_time_entry with {fact_df.count()} records")
+    except Exception as e:
+        print(f"  ERROR creating fact_time_entry: {e}")
+
+if "Agreement" in refreshed_entities:
+    print("\nCreating fact_agreement_period...")
+    try:
+        agreement_silver = spark.table("silver_cw_agreement")
+        fact_df = create_agreement_period_fact(
+            spark=spark,
+            agreement_df=agreement_silver,
+            config={}
+        )
+        fact_df.write.mode("overwrite").saveAsTable("gold_fact_agreement_period")
+        print(f"  Created fact_agreement_period with {fact_df.count()} records")
+    except Exception as e:
+        print(f"  ERROR creating fact_agreement_period: {e}")
+
+if "UnpostedInvoice" in refreshed_entities or "PostedInvoice" in refreshed_entities or "TimeEntry" in refreshed_entities:
+    print("\nCreating fact_invoice_line (depends on Invoice + TimeEntry + ProductItem + Agreement)...")
+    try:
+        # Load all required tables
+        invoice_silver = spark.table("silver_cw_unpostedinvoice")
+        time_entry_silver = spark.table("silver_cw_timeentry") if spark.catalog.tableExists("silver_cw_timeentry") else None
+        product_silver = spark.table("silver_cw_productitem") if spark.catalog.tableExists("silver_cw_productitem") else None
+        agreement_silver = spark.table("silver_cw_agreement") if spark.catalog.tableExists("silver_cw_agreement") else None
+        
+        fact_df = create_invoice_line_fact(
+            spark=spark,
+            invoice_df=invoice_silver,
+            time_entry_df=time_entry_silver,
+            product_df=product_silver,
+            agreement_df=agreement_silver
+        )
+        fact_df.write.mode("overwrite").saveAsTable("gold_fact_invoice_line")
+        print(f"  Created fact_invoice_line with {fact_df.count()} records")
+    except Exception as e:
+        print(f"  ERROR creating fact_invoice_line: {e}")
+
+if "ExpenseEntry" in refreshed_entities:
+    print("\nCreating fact_expense_entry...")
+    try:
+        expense_silver = spark.table("silver_cw_expenseentry")
+        agreement_silver = spark.table("silver_cw_agreement") if spark.catalog.tableExists("silver_cw_agreement") else None
+        
+        fact_df = create_expense_entry_fact(
+            spark=spark,
+            expense_df=expense_silver,
+            agreement_df=agreement_silver
+        )
+        fact_df.write.mode("overwrite").saveAsTable("gold_fact_expense_entry")
+        print(f"  Created fact_expense_entry with {fact_df.count()} records")
+    except Exception as e:
+        print(f"  ERROR creating fact_expense_entry: {e}")
+
+print("\n=== Cascade Update Complete ===")
+print("Bronze -> Silver -> Gold pipeline updated with fresh data!")
