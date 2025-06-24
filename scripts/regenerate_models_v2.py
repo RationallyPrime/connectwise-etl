@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Unified model generator with auto-detection and pluggable formats."""
-import click
 import logging
 from pathlib import Path
 
+import click
 from unified_etl_core.generators.registry import GeneratorRegistry
 
 # Set up logging
@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 @click.argument('source', type=click.Path(exists=True, path_type=Path))
 @click.argument('output', type=click.Path(path_type=Path))
 @click.option('--format', '-f', help='Input format (auto-detected if not specified)')
-@click.option('--config', '-c', 
-              default='../configs/generation.toml', 
+@click.option('--config', '-c',
+              default='../configs/generation.toml',
               type=click.Path(exists=True, path_type=Path),
               help='Generation config file')
 @click.option('--validate/--no-validate', default=True, help='Validate output models')
@@ -40,7 +40,7 @@ def generate(source: Path, output: Path, format: str, config: Path, validate: bo
     """
     if debug:
         logging.getLogger().setLevel(logging.DEBUG)
-    
+
     try:
         # Auto-detect format if not specified
         if not format:
@@ -48,16 +48,16 @@ def generate(source: Path, output: Path, format: str, config: Path, validate: bo
             click.echo(f"🔍 Detected format: {format}")
         else:
             click.echo(f"📋 Using specified format: {format}")
-        
+
         # Create generator
         generator = GeneratorRegistry.create(format, config)
-        
+
         # Generate models
         click.echo(f"🚀 Generating models from {source} → {output}")
         generator.generate(source, output, validate=validate)
-        
+
         click.echo("✅ Generation complete!")
-        
+
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)
         if debug:

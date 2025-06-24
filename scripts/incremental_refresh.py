@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Incremental data refresh for ConnectWise ETL - Fabric Notebook Version
 
@@ -198,27 +199,25 @@ print("=== Configuration and Table Status Check ===\n")
 # Initialize client to get spark session
 from unified_etl_connectwise import ConnectWiseClient
 from unified_etl_connectwise.config import SILVER_CONFIG
+from pyspark.sql import functions as F
 
 client = ConnectWiseClient()
 spark = client.spark
 
 # Check existing tables
 print("Checking existing tables...")
-existing_tables = spark.sql("""
-    SELECT 
-        tableName,
-        CASE 
-            WHEN tableName LIKE 'bronze_%' THEN 'Bronze'
-            WHEN tableName LIKE 'silver_%' THEN 'Silver'
-            WHEN tableName LIKE 'gold_%' THEN 'Gold'
-            ELSE 'Other'
-        END as layer
-    FROM (SHOW TABLES)
-    WHERE tableName LIKE 'bronze_cw_%' 
-       OR tableName LIKE 'silver_cw_%'
-       OR tableName LIKE 'gold_%'
-    ORDER BY layer, tableName
-""")
+all_tables_df = spark.sql("SHOW TABLES")
+existing_tables = all_tables_df.filter(
+    (F.col("tableName").like("bronze_cw_%")) |
+    (F.col("tableName").like("silver_cw_%")) |
+    (F.col("tableName").like("gold_%"))
+).withColumn(
+    "layer",
+    F.when(F.col("tableName").like("bronze_%"), "Bronze")
+    .when(F.col("tableName").like("silver_%"), "Silver")
+    .when(F.col("tableName").like("gold_%"), "Gold")
+    .otherwise("Other")
+).orderBy("layer", "tableName")
 
 print("\nExisting ETL Tables:")
 existing_tables.show(100, truncate=False)
@@ -296,10 +295,15 @@ for entity_name, df in results.items():
             bronze_table = f"bronze_cw_{entity_name.lower()}"
             
             if spark.catalog.tableExists(bronze_table):
+                # Deduplicate the incoming data first to avoid MERGE conflicts
+                df_deduped = df.dropDuplicates(["id"])
+                if df_deduped.count() < df.count():
+                    print(f"  WARNING: Removed {df.count() - df_deduped.count()} duplicate records from {entity_name}")
+                
                 # MERGE to handle duplicates
                 merge_key = "id"
                 temp_view = f"temp_{entity_name.lower()}_updates"
-                df.createOrReplaceTempView(temp_view)
+                df_deduped.createOrReplaceTempView(temp_view)
                 
                 # Build MERGE SQL
                 update_cols = [col for col in df.columns if col != merge_key]
@@ -321,9 +325,12 @@ for entity_name, df in results.items():
                 print(f"  Merged data into {bronze_table}")
                 spark.catalog.dropTempView(temp_view)
             else:
-                # First time - create table
-                df.write.mode("overwrite").saveAsTable(bronze_table)
-                print(f"  Created {bronze_table} with {df.count()} records")
+                # First time - create table, deduplicate first
+                df_deduped = df.dropDuplicates(["id"])
+                if df_deduped.count() < df.count():
+                    print(f"  WARNING: Removed {df.count() - df_deduped.count()} duplicate records from {entity_name}")
+                df_deduped.write.mode("overwrite").saveAsTable(bronze_table)
+                print(f"  Created {bronze_table} with {df_deduped.count()} records")
 
         except Exception as e:
             print(f"  ERROR writing {entity_name}: {e}")
@@ -370,17 +377,18 @@ else:
 
 # CASCADE UPDATE - SILVER LAYER (INCREMENTAL)
 print("\n=== Incremental Silver Layer Update ===")
-from unified_etl_connectwise import models
 from unified_etl_connectwise.config import SILVER_CONFIG
 from unified_etl_core.silver import apply_silver_transformations
+# Import model classes directly
+import unified_etl_connectwise.models.models as cw_models
 
 model_mapping = {
-    "Agreement": models.get("agreement"),
-    "TimeEntry": models.get("timeentry"),
-    "ExpenseEntry": models.get("expenseentry"),
-    "UnpostedInvoice": models.get("invoice"),
-    "PostedInvoice": models.get("invoice"),
-    "ProductItem": models.get("productitem"),
+    "Agreement": cw_models.Agreement,
+    "TimeEntry": cw_models.TimeEntry,
+    "ExpenseEntry": cw_models.ExpenseEntry,
+    "UnpostedInvoice": cw_models.Invoice,
+    "PostedInvoice": cw_models.Invoice,
+    "ProductItem": cw_models.ProductItem,
 }
 
 # Process only entities that had new data
@@ -391,13 +399,15 @@ print(f"Entities to update in Silver: {refreshed_entities}")
 silver_changes = {}
 
 for entity_name in refreshed_entities:
+    print(f"\n=== Starting to process entity: {entity_name} ===")
+    
     # Check if entity has Silver config
     if entity_name in SILVER_CONFIG["entities"]:
         entity_config = SILVER_CONFIG["entities"][entity_name]
         bronze_table = f"bronze_cw_{entity_name.lower()}"
         silver_table = entity_config["silver_table"]  # Use config table name
 
-        print(f"\nProcessing {entity_name}: {bronze_table} -> {silver_table}")
+        print(f"Processing {entity_name}: {bronze_table} -> {silver_table}")
 
         try:
             if FORCE_FULL_SILVER_GOLD:
@@ -431,6 +441,12 @@ for entity_name in refreshed_entities:
             model_class = model_mapping.get(entity_name)
             if not model_class:
                 print(f"  WARNING: No model class found for {entity_name}")
+                continue
+            
+            # Debug: Check what we got
+            print(f"  Model class type: {type(model_class)}")
+            if isinstance(model_class, str):
+                print(f"  ERROR: Got string '{model_class}' instead of model class")
                 continue
 
             # Apply Silver transformations to ONLY changed records
@@ -512,9 +528,9 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
         if FORCE_FULL_SILVER_GOLD:
             # Full refresh - process all time entries
             print("  FULL REFRESH: Processing all time entries")
-            time_entry_silver = spark.table("silver_cw_timeentry")
-            agreement_silver = spark.table("silver_cw_agreement")
-            member_silver = spark.table("silver_cw_member") if spark.catalog.tableExists("silver_cw_member") else None
+            time_entry_silver = spark.table("Lakehouse.silver.silver_cw_timeentry")
+            agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
+            member_silver = spark.table("Lakehouse.silver.silver_cw_member") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_member") else None
             
             fact_df = create_time_entry_fact(
                 spark=spark,
@@ -537,10 +553,11 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
             if "Agreement" in silver_changes:
                 # Time entries linked to changed agreements
                 agreement_ids = silver_changes["Agreement"]
-                linked_times = spark.sql(f"""
+                agreement_ids.createOrReplaceTempView("temp_agreement_ids")
+                linked_times = spark.sql("""
                     SELECT DISTINCT id 
-                    FROM silver_cw_timeentry 
-                    WHERE agreementId IN (SELECT id FROM ({agreement_ids.createOrReplaceTempView("temp_agreement_ids")}))
+                    FROM Lakehouse.silver.silver_cw_timeentry 
+                    WHERE agreementId IN (SELECT id FROM temp_agreement_ids)
                 """)
                 affected_time_ids.append(linked_times)
             
@@ -554,13 +571,13 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
                 
                 # Get only affected time entries
                 time_entry_delta = spark.sql("""
-                    SELECT * FROM silver_cw_timeentry
+                    SELECT * FROM Lakehouse.silver.silver_cw_timeentry
                     WHERE id IN (SELECT id FROM temp_affected_time_ids)
                 """)
                 
                 # Get all agreements (we need full set for lookups)
-                agreement_silver = spark.table("silver_cw_agreement")
-                member_silver = spark.table("silver_cw_member") if spark.catalog.tableExists("silver_cw_member") else None
+                agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
+                member_silver = spark.table("Lakehouse.silver.silver_cw_member") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_member") else None
                 
                 # Create facts for affected entries
                 fact_delta = create_time_entry_fact(
@@ -589,7 +606,7 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
                 else:
                     # First time - create full fact table
                     print("  Creating fact_time_entry for first time (full load)")
-                    time_entry_silver = spark.table("silver_cw_timeentry")
+                    time_entry_silver = spark.table("Lakehouse.silver.silver_cw_timeentry")
                     fact_df = create_time_entry_fact(
                         spark=spark,
                         time_entry_df=time_entry_silver,
@@ -608,7 +625,8 @@ if "Agreement" in silver_changes:
         if FORCE_FULL_SILVER_GOLD:
             # Full refresh
             print("  FULL REFRESH: Processing all agreements")
-            agreement_silver = spark.table("silver_cw_agreement")
+            agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
+            # Note: Silver should already have flattened columns if configured properly
             fact_df = create_agreement_period_fact(
                 spark=spark, 
                 agreement_df=agreement_silver, 
@@ -624,10 +642,11 @@ if "Agreement" in silver_changes:
             
             # Get only changed agreements
             agreement_delta = spark.sql("""
-                SELECT * FROM silver_cw_agreement
+                SELECT * FROM Lakehouse.silver.silver_cw_agreement
                 WHERE id IN (SELECT id FROM temp_changed_agreement_ids)
             """)
             
+            # Note: Silver should already have flattened columns if configured properly
             # Create periods for changed agreements
             fact_delta = create_agreement_period_fact(
                 spark=spark, 
@@ -652,7 +671,7 @@ if "Agreement" in silver_changes:
             else:
                 # First time - create full table
                 print("  Creating fact_agreement_period for first time (full load)")
-                agreement_silver = spark.table("silver_cw_agreement")
+                agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
                 fact_df = create_agreement_period_fact(
                     spark=spark, 
                     agreement_df=agreement_silver, 
@@ -670,8 +689,8 @@ if "ExpenseEntry" in silver_changes:
         if FORCE_FULL_SILVER_GOLD:
             # Full refresh
             print("  FULL REFRESH: Processing all expense entries")
-            expense_silver = spark.table("silver_cw_expenseentry")
-            agreement_silver = spark.table("silver_cw_agreement") if spark.catalog.tableExists("silver_cw_agreement") else None
+            expense_silver = spark.table("Lakehouse.silver.silver_cw_expenseentry")
+            agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_agreement") else None
             
             fact_df = create_expense_entry_fact(
                 spark=spark, 
@@ -687,11 +706,11 @@ if "ExpenseEntry" in silver_changes:
             changed_expense_ids.createOrReplaceTempView("temp_changed_expense_ids")
             
             expense_delta = spark.sql("""
-                SELECT * FROM silver_cw_expenseentry
+                SELECT * FROM Lakehouse.silver.silver_cw_expenseentry
                 WHERE id IN (SELECT id FROM temp_changed_expense_ids)
             """)
             
-            agreement_silver = spark.table("silver_cw_agreement") if spark.catalog.tableExists("silver_cw_agreement") else None
+            agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_agreement") else None
             
             fact_delta = create_expense_entry_fact(
                 spark=spark, 
@@ -806,7 +825,8 @@ dimension_configs = [
 
 # Generate dimensions
 for config in dimension_configs:
-    if spark.catalog.tableExists(config["source_table"]):
+    full_table_path = f"Lakehouse.silver.{config['source_table']}"
+    if spark.catalog.tableExists(full_table_path):
         print(
             f"\nGenerating {config['dimension_name']} from {config['source_table']}.{config['column']}..."
         )
@@ -832,279 +852,4 @@ for config in dimension_configs:
 
 print("\n=== Dimension Generation Complete ===")
 
-# %%
-# ==============================================================================
-# COLUMN VALUE ANALYSIS CELL - Identify high-value vs noise columns
-# ==============================================================================
-"""
-Analyze columns to identify which have signal vs noise for PowerBI views.
-This helps create focused views that exclude columns with no analytical value.
-"""
 
-print("\n=== Column Value Analysis ===")
-
-from pyspark.sql import functions as F  # noqa: E402
-
-
-def analyze_column_value(df, table_name, sample_size=10000):
-    """Analyze columns to provide detailed statistics without arbitrary scoring."""
-
-    # Sample the data if it's large
-    total_count = df.count()
-    if total_count > sample_size:
-        df_sample = df.sample(fraction=sample_size / total_count)
-    else:
-        df_sample = df
-
-    print(f"\nAnalyzing {table_name} ({total_count} rows, sampled {df_sample.count()})...")
-
-    analysis_results = []
-
-    for col in df.columns:
-        # Skip system columns
-        if col.startswith("_etl_") or col.startswith("etl"):
-            continue
-
-        # Get basic stats
-        distinct_count = df_sample.select(col).distinct().count()
-        null_count = df_sample.filter(F.col(col).isNull()).count()
-        null_percentage = (null_count / df_sample.count()) * 100
-        non_null_count = df_sample.count() - null_count
-
-        # Determine column type
-        col_type = str(df.schema[col].dataType)
-        
-        # Calculate cardinality ratio (distinct values / non-null rows)
-        cardinality_ratio = distinct_count / non_null_count if non_null_count > 0 else 0
-        
-        # Get sample values for low-cardinality columns
-        sample_values = []
-        if distinct_count <= 10 and distinct_count > 0:
-            values_df = df_sample.select(col).distinct().filter(F.col(col).isNotNull()).limit(10).collect()
-            sample_values = [str(row[0]) for row in values_df]
-        
-        # For numeric columns, get min/max/mean
-        numeric_stats = {}
-        if "Int" in col_type or "Double" in col_type or "Decimal" in col_type or "Float" in col_type:
-            stats_df = df_sample.select(
-                F.min(col).alias("min"),
-                F.max(col).alias("max"),
-                F.mean(col).alias("mean"),
-                F.stddev(col).alias("stddev")
-            ).collect()[0]
-            numeric_stats = {
-                "min": stats_df["min"],
-                "max": stats_df["max"],
-                "mean": round(stats_df["mean"], 2) if stats_df["mean"] else None,
-                "stddev": round(stats_df["stddev"], 2) if stats_df["stddev"] else None
-            }
-
-        # Column category based on characteristics
-        category = "unknown"
-        if col.lower().endswith(("id", "key", "_id", "_key")):
-            category = "identifier"
-        elif any(kw in col.lower() for kw in ["amount", "cost", "price", "revenue", "total", "sum"]):
-            category = "financial"
-        elif any(kw in col.lower() for kw in ["hours", "days", "minutes", "duration"]):
-            category = "time_measure"
-        elif any(kw in col.lower() for kw in ["date", "time", "created", "updated", "modified"]):
-            category = "temporal"
-        elif any(kw in col.lower() for kw in ["name", "description", "notes", "comment"]):
-            category = "text"
-        elif any(kw in col.lower() for kw in ["status", "type", "category", "class"]):
-            category = "categorical"
-        elif "Boolean" in col_type:
-            category = "boolean"
-        elif distinct_count == 1:
-            category = "constant"
-        elif cardinality_ratio > 0.95:
-            category = "high_cardinality"
-        elif cardinality_ratio < 0.01:
-            category = "low_cardinality"
-
-        analysis_results.append({
-            "column": col,
-            "type": col_type,
-            "category": category,
-            "distinct_values": distinct_count,
-            "null_count": null_count,
-            "null_percentage": round(null_percentage, 1),
-            "cardinality_ratio": round(cardinality_ratio, 3),
-            "sample_values": sample_values[:5] if sample_values else [],
-            "numeric_stats": numeric_stats
-        })
-
-    # Sort by category, then by null percentage
-    analysis_results.sort(key=lambda x: (x["category"], x["null_percentage"]))
-
-    # Print analysis by category
-    categories = {}
-    for result in analysis_results:
-        cat = result["category"]
-        if cat not in categories:
-            categories[cat] = []
-        categories[cat].append(result)
-    
-    print(f"\n  Column Analysis by Category:")
-    print(f"  {'Category':<20} {'Count':<8} {'Avg Nulls %':<12}")
-    print(f"  {'-'*40}")
-    
-    for cat, cols in categories.items():
-        avg_nulls = sum(c["null_percentage"] for c in cols) / len(cols)
-        print(f"  {cat:<20} {len(cols):<8} {avg_nulls:<12.1f}")
-    
-    # Show detailed analysis for each category
-    for cat, cols in categories.items():
-        print(f"\n  === {cat.upper()} COLUMNS ===")
-        for col in cols[:5]:  # Show first 5 of each category
-            print(f"\n  {col['column']} ({col['type']})")
-            print(f"    Nulls: {col['null_percentage']}% | Distinct: {col['distinct_values']} | Cardinality: {col['cardinality_ratio']}")
-            if col['sample_values']:
-                print(f"    Sample values: {col['sample_values']}")
-            if col['numeric_stats']:
-                stats = col['numeric_stats']
-                print(f"    Range: [{stats['min']} - {stats['max']}] | Mean: {stats['mean']} | StdDev: {stats['stddev']}")
-        
-        if len(cols) > 5:
-            print(f"    ... and {len(cols) - 5} more {cat} columns")
-
-    # Identify potentially problematic columns
-    print(f"\n  === POTENTIAL ISSUES ===")
-    
-    constant_cols = [r for r in analysis_results if r["category"] == "constant"]
-    if constant_cols:
-        print(f"\n  Constant columns (single value):")
-        for col in constant_cols:
-            print(f"    {col['column']}: '{col['sample_values'][0] if col['sample_values'] else 'NULL'}'")
-    
-    high_null_cols = [r for r in analysis_results if r["null_percentage"] > 95]
-    if high_null_cols:
-        print(f"\n  Nearly empty columns (>95% null):")
-        for col in high_null_cols:
-            print(f"    {col['column']}: {col['null_percentage']}% null")
-    
-    return analysis_results
-
-
-# Analyze key tables
-tables_to_analyze = [
-    "silver_cw_timeentry",
-    "silver_cw_agreement",
-    "silver_cw_invoice",
-    "gold_fact_time_entry",
-]
-
-all_analysis = {}
-for table in tables_to_analyze:
-    if spark.catalog.tableExists(table):
-        df = spark.table(table)
-        analysis = analyze_column_value(df, table)
-        all_analysis[table] = analysis
-
-# %%
-# ==============================================================================
-# CREATE POWERBI VIEWS CELL - Create optimized views for PowerBI
-# ==============================================================================
-"""
-Create SQL views optimized for PowerBI consumption.
-These views exclude low-value columns identified in the analysis above.
-"""
-
-print("\n=== Creating PowerBI Optimized Views ===")
-
-
-# Function to create view based on column analysis
-def create_powerbi_view(table_name, analysis_results, view_suffix="_pbi"):
-    """Create a view excluding problematic columns based on analysis."""
-
-    # Exclude columns based on objective criteria
-    exclude_categories = ["constant", "unknown"]  # Always exclude these
-    exclude_columns = set()
-    
-    for result in analysis_results:
-        # Exclude constant columns (single value)
-        if result["category"] == "constant":
-            exclude_columns.add(result["column"])
-        # Exclude nearly empty columns (>95% null) unless they're important categories
-        elif result["null_percentage"] > 95 and result["category"] not in ["identifier", "financial"]:
-            exclude_columns.add(result["column"])
-        # Exclude unknown columns with high nulls
-        elif result["category"] == "unknown" and result["null_percentage"] > 80:
-            exclude_columns.add(result["column"])
-    
-    # Get columns to keep
-    keep_columns = [r["column"] for r in analysis_results if r["column"] not in exclude_columns]
-    
-    # Always include certain critical columns even if they have issues
-    critical_patterns = ["id", "key", "sk", "date", "amount", "revenue"]
-    for result in analysis_results:
-        col = result["column"]
-        if any(pattern in col.lower() for pattern in critical_patterns) and col not in keep_columns:
-            keep_columns.append(col)
-
-    # Build SELECT statement
-    select_cols = ", ".join(keep_columns)
-    view_name = f"{table_name}{view_suffix}"
-
-    create_view_sql = f"""
-    CREATE OR REPLACE VIEW {view_name} AS
-    SELECT {select_cols}
-    FROM {table_name}
-    """
-
-    try:
-        spark.sql(create_view_sql)
-        print(
-            f"  Created view {view_name} with {len(keep_columns)} columns (excluded {len(exclude_columns)} columns)"
-        )
-        if exclude_columns:
-            print(f"    Excluded: {', '.join(sorted(exclude_columns))}")
-        return view_name
-    except Exception as e:
-        print(f"  ERROR creating view {view_name}: {e}")
-        return None
-
-
-# Create views for analyzed tables
-for table_name, analysis in all_analysis.items():
-    create_powerbi_view(table_name, analysis)
-
-# Create specialized fact views with business logic
-print("\n\nCreating specialized business views...")
-
-# Time Entry Analysis View
-time_entry_view_sql = """
-CREATE OR REPLACE VIEW v_time_entry_analysis AS
-SELECT
-    TimeEntrySK,
-    WorkDateSK,
-    memberName,
-    agreementName,
-    agreementType,
-    utilizationType,
-    actualHours,
-    potentialRevenue,
-    actualCost,
-    margin,
-    marginPercentage,
-    isInternalWork,
-    isTimapottur,
-    effectiveBillingStatus,
-    daysSinceWork,
-    daysUninvoiced
-FROM gold_fact_time_entry
-WHERE actualHours > 0  -- Filter out zero-hour entries
-"""
-
-try:
-    spark.sql(time_entry_view_sql)
-    print("  Created v_time_entry_analysis")
-except Exception as e:
-    print(f"  ERROR creating v_time_entry_analysis: {e}")
-
-print("\n=== PowerBI View Creation Complete ===")
-print("\nNext steps:")
-print("1. Connect PowerBI to the Lakehouse")
-print("2. Use the _pbi views for optimized performance")
-print("3. Use v_time_entry_analysis for time tracking analytics")
-print("4. Join views with gold_dim_* tables for descriptive labels")

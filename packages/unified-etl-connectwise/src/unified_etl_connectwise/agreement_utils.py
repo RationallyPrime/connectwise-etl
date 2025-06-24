@@ -47,15 +47,15 @@ def normalize_agreement_type(type_name: str | None) -> tuple[AgreementType, str]
     """
     if not type_name:
         return AgreementType.OTHER, "unknown"
-    
+
     # Clean the input - remove trailing spaces and punctuation
     cleaned = type_name.strip().rstrip(":")
-    
+
     # Try to match against known patterns
     for pattern, (agreement_type, billing) in AGREEMENT_TYPE_PATTERNS.items():
         if re.search(pattern, cleaned, re.IGNORECASE):
             return agreement_type, billing
-    
+
     logger.warning(f"Unknown agreement type: '{type_name}'")
     return AgreementType.OTHER, "unknown"
 
@@ -71,17 +71,17 @@ def extract_agreement_number(df: DataFrame, custom_fields_col: str = "customFiel
         F.when(
             F.col(custom_fields_col).isNotNull(),
             F.from_json(
-                F.col(custom_fields_col), 
+                F.col(custom_fields_col),
                 "array<struct<id:string,caption:string,type:string,value:string>>"
             )
         ).otherwise(None)
     )
-    
+
     # Extract agreement number with validation
     return df_parsed.withColumn(
         "agreementNumber",
         F.when(
-            (F.col("_parsed_custom_fields").isNotNull()) & 
+            (F.col("_parsed_custom_fields").isNotNull()) &
             (F.size("_parsed_custom_fields") > 0),
             F.col("_parsed_custom_fields").getItem(0).getField("value")
         ).otherwise(None)
@@ -103,10 +103,10 @@ def resolve_agreement_hierarchy(
     4. Adds billing classification
     """
     logger.info(f"Resolving agreement hierarchy for {entity_type}")
-    
+
     # Get agreement numbers and normalize types
     agreements_enhanced = extract_agreement_number(agreements_df)
-    
+
     # Create normalized type columns using UDF would be better, but let's use when/otherwise
     agreements_enhanced = agreements_enhanced.withColumn(
         "_type_normalized",
@@ -127,7 +127,7 @@ def resolve_agreement_hierarchy(
         .when(F.col("_type_normalized") == "operations", "operations")
         .otherwise("unknown")
     )
-    
+
     # Join entity with agreements
     df_with_agreement = df.join(
         agreements_enhanced.select(
@@ -141,7 +141,7 @@ def resolve_agreement_hierarchy(
         df[entity_agreement_col] == F.col("agr_id"),
         "left",
     )
-    
+
     # If no direct agreement number, check parent
     df_with_parent = df_with_agreement.join(
         agreements_enhanced.select(
@@ -151,13 +151,13 @@ def resolve_agreement_hierarchy(
         F.col("parentAgreementId") == F.col("parent_id"),
         "left",
     )
-    
+
     # Final agreement number with fallback logic
     result = df_with_parent.withColumn(
         "final_agreement_number",
         F.coalesce("direct_agreement_number", "parent_agreement_number")
     ).drop("agr_id", "parent_id", "direct_agreement_number", "parent_agreement_number")
-    
+
     return result
 
 
@@ -228,11 +228,11 @@ def add_surrogate_keys(df: DataFrame, key_config: dict[str, dict]) -> DataFrame:
         DataFrame with surrogate keys added
     """
     result_df = df
-    
+
     for key_name, config in key_config.items():
         key_type = config.get("type", "hash")
         source_columns = config["source_columns"]
-        
+
         if key_type == "hash":
             # Create hash-based surrogate key
             result_df = result_df.withColumn(
@@ -243,5 +243,5 @@ def add_surrogate_keys(df: DataFrame, key_config: dict[str, dict]) -> DataFrame:
             result_df = result_df.withColumn(
                 key_name, F.date_format(F.col(source_columns[0]), "yyyyMMdd").cast("int")
             )
-    
+
     return result_df

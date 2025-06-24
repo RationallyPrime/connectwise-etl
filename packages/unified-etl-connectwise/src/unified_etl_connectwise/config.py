@@ -7,7 +7,8 @@ SILVER_CONFIG = {
     "entities": {
         "Agreement": {
             "bronze_table": "bronze_cw_agreement",
-            "silver_table": "silver_agreement",
+            "silver_table": "silver_cw_agreement",
+            "source": "connectwise",
             "scd_type": 2,
             "incremental_column": "_info.lastUpdated",
             "business_keys": ["id"],
@@ -50,7 +51,8 @@ SILVER_CONFIG = {
         },
         "TimeEntry": {
             "bronze_table": "bronze_cw_timeentry",
-            "silver_table": "silver_timeentry",
+            "silver_table": "silver_cw_timeentry",
+            "source": "connectwise",
             "scd_type": 1,
             "incremental_column": "_info.lastUpdated",
             "business_keys": ["id"],
@@ -105,7 +107,8 @@ SILVER_CONFIG = {
         },
         "ExpenseEntry": {
             "bronze_table": "bronze_cw_expenseentry",
-            "silver_table": "silver_expenseentry",
+            "silver_table": "silver_cw_expenseentry",
+            "source": "connectwise",
             "scd_type": 1,
             "incremental_column": "_info.lastUpdated",
             "business_keys": ["id"],
@@ -153,7 +156,8 @@ SILVER_CONFIG = {
         },
         "ProductItem": {
             "bronze_table": "bronze_cw_productitem",
-            "silver_table": "silver_productitem",
+            "silver_table": "silver_cw_productitem",
+            "source": "connectwise",
             "scd_type": 2,
             "incremental_column": "_info.lastUpdated",
             "business_keys": ["id"],
@@ -202,7 +206,8 @@ SILVER_CONFIG = {
         },
         "Invoice": {
             "bronze_table": "bronze_cw_invoice",
-            "silver_table": "silver_invoice",
+            "silver_table": "silver_cw_invoice",
+            "source": "connectwise",
             "scd_type": 1,
             "incremental_column": "_info.lastUpdated",
             "business_keys": ["id"],

@@ -8,7 +8,7 @@ Following CLAUDE.md: Generic where possible, specialized where necessary.
 """
 
 import logging
-from typing import List, Tuple
+
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 
@@ -47,14 +47,14 @@ def create_dimension_from_column(
         GROUP BY {column_name}
         ORDER BY usage_count DESC
     """
-    
+
     df = spark.sql(query)
-    
+
     # Add surrogate key using row_number
     window = F.row_number().over(F.orderBy(F.desc("usage_count")))
-    
+
     dim_df = df.withColumn(f"{dimension_name}_key", window)
-    
+
     # Reorder columns and add metadata
     result = dim_df.select(
         F.col(f"{dimension_name}_key"),
@@ -64,16 +64,16 @@ def create_dimension_from_column(
         F.current_timestamp().alias("effective_date"),
         F.lit(None).cast("timestamp").alias("end_date")
     )
-    
+
     # Add standard ETL metadata using existing pattern
     result = _add_etl_metadata(result, layer="gold", source="dimension_generator")
-    
+
     return result
 
 
 def create_all_dimensions(
     spark: SparkSession,
-    dimension_configs: List[Tuple[str, str, str]],
+    dimension_configs: list[tuple[str, str, str]],
     lakehouse_root: str = "/lakehouse/default/Tables/"
 ) -> dict:
     """Create all dimension tables from configuration.
@@ -87,11 +87,11 @@ def create_all_dimensions(
         Dictionary of dimension name -> DataFrame
     """
     dimensions = {}
-    
+
     for source_table, column_name, dimension_name in dimension_configs:
         try:
             logger.info(f"Creating dimension: dim_{dimension_name} from {source_table}.{column_name}")
-            
+
             # Create dimension DataFrame
             dim_df = create_dimension_from_column(
                 spark=spark,
@@ -99,24 +99,24 @@ def create_all_dimensions(
                 column_name=column_name,
                 dimension_name=dimension_name
             )
-            
+
             # Store in dictionary
             dimensions[f"dim_{dimension_name}"] = dim_df
-            
+
             # Write to gold layer
             table_path = f"{lakehouse_root}gold/dim_{dimension_name}"
-            
+
             dim_df.write \
                 .mode("overwrite") \
                 .option("overwriteSchema", "true") \
                 .format("delta") \
                 .save(table_path)
-                
+
             logger.info(f"Created dim_{dimension_name} with {dim_df.count()} values")
-            
+
         except Exception as e:
-            logger.error(f"Failed to create dim_{dimension_name}: {str(e)}")
-            
+            logger.error(f"Failed to create dim_{dimension_name}: {e!s}")
+
     return dimensions
 
 
@@ -127,7 +127,7 @@ def create_all_dimensions(
 def add_dimension_keys(
     fact_df: DataFrame,
     spark: SparkSession,
-    dimension_mappings: List[Tuple[str, str, str, str]]
+    dimension_mappings: list[tuple[str, str, str, str]]
 ) -> DataFrame:
     """Add dimension keys to fact table.
     
@@ -140,16 +140,16 @@ def add_dimension_keys(
         Fact DataFrame with dimension keys added
     """
     result_df = fact_df
-    
+
     for fact_col, dim_table, dim_code_col, key_col in dimension_mappings:
         # Read dimension table
         dim_df = spark.table(f"gold.{dim_table}")
-        
+
         # Join to get key
         result_df = result_df.join(
             dim_df.select(dim_code_col, key_col),
             result_df[fact_col] == dim_df[dim_code_col],
             "left"
         ).drop(dim_code_col)
-    
+
     return result_df

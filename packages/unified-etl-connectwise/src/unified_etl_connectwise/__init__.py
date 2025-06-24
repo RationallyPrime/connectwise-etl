@@ -30,10 +30,10 @@ models = {
 __all__ = [
     "ConnectWiseClient",
     "ConnectWiseExtractor",
-    "extractor",
-    "models",
     "create_agreement_period_fact",
     "create_expense_entry_fact",
     "create_invoice_line_fact",
     "create_time_entry_fact",
+    "extractor",
+    "models",
 ]

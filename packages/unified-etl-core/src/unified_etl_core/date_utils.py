@@ -31,7 +31,7 @@ def generate_date_dimension(
     """
     if not end_date:
         end_date = datetime.now().strftime("%Y-%m-%d")
-    
+
     # Validate input parameters
     if fiscal_year_start_month < 1 or fiscal_year_start_month > 12:
         raise ValueError("fiscal_year_start_month must be between 1 and 12")
@@ -181,7 +181,7 @@ def add_date_key(df: DataFrame, date_column: str, key_name: str | None = None) -
     """
     if not key_name:
         key_name = f"{date_column}SK"
-    
+
     return df.withColumn(
         key_name,
         F.date_format(F.col(date_column), "yyyyMMdd").cast("int")
