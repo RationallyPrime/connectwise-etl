@@ -33,11 +33,7 @@ print("   (Delete this cell after running!)")
 logging.basicConfig(level=logging.INFO)
 
 # Full refresh of gold layer to pick up new time entry columns
-run_etl_pipeline(
-    integrations=["connectwise"],
-    layers=["gold"],
-    mode="full"
-)
+run_etl_pipeline(integrations=["connectwise"], layers=["gold"], mode="full")
 
 print("\n✅ Schema updated! You can now delete this cell.")
 
@@ -47,7 +43,9 @@ from unified_etl_core.main import run_etl_pipeline
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # Run incremental pipeline with 7-day lookback
 print("🔄 Starting Incremental ETL Pipeline...")
@@ -60,32 +58,32 @@ entity_configs = {
         "business_keys": [{"name": "AgreementBusinessKey", "source_columns": ["id"]}],
         "calculated_columns": {
             "estimated_monthly_revenue": "CASE WHEN applicationUnits = 'Amount' THEN COALESCE(applicationLimit, 0) ELSE 0 END"
-        }
+        },
     },
     "invoice": {
         "source": "connectwise",
         "surrogate_keys": [{"name": "InvoiceSK", "business_keys": ["id"]}],
         "business_keys": [{"name": "InvoiceBusinessKey", "source_columns": ["id"]}],
-        "calculated_columns": {}
+        "calculated_columns": {},
     },
     "timeentry": {
         "source": "connectwise",
         "surrogate_keys": [{"name": "TimeentrySK", "business_keys": ["id"]}],
         "business_keys": [{"name": "TimeentryBusinessKey", "source_columns": ["id"]}],
-        "calculated_columns": {}
+        "calculated_columns": {},
     },
     "expenseentry": {
         "source": "connectwise",
         "surrogate_keys": [{"name": "ExpenseentrySK", "business_keys": ["id"]}],
         "business_keys": [{"name": "ExpenseentryBusinessKey", "source_columns": ["id"]}],
-        "calculated_columns": {}
+        "calculated_columns": {},
     },
     "productitem": {
         "source": "connectwise",
         "surrogate_keys": [{"name": "ProductitemSK", "business_keys": ["id"]}],
         "business_keys": [{"name": "ProductitemBusinessKey", "source_columns": ["id"]}],
-        "calculated_columns": {}
-    }
+        "calculated_columns": {},
+    },
 }
 
 run_etl_pipeline(
@@ -93,7 +91,7 @@ run_etl_pipeline(
     layers=["bronze", "silver", "gold"],
     mode="incremental",
     lookback_days=7,
-    config={"entities": entity_configs}
+    config={"entities": entity_configs},
 )
 
 print("\n✅ Incremental update complete!")
@@ -120,7 +118,7 @@ spark = SparkSession.getActiveSession()
 
 # Check most recent data in each layer
 print("\n📊 Most Recent Data by Layer:")
-print("="*50)
+print("=" * 50)
 
 # Bronze layer
 for entity in ["timeentry", "agreement", "invoice", "expenseentry"]:
@@ -136,7 +134,7 @@ for entity in ["timeentry", "agreement", "invoice", "expenseentry"]:
 
 print()
 
-# Silver layer  
+# Silver layer
 for entity in ["timeentry", "agreement", "invoice", "expenseentry"]:
     table = f"silver.silver_cw_{entity}"
     try:
@@ -163,24 +161,26 @@ if spark.catalog.tableExists("silver.silver_cw_timeentry"):
         GROUP BY DATE(timeStart)
         ORDER BY work_date DESC
     """).collect()
-    
+
     print("\n📅 Time Entries - Last 7 Days:")
-    print("="*60)
+    print("=" * 60)
     for row in recent:
-        print(f"{row['work_date']}: {row['entries']:>4} entries, {row['hours']:>6.1f} hours (updated: {row['last_processed']})")
+        print(
+            f"{row['work_date']}: {row['entries']:>4} entries, {row['hours']:>6.1f} hours (updated: {row['last_processed']})"
+        )
 
 # %%
 # CELL 7: Check Incremental vs Full Counts
 # Compare record counts to ensure incremental is working
 print("\n📈 Record Counts by Table:")
-print("="*50)
+print("=" * 50)
 
 for schema in ["bronze", "silver", "gold"]:
     print(f"\n{schema.upper()}:")
     try:
         tables = spark.sql(f"SHOW TABLES IN {schema}").collect()
         for row in tables:
-            if row.tableName.startswith(('bronze_cw_', 'silver_cw_', 'gold_')):
+            if row.tableName.startswith(("bronze_cw_", "silver_cw_", "gold_")):
                 count = spark.sql(f"SELECT COUNT(*) FROM {schema}.{row.tableName}").collect()[0][0]
                 print(f"  {row.tableName}: {count:,}")
     except:

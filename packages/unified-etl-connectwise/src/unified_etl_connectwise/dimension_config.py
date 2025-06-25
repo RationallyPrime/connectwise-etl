@@ -13,21 +13,17 @@ CONNECTWISE_DIMENSION_CONFIG = [
     ("silver_cw_timeentry", "workRoleId", "work_role"),
     ("silver_cw_timeentry", "departmentId", "department"),
     ("silver_cw_timeentry", "businessUnitId", "business_unit"),
-
     # Agreement dimensions
     ("silver_cw_agreement", "agreementStatus", "agreement_status"),
     ("silver_cw_agreement", "typeId", "agreement_type"),  # The misused billable tracker!
     ("silver_cw_agreement", "billingCycleId", "billing_cycle"),
-
     # Invoice dimensions
     ("silver_cw_invoice", "type", "invoice_type"),
     ("silver_cw_invoice", "statusId", "invoice_status"),
     ("silver_cw_invoice", "applyToType", "invoice_apply_type"),
-
     # Product dimensions
     ("silver_cw_productitem", "productClass", "product_class"),
     ("silver_cw_productitem", "billableOption", "product_billable_status"),
-
     # Expense dimensions
     ("silver_cw_expenseentry", "status", "expense_status"),
     ("silver_cw_expenseentry", "chargeToType", "expense_charge_type"),
@@ -49,9 +45,7 @@ def refresh_connectwise_dimensions(spark, lakehouse_root: str = "/lakehouse/defa
     start_time = datetime.now()
 
     dimensions = create_all_dimensions(
-        spark=spark,
-        dimension_configs=CONNECTWISE_DIMENSION_CONFIG,
-        lakehouse_root=lakehouse_root
+        spark=spark, dimension_configs=CONNECTWISE_DIMENSION_CONFIG, lakehouse_root=lakehouse_root
     )
 
     end_time = datetime.now()

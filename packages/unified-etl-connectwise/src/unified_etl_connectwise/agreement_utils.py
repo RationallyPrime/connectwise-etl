@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AgreementType(Enum):
     """Standard agreement type classifications."""
+
     BILLABLE_SERVICE = "billable_service"
     PREPAID_HOURS = "prepaid_hours"
     INTERNAL_PROJECT = "internal_project"
@@ -38,10 +39,10 @@ AGREEMENT_TYPE_PATTERNS = {
 
 def normalize_agreement_type(type_name: str | None) -> tuple[AgreementType, str]:
     """Normalize agreement type names to standard values.
-    
+
     Args:
         type_name: Raw agreement type name from ConnectWise
-        
+
     Returns:
         Tuple of (standard type enum, billing behavior)
     """
@@ -62,7 +63,7 @@ def normalize_agreement_type(type_name: str | None) -> tuple[AgreementType, str]
 
 def extract_agreement_number(df: DataFrame, custom_fields_col: str = "customFields") -> DataFrame:
     """Extract agreement number from customFields JSON with validation.
-    
+
     Handles multiple formats and validates the JSON structure exists.
     """
     # First, parse the JSON string to array if it's a string
@@ -72,19 +73,18 @@ def extract_agreement_number(df: DataFrame, custom_fields_col: str = "customFiel
             F.col(custom_fields_col).isNotNull(),
             F.from_json(
                 F.col(custom_fields_col),
-                "array<struct<id:string,caption:string,type:string,value:string>>"
-            )
-        ).otherwise(None)
+                "array<struct<id:string,caption:string,type:string,value:string>>",
+            ),
+        ).otherwise(None),
     )
 
     # Extract agreement number with validation
     return df_parsed.withColumn(
         "agreementNumber",
         F.when(
-            (F.col("_parsed_custom_fields").isNotNull()) &
-            (F.size("_parsed_custom_fields") > 0),
-            F.col("_parsed_custom_fields").getItem(0).getField("value")
-        ).otherwise(None)
+            (F.col("_parsed_custom_fields").isNotNull()) & (F.size("_parsed_custom_fields") > 0),
+            F.col("_parsed_custom_fields").getItem(0).getField("value"),
+        ).otherwise(None),
     ).drop("_parsed_custom_fields")
 
 
@@ -95,7 +95,7 @@ def resolve_agreement_hierarchy(
     entity_type: str = "entity",
 ) -> DataFrame:
     """Resolve agreement hierarchy with parent fallback and type normalization.
-    
+
     This function:
     1. Joins entities with agreements
     2. Extracts agreement numbers with parent fallback
@@ -118,14 +118,14 @@ def resolve_agreement_hierarchy(
         .when(F.col("typeName").rlike(r"(?i)Alrekstur"), "operations")
         .when(F.col("typeName").rlike(r"(?i)Hugbúnaðarþjónusta"), "software_service")
         .when(F.col("typeName").rlike(r"(?i)Office 365"), "software_service")
-        .otherwise("other")
+        .otherwise("other"),
     ).withColumn(
         "_billing_behavior",
         F.when(F.col("_type_normalized").isin("billable_service", "software_service"), "billable")
         .when(F.col("_type_normalized") == "prepaid_hours", "prepaid")
         .when(F.col("_type_normalized") == "internal_project", "internal")
         .when(F.col("_type_normalized") == "operations", "operations")
-        .otherwise("unknown")
+        .otherwise("unknown"),
     )
 
     # Join entity with agreements
@@ -154,8 +154,7 @@ def resolve_agreement_hierarchy(
 
     # Final agreement number with fallback logic
     result = df_with_parent.withColumn(
-        "final_agreement_number",
-        F.coalesce("direct_agreement_number", "parent_agreement_number")
+        "final_agreement_number", F.coalesce("direct_agreement_number", "parent_agreement_number")
     ).drop("agr_id", "parent_id", "direct_agreement_number", "parent_agreement_number")
 
     return result
@@ -163,35 +162,30 @@ def resolve_agreement_hierarchy(
 
 def add_agreement_flags(df: DataFrame) -> DataFrame:
     """Add boolean flags based on agreement type and billing behavior.
-    
+
     Uses the normalized agreement types for consistent flagging.
     """
-    return df.withColumn(
-        "isBillableWork",
-        F.col("agreement_billing_behavior") == "billable"
-    ).withColumn(
-        "isTimapottur",
-        F.col("agreement_type_normalized") == "prepaid_hours"
-    ).withColumn(
-        "isInternalWork",
-        F.col("agreement_type_normalized") == "internal_project"
-    ).withColumn(
-        "isOperations",
-        F.col("agreement_type_normalized") == "operations"
+    return (
+        df.withColumn("isBillableWork", F.col("agreement_billing_behavior") == "billable")
+        .withColumn("isTimapottur", F.col("agreement_type_normalized") == "prepaid_hours")
+        .withColumn("isInternalWork", F.col("agreement_type_normalized") == "internal_project")
+        .withColumn("isOperations", F.col("agreement_type_normalized") == "operations")
     )
 
 
 def filter_billable_time_entries(time_df: DataFrame) -> DataFrame:
     """Filter time entries for invoice creation, excluding prepaid and internal work.
-    
+
     This implements the Business Central logic where Tímapottur entries are excluded
     from invoice line creation.
     """
     return time_df.filter(
         # Must have an invoice ID
-        F.col("invoiceId").isNotNull() &
+        F.col("invoiceId").isNotNull()
+        &
         # Exclude prepaid hours (Tímapottur)
-        (~F.col("isTimapottur")) &
+        (~F.col("isTimapottur"))
+        &
         # Exclude internal work
         (~F.col("isInternalWork"))
     )
@@ -199,7 +193,7 @@ def filter_billable_time_entries(time_df: DataFrame) -> DataFrame:
 
 def calculate_effective_billing_status(df: DataFrame) -> DataFrame:
     """Calculate the effective billing status combining multiple factors.
-    
+
     Considers:
     - Invoice status (already invoiced?)
     - Agreement type (billable, prepaid, internal)
@@ -213,17 +207,17 @@ def calculate_effective_billing_status(df: DataFrame) -> DataFrame:
         .when(F.col("isBillableWork") & (F.col("billableOption") == "Billable"), "Billable")
         .when(F.col("billableOption") == "NoCharge", "NoCharge")
         .when(F.col("billableOption") == "DoNotBill", "DoNotBill")
-        .otherwise("Unknown")
+        .otherwise("Unknown"),
     )
 
 
 def add_surrogate_keys(df: DataFrame, key_config: dict[str, dict]) -> DataFrame:
     """Add surrogate keys based on configuration.
-    
+
     Args:
         df: Source DataFrame
         key_config: Dictionary mapping key names to generation config
-        
+
     Returns:
         DataFrame with surrogate keys added
     """

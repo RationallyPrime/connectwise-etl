@@ -1,4 +1,5 @@
 """CDM (Common Data Model) schema model generator."""
+
 import json
 import logging
 import tempfile
@@ -16,15 +17,18 @@ class CDMConverter:
     def __init__(self, config: dict[str, Any] | None = None):
         """Initialize converter with optional config."""
         self.config = config or {}
-        self.type_mapping = self.config.get("cdm", {}).get("type_mapping", {
-            "String": "string",
-            "Int32": "integer",
-            "Int64": "integer",
-            "Decimal": "number",
-            "Boolean": "boolean",
-            "DateTime": "string",  # With format: date-time
-            "Guid": "string",  # With format: uuid
-        })
+        self.type_mapping = self.config.get("cdm", {}).get(
+            "type_mapping",
+            {
+                "String": "string",
+                "Int32": "integer",
+                "Int64": "integer",
+                "Decimal": "number",
+                "Boolean": "boolean",
+                "DateTime": "string",  # With format: date-time
+                "Guid": "string",  # With format: uuid
+            },
+        )
 
     def convert_file(self, cdm_file: Path) -> dict[str, Any]:
         """Convert a single CDM file to JSON Schema."""
@@ -100,9 +104,7 @@ class CDMConverter:
 
         # Handle nullable with union type
         if is_nullable:
-            prop_def = {
-                "anyOf": [prop_def, {"type": "null"}]
-            }
+            prop_def = {"anyOf": [prop_def, {"type": "null"}]}
 
         return name, prop_def, is_required
 
@@ -144,10 +146,7 @@ class CDMGenerator(ModelGenerator):
 
         # Write to temp file
         with tempfile.NamedTemporaryFile(
-            mode="w",
-            suffix=".json",
-            delete=False,
-            dir=self.config.get("temp_dir", None)
+            mode="w", suffix=".json", delete=False, dir=self.config.get("temp_dir", None)
         ) as f:
             json.dump(schema, f, indent=2)
             return Path(f.name)
@@ -155,10 +154,9 @@ class CDMGenerator(ModelGenerator):
     def _convert_cdm_directory(self, cdm_dir: Path) -> Path:
         """Convert directory of CDM files to JSON Schema directory."""
         # Create temp directory
-        temp_dir = Path(tempfile.mkdtemp(
-            dir=self.config.get("temp_dir", None),
-            prefix="cdm_schemas_"
-        ))
+        temp_dir = Path(
+            tempfile.mkdtemp(dir=self.config.get("temp_dir", None), prefix="cdm_schemas_")
+        )
 
         # Convert each CDM file
         for cdm_file in cdm_dir.glob("*.cdm.json"):
@@ -175,6 +173,7 @@ class CDMGenerator(ModelGenerator):
     def _get_format_args(self) -> list[str]:
         """JSON Schema specific arguments."""
         return [
-            "--input-file-type", "jsonschema",
+            "--input-file-type",
+            "jsonschema",
             "--disable-timestamp",
         ]

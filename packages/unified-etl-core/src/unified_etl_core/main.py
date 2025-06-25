@@ -80,25 +80,27 @@ def process_integration(
         if extractor:
             try:
                 from datetime import datetime, timedelta
-                from pyspark.sql import SparkSession
+
                 import pyspark.sql.functions as F
-                
+                from pyspark.sql import SparkSession
+
                 spark = SparkSession.getActiveSession()
                 if not spark:
                     raise RuntimeError("No active Spark session found")
-                
+
                 # Import incremental utilities if in incremental mode
                 incremental_processor = None
                 if mode == "incremental":
                     from unified_etl_core.incremental import (
-                        IncrementalProcessor, 
+                        IncrementalProcessor,
                         build_incremental_conditions,
-                        get_incremental_lookback_days
+                        get_incremental_lookback_days,
                     )
+
                     incremental_processor = IncrementalProcessor(spark)
-                
+
                 # Process each entity based on mode
-                if hasattr(extractor, 'extract') and integration_name == "connectwise":
+                if hasattr(extractor, "extract") and integration_name == "connectwise":
                     # ConnectWise-specific extraction with conditions support
                     endpoints = {
                         "Agreement": "/finance/agreements",
@@ -108,35 +110,39 @@ def process_integration(
                         "PostedInvoice": "/finance/invoices/posted",
                         "UnpostedInvoice": "/finance/invoices",
                     }
-                    
+
                     for entity_name, endpoint in endpoints.items():
                         try:
                             # Build extraction conditions for incremental mode
                             conditions = None
                             if mode == "incremental":
-                                entity_lookback = get_incremental_lookback_days(entity_name, lookback_days)
-                                since_date = (datetime.now() - timedelta(days=entity_lookback)).strftime("%Y-%m-%d")
+                                entity_lookback = get_incremental_lookback_days(
+                                    entity_name, lookback_days
+                                )
+                                since_date = (
+                                    datetime.now() - timedelta(days=entity_lookback)
+                                ).strftime("%Y-%m-%d")
                                 conditions = build_incremental_conditions(entity_name, since_date)
-                                
+
                                 if conditions:
-                                    logging.info(f"Incremental extraction for {entity_name} with conditions: {conditions}")
-                            
+                                    logging.info(
+                                        f"Incremental extraction for {entity_name} with conditions: {conditions}"
+                                    )
+
                             # Extract data with conditions
                             bronze_df = extractor.extract(
-                                endpoint=endpoint,
-                                conditions=conditions,
-                                page_size=1000
+                                endpoint=endpoint, conditions=conditions, page_size=1000
                             )
-                            
+
                             # Add ETL metadata - use existing column names for compatibility
                             bronze_df = bronze_df.withColumn("etlTimestamp", F.current_timestamp())
                             bronze_df = bronze_df.withColumn("etlEntity", F.lit(entity_name))
-                            
+
                             record_count = bronze_df.count()
                             if record_count == 0:
                                 logging.info(f"No new records for {entity_name}")
                                 continue
-                            
+
                             # Determine table name
                             if table_mappings and "bronze" in table_mappings:
                                 table_name = table_mappings["bronze"].get(
@@ -144,31 +150,33 @@ def process_integration(
                                 )
                             else:
                                 table_name = f"bronze_cw_{entity_name.lower()}"
-                            
+
                             # Add schema prefix if needed
                             if "." not in table_name:
                                 table_name = f"Lakehouse.bronze.{table_name}"
-                            
+
                             # Write based on mode
                             if mode == "incremental" and spark.catalog.tableExists(table_name):
                                 # Use MERGE for incremental
                                 merged, total = incremental_processor.merge_bronze_incremental(
                                     bronze_df, table_name
                                 )
-                                logging.info(f"Merged {merged} records into {table_name} (total: {total})")
+                                logging.info(
+                                    f"Merged {merged} records into {table_name} (total: {total})"
+                                )
                             else:
                                 # Full overwrite
                                 bronze_df.write.mode("overwrite").saveAsTable(table_name)
                                 logging.info(f"Stored {record_count} records in {table_name}")
-                                
+
                         except Exception as e:
                             logging.error(f"Failed to process {entity_name}: {e}")
                             continue
-                            
+
                 else:
                     # Fallback to extract_all for other integrations
                     bronze_data = extractor.extract_all()
-                    
+
                     # Store each entity in separate bronze table
                     for entity_name, raw_data in bronze_data.items():
                         if raw_data:
@@ -188,7 +196,7 @@ def process_integration(
                                     f"Lakehouse.bronze.{table_name}"
                                 )
                             logging.info(f"Stored {len(raw_data)} records in {table_name}")
-                            
+
             except Exception as e:
                 logging.error(f"Bronze layer failed for {integration_name}: {e}")
                 raise
@@ -202,11 +210,12 @@ def process_integration(
                 spark = SparkSession.getActiveSession()
                 if not spark:
                     raise RuntimeError("No active Spark session found")
-                
+
                 # Import incremental utilities if in incremental mode
                 incremental_processor = None
                 if mode == "incremental":
                     from unified_etl_core.incremental import IncrementalProcessor
+
                     incremental_processor = IncrementalProcessor(spark)
 
                 # Silver: Validate and transform each entity
@@ -218,7 +227,7 @@ def process_integration(
                         )
                     else:
                         bronze_table = f"bronze_cw_{entity_name}"
-                    
+
                     # Get Silver table name
                     if table_mappings and "silver" in table_mappings:
                         silver_table = table_mappings["silver"].get(
@@ -226,30 +235,29 @@ def process_integration(
                         )
                     else:
                         silver_table = f"silver_cw_{entity_name}"
-                    
+
                     try:
                         # Add schema prefix if needed
                         if "." not in bronze_table:
                             bronze_table = f"Lakehouse.bronze.{bronze_table}"
                         if "." not in silver_table:
                             silver_table = f"Lakehouse.silver.{silver_table}"
-                        
+
                         # Get data based on mode
                         if mode == "incremental" and incremental_processor:
                             # Get only changed records from Bronze
                             bronze_df = incremental_processor.get_changed_records(
-                                source_table=bronze_table,
-                                target_table=silver_table
+                                source_table=bronze_table, target_table=silver_table
                             )
                         else:
                             # Full refresh - get all records
                             bronze_df = spark.table(bronze_table)
-                        
+
                         total_rows = bronze_df.count()
                         if total_rows == 0:
                             logging.info(f"No new records to process for {entity_name}")
                             continue
-                            
+
                         logging.info(f"Processing {total_rows} rows from {bronze_table}")
 
                         # Silver layer: Use proven flattening logic
@@ -282,13 +290,23 @@ def process_integration(
                                 silver_df = bronze_df
 
                         # Write based on mode
-                        if mode == "incremental" and incremental_processor and spark.catalog.tableExists(silver_table):
+                        if (
+                            mode == "incremental"
+                            and incremental_processor
+                            and spark.catalog.tableExists(silver_table)
+                        ):
                             # Get business keys from config (default to 'id')
                             from unified_etl_connectwise.config import SILVER_CONFIG
+
                             business_keys = ["id"]  # default
-                            if integration_name == "connectwise" and entity_name in SILVER_CONFIG.get("entities", {}):
-                                business_keys = SILVER_CONFIG["entities"][entity_name].get("business_keys", ["id"])
-                            
+                            if (
+                                integration_name == "connectwise"
+                                and entity_name in SILVER_CONFIG.get("entities", {})
+                            ):
+                                business_keys = SILVER_CONFIG["entities"][entity_name].get(
+                                    "business_keys", ["id"]
+                                )
+
                             # Use MERGE for incremental
                             processed_count = incremental_processor.merge_silver_scd1(
                                 silver_df, silver_table, business_keys
@@ -296,7 +314,9 @@ def process_integration(
                             logging.info(f"Merged {processed_count} records into {silver_table}")
                         else:
                             # Full overwrite
-                            silver_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(silver_table)
+                            silver_df.write.mode("overwrite").option(
+                                "mergeSchema", "true"
+                            ).saveAsTable(silver_table)
                             logging.info(f"Processed {total_rows} records to {silver_table}")
 
                     except Exception as e:
@@ -458,7 +478,9 @@ def process_integration(
                                     member_df = None
                                     try:
                                         member_table = (
-                                            table_mappings["silver"].get("member", "silver_cw_member")
+                                            table_mappings["silver"].get(
+                                                "member", "silver_cw_member"
+                                            )
                                             if table_mappings and "silver" in table_mappings
                                             else "silver_cw_member"
                                         )
@@ -466,55 +488,73 @@ def process_integration(
                                             member_df = spark.table(member_table)
                                     except:
                                         logging.debug("Member table not available for enrichment")
-                                    
+
                                     # Load agreement data for hierarchy resolution
                                     agreement_df = None
                                     try:
                                         agreement_table = (
-                                            table_mappings["silver"].get("agreement", "silver_cw_agreement")
+                                            table_mappings["silver"].get(
+                                                "agreement", "silver_cw_agreement"
+                                            )
                                             if table_mappings and "silver" in table_mappings
                                             else "silver_cw_agreement"
                                         )
-                                        if spark.catalog.tableExists(f"Lakehouse.silver.{agreement_table}"):
-                                            agreement_df = spark.table(f"Lakehouse.silver.{agreement_table}")
+                                        if spark.catalog.tableExists(
+                                            f"Lakehouse.silver.{agreement_table}"
+                                        ):
+                                            agreement_df = spark.table(
+                                                f"Lakehouse.silver.{agreement_table}"
+                                            )
                                         elif spark.catalog.tableExists(agreement_table):
                                             agreement_df = spark.table(agreement_table)
                                     except:
-                                        logging.debug("Agreement table not available for enrichment")
-                                    
+                                        logging.debug(
+                                            "Agreement table not available for enrichment"
+                                        )
+
                                     gold_df = integration_transforms.create_time_entry_fact(
                                         spark=spark,
                                         time_entry_df=silver_df,
                                         member_df=member_df,
                                         agreement_df=agreement_df,
-                                        config=entity_config
+                                        config=entity_config,
                                     )
                                     gold_dfs = {"fact_timeentry": gold_df}
                                     transform_used = True
                                 elif entity_name == "expenseentry" and hasattr(
                                     integration_transforms, "create_expense_entry_fact"
                                 ):
-                                    logging.info("Using ConnectWise expense entry-specific transforms")
+                                    logging.info(
+                                        "Using ConnectWise expense entry-specific transforms"
+                                    )
                                     # Load agreement data for hierarchy resolution
                                     agreement_df = None
                                     try:
                                         agreement_table = (
-                                            table_mappings["silver"].get("agreement", "silver_cw_agreement")
+                                            table_mappings["silver"].get(
+                                                "agreement", "silver_cw_agreement"
+                                            )
                                             if table_mappings and "silver" in table_mappings
                                             else "silver_cw_agreement"
                                         )
-                                        if spark.catalog.tableExists(f"Lakehouse.silver.{agreement_table}"):
-                                            agreement_df = spark.table(f"Lakehouse.silver.{agreement_table}")
+                                        if spark.catalog.tableExists(
+                                            f"Lakehouse.silver.{agreement_table}"
+                                        ):
+                                            agreement_df = spark.table(
+                                                f"Lakehouse.silver.{agreement_table}"
+                                            )
                                         elif spark.catalog.tableExists(agreement_table):
                                             agreement_df = spark.table(agreement_table)
                                     except:
-                                        logging.debug("Agreement table not available for enrichment")
-                                    
+                                        logging.debug(
+                                            "Agreement table not available for enrichment"
+                                        )
+
                                     gold_df = integration_transforms.create_expense_entry_fact(
                                         spark=spark,
                                         expense_df=silver_df,
                                         agreement_df=agreement_df,
-                                        config=entity_config
+                                        config=entity_config,
                                     )
                                     gold_dfs = {"fact_expenseentry": gold_df}
                                     transform_used = True
@@ -543,11 +583,13 @@ def process_integration(
                                 gold_table = f"gold_cw_{fact_name}"
                             # Write to proper location
                             if "." in gold_table:
-                                gold_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(gold_table)
+                                gold_df.write.mode("overwrite").option(
+                                    "mergeSchema", "true"
+                                ).saveAsTable(gold_table)
                             else:
-                                gold_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(
-                                    f"Lakehouse.gold.{gold_table}"
-                                )
+                                gold_df.write.mode("overwrite").option(
+                                    "mergeSchema", "true"
+                                ).saveAsTable(f"Lakehouse.gold.{gold_table}")
                             logging.info(f"Created fact table {gold_table}")
 
                     except Exception as e:

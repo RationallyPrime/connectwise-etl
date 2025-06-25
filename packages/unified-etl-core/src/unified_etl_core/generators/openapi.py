@@ -1,4 +1,5 @@
 """OpenAPI schema model generator."""
+
 import json
 import logging
 from pathlib import Path
@@ -33,8 +34,10 @@ class OpenAPIGenerator(ModelGenerator):
     def _get_format_args(self) -> list[str]:
         """OpenAPI-specific arguments for datamodel-codegen."""
         args = [
-            "--input-file-type", "openapi",
-            "--openapi-scopes", "schemas",
+            "--input-file-type",
+            "openapi",
+            "--openapi-scopes",
+            "schemas",
             # "--collapse-root-models",  # This causes the directory issue
             "--disable-timestamp",
         ]

@@ -65,9 +65,7 @@ def generate_date_dimension(
 
     # YearMonth for sorting and filtering
     date_df = date_df.withColumn("YearMonth", F.date_format("Date", "yyyy-MM"))
-    date_df = date_df.withColumn(
-        "YearMonthNo", F.expr("CalendarYear * 100 + CalendarMonthNo")
-    )
+    date_df = date_df.withColumn("YearMonthNo", F.expr("CalendarYear * 100 + CalendarMonthNo"))
 
     # Add fiscal year calculations based on fiscal_year_start_month
     date_df = date_df.withColumn(
@@ -80,15 +78,11 @@ def generate_date_dimension(
     # Calculate fiscal quarter (1-4) based on fiscal year start
     date_df = date_df.withColumn(
         "FiscalQuarterNo",
-        F.expr(
-            f"mod(floor((month(Date) - {fiscal_year_start_month} + 12) % 12 / 3) + 1, 4) + 1"
-        ),
+        F.expr(f"mod(floor((month(Date) - {fiscal_year_start_month} + 12) % 12 / 3) + 1, 4) + 1"),
     )
 
     # Create FiscalQuarter as a formatted string (e.g., "FQ1")
-    date_df = date_df.withColumn(
-        "FiscalQuarter", F.concat(F.lit("FQ"), F.col("FiscalQuarterNo"))
-    )
+    date_df = date_df.withColumn("FiscalQuarter", F.concat(F.lit("FQ"), F.col("FiscalQuarterNo")))
 
     # Calculate fiscal month (1-12) based on fiscal year start
     date_df = date_df.withColumn(
@@ -170,19 +164,16 @@ def create_date_spine(
 
 def add_date_key(df: DataFrame, date_column: str, key_name: str | None = None) -> DataFrame:
     """Add integer date key (YYYYMMDD) for a date column.
-    
+
     Args:
         df: Source DataFrame
         date_column: Name of the date column
         key_name: Name for the key column (defaults to {date_column}SK)
-        
+
     Returns:
         DataFrame with date key added
     """
     if not key_name:
         key_name = f"{date_column}SK"
 
-    return df.withColumn(
-        key_name,
-        F.date_format(F.col(date_column), "yyyyMMdd").cast("int")
-    )
+    return df.withColumn(key_name, F.date_format(F.col(date_column), "yyyyMMdd").cast("int"))

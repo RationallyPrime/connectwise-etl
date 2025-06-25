@@ -100,8 +100,6 @@ def refresh_recent_data(days_back: int = 30) -> dict[str, DataFrame]:
     return results
 
 
-
-
 def check_latest_records() -> None:
     """Check the most recent records to see what dates we have."""
     client = ConnectWiseClient()
@@ -130,7 +128,9 @@ def check_latest_records() -> None:
 
     print("\nMost recent invoices:")
     for inv in recent_invoices:
-        print(f"  {inv.get('invoiceNumber', inv.get('id', 'N/A'))}: {inv.get('lastUpdated', 'N/A')}")
+        print(
+            f"  {inv.get('invoiceNumber', inv.get('id', 'N/A'))}: {inv.get('lastUpdated', 'N/A')}"
+        )
 
 
 # %%
@@ -141,39 +141,38 @@ def check_latest_records() -> None:
 Simple deduplication utilities for cleaning up tables with duplicate rows.
 """
 
+
 def deduplicate_table(table_name: str, unique_keys: list[str], keep: str = "last") -> int:
     """
     Remove duplicate rows from a table based on unique keys.
-    
+
     Args:
         table_name: Name of the table to deduplicate
         unique_keys: List of columns that should be unique (e.g., ['id'])
         keep: Which duplicate to keep - 'first' or 'last' (based on _etl_timestamp)
-        
+
     Returns:
         Number of duplicates removed
     """
     if not spark.catalog.tableExists(table_name):
         print(f"Table {table_name} does not exist")
         return 0
-    
+
     # Read table
     df = spark.table(table_name)
     original_count = df.count()
-    
+
     # Deduplicate
     if keep == "last":
         # Keep the most recent record based on _etl_timestamp
-        deduped_df = df.orderBy(*unique_keys, F.desc("_etl_timestamp")) \
-                      .dropDuplicates(unique_keys)
+        deduped_df = df.orderBy(*unique_keys, F.desc("_etl_timestamp")).dropDuplicates(unique_keys)
     else:
         # Keep the first record
-        deduped_df = df.orderBy(*unique_keys, F.asc("_etl_timestamp")) \
-                      .dropDuplicates(unique_keys)
-    
+        deduped_df = df.orderBy(*unique_keys, F.asc("_etl_timestamp")).dropDuplicates(unique_keys)
+
     final_count = deduped_df.count()
     duplicates_removed = original_count - final_count
-    
+
     if duplicates_removed > 0:
         # Overwrite table with deduplicated data
         deduped_df.write.mode("overwrite").saveAsTable(table_name)
@@ -181,9 +180,8 @@ def deduplicate_table(table_name: str, unique_keys: list[str], keep: str = "last
         print(f"  Original: {original_count} rows → Final: {final_count} rows")
     else:
         print(f"No duplicates found in {table_name}")
-    
-    return duplicates_removed
 
+    return duplicates_removed
 
 
 # %%
@@ -207,17 +205,21 @@ spark = client.spark
 # Check existing tables
 print("Checking existing tables...")
 all_tables_df = spark.sql("SHOW TABLES")
-existing_tables = all_tables_df.filter(
-    (F.col("tableName").like("bronze_cw_%")) |
-    (F.col("tableName").like("silver_cw_%")) |
-    (F.col("tableName").like("gold_%"))
-).withColumn(
-    "layer",
-    F.when(F.col("tableName").like("bronze_%"), "Bronze")
-    .when(F.col("tableName").like("silver_%"), "Silver")
-    .when(F.col("tableName").like("gold_%"), "Gold")
-    .otherwise("Other")
-).orderBy("layer", "tableName")
+existing_tables = (
+    all_tables_df.filter(
+        (F.col("tableName").like("bronze_cw_%"))
+        | (F.col("tableName").like("silver_cw_%"))
+        | (F.col("tableName").like("gold_%"))
+    )
+    .withColumn(
+        "layer",
+        F.when(F.col("tableName").like("bronze_%"), "Bronze")
+        .when(F.col("tableName").like("silver_%"), "Silver")
+        .when(F.col("tableName").like("gold_%"), "Gold")
+        .otherwise("Other"),
+    )
+    .orderBy("layer", "tableName")
+)
 
 print("\nExisting ETL Tables:")
 existing_tables.show(100, truncate=False)
@@ -236,17 +238,19 @@ for row in existing_tables.collect():
 print("\n\nSilver Configuration Summary:")
 print(f"Entities configured: {list(SILVER_CONFIG['entities'].keys())}")
 
-for entity, config in SILVER_CONFIG['entities'].items():
+for entity, config in SILVER_CONFIG["entities"].items():
     print(f"\n{entity}:")
     print(f"  Bronze: {config['bronze_table']}")
     print(f"  Silver: {config['silver_table']}")
     print(f"  SCD Type: {config.get('scd_type', 'Not specified')}")
     print(f"  Business Keys: {config.get('business_keys', ['id'])}")
-    
+
     # Check if tables exist
-    bronze_exists = spark.catalog.tableExists(config['bronze_table'])
-    silver_exists = spark.catalog.tableExists(config['silver_table'])
-    print(f"  Status: Bronze {'✓' if bronze_exists else '✗'}, Silver {'✓' if silver_exists else '✗'}")
+    bronze_exists = spark.catalog.tableExists(config["bronze_table"])
+    silver_exists = spark.catalog.tableExists(config["silver_table"])
+    print(
+        f"  Status: Bronze {'✓' if bronze_exists else '✗'}, Silver {'✓' if silver_exists else '✗'}"
+    )
 
 # Check last refresh timestamp if set
 try:
@@ -254,7 +258,9 @@ try:
     print(f"\n\nLast incremental refresh: {last_refresh}")
 except:
     print("\n\nNo previous incremental refresh timestamp found.")
-    print("First run will use 24 hours lookback for Bronze, then incremental for Silver/Gold if tables exist.")
+    print(
+        "First run will use 24 hours lookback for Bronze, then incremental for Silver/Gold if tables exist."
+    )
 
 print("\n=== Configuration Check Complete ===")
 
@@ -293,24 +299,26 @@ for entity_name, df in results.items():
     if df is not None and df.count() > 0:
         try:
             bronze_table = f"bronze_cw_{entity_name.lower()}"
-            
+
             if spark.catalog.tableExists(bronze_table):
                 # Deduplicate the incoming data first to avoid MERGE conflicts
                 df_deduped = df.dropDuplicates(["id"])
                 if df_deduped.count() < df.count():
-                    print(f"  WARNING: Removed {df.count() - df_deduped.count()} duplicate records from {entity_name}")
-                
+                    print(
+                        f"  WARNING: Removed {df.count() - df_deduped.count()} duplicate records from {entity_name}"
+                    )
+
                 # MERGE to handle duplicates
                 merge_key = "id"
                 temp_view = f"temp_{entity_name.lower()}_updates"
                 df_deduped.createOrReplaceTempView(temp_view)
-                
+
                 # Build MERGE SQL
                 update_cols = [col for col in df.columns if col != merge_key]
                 update_expr = ", ".join([f"target.{col} = source.{col}" for col in update_cols])
                 insert_cols = ", ".join(df.columns)
                 insert_values = ", ".join([f"source.{col}" for col in df.columns])
-                
+
                 merge_sql = f"""
                 MERGE INTO {bronze_table} AS target
                 USING {temp_view} AS source
@@ -320,7 +328,7 @@ for entity_name, df in results.items():
                 WHEN NOT MATCHED THEN
                     INSERT ({insert_cols}) VALUES ({insert_values})
                 """
-                
+
                 spark.sql(merge_sql)
                 print(f"  Merged data into {bronze_table}")
                 spark.catalog.dropTempView(temp_view)
@@ -328,7 +336,9 @@ for entity_name, df in results.items():
                 # First time - create table, deduplicate first
                 df_deduped = df.dropDuplicates(["id"])
                 if df_deduped.count() < df.count():
-                    print(f"  WARNING: Removed {df.count() - df_deduped.count()} duplicate records from {entity_name}")
+                    print(
+                        f"  WARNING: Removed {df.count() - df_deduped.count()} duplicate records from {entity_name}"
+                    )
                 df_deduped.write.mode("overwrite").saveAsTable(bronze_table)
                 print(f"  Created {bronze_table} with {df_deduped.count()} records")
 
@@ -379,6 +389,7 @@ else:
 print("\n=== Incremental Silver Layer Update ===")
 from unified_etl_connectwise.config import SILVER_CONFIG
 from unified_etl_core.silver import apply_silver_transformations
+
 # Import model classes directly
 import unified_etl_connectwise.models.models as cw_models
 
@@ -400,7 +411,7 @@ silver_changes = {}
 
 for entity_name in refreshed_entities:
     print(f"\n=== Starting to process entity: {entity_name} ===")
-    
+
     # Check if entity has Silver config
     if entity_name in SILVER_CONFIG["entities"]:
         entity_config = SILVER_CONFIG["entities"][entity_name]
@@ -415,7 +426,7 @@ for entity_name in refreshed_entities:
                 bronze_changes = spark.table(bronze_table)
                 change_count = bronze_changes.count()
                 print(f"  FULL REFRESH: Processing all {change_count} Bronze records")
-                
+
                 # Track all IDs for Gold processing
                 changed_ids = bronze_changes.select("id").distinct()
                 silver_changes[entity_name] = changed_ids
@@ -425,14 +436,14 @@ for entity_name in refreshed_entities:
                     SELECT * FROM {bronze_table}
                     WHERE _etl_timestamp >= '{last_refresh}'
                 """)
-                
+
                 change_count = bronze_changes.count()
                 print(f"  Found {change_count} new/changed records in Bronze")
-                
+
                 if change_count == 0:
                     print(f"  No changes for {entity_name}, skipping")
                     continue
-                
+
                 # Track changed IDs for Gold processing
                 changed_ids = bronze_changes.select("id").distinct()
                 silver_changes[entity_name] = changed_ids
@@ -442,7 +453,7 @@ for entity_name in refreshed_entities:
             if not model_class:
                 print(f"  WARNING: No model class found for {entity_name}")
                 continue
-            
+
             # Debug: Check what we got
             print(f"  Model class type: {type(model_class)}")
             if isinstance(model_class, str):
@@ -456,23 +467,22 @@ for entity_name in refreshed_entities:
                 model_class=model_class,
             )
 
-            
             scd_type = entity_config.get("scd_type", 1)
             business_keys = entity_config.get("business_keys", ["id"])
-            
+
             # Check if Silver table exists
             if spark.catalog.tableExists(silver_table) and not FORCE_FULL_SILVER_GOLD:
                 # INCREMENTAL MODE - use MERGE
                 if scd_type == 1:
                     # For SCD Type 1, we can use MERGE to update/insert
-                    merge_key_conditions = " AND ".join([
-                        f"target.{key} = source.{key}" for key in business_keys
-                    ])
-                    
+                    merge_key_conditions = " AND ".join(
+                        [f"target.{key} = source.{key}" for key in business_keys]
+                    )
+
                     # Create temp view for merge
                     temp_view = f"temp_silver_{entity_name.lower()}_delta"
                     silver_delta.createOrReplaceTempView(temp_view)
-                    
+
                     # Build MERGE statement (UPDATE SET * for all columns)
                     merge_sql = f"""
                     MERGE INTO {silver_table} AS target
@@ -483,16 +493,18 @@ for entity_name in refreshed_entities:
                     WHEN NOT MATCHED THEN
                         INSERT *
                     """
-                    
+
                     # Execute merge
                     spark.sql(merge_sql)
                     print(f"  Merged {change_count} records into {silver_table} (SCD Type 1)")
-                    
+
                     # Clean up temp view
                     spark.catalog.dropTempView(temp_view)
                 else:
                     # SCD Type 2 - for now, just append (proper implementation would close old records)
-                    print(f"  WARNING: SCD Type 2 incremental not fully implemented, appending records")
+                    print(
+                        f"  WARNING: SCD Type 2 incremental not fully implemented, appending records"
+                    )
                     silver_delta.write.mode("append").saveAsTable(silver_table)
             else:
                 # FULL REFRESH MODE or table doesn't exist
@@ -500,9 +512,11 @@ for entity_name in refreshed_entities:
                     print(f"  FULL REFRESH: Overwriting {silver_table} with all Bronze data")
                 else:
                     print(f"  Silver table doesn't exist, creating with all Bronze data")
-                
+
                 # For full refresh or initial creation, just overwrite
-                silver_delta.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(silver_table)
+                silver_delta.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(
+                    silver_table
+                )
                 print(f"  Wrote {silver_delta.count()} records to {silver_table}")
 
         except Exception as e:
@@ -515,7 +529,6 @@ print("\n\n=== Incremental Gold Layer Update ===")
 from unified_etl_connectwise.transforms import (
     create_agreement_period_fact,
     create_expense_entry_fact,
-    create_invoice_line_fact,
     create_time_entry_fact,
 )
 
@@ -530,26 +543,30 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
             print("  FULL REFRESH: Processing all time entries")
             time_entry_silver = spark.table("Lakehouse.silver.silver_cw_timeentry")
             agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
-            member_silver = spark.table("Lakehouse.silver.silver_cw_member") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_member") else None
-            
+            member_silver = (
+                spark.table("Lakehouse.silver.silver_cw_member")
+                if spark.catalog.tableExists("Lakehouse.silver.silver_cw_member")
+                else None
+            )
+
             fact_df = create_time_entry_fact(
                 spark=spark,
                 time_entry_df=time_entry_silver,
                 agreement_df=agreement_silver,
                 member_df=member_silver,
             )
-            
+
             fact_df.write.mode("overwrite").saveAsTable("gold_fact_time_entry")
             print(f"  Overwrote fact_time_entry with {fact_df.count()} records")
         else:
             # Incremental mode - only process changed records
             affected_time_ids = []
-            
+
             if "TimeEntry" in silver_changes:
                 # Direct time entry changes
                 time_ids = silver_changes["TimeEntry"]
                 affected_time_ids.append(time_ids)
-                
+
             if "Agreement" in silver_changes:
                 # Time entries linked to changed agreements
                 agreement_ids = silver_changes["Agreement"]
@@ -560,25 +577,29 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
                     WHERE agreementId IN (SELECT id FROM temp_agreement_ids)
                 """)
                 affected_time_ids.append(linked_times)
-            
+
             if affected_time_ids:
                 # Union all affected time entry IDs
                 all_affected = affected_time_ids[0]
                 for df in affected_time_ids[1:]:
                     all_affected = all_affected.union(df).distinct()
-                
+
                 all_affected.createOrReplaceTempView("temp_affected_time_ids")
-                
+
                 # Get only affected time entries
                 time_entry_delta = spark.sql("""
                     SELECT * FROM Lakehouse.silver.silver_cw_timeentry
                     WHERE id IN (SELECT id FROM temp_affected_time_ids)
                 """)
-                
+
                 # Get all agreements (we need full set for lookups)
                 agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
-                member_silver = spark.table("Lakehouse.silver.silver_cw_member") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_member") else None
-                
+                member_silver = (
+                    spark.table("Lakehouse.silver.silver_cw_member")
+                    if spark.catalog.tableExists("Lakehouse.silver.silver_cw_member")
+                    else None
+                )
+
                 # Create facts for affected entries
                 fact_delta = create_time_entry_fact(
                     spark=spark,
@@ -586,13 +607,13 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
                     agreement_df=agreement_silver,
                     member_df=member_silver,
                 )
-                
+
                 print(f"  Processing {fact_delta.count()} affected time entries")
-                
+
                 # MERGE into existing fact table
                 if spark.catalog.tableExists("gold_fact_time_entry"):
                     fact_delta.createOrReplaceTempView("temp_fact_time_delta")
-                    
+
                     merge_sql = """
                     MERGE INTO gold_fact_time_entry AS target
                     USING temp_fact_time_delta AS source
@@ -600,7 +621,7 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
                     WHEN MATCHED THEN UPDATE SET *
                     WHEN NOT MATCHED THEN INSERT *
                     """
-                    
+
                     spark.sql(merge_sql)
                     print("  Merged changes into fact_time_entry")
                 else:
@@ -615,7 +636,7 @@ if "TimeEntry" in silver_changes or "Agreement" in silver_changes:
                     )
                     fact_df.write.mode("overwrite").saveAsTable("gold_fact_time_entry")
                     print(f"  Created fact_time_entry with {fact_df.count()} records")
-                
+
     except Exception as e:
         print(f"  ERROR updating fact_time_entry: {e}")
 
@@ -628,9 +649,9 @@ if "Agreement" in silver_changes:
             agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
             # Note: Silver should already have flattened columns if configured properly
             fact_df = create_agreement_period_fact(
-                spark=spark, 
-                agreement_df=agreement_silver, 
-                config={"start_date": "2020-01-01", "frequency": "month"}
+                spark=spark,
+                agreement_df=agreement_silver,
+                config={"start_date": "2020-01-01", "frequency": "month"},
             )
             fact_df.write.mode("overwrite").saveAsTable("gold_fact_agreement_period")
             print(f"  Overwrote fact_agreement_period with {fact_df.count()} records")
@@ -639,23 +660,23 @@ if "Agreement" in silver_changes:
             # For agreement periods, we only need to recalculate periods for changed agreements
             changed_agreement_ids = silver_changes["Agreement"]
             changed_agreement_ids.createOrReplaceTempView("temp_changed_agreement_ids")
-            
+
             # Get only changed agreements
             agreement_delta = spark.sql("""
                 SELECT * FROM Lakehouse.silver.silver_cw_agreement
                 WHERE id IN (SELECT id FROM temp_changed_agreement_ids)
             """)
-            
+
             # Note: Silver should already have flattened columns if configured properly
             # Create periods for changed agreements
             fact_delta = create_agreement_period_fact(
-                spark=spark, 
-                agreement_df=agreement_delta, 
-                config={"start_date": "2020-01-01", "frequency": "month"}
+                spark=spark,
+                agreement_df=agreement_delta,
+                config={"start_date": "2020-01-01", "frequency": "month"},
             )
-            
+
             print(f"  Processing {changed_agreement_ids.count()} changed agreements")
-            
+
             if spark.catalog.tableExists("gold_fact_agreement_period"):
                 # Delete old periods for these agreements
                 spark.sql("""
@@ -664,7 +685,7 @@ if "Agreement" in silver_changes:
                         SELECT DISTINCT AgreementSK FROM temp_fact_agreement_delta
                     )
                 """)
-                
+
                 # Insert new periods
                 fact_delta.write.mode("append").saveAsTable("gold_fact_agreement_period")
                 print("  Updated fact_agreement_period")
@@ -673,13 +694,13 @@ if "Agreement" in silver_changes:
                 print("  Creating fact_agreement_period for first time (full load)")
                 agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement")
                 fact_df = create_agreement_period_fact(
-                    spark=spark, 
-                    agreement_df=agreement_silver, 
-                    config={"start_date": "2020-01-01", "frequency": "month"}
+                    spark=spark,
+                    agreement_df=agreement_silver,
+                    config={"start_date": "2020-01-01", "frequency": "month"},
                 )
                 fact_df.write.mode("overwrite").saveAsTable("gold_fact_agreement_period")
                 print(f"  Created fact_agreement_period with {fact_df.count()} records")
-            
+
     except Exception as e:
         print(f"  ERROR updating fact_agreement_period: {e}")
 
@@ -690,39 +711,43 @@ if "ExpenseEntry" in silver_changes:
             # Full refresh
             print("  FULL REFRESH: Processing all expense entries")
             expense_silver = spark.table("Lakehouse.silver.silver_cw_expenseentry")
-            agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_agreement") else None
-            
-            fact_df = create_expense_entry_fact(
-                spark=spark, 
-                expense_df=expense_silver, 
-                agreement_df=agreement_silver
+            agreement_silver = (
+                spark.table("Lakehouse.silver.silver_cw_agreement")
+                if spark.catalog.tableExists("Lakehouse.silver.silver_cw_agreement")
+                else None
             )
-            
+
+            fact_df = create_expense_entry_fact(
+                spark=spark, expense_df=expense_silver, agreement_df=agreement_silver
+            )
+
             fact_df.write.mode("overwrite").saveAsTable("gold_fact_expense_entry")
             print(f"  Overwrote fact_expense_entry with {fact_df.count()} records")
         else:
             # Incremental mode
             changed_expense_ids = silver_changes["ExpenseEntry"]
             changed_expense_ids.createOrReplaceTempView("temp_changed_expense_ids")
-            
+
             expense_delta = spark.sql("""
                 SELECT * FROM Lakehouse.silver.silver_cw_expenseentry
                 WHERE id IN (SELECT id FROM temp_changed_expense_ids)
             """)
-            
-            agreement_silver = spark.table("Lakehouse.silver.silver_cw_agreement") if spark.catalog.tableExists("Lakehouse.silver.silver_cw_agreement") else None
-            
-            fact_delta = create_expense_entry_fact(
-                spark=spark, 
-                expense_df=expense_delta, 
-                agreement_df=agreement_silver
+
+            agreement_silver = (
+                spark.table("Lakehouse.silver.silver_cw_agreement")
+                if spark.catalog.tableExists("Lakehouse.silver.silver_cw_agreement")
+                else None
             )
-            
+
+            fact_delta = create_expense_entry_fact(
+                spark=spark, expense_df=expense_delta, agreement_df=agreement_silver
+            )
+
             print(f"  Processing {fact_delta.count()} expense entries")
-            
+
             if spark.catalog.tableExists("gold_fact_expense_entry"):
                 fact_delta.createOrReplaceTempView("temp_fact_expense_delta")
-                
+
                 merge_sql = """
                 MERGE INTO gold_fact_expense_entry AS target
                 USING temp_fact_expense_delta AS source
@@ -730,13 +755,13 @@ if "ExpenseEntry" in silver_changes:
                 WHEN MATCHED THEN UPDATE SET *
                 WHEN NOT MATCHED THEN INSERT *
                 """
-                
+
                 spark.sql(merge_sql)
                 print("  Merged changes into fact_expense_entry")
             else:
                 fact_delta.write.mode("overwrite").saveAsTable("gold_fact_expense_entry")
                 print(f"  Created fact_expense_entry with {fact_delta.count()} records")
-            
+
     except Exception as e:
         print(f"  ERROR updating fact_expense_entry: {e}")
 

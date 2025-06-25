@@ -1,4 +1,5 @@
 """Central registry for all model generators."""
+
 import json
 import logging
 from pathlib import Path

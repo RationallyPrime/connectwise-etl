@@ -1,4 +1,5 @@
 """Base generator with common logic for all model generators."""
+
 import logging
 import subprocess
 from abc import ABC, abstractmethod
@@ -26,8 +27,10 @@ class ModelGenerator(ABC):
         self.config = self._load_config(config_path) if config_path else {}
         self.base_args = [
             "datamodel-codegen",
-            "--base-class", self.config.get("base_class", "sparkdantic.SparkModel"),
-            "--target-python-version", self.config.get("target_python", "3.11"),
+            "--base-class",
+            self.config.get("base_class", "sparkdantic.SparkModel"),
+            "--target-python-version",
+            self.config.get("target_python", "3.11"),
             "--use-standard-collections",
             "--use-union-operator",
             "--strict-nullable",
@@ -68,10 +71,11 @@ class ModelGenerator(ABC):
         prepared_input = self.prepare_input(source)
 
         # Add format-specific args
-        args = self.base_args + self._get_format_args() + [
-            "--input", str(prepared_input),
-            "--output", str(output)
-        ]
+        args = (
+            self.base_args
+            + self._get_format_args()
+            + ["--input", str(prepared_input), "--output", str(output)]
+        )
 
         logger.debug(f"Running: {' '.join(args)}")
 

@@ -30,16 +30,20 @@ for schema_name, prefix in schemas_to_check:
             tables = spark.sql(f"SHOW TABLES IN Lakehouse.{schema_name}")
         else:
             tables = spark.sql("SHOW TABLES")
-        
+
         for row in tables.collect():
             table_name = row.tableName
             full_name = f"{prefix}{table_name}" if prefix else table_name
-            all_tables.append({
-                "schema": schema_name,
-                "table": table_name,
-                "full_name": full_name,
-                "catalog_path": f"Lakehouse.{schema_name}.{table_name}" if prefix else table_name
-            })
+            all_tables.append(
+                {
+                    "schema": schema_name,
+                    "table": table_name,
+                    "full_name": full_name,
+                    "catalog_path": f"Lakehouse.{schema_name}.{table_name}"
+                    if prefix
+                    else table_name,
+                }
+            )
     except Exception as e:
         print(f"  Could not list tables in {schema_name}: {e}")
 
@@ -60,20 +64,20 @@ print(f"Configured entities: {list(SILVER_CONFIG['entities'].keys())}")
 issues = []
 fixes = {}
 
-for entity, config in SILVER_CONFIG['entities'].items():
+for entity, config in SILVER_CONFIG["entities"].items():
     print(f"\n{entity}:")
-    bronze_cfg = config['bronze_table']
-    silver_cfg = config['silver_table']
-    
+    bronze_cfg = config["bronze_table"]
+    silver_cfg = config["silver_table"]
+
     # Check Bronze
     bronze_found = any(t["table"] == bronze_cfg for t in bronze_tables)
     print(f"  Bronze: {bronze_cfg} {'✓' if bronze_found else '✗'}")
-    
+
     # Check Silver - try both the config name and expected name
     silver_found = any(t["table"] == silver_cfg for t in silver_tables)
     expected_silver = f"silver_cw_{entity.lower()}"
     silver_expected_found = any(t["table"] == expected_silver for t in silver_tables)
-    
+
     if not silver_found and silver_expected_found:
         print(f"  Silver: {silver_cfg} ✗ (but {expected_silver} exists!)")
         issues.append(f"{entity}: silver_table should be '{expected_silver}' not '{silver_cfg}'")
@@ -83,8 +87,8 @@ for entity, config in SILVER_CONFIG['entities'].items():
 
 # Check for tables not in config
 print("\n=== Tables Not in Config ===")
-configured_bronze = {config['bronze_table'] for config in SILVER_CONFIG['entities'].values()}
-configured_silver = {config['silver_table'] for config in SILVER_CONFIG['entities'].values()}
+configured_bronze = {config["bronze_table"] for config in SILVER_CONFIG["entities"].values()}
+configured_silver = {config["silver_table"] for config in SILVER_CONFIG["entities"].values()}
 
 actual_bronze = {t["table"] for t in bronze_tables}
 actual_silver = {t["table"] for t in silver_tables}
@@ -106,7 +110,14 @@ if untracked_silver:
 print("\n=== Catalog Path Testing ===")
 test_tables = [
     ("bronze_cw_agreement", ["bronze_cw_agreement", "Lakehouse.dbo.bronze_cw_agreement"]),
-    ("silver_cw_agreement", ["silver_cw_agreement", "Lakehouse.silver.silver_cw_agreement", "silver.silver_cw_agreement"]),
+    (
+        "silver_cw_agreement",
+        [
+            "silver_cw_agreement",
+            "Lakehouse.silver.silver_cw_agreement",
+            "silver.silver_cw_agreement",
+        ],
+    ),
 ]
 
 for table_name, paths_to_try in test_tables:
@@ -124,7 +135,7 @@ if issues:
     print("\n=== Required Config Fixes ===")
     for issue in issues:
         print(f"  - {issue}")
-    
+
     print("\n=== config.py Updates Needed ===")
     for entity, updates in fixes.items():
         print(f"\n# {entity}")
@@ -143,9 +154,9 @@ refresh_endpoints = {
 
 for entity, expected_table in refresh_endpoints.items():
     exists = expected_table in actual_bronze
-    in_config = entity in SILVER_CONFIG['entities']
+    in_config = entity in SILVER_CONFIG["entities"]
     print(f"{entity}: Bronze {'✓' if exists else '✗'}, Config {'✓' if in_config else '✗'}")
-    
+
     if not in_config:
         print(f"  WARNING: {entity} is fetched but not in SILVER_CONFIG!")
 
