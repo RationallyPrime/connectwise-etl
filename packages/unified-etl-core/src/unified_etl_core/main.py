@@ -543,9 +543,9 @@ def process_integration(
                                 gold_table = f"gold_cw_{fact_name}"
                             # Write to proper location
                             if "." in gold_table:
-                                gold_df.write.mode("overwrite").saveAsTable(gold_table)
+                                gold_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(gold_table)
                             else:
-                                gold_df.write.mode("overwrite").saveAsTable(
+                                gold_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(
                                     f"Lakehouse.gold.{gold_table}"
                                 )
                             logging.info(f"Created fact table {gold_table}")

@@ -64,7 +64,7 @@ def create_time_entry_fact(
     # Start with all time entries
     fact_df = time_entry_df.select(
         # Keys
-        F.sha2(F.col("id").cast("string"), 256).alias("TimeEntrySK"),
+        F.sha2(F.col("id").cast("string"), 256).alias("TimeentrySK"),
         F.col("id").alias("timeEntryId"),
 
         # Foreign keys
@@ -252,6 +252,10 @@ def create_invoice_line_fact(
             F.col("memberId").alias("employeeId"),
             F.concat_ws(" - ", "workTypeName", "memberName").alias("memo"),
             F.lit("Service").alias("productClass"),
+            # Agreement fields - CRITICAL for analysis
+            "agreement_type", "agreement_type_normalized", 
+            "agreement_billing_behavior", "final_agreement_number",
+            "isBillableWork", "isTimapottur", "isInternalWork", "isOperations",
         )
         
         invoice_lines.append(time_lines)
@@ -278,6 +282,15 @@ def create_invoice_line_fact(
             F.lit(None).alias("employeeId"),
             F.col("p.productClass"),
             F.col("p.description").alias("memo"),
+            # Agreement fields - NULL for products
+            F.lit(None).alias("agreement_type"),
+            F.lit(None).alias("agreement_type_normalized"),
+            F.lit(None).alias("agreement_billing_behavior"),
+            F.lit(None).alias("final_agreement_number"),
+            F.lit(False).alias("isBillableWork"),
+            F.lit(False).alias("isTimapottur"),
+            F.lit(False).alias("isInternalWork"),
+            F.lit(False).alias("isOperations"),
         )
         
         invoice_lines.append(product_lines)
@@ -302,13 +315,15 @@ def create_invoice_line_fact(
         "isBillable", F.col("lineAmount") > 0
     )
     
-    # Calculate margin
+    # Calculate line cost and margin
     fact_df = fact_df.withColumn(
-        "margin", F.col("lineAmount") - (F.col("quantity") * F.col("cost"))
+        "lineCost", F.col("quantity") * F.col("cost")
+    ).withColumn(
+        "margin", F.col("lineAmount") - F.col("lineCost")
     ).withColumn(
         "marginPercentage",
         F.when(F.col("lineAmount") > 0,
-            ((F.col("lineAmount") - (F.col("quantity") * F.col("cost"))) / F.col("lineAmount") * 100)
+            (F.col("margin") / F.col("lineAmount") * 100)
         ).otherwise(0)
     )
     
@@ -317,7 +332,7 @@ def create_invoice_line_fact(
         fact_df = fact_df.alias("lines").join(
             invoice_df.select(
                 F.col("id").alias("inv_id"),
-                "date", "dueDate", "status",
+                "date", "dueDate", F.col("statusName").alias("status"),
                 F.col("companyId"), F.col("companyName"),
             ).alias("inv"),
             F.col("lines.invoiceId") == F.col("inv.inv_id"),
@@ -405,7 +420,8 @@ def create_agreement_period_fact(
     from unified_etl_core.date_utils import create_date_spine
     
     if end_date is None:
-        end_date = F.current_date()
+        from datetime import datetime
+        end_date = datetime.now().strftime("%Y-%m-%d")
     
     date_spine = create_date_spine(spark, start_date, end_date, "M")
     
@@ -487,26 +503,26 @@ def create_expense_entry_fact(
         "billableOption",
 
         # Metrics
-        "amount", "quantity",
-        F.coalesce("cost", F.lit(0)).alias("cost"),
+        "amount",
+        F.lit(1).alias("quantity"),  # Expenses don't have quantity, default to 1
 
         # Date
         "date",
 
         # Notes
-        "notes", "description",
+        "notes",
     )
 
     # Add date key
     fact_df = add_date_key(fact_df, "date", "ExpenseDateSK")
 
-    # Calculate totals
+    # Calculate totals (no cost data available for expenses)
     fact_df = fact_df.withColumn(
-        "totalAmount", F.col("amount") * F.coalesce("quantity", F.lit(1))
+        "totalAmount", F.col("amount") * F.col("quantity")
     ).withColumn(
-        "totalCost", F.col("cost") * F.coalesce("quantity", F.lit(1))
+        "totalCost", F.lit(0)  # No cost data available
     ).withColumn(
-        "margin", F.col("totalAmount") - F.col("totalCost")
+        "margin", F.col("totalAmount")  # All amount is margin without cost data
     )
 
     # If agreements provided, resolve types and add flags
