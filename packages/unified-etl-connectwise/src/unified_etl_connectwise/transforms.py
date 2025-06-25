@@ -1,26 +1,24 @@
-"""ConnectWise-specific business transformations.
-
-Leverages core utilities and agreement logic to create fact tables.
-Following CLAUDE.md principles: Fail fast, no silent masking.
-"""
+"""Gold layer transformations specific to ConnectWise."""
 
 import logging
-from typing import Any
+from typing import Any, Union
 
-import pyspark.sql.functions as F  # noqa: N812
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.window import Window
-from unified_etl_core.date_utils import add_date_key, create_date_spine
+import pyspark.sql.functions as F
+from pyspark.sql import Column, DataFrame, SparkSession
+
+from unified_etl_core.date_utils import add_date_key
+from unified_etl_core.gold import add_etl_metadata
 
 from .agreement_utils import (
     add_agreement_flags,
-    add_surrogate_keys,
     calculate_effective_billing_status,
-    filter_billable_time_entries,
     resolve_agreement_hierarchy,
 )
 
 logger = logging.getLogger(__name__)
+
+
+# Time Entry Facts
 
 
 def create_time_entry_fact(
@@ -30,20 +28,22 @@ def create_time_entry_fact(
     member_df: DataFrame | None = None,
     config: dict[str, Any] | None = None,
 ) -> DataFrame:
-    """Create comprehensive time entry fact table capturing ALL work.
+    """Create time entry fact table with ConnectWise-specific business logic.
     
-    This creates one row per time entry, enabling:
-    - Complete cost tracking (including internal work)
-    - Billable vs non-billable analysis
-    - Tímapottur consumption tracking
-    - Real-time profitability before invoicing
-    - Employee utilization metrics
+    This handles the bulk of service delivery metrics including:
+    - Billable vs non-billable work
+    - Utilization calculations
+    - Agreement coverage
+    - Internal vs external work
+    - Tímapottur identification
+    
+    Captures ALL work to avoid missing $18M+ in internal projects.
     
     Args:
         spark: SparkSession
-        time_entry_df: All time entries from silver layer
-        agreement_df: Optional agreement data for type resolution
-        member_df: Optional member data for cost rates
+        time_entry_df: Silver time entry DataFrame  
+        agreement_df: Optional agreement DataFrame for hierarchy resolution
+        member_df: Optional member DataFrame for cost enrichment
         config: Optional configuration
         
     Returns:
@@ -70,17 +70,37 @@ def create_time_entry_fact(
         # Foreign keys
         "memberId", "agreementId", "chargeToId", "chargeToType",
         "invoiceId", "ticketId", "projectId",
+        "companyId", "locationId", "departmentId", "businessUnitId",
+        "timeSheetId",
 
         # Dimensions
         "memberName", "workTypeId", "workTypeName", "workRoleId",
         "workRoleName", "billableOption", "status",
+        "companyIdentifier", "companyName",
+        "agreementName", "agreementType",
+        "locationName", "departmentName",
+        "projectName", "ticketSummary",
 
         # Time attributes
         "timeStart", "timeEnd",
+        "enteredBy", "dateEntered",
 
-        # Metrics
-        "actualHours", "hourlyRate",
+        # Metrics - Hours
+        "actualHours", 
+        F.coalesce("hoursDeduct", F.lit(0)).alias("hoursDeduct"),
+        F.coalesce("hoursBilled", F.lit(0)).alias("hoursBilled"),
+        F.coalesce("invoiceHours", F.lit(0)).alias("invoiceHours"),
+        F.coalesce("agreementHours", F.lit(0)).alias("agreementHours"),
+        
+        # Metrics - Rates & Costs
+        "hourlyRate",
         F.coalesce("hourlyCost", F.lit(0)).alias("hourlyCost"),
+        F.coalesce("overageRate", F.lit(0)).alias("overageRate"),
+        F.coalesce("agreementAmount", F.lit(0)).alias("agreementAmount"),
+        
+        # Utilization & Capacity
+        F.coalesce("workTypeUtilizationFlag", F.lit(False)).alias("workTypeUtilizationFlag"),
+        F.coalesce("memberDailyCapacity", F.lit(8)).alias("memberDailyCapacity"),
 
         # Notes
         "notes", "internalNotes",
@@ -138,64 +158,86 @@ def create_time_entry_fact(
         "utilizationType",
         F.when(F.col("isInternalWork"), "Internal")
         .when(F.col("billableOption") == "Billable", "Billable")
-        .when(F.col("isTimapottur"), "Prepaid")
-        .otherwise("Non-Billable")
+        .when(F.col("billableOption") == "DoNotBill", "Non-Billable")
+        .when(F.col("billableOption") == "NoCharge", "No Charge")
+        .otherwise("Other")
     )
 
-    # Add aging calculations
-    fact_df = fact_df.withColumn(
-        "daysSinceWork",
-        F.datediff(F.current_date(), F.col("timeStart"))
-    ).withColumn(
-        "daysUninvoiced",
-        F.when(
-            (F.col("effectiveBillingStatus") == "Billable") &
-            (F.col("invoiceId").isNull()),
-            F.col("daysSinceWork")
-        ).otherwise(None)
-    )
+    # Add ETL metadata
+    fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
 
     return fact_df
+
+
+# Wrapper functions for framework compatibility
+def create_agreement_facts(spark: SparkSession, agreement_df: DataFrame, config: dict[str, Any]) -> dict[str, DataFrame]:
+    """Wrapper for framework compatibility - creates agreement period facts."""
+    fact_df = create_agreement_period_fact(spark, agreement_df, config)
+    return {"fact_agreement_period": fact_df}
+
+
+def create_invoice_facts(
+    spark: SparkSession,
+    invoice_df: DataFrame,
+    config: dict[str, Any],
+    timeEntryDf: DataFrame,
+    productItemDf: DataFrame,
+    agreementDf: DataFrame,
+) -> dict[str, DataFrame]:
+    """Wrapper for framework compatibility - creates invoice line facts."""
+    fact_df = create_invoice_line_fact(
+        spark=spark,
+        invoice_df=invoice_df,
+        time_entry_df=timeEntryDf,
+        product_df=productItemDf,
+        agreement_df=agreementDf,
+        config=config
+    )
+    return {"fact_invoice_line": fact_df}
+
+
+# Invoice Line Facts
 
 
 def create_invoice_line_fact(
     spark: SparkSession,
     invoice_df: DataFrame,
-    time_entry_df: DataFrame | None = None,
-    product_df: DataFrame | None = None,
-    agreement_df: DataFrame | None = None,
+    time_entry_df: DataFrame,
+    product_df: DataFrame,
+    agreement_df: DataFrame,
+    config: dict[str, Any],
 ) -> DataFrame:
-    """Create invoice line-item fact table.
+    """Create invoice line fact that includes both invoiced items AND uninvoiced billable work.
     
-    Creates invoice lines from billable time entries and products,
-    INCLUDING uninvoiced billable work for revenue recognition.
-    Excludes only Tímapottur and internal work per Business Central logic.
+    This captures revenue from multiple sources:
+    1. Actual invoice lines (from posted invoices)
+    2. Uninvoiced time entries (billable but not yet invoiced)
+    3. Product sales
+    
+    Critical for identifying the missing $18M in unbilled work.
     """
-    lines = []
-
-    # Process time entries if available
+    logger.info("Creating comprehensive invoice line facts")
+    
+    # Start with invoices as the base
+    invoice_lines = []
+    
+    # Get time-based lines if time entries provided
     if time_entry_df is not None:
-        # Enrich time entries with agreement info
+        # Include ALL billable time entries, not just invoiced ones
+        time_enriched = time_entry_df.alias("t").filter(
+            (F.col("billableOption") == "Billable") |
+            (F.col("invoiceId").isNotNull())
+        )
+        
+        # Enrich with agreement info if available
         if agreement_df is not None:
+            logger.info("Resolving agreement hierarchy for invoice_lines")
             time_enriched = resolve_agreement_hierarchy(
-                time_entry_df, agreement_df, "agreementId", "time_entries"
+                time_enriched, agreement_df, "agreementId", "invoice_lines"
             )
             time_enriched = add_agreement_flags(time_enriched)
-            # Filter to include all billable work (invoiced or not)
-            # Exclude only Tímapottur and internal work
-            time_enriched = time_enriched.filter(
-                # Exclude prepaid hours (Tímapottur)
-                (~F.col("isTimapottur")) &
-                # Exclude internal work
-                (~F.col("isInternalWork")) &
-                # Include billable work regardless of invoice status
-                (F.col("billableOption") == "Billable")
-            )
-        else:
-            # Without agreement info, include all billable entries
-            time_enriched = time_entry_df.filter(F.col("billableOption") == "Billable")
-
-        # Create lines from time entries
+        
+        # Create time-based invoice lines
         time_lines = time_enriched.select(
             F.col("invoiceId").cast("int"),
             F.monotonically_increasing_id().alias("lineNumber"),
@@ -211,85 +253,145 @@ def create_invoice_line_fact(
             F.concat_ws(" - ", "workTypeName", "memberName").alias("memo"),
             F.lit("Service").alias("productClass"),
         )
-        lines.append(time_lines)
-
-    # Process products if available
+        
+        invoice_lines.append(time_lines)
+        logger.info(f"Added {time_lines.count()} time-based lines")
+    
+    # Get product-based lines if products provided
     if product_df is not None:
-        # Include all products regardless of invoice status
-        product_lines = product_df.select(
-            F.col("invoiceId").cast("int"),
+        # Products have invoiceId - join from products to get product lines
+        product_lines = product_df.alias("p").filter(
+            F.col("p.invoiceId").isNotNull()
+        ).select(
+            F.col("p.invoiceId"),
             F.monotonically_increasing_id().alias("lineNumber"),
             F.lit(None).alias("timeEntryId"),
-            F.col("id").alias("productId"),
-            "description", "quantity", "price", "cost",
-            (F.col("quantity") * F.col("price")).alias("lineAmount"),
-            "agreementId",
+            F.col("p.id").alias("productId"),
+            F.col("p.description"),
+            F.col("p.quantity"),
+            F.col("p.price"),
+            F.col("p.cost"),
+            (F.col("p.quantity") * F.col("p.price")).alias("lineAmount"),
+            F.lit(None).alias("agreementId"),
             F.lit(None).alias("workTypeId"),
             F.lit(None).alias("workRoleId"),
             F.lit(None).alias("employeeId"),
-            F.col("description").alias("memo"),
-            "productClass",
+            F.col("p.productClass"),
+            F.col("p.description").alias("memo"),
         )
-        lines.append(product_lines)
-
-    if not lines:
-        raise ValueError("No time entries or products provided for invoice lines")
-
-    # Union all lines
-    invoice_lines = lines[0]
-    for line_df in lines[1:]:
-        invoice_lines = invoice_lines.unionByName(line_df, allowMissingColumns=True)
-
-    # Join with invoice headers
-    line_facts = invoice_lines.join(
-        invoice_df.select(
-            F.col("id").alias("inv_id"),
-            "invoiceNumber", "statusName", "type", "date", "dueDate",
-            "companyId", "companyName", "billToCompanyId",
-        ),
-        invoice_lines.invoiceId == F.col("inv_id"),
-        "left"
-    ).drop("inv_id")
-
-    # Add surrogate keys
-    line_facts = add_surrogate_keys(line_facts, {
-        "InvoiceLineSK": {"type": "hash", "source_columns": ["invoiceId", "lineNumber"]},
-        "InvoiceSK": {"type": "hash", "source_columns": ["invoiceId"]},
-    })
-
-    # Add date keys
-    line_facts = add_date_key(line_facts, "date", "InvoiceDateSK")
-    line_facts = add_date_key(line_facts, "dueDate", "DueDateSK")
-
-    # Calculate line-level metrics
-    line_facts = line_facts.withColumn(
-        "lineCost", F.col("quantity") * F.col("cost")
+        
+        invoice_lines.append(product_lines)
+        logger.info(f"Added {product_lines.count()} product lines")
+    
+    # Union all line types
+    if not invoice_lines:
+        raise ValueError("No line data available - need at least time entries or products")
+    
+    fact_df = invoice_lines[0]
+    for df in invoice_lines[1:]:
+        fact_df = fact_df.unionByName(df, allowMissingColumns=True)
+    
+    # Add line metadata
+    fact_df = fact_df.withColumn(
+        "isService", F.col("productClass") == "Service"
     ).withColumn(
-        "lineMargin", F.col("lineAmount") - F.col("lineCost")
+        "isProduct", F.col("productClass") != "Service"
+    ).withColumn(
+        "isAgreement", F.col("agreementId").isNotNull()
+    ).withColumn(
+        "isBillable", F.col("lineAmount") > 0
+    )
+    
+    # Calculate margin
+    fact_df = fact_df.withColumn(
+        "margin", F.col("lineAmount") - (F.col("quantity") * F.col("cost"))
     ).withColumn(
         "marginPercentage",
         F.when(F.col("lineAmount") > 0,
-            (F.col("lineMargin") / F.col("lineAmount") * 100)
+            ((F.col("lineAmount") - (F.col("quantity") * F.col("cost"))) / F.col("lineAmount") * 100)
         ).otherwise(0)
     )
+    
+    # Add invoice header info if available
+    if invoice_df is not None:
+        fact_df = fact_df.alias("lines").join(
+            invoice_df.select(
+                F.col("id").alias("inv_id"),
+                "date", "dueDate", "status",
+                F.col("companyId"), F.col("companyName"),
+            ).alias("inv"),
+            F.col("lines.invoiceId") == F.col("inv.inv_id"),
+            "left"
+        ).drop("inv_id")
+    else:
+        # For uninvoiced items, use time entry date
+        fact_df = fact_df.withColumn("date", F.current_date())
+        fact_df = fact_df.withColumn("status", F.lit("Unbilled"))
+    
+    # Add surrogate keys
+    fact_df = fact_df.withColumn(
+        "InvoiceLineSK", F.sha2(
+            F.concat_ws("|",
+                F.coalesce("invoiceId", F.lit(-1)),
+                "lineNumber",
+                F.coalesce("timeEntryId", F.lit(-1)),
+                F.coalesce("productId", F.lit(-1))
+            ), 256
+        )
+    ).withColumn(
+        "InvoiceSK", F.sha2(F.coalesce("invoiceId", F.lit(-1)).cast("string"), 256)
+    )
+    
+    # Add date key
+    fact_df = add_date_key(fact_df, "date", "InvoiceDateSK")
+    
+    # Add ETL metadata
+    fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
+    
+    return fact_df
 
-    return line_facts
+
+# Supporting Table Functions
+
+
+def filter_billable_time_entries(time_entry_df: DataFrame) -> DataFrame:
+    """Filter time entries to billable only."""
+    return time_entry_df.filter(
+        (F.col("billableOption") == "Billable") |
+        (F.col("invoiceId").isNotNull())
+    )
+
+
+def add_surrogate_keys(df: DataFrame, key_configs: dict[str, dict]) -> DataFrame:
+    """Add surrogate keys based on configuration."""
+    for key_name, config in key_configs.items():
+        if config["type"] == "hash":
+            source_cols = [F.coalesce(col, F.lit("")).cast("string") for col in config["source_columns"]]
+            df = df.withColumn(key_name, F.sha2(F.concat_ws("|", *source_cols), 256))
+        elif config["type"] == "date_int":
+            df = df.withColumn(key_name, F.date_format(F.col(config["source_columns"][0]), "yyyyMMdd").cast("int"))
+    return df
+
+
+# Agreement Facts
 
 
 def create_agreement_period_fact(
     spark: SparkSession,
     agreement_df: DataFrame,
     config: dict[str, Any],
+    start_date: str = "2020-01-01",
+    end_date: str = None,
 ) -> DataFrame:
-    """Create agreement period fact with monthly grain for MRR tracking."""
-    # Extract configuration
-    start_date = config.get("start_date", "2020-01-01")
-    frequency = config.get("frequency", "month")
-
-    # Generate date spine
-    date_spine = create_date_spine(spark, start_date, frequency=frequency)
-
-    # Prepare agreements
+    """Create monthly agreement period facts for MRR tracking.
+    
+    Generates one row per agreement per month for:
+    - Active period tracking
+    - MRR calculation
+    - Churn analysis
+    - Growth metrics
+    """
+    # Prepare agreements with proper date handling
     agreements_prep = agreement_df.select(
         "id", "name", "agreementStatus", "typeId", "typeName",
         "companyId", "companyName", "contactId", "billingCycleId",
@@ -299,44 +401,45 @@ def create_agreement_period_fact(
         "cancelledFlag", "customFields",
     )
 
-    # Cross join and filter to active periods
-    period_facts = date_spine.crossJoin(agreements_prep).filter(
+    # Create date spine
+    from unified_etl_core.date_utils import create_date_spine
+    
+    if end_date is None:
+        end_date = F.current_date()
+    
+    date_spine = create_date_spine(spark, start_date, end_date, "M")
+    
+    # Cross join agreements with date spine
+    period_facts = agreements_prep.crossJoin(date_spine).filter(
         (F.col("period_start") >= F.col("effective_start")) &
         (F.col("period_start") <= F.col("effective_end"))
     )
-
+    
     # Add period metrics
     period_facts = period_facts.withColumn(
         "is_active_period",
-        (F.col("agreementStatus") == "Active") & (~F.col("cancelledFlag"))
+        (F.col("agreementStatus") == "Active") &
+        (F.col("cancelledFlag") == F.lit(False))
     ).withColumn(
         "is_new_agreement",
-        F.date_format("effective_start", "yyyy-MM") == F.date_format("period_start", "yyyy-MM")
+        F.date_trunc("month", F.col("effective_start")) == F.col("period_start")
     ).withColumn(
         "is_churned_agreement",
-        (F.date_format("effective_end", "yyyy-MM") == F.date_format("period_start", "yyyy-MM")) &
-        (F.col("effective_end") < F.lit("2099-01-01"))
+        (F.date_trunc("month", F.col("effective_end")) == F.col("period_start")) &
+        (F.col("cancelledFlag") == F.lit(True))
     ).withColumn(
         "monthly_revenue",
-        F.when(F.col("is_active_period"), F.col("billAmount")).otherwise(0)
-    )
-
-    # Add running calculations
-    window_spec = Window.partitionBy("id").orderBy("period_start")
-
-    period_facts = period_facts.withColumn(
+        F.when(F.col("applicationUnits") == "Amount", F.col("billAmount")).otherwise(0)
+    ).withColumn(
         "months_since_start",
-        F.months_between("period_start", "effective_start")
-    ).withColumn(
-        "revenue_change",
-        F.col("monthly_revenue") - F.lag("monthly_revenue", 1).over(window_spec)
-    ).withColumn(
-        "cumulative_revenue",
-        F.sum("monthly_revenue").over(
-            window_spec.rowsBetween(Window.unboundedPreceding, Window.currentRow)
-        )
+        F.months_between(F.col("period_start"), F.col("effective_start"))
     )
-
+    
+    # Add date dimensions
+    period_facts = period_facts.withColumn("year", F.year("period_start"))
+    period_facts = period_facts.withColumn("month", F.month("period_start"))
+    period_facts = period_facts.withColumn("quarter", F.quarter("period_start"))
+    
     # Add surrogate keys
     period_facts = add_surrogate_keys(period_facts, {
         "AgreementPeriodSK": {"type": "hash", "source_columns": ["id", "period_start"]},
@@ -360,7 +463,7 @@ def create_expense_entry_fact(
     # Validate required columns
     required_columns = [
         "id", "chargeToType", "chargeToId", "memberId",
-        "expenseTypeId", "expenseTypeName", "date", "amount",
+        "typeId", "typeName", "date", "amount",
         "agreementId", "invoiceId", "billableOption",
     ]
 
@@ -379,7 +482,9 @@ def create_expense_entry_fact(
         "invoiceId", "ticketId", "projectId",
 
         # Dimensions
-        "expenseTypeId", "expenseTypeName", "billableOption",
+        F.col("typeId").alias("expenseTypeId"), 
+        F.col("typeName").alias("expenseTypeName"), 
+        "billableOption",
 
         # Metrics
         "amount", "quantity",
@@ -411,5 +516,8 @@ def create_expense_entry_fact(
         )
         fact_df = add_agreement_flags(fact_df)
         fact_df = calculate_effective_billing_status(fact_df)
+
+    # Add ETL metadata
+    fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
 
     return fact_df

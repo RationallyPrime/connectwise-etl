@@ -128,10 +128,9 @@ def process_integration(
                                 page_size=1000
                             )
                             
-                            # Add ETL metadata
-                            bronze_df = bronze_df.withColumn("_etl_timestamp", F.current_timestamp())
-                            bronze_df = bronze_df.withColumn("_etl_source", F.lit(integration_name))
-                            bronze_df = bronze_df.withColumn("_etl_batch_id", F.lit(datetime.now().strftime("%Y%m%d_%H%M%S")))
+                            # Add ETL metadata - use existing column names for compatibility
+                            bronze_df = bronze_df.withColumn("etlTimestamp", F.current_timestamp())
+                            bronze_df = bronze_df.withColumn("etlEntity", F.lit(entity_name))
                             
                             record_count = bronze_df.count()
                             if record_count == 0:
@@ -451,6 +450,74 @@ def process_integration(
                                         logging.warning(
                                             f"Could not load related tables for specialized transform: {e}"
                                         )
+                                elif entity_name == "timeentry" and hasattr(
+                                    integration_transforms, "create_time_entry_fact"
+                                ):
+                                    logging.info("Using ConnectWise time entry-specific transforms")
+                                    # Load member data for cost enrichment if available
+                                    member_df = None
+                                    try:
+                                        member_table = (
+                                            table_mappings["silver"].get("member", "silver_cw_member")
+                                            if table_mappings and "silver" in table_mappings
+                                            else "silver_cw_member"
+                                        )
+                                        if spark.catalog.tableExists(member_table):
+                                            member_df = spark.table(member_table)
+                                    except:
+                                        logging.debug("Member table not available for enrichment")
+                                    
+                                    # Load agreement data for hierarchy resolution
+                                    agreement_df = None
+                                    try:
+                                        agreement_table = (
+                                            table_mappings["silver"].get("agreement", "silver_cw_agreement")
+                                            if table_mappings and "silver" in table_mappings
+                                            else "silver_cw_agreement"
+                                        )
+                                        if spark.catalog.tableExists(f"Lakehouse.silver.{agreement_table}"):
+                                            agreement_df = spark.table(f"Lakehouse.silver.{agreement_table}")
+                                        elif spark.catalog.tableExists(agreement_table):
+                                            agreement_df = spark.table(agreement_table)
+                                    except:
+                                        logging.debug("Agreement table not available for enrichment")
+                                    
+                                    gold_df = integration_transforms.create_time_entry_fact(
+                                        spark=spark,
+                                        time_entry_df=silver_df,
+                                        member_df=member_df,
+                                        agreement_df=agreement_df,
+                                        config=entity_config
+                                    )
+                                    gold_dfs = {"fact_timeentry": gold_df}
+                                    transform_used = True
+                                elif entity_name == "expenseentry" and hasattr(
+                                    integration_transforms, "create_expense_entry_fact"
+                                ):
+                                    logging.info("Using ConnectWise expense entry-specific transforms")
+                                    # Load agreement data for hierarchy resolution
+                                    agreement_df = None
+                                    try:
+                                        agreement_table = (
+                                            table_mappings["silver"].get("agreement", "silver_cw_agreement")
+                                            if table_mappings and "silver" in table_mappings
+                                            else "silver_cw_agreement"
+                                        )
+                                        if spark.catalog.tableExists(f"Lakehouse.silver.{agreement_table}"):
+                                            agreement_df = spark.table(f"Lakehouse.silver.{agreement_table}")
+                                        elif spark.catalog.tableExists(agreement_table):
+                                            agreement_df = spark.table(agreement_table)
+                                    except:
+                                        logging.debug("Agreement table not available for enrichment")
+                                    
+                                    gold_df = integration_transforms.create_expense_entry_fact(
+                                        spark=spark,
+                                        expense_df=silver_df,
+                                        agreement_df=agreement_df,
+                                        config=entity_config
+                                    )
+                                    gold_dfs = {"fact_expenseentry": gold_df}
+                                    transform_used = True
 
                         # Fallback to generic transform if no specific transform was used
                         if not transform_used:

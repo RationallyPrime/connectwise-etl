@@ -20,13 +20,16 @@ class IncrementalProcessor:
         self.spark = spark
     
     def get_last_etl_timestamp(self, table_name: str) -> datetime | None:
-        """Get the maximum _etl_timestamp from a table to know when it was last updated."""
+        """Get the maximum ETL timestamp from a table to know when it was last updated."""
         try:
             if not self.spark.catalog.tableExists(table_name):
                 return None
                 
+            # Bronze uses etlTimestamp, Silver/Gold use _etl_processed_at
+            timestamp_col = "etlTimestamp" if "bronze" in table_name else "_etl_processed_at"
+            
             result = self.spark.sql(f"""
-                SELECT MAX(_etl_timestamp) as last_refresh 
+                SELECT MAX({timestamp_col}) as last_refresh 
                 FROM {table_name}
             """).collect()
             
@@ -50,9 +53,13 @@ class IncrementalProcessor:
         
         if since_timestamp:
             logger.info(f"Getting records from {source_table} since {since_timestamp}")
+            
+            # Bronze uses etlTimestamp, Silver/Gold use _etl_processed_at
+            timestamp_col = "etlTimestamp" if "bronze" in source_table else "_etl_processed_at"
+            
             return self.spark.sql(f"""
                 SELECT * FROM {source_table}
-                WHERE _etl_timestamp > '{since_timestamp.isoformat()}'
+                WHERE {timestamp_col} > '{since_timestamp.isoformat()}'
             """)
         else:
             logger.info(f"No timestamp found, getting all records from {source_table}")
@@ -81,12 +88,18 @@ class IncrementalProcessor:
         temp_view = f"temp_{target_table.split('.')[-1]}_merge"
         source_df.createOrReplaceTempView(temp_view)
         
-        # Get columns for merge
+        # Get columns that exist in both source and target
+        target_columns = self.spark.table(target_table).columns
         source_columns = source_df.columns
-        update_cols = [col for col in source_columns if col != merge_key]
+        
+        # Only update columns that exist in the target table
+        common_columns = [col for col in source_columns if col in target_columns]
+        update_cols = [col for col in common_columns if col != merge_key]
         update_expr = ", ".join([f"target.{col} = source.{col}" for col in update_cols])
-        insert_cols = ", ".join(source_columns)
-        insert_values = ", ".join([f"source.{col}" for col in source_columns])
+        
+        # For insert, only use columns that exist in target
+        insert_cols = ", ".join(common_columns)
+        insert_values = ", ".join([f"source.{col}" for col in common_columns])
         
         # Execute MERGE
         merge_sql = f"""
@@ -175,25 +188,27 @@ def build_incremental_conditions(
     since_date: str,
     entity_config: dict[str, Any] | None = None
 ) -> str:
-    """Build API conditions for incremental extraction based on entity type."""
-    # Default patterns based on ConnectWise entity types
-    if entity_name in ["TimeEntry", "ExpenseEntry"]:
-        # Use dateEntered for work entries
-        return f"dateEntered>=[{since_date}]"
-    elif entity_name in ["Agreement", "Invoice", "PostedInvoice", "ProductItem"]:
-        # Use lastUpdated for master data
-        return f"lastUpdated>=[{since_date}]"
-    elif entity_name == "UnpostedInvoice":
+    """Build API conditions for incremental extraction based on entity type.
+    
+    ALWAYS use lastUpdated to catch both new and modified records.
+    Using dateEntered misses old entries that were recently modified!
+    """
+    # Special cases
+    if entity_name == "UnpostedInvoice":
         # Unposted invoices are always in flux, fetch all
         return None
-    else:
-        # Check entity config for custom incremental column
-        if entity_config and "incremental_column" in entity_config:
-            column = entity_config["incremental_column"]
-            return f"{column}>=[{since_date}]"
-        else:
-            # Default to lastUpdated
-            return f"lastUpdated>=[{since_date}]"
+    
+    # Check entity config for custom incremental column
+    if entity_config and "incremental_column" in entity_config:
+        column = entity_config["incremental_column"]
+        # Strip any nested path notation for API conditions
+        if "." in column:
+            column = column.split(".")[-1]
+        return f"{column}>=[{since_date}]"
+    
+    # Default to lastUpdated for ALL entities
+    # This ensures we catch both new records AND updates to old records
+    return f"lastUpdated>=[{since_date}]"
 
 
 def get_incremental_lookback_days(entity_name: str, default: int = 30) -> int:
