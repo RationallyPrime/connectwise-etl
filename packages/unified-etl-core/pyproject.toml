@@ -13,6 +13,7 @@ dependencies = [
     "tomli>=2.0.0",
     "click>=8.0.0",
     "datamodel-code-generator>=0.29.1",
+    "structlog>=25.4.0",
 ]
 
 [project.optional-dependencies]

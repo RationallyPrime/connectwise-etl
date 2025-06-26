@@ -174,7 +174,7 @@ class IncrementalProcessor:
 
 def build_incremental_conditions(
     entity_name: str, since_date: str, entity_config: dict[str, Any] | None = None
-) -> str:
+) -> str | None:
     """Build API conditions for incremental extraction based on entity type.
 
     ALWAYS use lastUpdated to catch both new and modified records.

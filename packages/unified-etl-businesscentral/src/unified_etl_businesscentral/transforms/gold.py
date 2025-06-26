@@ -23,7 +23,10 @@ from unified_etl_core.utils.exceptions import (
     DimensionResolutionError,
     HierarchyBuildError,
 )
-from unified_etl_core.utils.naming import construct_table_path
+# Simple table path construction function
+def construct_table_path(base_path: str, table_name: str) -> str:
+    """Construct a table path from base path and table name."""
+    return f"{base_path.rstrip('/')}/{table_name}"
 
 
 def create_bc_dimension_bridge(
