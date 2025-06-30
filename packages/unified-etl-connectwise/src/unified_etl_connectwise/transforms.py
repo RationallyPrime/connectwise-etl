@@ -1,9 +1,10 @@
 """Gold layer transformations specific to ConnectWise."""
 
 import logging
+from logging import Logger
 from typing import Any
 
-import pyspark.sql.functions as F
+import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame, SparkSession
 from unified_etl_core.date_utils import add_date_key
 from unified_etl_core.gold import add_etl_metadata
@@ -11,10 +12,11 @@ from unified_etl_core.gold import add_etl_metadata
 from .agreement_utils import (
     add_agreement_flags,
     calculate_effective_billing_status,
+    extract_agreement_number,
     resolve_agreement_hierarchy,
 )
 
-logger = logging.getLogger(__name__)
+logger: Logger = logging.getLogger(name=__name__)
 
 
 # Time Entry Facts
@@ -49,7 +51,7 @@ def create_time_entry_fact(
         DataFrame with comprehensive time entry facts
     """
     # Validate required columns
-    required_columns = [
+    required_columns: list[str] = [
         "id",
         "chargeToType",
         "chargeToId",
@@ -67,12 +69,12 @@ def create_time_entry_fact(
         "hourlyRate",
     ]
 
-    missing_columns = [col for col in required_columns if col not in time_entry_df.columns]
+    missing_columns: list[str] = [col for col in required_columns if col not in time_entry_df.columns]
     if missing_columns:
         raise ValueError(f"Missing required columns for time entry fact: {missing_columns}")
 
     # Start with all time entries
-    fact_df = time_entry_df.select(
+    fact_df: DataFrame = time_entry_df.select(
         # Keys
         F.sha2(F.col("id").cast("string"), 256).alias("TimeentrySK"),
         F.col("id").alias("timeEntryId"),
@@ -82,6 +84,7 @@ def create_time_entry_fact(
         "chargeToId",
         "chargeToType",
         "invoiceId",
+        F.col("invoiceIdentifier").alias("invoiceNumber"),  # From invoice.identifier
         "ticketId",
         "projectId",
         "companyId",
@@ -105,6 +108,10 @@ def create_time_entry_fact(
         "departmentName",
         "projectName",
         "ticketSummary",
+        # Ticket classification
+        F.col("ticketBoard").alias("ticketBoard"),
+        F.col("ticketType").alias("ticketType"),
+        F.col("ticketSubType").alias("ticketSubType"),
         # Time attributes
         "timeStart",
         "timeEnd",
@@ -121,6 +128,15 @@ def create_time_entry_fact(
         F.coalesce("hourlyCost", F.lit(0)).alias("hourlyCost"),
         F.coalesce("overageRate", F.lit(0)).alias("overageRate"),
         F.coalesce("agreementAmount", F.lit(0)).alias("agreementAmount"),
+        # Financial adjustments
+        F.coalesce("agreementAdjustment", F.lit(0)).alias("agreementAdjustment"),
+        F.coalesce("adjustment", F.lit(0)).alias("adjustment"),
+        F.coalesce("extendedInvoiceAmount", F.lit(0)).alias("extendedInvoiceAmount"),
+        # Tax/billing metadata
+        F.col("taxCodeId").alias("taxCodeId"),
+        F.col("taxCodeName").alias("taxCodeName"),
+        F.coalesce("invoiceFlag", F.lit(False)).alias("invoiceFlag"),
+        F.coalesce("invoiceReady", F.lit(0)).alias("invoiceReady"),
         # Utilization & Capacity
         F.coalesce("workTypeUtilizationFlag", F.lit(False)).alias("workTypeUtilizationFlag"),
         F.coalesce("memberDailyCapacity", F.lit(8)).alias("memberDailyCapacity"),
@@ -168,6 +184,7 @@ def create_time_entry_fact(
         fact_df = resolve_agreement_hierarchy(fact_df, agreement_df, "agreementId", "time_entries")
         fact_df = add_agreement_flags(fact_df)
         fact_df = calculate_effective_billing_status(fact_df)
+        # The resolve_agreement_hierarchy function adds parentAgreementId and final_agreement_number
 
     # Add utilization type
     fact_df = fact_df.withColumn(
@@ -186,21 +203,21 @@ def create_time_entry_fact(
 
 
 # Wrapper functions for framework compatibility
-def create_agreement_facts(
+def create_agreement_dimensions(
     spark: SparkSession, agreement_df: DataFrame, config: dict[str, Any]
 ) -> dict[str, DataFrame]:
-    """Wrapper for framework compatibility - creates agreement period facts."""
-    fact_df = create_agreement_period_fact(spark, agreement_df, config)
-    return {"fact_agreement_period": fact_df}
+    """Wrapper for framework compatibility - creates agreement dimension."""
+    dim_df = create_agreement_dimension(spark, agreement_df, config)
+    return {"dim_agreement": dim_df}
 
 
 def create_invoice_facts(
     spark: SparkSession,
     invoice_df: DataFrame,
     config: dict[str, Any],
-    timeEntryDf: DataFrame,
-    productItemDf: DataFrame,
-    agreementDf: DataFrame,
+    timeEntryDf: DataFrame,  # noqa: N803
+    productItemDf: DataFrame,  # noqa: N803
+    agreementDf: DataFrame,  # noqa: N803
 ) -> dict[str, DataFrame]:
     """Wrapper for framework compatibility - creates invoice line facts."""
     fact_df = create_invoice_line_fact(
@@ -421,96 +438,151 @@ def add_surrogate_keys(df: DataFrame, key_configs: dict[str, dict]) -> DataFrame
 # Agreement Facts
 
 
-def create_agreement_period_fact(
-    spark: SparkSession,
+def create_agreement_dimension(
+    spark: SparkSession,  # pylint: disable=unused-argument
     agreement_df: DataFrame,
-    config: dict[str, Any],  # pylint: disable=unused-argument
-    start_date: str = "2020-01-01",
-    end_date: str | None = None,
+    config: dict[str, Any] | None = None,  # pylint: disable=unused-argument
 ) -> DataFrame:
-    """Create monthly agreement period facts for MRR tracking.
+    """Create agreement dimension table with comprehensive business attributes.
 
-    Generates one row per agreement per month for:
-    - Active period tracking
-    - MRR calculation
-    - Churn analysis
-    - Growth metrics
+    This dimension provides:
+    - Agreement hierarchy and relationships
+    - Billing model classification (Amount/Hours/Incidents)
+    - Coverage details (what services are included)
+    - Customer and billing relationships
+    - Lifecycle status and dates
+    - Financial terms and limits
     """
-    # Prepare agreements with proper date handling
-    agreements_prep = agreement_df.select(
-        "id",
+    # Extract agreement number from customFields
+    dim_df = extract_agreement_number(agreement_df)
+
+    # Create comprehensive dimension with all attributes
+    dim_df = dim_df.select(
+        # Keys
+        F.sha2(F.col("id").cast("string"), 256).alias("AgreementSK"),
+        F.col("id").alias("agreementId"),
+        F.col("agreementNumber"),
+
+        # Basic attributes
         "name",
-        "agreementStatus",
-        "typeId",
-        "typeName",
+        F.col("typeId").alias("agreementTypeId"),
+        F.col("typeName").alias("agreementTypeName"),
+        F.col("agreementStatus").alias("status"),
+
+        # Hierarchy
+        F.col("parentAgreementId"),
+        F.col("parentAgreementName"),
+
+        # Customer relationships
         "companyId",
         "companyName",
+        F.col("companyIdentifier").alias("companyNumber"),
         "contactId",
-        "billingCycleId",
-        "billAmount",
-        "applicationUnits",
-        F.to_date(F.coalesce("startDate", F.current_date())).alias("effective_start"),
-        F.coalesce("endDate", F.to_date(F.lit("2099-12-31"))).alias("effective_end"),
-        "cancelledFlag",
-        "customFields",
+        "contactName",
+        "siteId",
+        "siteName",
+
+        # Billing relationships
+        "billToCompanyId",
+        "billToCompanyName",
+        "billToContactId",
+        "billToContactName",
+        "billToSiteId",
+        "billToSiteName",
+
+        # Billing model
+        F.col("applicationUnits").alias("billingModel"),  # Amount/Hours/Incidents
+        F.col("applicationLimit").alias("contractLimit"),
+        F.col("applicationCycle").alias("billingCycle"),
+        F.col("applicationUnlimitedFlag").alias("isUnlimited"),
+
+        # Coverage flags
+        F.col("coverAgreementTime").alias("coversTime"),
+        F.col("coverAgreementProduct").alias("coversProducts"),
+        F.col("coverAgreementExpense").alias("coversExpenses"),
+        F.col("coverSalesTax").alias("coversSalesTax"),
+
+        # Billing rules
+        F.col("carryOverUnused").alias("allowsCarryOver"),
+        F.col("allowOverruns").alias("allowsOverruns"),
+        F.col("expireWhenZero").alias("expiresWhenZero"),
+        F.col("chargeToFirm").alias("chargeToFirm"),
+
+        # Financial terms
+        F.col("billAmount").alias("recurringAmount"),
+        F.col("hourlyRate").alias("defaultHourlyRate"),
+        F.col("compHourlyRate").alias("compensationHourlyRate"),
+        F.col("compLimitAmount").alias("compensationLimit"),
+        F.col("taxable").alias("isTaxable"),
+        F.col("taxCodeId"),
+        F.col("taxCodeName"),
+
+        # Billing configuration
+        F.col("billTime").alias("defaultTimeBilling"),  # Billable/DoNotBill/NoCharge
+        F.col("billExpenses").alias("defaultExpenseBilling"),
+        F.col("billProducts").alias("defaultProductBilling"),
+        F.col("billOneTimeFlag").alias("isOneTimeBilling"),
+        F.col("prorateFlag").alias("allowsProration"),
+
+        # Work defaults
+        F.col("workRoleId").alias("defaultWorkRoleId"),
+        F.col("workRoleName").alias("defaultWorkRoleName"),
+        F.col("workTypeId").alias("defaultWorkTypeId"),
+        F.col("workTypeName").alias("defaultWorkTypeName"),
+
+        # Lifecycle dates
+        F.to_date("startDate").alias("startDate"),
+        F.to_date("endDate").alias("endDate"),
+        F.col("noEndingDateFlag").alias("isOpenEnded"),
+        F.to_date("dateCancelled").alias("cancelledDate"),
+        F.col("cancelledFlag").alias("isCancelled"),
+        F.col("reasonCancelled").alias("cancellationReason"),
+
+        # Derived fields
+        F.when(F.col("endDate").isNull() | (F.col("endDate") > F.current_date()), True)
+         .otherwise(False).alias("isActive"),
+        F.months_between(F.current_date(), F.col("startDate")).alias("ageInMonths"),
+        F.datediff(F.coalesce("endDate", F.current_date()), F.col("startDate")).alias("durationDays"),
+
+        # Invoice configuration
+        F.col("invoiceTemplateId"),
+        F.col("invoiceTemplateName"),
+        F.col("autoInvoiceFlag").alias("isAutoInvoice"),
+        F.col("nextInvoiceDate"),
+
+        # Other attributes
+        F.col("customerPO").alias("customerPONumber"),
+        F.col("workOrder").alias("workOrderNumber"),
+        F.col("slaId").alias("slaId"),
+        F.col("slaName").alias("slaName"),
+        "internalNotes",
     )
 
-    # Create date spine
-    from datetime import datetime
-
-    from unified_etl_core.date_utils import create_date_spine
-
-    if end_date is None:
-        end_date = datetime.now().strftime("%Y-%m-%d")
-
-    date_spine = create_date_spine(spark, start_date, end_date, "M")
-
-    # Cross join agreements with date spine
-    period_facts = agreements_prep.crossJoin(date_spine).filter(
-        (F.col("period_start") >= F.col("effective_start"))
-        & (F.col("period_start") <= F.col("effective_end"))
+    # Add agreement type normalization
+    dim_df = dim_df.withColumn(
+        "agreementTypeNormalized",
+        F.when(F.col("agreementTypeName").rlike(r"(?i)yÞjónusta"), "billable_service")
+        .when(F.col("agreementTypeName").rlike(r"(?i)Tímapottur\s*:?"), "prepaid_hours")
+        .when(F.col("agreementTypeName").rlike(r"(?i)Innri verkefni"), "internal_project")
+        .when(F.col("agreementTypeName").rlike(r"(?i)Rekstrarþjónusta|Alrekstur"), "operations")
+        .when(F.col("agreementTypeName").rlike(r"(?i)Hugbúnaðarþjónusta|Office 365"), "software_service")
+        .otherwise("other")
     )
 
-    # Add period metrics
-    period_facts = (
-        period_facts.withColumn(
-            "is_active_period",
-            (F.col("agreementStatus") == "Active") & (F.col("cancelledFlag") == F.lit(False)),
-        )
-        .withColumn(
-            "is_new_agreement",
-            F.date_trunc("month", F.col("effective_start")) == F.col("period_start"),
-        )
-        .withColumn(
-            "is_churned_agreement",
-            (F.date_trunc("month", F.col("effective_end")) == F.col("period_start"))
-            & (F.col("cancelledFlag") == F.lit(True)),
-        )
-        .withColumn(
-            "monthly_revenue",
-            F.when(F.col("applicationUnits") == "Amount", F.col("billAmount")).otherwise(0),
-        )
-        .withColumn(
-            "months_since_start", F.months_between(F.col("period_start"), F.col("effective_start"))
-        )
+    # Add billing behavior classification
+    dim_df = dim_df.withColumn(
+        "billingBehavior",
+        F.when(F.col("agreementTypeNormalized").isin("billable_service", "software_service"), "billable")
+        .when(F.col("agreementTypeNormalized") == "prepaid_hours", "prepaid")
+        .when(F.col("agreementTypeNormalized") == "internal_project", "internal")
+        .when(F.col("agreementTypeNormalized") == "operations", "operations")
+        .otherwise("unknown")
     )
 
-    # Add date dimensions
-    period_facts = period_facts.withColumn("year", F.year("period_start"))
-    period_facts = period_facts.withColumn("month", F.month("period_start"))
-    period_facts = period_facts.withColumn("quarter", F.quarter("period_start"))
+    # Add ETL metadata
+    dim_df = add_etl_metadata(dim_df, layer="gold", source="connectwise")
 
-    # Add surrogate keys
-    period_facts = add_surrogate_keys(
-        period_facts,
-        {
-            "AgreementPeriodSK": {"type": "hash", "source_columns": ["id", "period_start"]},
-            "AgreementSK": {"type": "hash", "source_columns": ["id"]},
-            "PeriodDateSK": {"type": "date_int", "source_columns": ["period_start"]},
-        },
-    )
-
-    return period_facts
+    return dim_df
 
 
 def create_expense_entry_fact(

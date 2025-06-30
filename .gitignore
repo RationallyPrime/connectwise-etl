@@ -137,7 +137,7 @@ uv.lock
 pyproject.toml.backup
 
 # Reference files
-Src/
+# Src/  # Removed - we want to track Src/ManageAPI
 
 # Temporary analysis files
 dims.txt
