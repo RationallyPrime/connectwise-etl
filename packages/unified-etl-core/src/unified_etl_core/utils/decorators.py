@@ -2,14 +2,15 @@
 
 import asyncio
 import inspect
+from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import Awaitable, Callable, TypeVar, cast
+from typing import TypeVar, cast
 
 import structlog
 from typing_extensions import ParamSpec
 
-from ..utils.exceptions import ApplicationError
 from ..base import ErrorLevel
+from ..utils.exceptions import ApplicationError
 
 # Type variables for generic function signatures
 P = ParamSpec("P")

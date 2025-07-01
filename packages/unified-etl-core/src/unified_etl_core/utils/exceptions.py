@@ -6,7 +6,7 @@ from ..base import ApplicationError, ErrorCode, ErrorLevel
 # Convenience exception aliases that use specific ETL error codes
 class DimensionResolutionError(ApplicationError):
     """Raised when dimension resolution fails."""
-    
+
     def __init__(self, message: str, **kwargs):
         super().__init__(
             message=message,
@@ -18,7 +18,7 @@ class DimensionResolutionError(ApplicationError):
 
 class DimensionJoinError(ApplicationError):
     """Raised when dimension join operations fail."""
-    
+
     def __init__(self, message: str, **kwargs):
         super().__init__(
             message=message,
@@ -30,7 +30,7 @@ class DimensionJoinError(ApplicationError):
 
 class HierarchyBuildError(ApplicationError):
     """Raised when hierarchy building fails."""
-    
+
     def __init__(self, message: str, **kwargs):
         super().__init__(
             message=message,

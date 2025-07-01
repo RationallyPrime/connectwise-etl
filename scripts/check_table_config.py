@@ -6,7 +6,6 @@ Run this as a single cell in Fabric notebook to diagnose config issues.
 
 from unified_etl_connectwise import ConnectWiseClient
 from unified_etl_connectwise.config import SILVER_CONFIG
-from pyspark.sql import functions as F
 
 # Initialize spark
 client = ConnectWiseClient()
@@ -52,7 +51,7 @@ bronze_tables = [t for t in all_tables if t["table"].startswith("bronze_cw_")]
 silver_tables = [t for t in all_tables if t["table"].startswith("silver_cw_")]
 gold_tables = [t for t in all_tables if t["table"].startswith("gold_")]
 
-print(f"\nFound tables:")
+print("\nFound tables:")
 print(f"  Bronze: {len(bronze_tables)}")
 print(f"  Silver: {len(silver_tables)}")
 print(f"  Gold: {len(gold_tables)}")
@@ -162,5 +161,5 @@ for entity, expected_table in refresh_endpoints.items():
 
 print("\n=== Summary ===")
 print(f"Total issues found: {len(issues)}")
-print(f"Tables are in schema: Lakehouse.silver for Silver layer")
-print(f"Bronze tables appear to be in default schema")
+print("Tables are in schema: Lakehouse.silver for Silver layer")
+print("Bronze tables appear to be in default schema")

@@ -23,6 +23,8 @@ from unified_etl_core.utils.exceptions import (
     DimensionResolutionError,
     HierarchyBuildError,
 )
+
+
 # Simple table path construction function
 def construct_table_path(base_path: str, table_name: str) -> str:
     """Construct a table path from base path and table name."""

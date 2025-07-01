@@ -74,7 +74,7 @@ class ErrorCode(str, Enum):
     STORAGE_ERROR = "6001"
     STORAGE_CONNECTION = "6002"
     STORAGE_OPERATION = "6003"
-    
+
     # ETL Errors (7xxx)
     DIMENSION_RESOLUTION_FAILED = "7001"
     DIMENSION_JOIN_FAILED = "7002"

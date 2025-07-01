@@ -24,8 +24,9 @@ print("✅ Credentials configured")
 # %%
 # CELL 2B: ONE-TIME Schema Update - DELETE THIS CELL AFTER RUNNING!
 # This refreshes gold layer to pick up new columns added to time entry fact
-from unified_etl_core.main import run_etl_pipeline
 import logging
+
+from unified_etl_core.main import run_etl_pipeline
 
 print("🔧 ONE-TIME: Refreshing Gold layer to update schema with new columns...")
 print("   (Delete this cell after running!)")
@@ -39,8 +40,9 @@ print("\n✅ Schema updated! You can now delete this cell.")
 
 # %%
 # CELL 3: Run Incremental Update
-from unified_etl_core.main import run_etl_pipeline
 import logging
+
+from unified_etl_core.main import run_etl_pipeline
 
 # Configure logging
 logging.basicConfig(
@@ -111,8 +113,9 @@ run_etl_pipeline(
 
 # %%
 # CELL 5: Verify Recent Data
-from pyspark.sql import SparkSession
 from datetime import datetime
+
+from pyspark.sql import SparkSession
 
 spark = SparkSession.getActiveSession()
 

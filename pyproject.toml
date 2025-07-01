@@ -11,6 +11,7 @@ dependencies = [
     # Core package is always required
     "unified-etl-core",
     "pydantic>=2.11.4",
+    "pyspark>=3.5.5",
 ]
 
 [project.optional-dependencies]

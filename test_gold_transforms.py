@@ -3,7 +3,6 @@
 Quick test to verify transform detection issue
 """
 
-import importlib
 
 
 # Test what the framework sees

@@ -18,5 +18,5 @@ def get_table_config(entity_name: str, configs: dict[str, Any]) -> dict[str, Any
     """
     if entity_name not in configs:
         raise KeyError(f"Configuration not found for entity: {entity_name}")
-    
+
     return configs[entity_name]

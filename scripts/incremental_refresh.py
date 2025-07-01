@@ -195,9 +195,8 @@ Check configuration and existing table statistics before running refresh.
 print("=== Configuration and Table Status Check ===\n")
 
 # Initialize client to get spark session
-from unified_etl_connectwise import ConnectWiseClient
-from unified_etl_connectwise.config import SILVER_CONFIG
 from pyspark.sql import functions as F
+from unified_etl_connectwise.config import SILVER_CONFIG
 
 client = ConnectWiseClient()
 spark = client.spark
@@ -370,7 +369,6 @@ Prerequisites:
 - Ensure 'refreshed_entities' variable contains the entities to update
 """
 
-from datetime import datetime, timedelta
 from pyspark.sql import functions as F
 
 # Get the last refresh timestamp (default to 24 hours ago if not set)
@@ -387,11 +385,10 @@ else:
 
 # CASCADE UPDATE - SILVER LAYER (INCREMENTAL)
 print("\n=== Incremental Silver Layer Update ===")
-from unified_etl_connectwise.config import SILVER_CONFIG
-from unified_etl_core.silver import apply_silver_transformations
-
 # Import model classes directly
 import unified_etl_connectwise.models.models as cw_models
+from unified_etl_connectwise.config import SILVER_CONFIG
+from unified_etl_core.silver import apply_silver_transformations
 
 model_mapping = {
     "Agreement": cw_models.Agreement,
@@ -503,7 +500,7 @@ for entity_name in refreshed_entities:
                 else:
                     # SCD Type 2 - for now, just append (proper implementation would close old records)
                     print(
-                        f"  WARNING: SCD Type 2 incremental not fully implemented, appending records"
+                        "  WARNING: SCD Type 2 incremental not fully implemented, appending records"
                     )
                     silver_delta.write.mode("append").saveAsTable(silver_table)
             else:
@@ -511,7 +508,7 @@ for entity_name in refreshed_entities:
                 if FORCE_FULL_SILVER_GOLD:
                     print(f"  FULL REFRESH: Overwriting {silver_table} with all Bronze data")
                 else:
-                    print(f"  Silver table doesn't exist, creating with all Bronze data")
+                    print("  Silver table doesn't exist, creating with all Bronze data")
 
                 # For full refresh or initial creation, just overwrite
                 silver_delta.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(
@@ -768,7 +765,7 @@ if "ExpenseEntry" in silver_changes:
 # Store the current timestamp for next incremental run
 current_timestamp = datetime.now().isoformat()
 spark.conf.set("spark.unified_etl.last_refresh", current_timestamp)
-print(f"\n=== Incremental Update Complete ===")
+print("\n=== Incremental Update Complete ===")
 print(f"Last refresh timestamp saved: {current_timestamp}")
 print("Only processed changed records through Bronze -> Silver -> Gold!")
 

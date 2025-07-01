@@ -85,6 +85,7 @@ def process_integration(
                 from pyspark.sql import SparkSession
 
                 spark = SparkSession.getActiveSession()
+                logging.info(f"Silver layer: SparkSession.getActiveSession() returned: {spark}")
                 if not spark:
                     raise RuntimeError("No active Spark session found")
 
@@ -208,6 +209,7 @@ def process_integration(
                 from pyspark.sql import SparkSession
 
                 spark = SparkSession.getActiveSession()
+                logging.info(f"Silver layer: SparkSession.getActiveSession() returned: {spark}")
                 if not spark:
                     raise RuntimeError("No active Spark session found")
 
@@ -335,6 +337,7 @@ def process_integration(
             from unified_etl_core import facts
 
             spark = SparkSession.getActiveSession()
+            logging.info(f"SparkSession.getActiveSession() returned: {spark}")
             if not spark:
                 raise RuntimeError("No active Spark session found")
 
@@ -359,8 +362,10 @@ def process_integration(
 
             # Gold: Create fact tables using configuration
             entity_configs = config.get("entities", {}) if config else {}
+            logging.info(f"Gold layer entity_configs: {list(entity_configs.keys())}")
             for entity_name, entity_config in entity_configs.items():
                 if entity_config.get("source") == integration_name:
+                    logging.info(f"Processing gold entity: {entity_name} for integration: {integration_name}")
                     try:
                         # Use custom table mapping or default pattern
                         if table_mappings and "silver" in table_mappings:

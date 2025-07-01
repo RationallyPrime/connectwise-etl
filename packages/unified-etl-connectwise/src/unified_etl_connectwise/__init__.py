@@ -3,7 +3,6 @@
 from .client import ConnectWiseClient, ConnectWiseExtractor
 from .models import models as models_module
 from .transforms import (
-    create_agreement_period_fact,
     create_expense_entry_fact,
     create_invoice_line_fact,
     create_time_entry_fact,
@@ -30,7 +29,6 @@ models = {
 __all__ = [
     "ConnectWiseClient",
     "ConnectWiseExtractor",
-    "create_agreement_period_fact",
     "create_expense_entry_fact",
     "create_invoice_line_fact",
     "create_time_entry_fact",
