@@ -193,6 +193,12 @@ def create_time_entry_fact(
         .when(F.col("billableOption") == "NoCharge", "No Charge")
     )
 
+    # Add cross-product of utilizationType and status
+    fact_df = fact_df.withColumn(
+        "utilizationStatus",
+        F.concat(F.col("utilizationType"), F.lit(" - "), F.col("status"))
+    )
+
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
 
@@ -510,7 +516,7 @@ def create_agreement_dimension(
 
         # Financial terms
         F.col("billAmount").alias("recurringAmount"),
-        F.col("hourlyRate").alias("defaultHourlyRate"),
+        F.lit(None).cast("double").alias("defaultHourlyRate"),  # hourlyRate not in agreement table
         F.col("compHourlyRate").alias("compensationHourlyRate"),
         F.col("compLimitAmount").alias("compensationLimit"),
         F.col("taxable").alias("isTaxable"),
