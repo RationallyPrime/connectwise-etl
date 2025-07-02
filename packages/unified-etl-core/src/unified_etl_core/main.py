@@ -3,6 +3,11 @@
 import logging
 from typing import Any
 
+from unified_etl_core.incremental import (
+    IncrementalProcessor,
+    build_incremental_conditions,
+    get_incremental_lookback_days,
+)
 from unified_etl_core.integrations import detect_available_integrations, list_available_integrations
 
 
@@ -90,14 +95,8 @@ def process_integration(
                     raise RuntimeError("No active Spark session found")
 
                 # Import incremental utilities if in incremental mode
-                incremental_processor = None
+                incremental_processor: IncrementalProcessor | None = None
                 if mode == "incremental":
-                    from unified_etl_core.incremental import (
-                        IncrementalProcessor,
-                        build_incremental_conditions,
-                        get_incremental_lookback_days,
-                    )
-
                     incremental_processor = IncrementalProcessor(spark)
 
                 # Process each entity based on mode
@@ -157,7 +156,7 @@ def process_integration(
                                 table_name = f"Lakehouse.bronze.{table_name}"
 
                             # Write based on mode
-                            if mode == "incremental" and spark.catalog.tableExists(table_name):
+                            if mode == "incremental" and spark.catalog.tableExists(table_name) and incremental_processor is not None:
                                 # Use MERGE for incremental
                                 merged, total = incremental_processor.merge_bronze_incremental(
                                     bronze_df, table_name
@@ -216,8 +215,6 @@ def process_integration(
                 # Import incremental utilities if in incremental mode
                 incremental_processor = None
                 if mode == "incremental":
-                    from unified_etl_core.incremental import IncrementalProcessor
-
                     incremental_processor = IncrementalProcessor(spark)
 
                 # Silver: Validate and transform each entity
@@ -353,7 +350,7 @@ def process_integration(
                     logging.warning(f"Could not import ConnectWise transforms: {e}")
             elif integration_name == "businesscentral":
                 try:
-                    from unified_etl_businesscentral import transforms as bc_transforms
+                    from unified_etl_businesscentral.transforms import gold as bc_transforms
 
                     integration_transforms = bc_transforms
                     logging.info("Using Business Central-specific transforms")
@@ -393,10 +390,10 @@ def process_integration(
                             # ConnectWise specific transforms
                             if integration_name == "connectwise":
                                 if entity_name == "agreement" and hasattr(
-                                    integration_transforms, "create_agreement_facts"
+                                    integration_transforms, "create_agreement_dimensions"
                                 ):
                                     logging.info("Using ConnectWise agreement-specific transforms")
-                                    gold_dfs = integration_transforms.create_agreement_facts(
+                                    gold_dfs = integration_transforms.create_agreement_dimensions(
                                         spark=spark, agreement_df=silver_df, config=entity_config
                                     )
                                     transform_used = True

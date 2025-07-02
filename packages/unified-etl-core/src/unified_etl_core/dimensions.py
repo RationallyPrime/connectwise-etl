@@ -11,6 +11,7 @@ import logging
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.window import Window
 
 # Import ETL metadata function from facts module
 from .facts import _add_etl_metadata
@@ -51,9 +52,8 @@ def create_dimension_from_column(
     df = spark.sql(query)
 
     # Add surrogate key using row_number
-    window = F.row_number().over(F.orderBy(F.desc("usage_count")))
-
-    dim_df = df.withColumn(f"{dimension_name}_key", window)
+    window = Window.orderBy(F.desc("usage_count"))
+    dim_df = df.withColumn(f"{dimension_name}_key", F.row_number().over(window))
 
     # Reorder columns and add metadata
     result = dim_df.select(
