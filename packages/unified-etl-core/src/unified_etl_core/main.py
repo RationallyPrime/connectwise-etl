@@ -346,6 +346,9 @@ def process_integration(
 
                     integration_transforms = cw_transforms
                     logging.info("Using ConnectWise-specific transforms")
+                    
+                    # Dimensions will be created after facts to handle calculated columns
+                    
                 except ImportError as e:
                     logging.warning(f"Could not import ConnectWise transforms: {e}")
             elif integration_name == "businesscentral":
@@ -597,6 +600,27 @@ def process_integration(
                     except Exception as e:
                         logging.error(f"Gold processing failed for {entity_name}: {e}")
                         continue
+            
+            # Create dimensions after all facts are created
+            if integration_name == "connectwise":
+                from unified_etl_connectwise.dimension_config import refresh_connectwise_dimensions
+                from unified_etl_core.dimensions import create_dimension_from_column
+                
+                logging.info("Creating ConnectWise dimensions from silver tables...")
+                refresh_connectwise_dimensions(spark)
+                
+                # Create dimensions from gold calculated columns
+                logging.info("Creating dimensions from gold calculated columns...")
+                
+                # LineType dimension from invoice lines
+                line_type_dim = create_dimension_from_column(
+                    spark=spark,
+                    source_table="gold_cw_fact_invoice_line",
+                    column_name="LineType",
+                    dimension_name="line_type"
+                )
+                line_type_dim.write.mode("overwrite").format("delta").saveAsTable("gold.dim_line_type")
+                logging.info(f"Created dim_line_type: {line_type_dim.count()} rows")
 
         except Exception as e:
             logging.error(f"Gold layer failed for {integration_name}: {e}")

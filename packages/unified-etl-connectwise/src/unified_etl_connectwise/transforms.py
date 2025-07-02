@@ -199,6 +199,22 @@ def create_time_entry_fact(
         F.concat(F.col("utilizationType"), F.lit(" - "), F.col("status"))
     )
 
+    # Add dimension keys for enum columns
+    from unified_etl_core.dimensions import add_dimension_keys
+    
+    dimension_mappings = [
+        # (fact_column, dim_table, dim_code_column, key_column)
+        ("billableOption", "dim_billable_status", "billable_status_code", "billable_status_key"),
+        ("status", "dim_time_status", "time_status_code", "time_status_key"),
+        ("chargeToType", "dim_charge_type", "charge_type_code", "charge_type_key"),
+        ("workTypeId", "dim_work_type", "work_type_code", "work_type_key"),
+        ("workRoleId", "dim_work_role", "work_role_code", "work_role_key"),
+        ("departmentId", "dim_department", "department_code", "department_key"),
+        ("businessUnitId", "dim_business_unit", "business_unit_code", "business_unit_key"),
+    ]
+    
+    fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
+
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
 
@@ -374,6 +390,12 @@ def create_invoice_line_fact(
         .drop("inv_id")
     )
 
+    # Default applyToType to "Services" when null
+    fact_df = fact_df.withColumn(
+        "applyToType",
+        F.coalesce(F.col("applyToType"), F.lit("Services"))
+    )
+
     # Add surrogate keys
     fact_df = fact_df.withColumn(
         "InvoiceLineSK",
@@ -395,7 +417,7 @@ def create_invoice_line_fact(
     # Only use agreementType when applyToType = "Agreement"
     # Use the most granular agreement type available (line-level > invoice-level)
     fact_df = fact_df.withColumn(
-        "line_agreement_type",
+        "agreement_type",
         F.coalesce(F.col("time_entry_agreement_type"), F.col("product_agreement_type")),
     ).withColumn(
         "agreement_type_final",
@@ -408,6 +430,19 @@ def create_invoice_line_fact(
         # For all other applyToTypes, leave agreement_type_final as NULL
         .otherwise(F.lit(None)),
     )
+
+    # Add dimension keys for enum columns
+    from unified_etl_core.dimensions import add_dimension_keys
+    
+    dimension_mappings = [
+        # (fact_column, dim_table, dim_code_column, key_column)
+        ("LineType", "dim_line_type", "line_type_code", "line_type_key"),
+        ("productClass", "dim_product_class", "product_class_code", "product_class_key"),
+        ("applyToType", "dim_invoice_apply_type", "invoice_apply_type_code", "invoice_apply_type_key"),
+        ("status", "dim_invoice_status", "invoice_status_code", "invoice_status_key"),
+    ]
+    
+    fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
 
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
@@ -666,6 +701,19 @@ def create_expense_entry_fact(
     if agreement_df is not None:
         fact_df = resolve_agreement_hierarchy(fact_df, agreement_df, "agreementId", "expenses")
         fact_df = calculate_effective_billing_status(fact_df)
+
+    # Add dimension keys for enum columns
+    from unified_etl_core.dimensions import add_dimension_keys
+    
+    dimension_mappings = [
+        # (fact_column, dim_table, dim_code_column, key_column)
+        ("billableOption", "dim_expense_billable_status", "expense_billable_status_code", "expense_billable_status_key"),
+        ("chargeToType", "dim_expense_charge_type", "expense_charge_type_code", "expense_charge_type_key"),
+        ("status", "dim_expense_status", "expense_status_code", "expense_status_key"),
+        ("classificationId", "dim_expense_classification", "expense_classification_code", "expense_classification_key"),
+    ]
+    
+    fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
 
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")

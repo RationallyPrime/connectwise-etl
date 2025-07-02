@@ -143,9 +143,9 @@ def add_dimension_keys(
         # Read dimension table
         dim_df = spark.table(f"gold.{dim_table}")
 
-        # Join to get key
+        # Join to get key - use broadcast for small dimension tables
         result_df = result_df.join(
-            dim_df.select(dim_code_col, key_col),
+            F.broadcast(dim_df.select(dim_code_col, key_col)),
             result_df[fact_col] == dim_df[dim_code_col],
             "left",
         ).drop(dim_code_col)
