@@ -10,7 +10,6 @@ from unified_etl_core.date_utils import add_date_key
 from unified_etl_core.gold import add_etl_metadata
 
 from .agreement_utils import (
-    add_agreement_flags,
     calculate_effective_billing_status,
     extract_agreement_number,
     resolve_agreement_hierarchy,
@@ -182,18 +181,16 @@ def create_time_entry_fact(
     # If agreements provided, resolve types and add flags
     if agreement_df is not None:
         fact_df = resolve_agreement_hierarchy(fact_df, agreement_df, "agreementId", "time_entries")
-        fact_df = add_agreement_flags(fact_df)
         fact_df = calculate_effective_billing_status(fact_df)
         # The resolve_agreement_hierarchy function adds parentAgreementId and final_agreement_number
 
     # Add utilization type
     fact_df = fact_df.withColumn(
         "utilizationType",
-        F.when(F.col("isInternalWork"), "Internal")
+        F.when(F.col("agreement_type_normalized") == "internal_project", "Internal")
         .when(F.col("billableOption") == "Billable", "Billable")
         .when(F.col("billableOption") == "DoNotBill", "Non-Billable")
         .when(F.col("billableOption") == "NoCharge", "No Charge")
-        .otherwise("Other"),
     )
 
     # Add ETL metadata
@@ -329,10 +326,13 @@ def create_invoice_line_fact(
 
     # Add line metadata
     fact_df = (
-        fact_df.withColumn("isService", F.col("productClass") == "Service")
-        .withColumn("isProduct", F.col("productClass") != "Service")
-        .withColumn("isAgreement", F.col("agreementId").isNotNull())
-        .withColumn("isBillable", F.col("lineAmount") > 0)
+        fact_df.withColumn(
+            "LineType",
+            F.when(F.col("productClass") == "Service", "SERVICE")
+             .when(F.col("productClass").isNull() & F.col("timeEntryId").isNotNull(), "SERVICE")
+             .when(F.col("productClass").isNotNull(), "PRODUCT") 
+             .when(F.col("agreementId").isNotNull(), "AGREEMENT")
+        )
     )
 
     # Calculate line cost and margin
@@ -659,7 +659,6 @@ def create_expense_entry_fact(
     # If agreements provided, resolve types and add flags
     if agreement_df is not None:
         fact_df = resolve_agreement_hierarchy(fact_df, agreement_df, "agreementId", "expenses")
-        fact_df = add_agreement_flags(fact_df)
         fact_df = calculate_effective_billing_status(fact_df)
 
     # Add ETL metadata

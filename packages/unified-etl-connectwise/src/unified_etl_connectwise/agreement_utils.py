@@ -160,18 +160,6 @@ def resolve_agreement_hierarchy(
     return result
 
 
-def add_agreement_flags(df: DataFrame) -> DataFrame:
-    """Add boolean flags based on agreement type and billing behavior.
-
-    Uses the normalized agreement types for consistent flagging.
-    """
-    return (
-        df.withColumn("isBillableWork", F.col("agreement_billing_behavior") == "billable")
-        .withColumn("isTimapottur", F.col("agreement_type_normalized") == "prepaid_hours")
-        .withColumn("isInternalWork", F.col("agreement_type_normalized") == "internal_project")
-        .withColumn("isOperations", F.col("agreement_type_normalized") == "operations")
-    )
-
 
 def filter_billable_time_entries(time_df: DataFrame) -> DataFrame:
     """Filter time entries for invoice creation, excluding prepaid and internal work.
@@ -184,10 +172,10 @@ def filter_billable_time_entries(time_df: DataFrame) -> DataFrame:
         F.col("invoiceId").isNotNull()
         &
         # Exclude prepaid hours (Tímapottur)
-        (~F.col("isTimapottur"))
+        (F.col("agreement_type_normalized") != "prepaid_hours")
         &
         # Exclude internal work
-        (~F.col("isInternalWork"))
+        (F.col("agreement_type_normalized") != "internal_project")
     )
 
 
@@ -202,12 +190,11 @@ def calculate_effective_billing_status(df: DataFrame) -> DataFrame:
     return df.withColumn(
         "effectiveBillingStatus",
         F.when(F.col("invoiceId").isNotNull(), "Invoiced")
-        .when(F.col("isInternalWork"), "Internal")
-        .when(F.col("isTimapottur"), "Prepaid")
-        .when(F.col("isBillableWork") & (F.col("billableOption") == "Billable"), "Billable")
+        .when(F.col("agreement_type_normalized") == "internal_project", "Internal")
+        .when(F.col("agreement_type_normalized") == "prepaid_hours", "Prepaid")
+        .when((F.col("agreement_billing_behavior") == "billable") & (F.col("billableOption") == "Billable"), "Billable")
         .when(F.col("billableOption") == "NoCharge", "NoCharge")
         .when(F.col("billableOption") == "DoNotBill", "DoNotBill")
-        .otherwise("Unknown"),
     )
 
 

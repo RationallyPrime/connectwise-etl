@@ -99,6 +99,30 @@ def generate_date_dimension(
         "IsWeekend", (F.dayofweek("Date") == 1) | (F.dayofweek("Date") == 7)
     )
 
+    # Add timesheet period (26th to 25th)
+    date_df = date_df.withColumn(
+        "TimesheetPeriodStart",
+        F.when(F.dayofmonth("Date") >= 26, 
+               F.date_format(F.make_date(F.year("Date"), F.month("Date"), F.lit(26)), "yyyy-MM-dd")
+        ).otherwise(
+            F.date_format(F.make_date(
+                F.when(F.month("Date") == 1, F.year("Date") - 1).otherwise(F.year("Date")),
+                F.when(F.month("Date") == 1, F.lit(12)).otherwise(F.month("Date") - 1),
+                F.lit(26)
+            ), "yyyy-MM-dd")
+        )
+    )
+
+    date_df = date_df.withColumn(
+        "TimesheetPeriodEnd", 
+        F.date_add(F.add_months(F.col("TimesheetPeriodStart"), 1), -1)
+    )
+
+    date_df = date_df.withColumn(
+        "TimesheetPeriodKey",
+        F.date_format("TimesheetPeriodStart", "yyyyMMdd").cast("int")
+    )
+
     # Add previous/next date keys for easy navigation
     date_df = date_df.withColumn(
         "PreviousDateKey", F.date_format(F.date_sub("Date", 1), "yyyyMMdd").cast("int")
