@@ -30,7 +30,7 @@ def create_dimension_from_column(
 
     Args:
         spark: SparkSession
-        source_table: Source table name (e.g., "silver_cw_timeentry")
+        source_table: Source table name (e.g., "silver_cw_timeentry" or "Lakehouse.silver.silver_cw_timeentry")
         column_name: Column to extract values from
         dimension_name: Name for the dimension (without dim_ prefix)
         include_counts: Whether to include usage counts
@@ -38,18 +38,17 @@ def create_dimension_from_column(
     Returns:
         DataFrame with dimension data
     """
-    # Query distinct values with counts
-    query = f"""
-        SELECT 
-            {column_name} as {dimension_name}_code,
-            COUNT(*) as usage_count
-        FROM Lakehouse.silver.{source_table}
-        WHERE {column_name} IS NOT NULL
-        GROUP BY {column_name}
-        ORDER BY usage_count DESC
-    """
+    # Read the source table dynamically
+    source_df = spark.table(source_table)
 
-    df = spark.sql(query)
+    # Use DataFrame API instead of SQL query
+    df = (
+        source_df.where(F.col(column_name).isNotNull())
+        .groupBy(column_name)
+        .agg(F.count("*").alias("usage_count"))
+        .withColumnRenamed(column_name, f"{dimension_name}_code")
+        .orderBy(F.desc("usage_count"))
+    )
 
     # Add surrogate key using row_number
     window = Window.orderBy(F.desc("usage_count"))
@@ -89,33 +88,27 @@ def create_all_dimensions(
     dimensions = {}
 
     for source_table, column_name, dimension_name in dimension_configs:
-        try:
-            logger.info(
-                f"Creating dimension: dim_{dimension_name} from {source_table}.{column_name}"
-            )
+        logger.info(
+            f"Creating dimension: dim_{dimension_name} from {source_table}.{column_name}"
+        )
 
-            # Create dimension DataFrame
-            dim_df = create_dimension_from_column(
-                spark=spark,
-                source_table=source_table,
-                column_name=column_name,
-                dimension_name=dimension_name,
-            )
+        # Create dimension DataFrame - FAIL FAST on errors
+        dim_df = create_dimension_from_column(
+            spark=spark,
+            source_table=source_table,
+            column_name=column_name,
+            dimension_name=dimension_name,
+        )
 
-            # Store in dictionary
-            dimensions[f"dim_{dimension_name}"] = dim_df
+        # Store in dictionary
+        dimensions[f"dim_{dimension_name}"] = dim_df
 
-            # Write to gold layer
-            table_path = f"{lakehouse_root}gold/dim_{dimension_name}"
+        # Write to gold layer using saveAsTable for proper Fabric integration
+        table_name = f"Lakehouse.gold.dim_{dimension_name}"
+        
+        dim_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(table_name)
 
-            dim_df.write.mode("overwrite").option("overwriteSchema", "true").format("delta").save(
-                table_path
-            )
-
-            logger.info(f"Created dim_{dimension_name} with {dim_df.count()} values")
-
-        except Exception as e:
-            logger.error(f"Failed to create dim_{dimension_name}: {e!s}")
+        logger.info(f"Created dim_{dimension_name} with {dim_df.count()} values")
 
     return dimensions
 

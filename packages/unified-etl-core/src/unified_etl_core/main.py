@@ -52,12 +52,12 @@ def run_etl_pipeline(
         try:
             process_integration(
                 integration_name,
-                available_integrations[integration_name],
-                layers,
-                config,
-                table_mappings,
-                mode,
-                lookback_days,
+                integration_info=available_integrations[integration_name],
+                layers=layers,
+                config=config,
+                table_mappings=table_mappings,
+                mode=mode,
+                lookback_days=lookback_days,
             )
         except Exception as e:
             logging.error(f"Failed processing {integration_name}: {e}")
@@ -338,6 +338,18 @@ def process_integration(
             if not spark:
                 raise RuntimeError("No active Spark session found")
 
+            # Create dimensions FIRST before facts (facts need dimensions to exist)
+            if integration_name == "connectwise":
+                try:
+                    from unified_etl_connectwise.dimension_config import refresh_connectwise_dimensions
+                    
+                    logging.info("Creating ConnectWise dimensions from silver tables...")
+                    refresh_connectwise_dimensions(spark)
+                    logging.info("✅ ConnectWise dimensions created successfully")
+                except Exception as e:
+                    logging.error(f"Failed to create ConnectWise dimensions: {e}")
+                    raise
+
             # Check for integration-specific transforms
             integration_transforms = None
             if integration_name == "connectwise":
@@ -346,8 +358,6 @@ def process_integration(
 
                     integration_transforms = cw_transforms
                     logging.info("Using ConnectWise-specific transforms")
-                    
-                    # Dimensions will be created after facts to handle calculated columns
                     
                 except ImportError as e:
                     logging.warning(f"Could not import ConnectWise transforms: {e}")
@@ -601,26 +611,27 @@ def process_integration(
                         logging.error(f"Gold processing failed for {entity_name}: {e}")
                         continue
             
-            # Create dimensions after all facts are created
+            # Create dimensions from gold calculated columns after facts are created
             if integration_name == "connectwise":
-                from unified_etl_connectwise.dimension_config import refresh_connectwise_dimensions
-                from unified_etl_core.dimensions import create_dimension_from_column
-                
-                logging.info("Creating ConnectWise dimensions from silver tables...")
-                refresh_connectwise_dimensions(spark)
-                
-                # Create dimensions from gold calculated columns
-                logging.info("Creating dimensions from gold calculated columns...")
-                
-                # LineType dimension from invoice lines
-                line_type_dim = create_dimension_from_column(
-                    spark=spark,
-                    source_table="gold_cw_fact_invoice_line",
-                    column_name="LineType",
-                    dimension_name="line_type"
-                )
-                line_type_dim.write.mode("overwrite").format("delta").saveAsTable("gold.dim_line_type")
-                logging.info(f"Created dim_line_type: {line_type_dim.count()} rows")
+                try:
+                    from unified_etl_core.dimensions import create_dimension_from_column
+                    
+                    logging.info("Creating dimensions from gold calculated columns...")
+                    
+                    # LineType dimension from invoice lines
+                    if spark.catalog.tableExists("Lakehouse.gold.gold_cw_fact_invoice_line"):
+                        line_type_dim = create_dimension_from_column(
+                            spark=spark,
+                            source_table="gold_cw_fact_invoice_line",
+                            column_name="LineType",
+                            dimension_name="line_type"
+                        )
+                        line_type_dim.write.mode("overwrite").format("delta").saveAsTable("Lakehouse.gold.dim_line_type")
+                        logging.info(f"Created dim_line_type: {line_type_dim.count()} rows")
+                    else:
+                        logging.warning("gold_cw_fact_invoice_line table not found, skipping LineType dimension")
+                except Exception as e:
+                    logging.warning(f"Could not create calculated dimensions: {e}")
 
         except Exception as e:
             logging.error(f"Gold layer failed for {integration_name}: {e}")

@@ -6,33 +6,33 @@ Defines which columns should become dimensions for ConnectWise data.
 # Configuration for ConnectWise dimensions
 CONNECTWISE_DIMENSION_CONFIG = [
     # Time entry dimensions
-    ("silver_cw_timeentry", "billableOption", "billable_status"),
-    ("silver_cw_timeentry", "chargeToType", "charge_type"),
-    ("silver_cw_timeentry", "status", "time_status"),
-    ("silver_cw_timeentry", "workTypeId", "work_type"),
-    ("silver_cw_timeentry", "workRoleId", "work_role"),
-    ("silver_cw_timeentry", "departmentId", "department"),
-    ("silver_cw_timeentry", "businessUnitId", "business_unit"),
+    ("Lakehouse.silver.silver_cw_timeentry", "billableOption", "billable_status"),
+    ("Lakehouse.silver.silver_cw_timeentry", "chargeToType", "charge_type"),
+    ("Lakehouse.silver.silver_cw_timeentry", "status", "time_status"),
+    ("Lakehouse.silver.silver_cw_timeentry", "workTypeId", "work_type"),
+    ("Lakehouse.silver.silver_cw_timeentry", "workRoleId", "work_role"),
+    ("Lakehouse.silver.silver_cw_timeentry", "departmentId", "department"),
+    ("Lakehouse.silver.silver_cw_timeentry", "businessUnitId", "business_unit"),
     # Agreement dimensions
-    ("silver_cw_agreement", "agreementStatus", "agreement_status"),
-    ("silver_cw_agreement", "typeId", "agreement_type"),  # The misused billable tracker!
-    ("silver_cw_agreement", "billingCycleId", "billing_cycle"),
+    ("Lakehouse.silver.silver_cw_agreement", "agreementStatus", "agreement_status"),
+    ("Lakehouse.silver.silver_cw_agreement", "typeId", "agreement_type"),  # The misused billable tracker!
+    ("Lakehouse.silver.silver_cw_agreement", "billingCycleId", "billing_cycle"),
     # Invoice dimensions
-    ("silver_cw_invoice", "type", "invoice_type"),
-    ("silver_cw_invoice", "statusId", "invoice_status"),
-    ("silver_cw_invoice", "applyToType", "invoice_apply_type"),
+    ("Lakehouse.silver.silver_cw_invoice", "type", "invoice_type"),
+    ("Lakehouse.silver.silver_cw_invoice", "statusId", "invoice_status"),
+    ("Lakehouse.silver.silver_cw_invoice", "applyToType", "invoice_apply_type"),
     # Product dimensions
-    ("silver_cw_productitem", "productClass", "product_class"),
-    ("silver_cw_productitem", "billableOption", "product_billable_status"),
+    ("Lakehouse.silver.silver_cw_productitem", "productClass", "product_class"),
+    ("Lakehouse.silver.silver_cw_productitem", "billableOption", "product_billable_status"),
     # Expense dimensions
-    ("silver_cw_expenseentry", "status", "expense_status"),
-    ("silver_cw_expenseentry", "chargeToType", "expense_charge_type"),
-    ("silver_cw_expenseentry", "billableOption", "expense_billable_status"),
-    ("silver_cw_expenseentry", "classificationId", "expense_classification"),
+    ("Lakehouse.silver.silver_cw_expenseentry", "status", "expense_status"),
+    ("Lakehouse.silver.silver_cw_expenseentry", "chargeToType", "expense_charge_type"),
+    ("Lakehouse.silver.silver_cw_expenseentry", "billableOption", "expense_billable_status"),
+    ("Lakehouse.silver.silver_cw_expenseentry", "classificationId", "expense_classification"),
 ]
 
 
-def refresh_connectwise_dimensions(spark, lakehouse_root: str = "/lakehouse/default/Tables/"):
+def refresh_connectwise_dimensions(spark):
     """Refresh all ConnectWise dimension tables."""
     import logging
     from datetime import datetime
@@ -45,7 +45,7 @@ def refresh_connectwise_dimensions(spark, lakehouse_root: str = "/lakehouse/defa
     start_time = datetime.now()
 
     dimensions = create_all_dimensions(
-        spark=spark, dimension_configs=CONNECTWISE_DIMENSION_CONFIG, lakehouse_root=lakehouse_root
+        spark=spark, dimension_configs=CONNECTWISE_DIMENSION_CONFIG
     )
 
     end_time = datetime.now()

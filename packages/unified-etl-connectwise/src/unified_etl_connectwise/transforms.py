@@ -709,8 +709,8 @@ def create_expense_entry_fact(
         # (fact_column, dim_table, dim_code_column, key_column)
         ("billableOption", "dim_expense_billable_status", "expense_billable_status_code", "expense_billable_status_key"),
         ("chargeToType", "dim_expense_charge_type", "expense_charge_type_code", "expense_charge_type_key"),
-        ("status", "dim_expense_status", "expense_status_code", "expense_status_key"),
-        ("classificationId", "dim_expense_classification", "expense_classification_code", "expense_classification_key"),
+        # Note: expenses don't have status column, removed from dimension mappings
+        # ("classificationId", "dim_expense_classification", "expense_classification_code", "expense_classification_key"),
     ]
     
     fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
