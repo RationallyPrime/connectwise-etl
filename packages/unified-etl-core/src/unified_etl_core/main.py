@@ -341,8 +341,10 @@ def process_integration(
             # Create dimensions FIRST before facts (facts need dimensions to exist)
             if integration_name == "connectwise":
                 try:
-                    from unified_etl_connectwise.dimension_config import refresh_connectwise_dimensions
-                    
+                    from unified_etl_connectwise.dimension_config import (
+                        refresh_connectwise_dimensions,
+                    )
+
                     logging.info("Creating ConnectWise dimensions from silver tables...")
                     refresh_connectwise_dimensions(spark)
                     logging.info("✅ ConnectWise dimensions created successfully")
@@ -358,7 +360,7 @@ def process_integration(
 
                     integration_transforms = cw_transforms
                     logging.info("Using ConnectWise-specific transforms")
-                    
+
                 except ImportError as e:
                     logging.warning(f"Could not import ConnectWise transforms: {e}")
             elif integration_name == "businesscentral":
@@ -610,14 +612,14 @@ def process_integration(
                     except Exception as e:
                         logging.error(f"Gold processing failed for {entity_name}: {e}")
                         continue
-            
+
             # Create dimensions from gold calculated columns after facts are created
             if integration_name == "connectwise":
                 try:
                     from unified_etl_core.dimensions import create_dimension_from_column
-                    
+
                     logging.info("Creating dimensions from gold calculated columns...")
-                    
+
                     # LineType dimension from invoice lines
                     if spark.catalog.tableExists("Lakehouse.gold.gold_cw_fact_invoice_line"):
                         line_type_dim = create_dimension_from_column(

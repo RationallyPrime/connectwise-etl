@@ -102,7 +102,7 @@ def generate_date_dimension(
     # Add timesheet period (26th to 25th)
     date_df = date_df.withColumn(
         "TimesheetPeriodStart",
-        F.when(F.dayofmonth("Date") >= 26, 
+        F.when(F.dayofmonth("Date") >= 26,
                F.date_format(F.make_date(F.year("Date"), F.month("Date"), F.lit(26)), "yyyy-MM-dd")
         ).otherwise(
             F.date_format(F.make_date(
@@ -114,7 +114,7 @@ def generate_date_dimension(
     )
 
     date_df = date_df.withColumn(
-        "TimesheetPeriodEnd", 
+        "TimesheetPeriodEnd",
         F.date_add(F.add_months(F.col("TimesheetPeriodStart"), 1), -1)
     )
 

@@ -199,20 +199,27 @@ def create_time_entry_fact(
         F.concat(F.col("utilizationType"), F.lit(" - "), F.col("status"))
     )
 
-    # Add dimension keys for enum columns
+    # Add dimension keys for enum columns using new rich dimensions
     from unified_etl_core.dimensions import add_dimension_keys
-    
+
     dimension_mappings = [
         # (fact_column, dim_table, dim_code_column, key_column)
-        ("billableOption", "dim_billable_status", "billable_status_code", "billable_status_key"),
-        ("status", "dim_time_status", "time_status_code", "time_status_key"),
-        ("chargeToType", "dim_charge_type", "charge_type_code", "charge_type_key"),
-        ("workTypeId", "dim_work_type", "work_type_code", "work_type_key"),
-        ("workRoleId", "dim_work_role", "work_role_code", "work_role_key"),
-        ("departmentId", "dim_department", "department_code", "department_key"),
-        ("businessUnitId", "dim_business_unit", "business_unit_code", "business_unit_key"),
+        ("billableOption", "dimBillableStatus", "BillableStatusCode", "BillableStatusKey"),
+        ("status", "dimTimeEntryStatus", "TimeEntryStatusCode", "TimeEntryStatusKey"),
+        ("chargeToType", "dimChargeType", "ChargeTypeCode", "ChargeTypeKey"),
+        ("workTypeId", "dimWorkType", "WorkTypeCode", "WorkTypeKey"),
+        ("workRoleId", "dimWorkRole", "WorkRoleCode", "WorkRoleKey"),
+        ("departmentId", "dimDepartment", "DepartmentCode", "DepartmentKey"),
+        ("businessUnitId", "dimBusinessUnit", "BusinessUnitCode", "BusinessUnitKey"),
+        # Add missing dimensions
+        ("memberId", "dimMember", "MemberCode", "MemberKey"),
+        ("companyId", "dimCompany", "CompanyCode", "CompanyKey"),
     ]
-    
+
+    # Also add agreement type if available in the timeentry data
+    if "agreementTypeId" in fact_df.columns:
+        dimension_mappings.append(("agreementTypeId", "dimAgreementType", "AgreementTypeCode", "AgreementTypeKey"))
+
     fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
 
     # Add ETL metadata
@@ -352,7 +359,7 @@ def create_invoice_line_fact(
             "LineType",
             F.when(F.col("productClass") == "Service", "SERVICE")
              .when(F.col("productClass").isNull() & F.col("timeEntryId").isNotNull(), "SERVICE")
-             .when(F.col("productClass").isNotNull(), "PRODUCT") 
+             .when(F.col("productClass").isNotNull(), "PRODUCT")
              .when(F.col("agreementId").isNotNull(), "AGREEMENT")
         )
     )
@@ -431,17 +438,28 @@ def create_invoice_line_fact(
         .otherwise(F.lit(None)),
     )
 
-    # Add dimension keys for enum columns
+    # Add dimension keys for enum columns using new rich dimensions
     from unified_etl_core.dimensions import add_dimension_keys
-    
+
     dimension_mappings = [
         # (fact_column, dim_table, dim_code_column, key_column)
-        ("LineType", "dim_line_type", "line_type_code", "line_type_key"),
-        ("productClass", "dim_product_class", "product_class_code", "product_class_key"),
-        ("applyToType", "dim_invoice_apply_type", "invoice_apply_type_code", "invoice_apply_type_key"),
-        ("status", "dim_invoice_status", "invoice_status_code", "invoice_status_key"),
+        ("productClass", "dimProductClass", "ProductClassCode", "ProductClassKey"),
+        ("applyToType", "dimInvoiceApplyType", "InvoiceApplyTypeCode", "InvoiceApplyTypeKey"),
+        ("statusId", "dimInvoiceStatus", "InvoiceStatusCode", "InvoiceStatusKey"),
+        ("type", "dimInvoiceType", "InvoiceTypeCode", "InvoiceTypeKey"),
+        # Add missing dimensions
+        ("companyId", "dimCompany", "CompanyCode", "CompanyKey"),
+        ("memberId", "dimMember", "MemberCode", "MemberKey"),
     ]
-    
+
+    # Add agreement type if available
+    if "agreementTypeId" in fact_df.columns:
+        dimension_mappings.append(("agreementTypeId", "dimAgreementType", "AgreementTypeCode", "AgreementTypeKey"))
+
+    # Add agreement status if available
+    if "agreementStatus" in fact_df.columns:
+        dimension_mappings.append(("agreementStatus", "dimAgreementStatus", "AgreementStatusCode", "AgreementStatusKey"))
+
     fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
 
     # Add ETL metadata
@@ -702,17 +720,24 @@ def create_expense_entry_fact(
         fact_df = resolve_agreement_hierarchy(fact_df, agreement_df, "agreementId", "expenses")
         fact_df = calculate_effective_billing_status(fact_df)
 
-    # Add dimension keys for enum columns
+    # Add dimension keys for enum columns using new rich dimensions
     from unified_etl_core.dimensions import add_dimension_keys
-    
+
     dimension_mappings = [
         # (fact_column, dim_table, dim_code_column, key_column)
-        ("billableOption", "dim_expense_billable_status", "expense_billable_status_code", "expense_billable_status_key"),
-        ("chargeToType", "dim_expense_charge_type", "expense_charge_type_code", "expense_charge_type_key"),
-        # Note: expenses don't have status column, removed from dimension mappings
-        # ("classificationId", "dim_expense_classification", "expense_classification_code", "expense_classification_key"),
+        ("billableOption", "dimBillableStatus", "BillableStatusCode", "BillableStatusKey"),
+        ("chargeToType", "dimChargeType", "ChargeTypeCode", "ChargeTypeKey"),
+        ("status", "dimExpenseStatus", "ExpenseStatusCode", "ExpenseStatusKey"),
+        ("classificationId", "dimExpenseClassification", "ExpenseClassificationCode", "ExpenseClassificationKey"),
+        # Add missing dimensions
+        ("memberId", "dimMember", "MemberCode", "MemberKey"),
+        ("companyId", "dimCompany", "CompanyCode", "CompanyKey"),
     ]
-    
+
+    # Add agreement type if available
+    if "agreementTypeId" in fact_df.columns:
+        dimension_mappings.append(("agreementTypeId", "dimAgreementType", "AgreementTypeCode", "AgreementTypeKey"))
+
     fact_df = add_dimension_keys(fact_df, spark, dimension_mappings)
 
     # Add ETL metadata
