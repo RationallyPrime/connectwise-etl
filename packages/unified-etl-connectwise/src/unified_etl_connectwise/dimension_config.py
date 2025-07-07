@@ -104,7 +104,7 @@ CONNECTWISE_RICH_DIMENSIONS = {
             "isInternal": "CASE WHEN typeName LIKE '%Innri%' THEN true ELSE false END",
             "isOperations": "CASE WHEN typeName LIKE '%Rekstrar%' OR typeName LIKE '%Alrekstur%' THEN true ELSE false END",
             "isSoftware": "CASE WHEN typeName LIKE '%Hugbúnaðar%' OR typeName LIKE '%Office 365%' THEN true ELSE false END",
-            "agreementCategory": """CASE 
+            "agreementCategory": """CASE
                 WHEN typeName RLIKE 'Tímapottur\\\\s*:?' THEN 'Timapottur'
                 WHEN typeName LIKE '%Innri%' THEN 'Internal'
                 WHEN typeName LIKE '%Rekstrar%' OR typeName LIKE '%Alrekstur%' THEN 'Operations'

@@ -375,7 +375,10 @@ def join_bc_dimension(
                 )
 
             # Perform BC dimension join
-            join_condition = F.reduce(lambda x, y: x & y, join_conditions)
+            # Build join condition by combining all conditions with AND
+            join_condition = join_conditions[0]
+            for condition in join_conditions[1:]:
+                join_condition = join_condition & condition
 
             # Select only needed columns from BC dimension to avoid conflicts
             dim_select_cols = ["*"]  # Can be refined to specific columns

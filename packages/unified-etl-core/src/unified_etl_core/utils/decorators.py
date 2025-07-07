@@ -25,7 +25,7 @@ def with_etl_error_handling(
     operation: str | None = None,
 ) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """Decorator for handling errors in ETL functions.
-    
+
     Simplified version of the error handler that logs structured errors
     and optionally re-raises them.
 

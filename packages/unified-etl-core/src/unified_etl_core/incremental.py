@@ -28,7 +28,7 @@ class IncrementalProcessor:
             timestamp_col = "etlTimestamp" if "bronze" in table_name else "_etl_processed_at"
 
             result = self.spark.sql(f"""
-                SELECT MAX({timestamp_col}) as last_refresh 
+                SELECT MAX({timestamp_col}) as last_refresh
                 FROM {table_name}
             """).collect()
 
@@ -105,7 +105,7 @@ class IncrementalProcessor:
         MERGE INTO {target_table} AS target
         USING {temp_view} AS source
         ON target.{merge_key} = source.{merge_key}
-        WHEN MATCHED THEN 
+        WHEN MATCHED THEN
             UPDATE SET {update_expr}
         WHEN NOT MATCHED THEN
             INSERT ({insert_cols}) VALUES ({insert_values})

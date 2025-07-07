@@ -203,12 +203,12 @@ def create_rich_dimension(
     dimension_name: str,
 ) -> DataFrame:
     """Create a rich dimension table with additional business context columns.
-    
+
     Args:
         spark: SparkSession
         dimension_config: Dictionary with source_table, primary_column, additional_columns
         dimension_name: Name for the dimension
-        
+
     Returns:
         DataFrame with rich dimension data
     """
@@ -260,7 +260,7 @@ def create_rich_dimension(
 
     # Build the complete SQL query
     sql_query = f"""
-    SELECT 
+    SELECT
         {', '.join(group_by_cols)},
         {', '.join(additional_selects) if additional_selects else "'N/A' as placeholder"},
         COUNT(*) as usage_count
@@ -297,12 +297,12 @@ def create_rich_dimensions(
     lakehouse_root: str = "/lakehouse/default/Tables/",
 ) -> dict:
     """Create rich dimension tables with business context.
-    
+
     Args:
         spark: SparkSession
         rich_dimension_configs: Dictionary of dimension_name -> config
         lakehouse_root: Root path for lakehouse tables
-        
+
     Returns:
         Dictionary of dimension name -> DataFrame
     """
@@ -351,10 +351,7 @@ def add_dimension_keys(
 
     for fact_col, dim_table, dim_code_col, key_col in dimension_mappings:
         # Read dimension table - check if it already has catalog/schema prefix
-        if "." in dim_table:
-            table_path = dim_table
-        else:
-            table_path = f"gold.{dim_table}"
+        table_path = dim_table if "." in dim_table else f"gold.{dim_table}"
 
         try:
             dim_df = spark.table(table_path)

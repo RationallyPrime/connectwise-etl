@@ -80,10 +80,7 @@ def create_date_dimension(
         day_of_year = dt.timetuple().tm_yday
 
         # Fiscal year calculation
-        if month >= fiscal_year_start_month:
-            fiscal_year = year
-        else:
-            fiscal_year = year - 1
+        fiscal_year = year if month >= fiscal_year_start_month else year - 1
         fiscal_quarter = ((month - fiscal_year_start_month) % 12) // 3 + 1
 
         # Formatted names
@@ -176,9 +173,7 @@ def _is_us_holiday(dt: date) -> bool:
     if dt.month == 7 and dt.day == 4:
         return True
     # Christmas Day
-    if dt.month == 12 and dt.day == 25:
-        return True
-    return False
+    return bool(dt.month == 12 and dt.day == 25)
 
 
 def generate_surrogate_key(
