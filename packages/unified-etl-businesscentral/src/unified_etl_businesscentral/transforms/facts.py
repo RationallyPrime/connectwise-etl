@@ -11,7 +11,6 @@ import logging
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
-from unified_etl_core.utils.exceptions import ConfigurationError, FactTableError
 
 from ..config import BC_FACT_CONFIGS
 from .gold import join_bc_dimension
@@ -35,22 +34,22 @@ def create_purchase_fact(
         batch_id: REQUIRED batch identifier
     """
     if not spark:
-        raise FactTableError("SparkSession is required")
+        raise ValueError("SparkSession is required")
     if not silver_path:
-        raise FactTableError("silver_path is required")
+        raise ValueError("silver_path is required")
     if not gold_path:
-        raise FactTableError("gold_path is required")
+        raise ValueError("gold_path is required")
     if not batch_id:
-        raise FactTableError("batch_id is required")
+        raise ValueError("batch_id is required")
 
     try:
-        with logging.span("create_purchase_fact"):
+        # Create purchase fact
             logging.info("Creating Business Central purchase fact table")
 
             # Get fact configuration
             fact_config = BC_FACT_CONFIGS.get("fact_Purchase")
             if not fact_config:
-                raise ConfigurationError("fact_Purchase configuration not found")
+                raise ValueError("fact_Purchase configuration not found")
 
             # Load source entities
             source_dfs = []
@@ -62,11 +61,11 @@ def create_purchase_fact(
                     source_dfs.append(df)
                     logging.info(f"Loaded {entity}: {df.count()} rows")
                 except Exception as e:
-                    raise FactTableError(f"Failed to load entity {entity}: {e}") from e
+                    raise ValueError(f"Failed to load entity {entity}: {e}") from e
 
             # Union all purchase line sources
             if not source_dfs:
-                raise FactTableError("No source data found for purchase fact")
+                raise ValueError("No source data found for purchase fact")
 
             union_df = source_dfs[0]
             for df in source_dfs[1:]:
@@ -154,7 +153,7 @@ def create_purchase_fact(
             return result_df
 
     except Exception as e:
-        raise FactTableError(f"Purchase fact creation failed: {e}") from e
+        raise ValueError(f"Purchase fact creation failed: {e}") from e
 
 
 def create_agreement_fact(
@@ -175,22 +174,22 @@ def create_agreement_fact(
         batch_id: REQUIRED batch identifier
     """
     if not spark:
-        raise FactTableError("SparkSession is required")
+        raise ValueError("SparkSession is required")
     if not silver_path:
-        raise FactTableError("silver_path is required")
+        raise ValueError("silver_path is required")
     if not gold_path:
-        raise FactTableError("gold_path is required")
+        raise ValueError("gold_path is required")
     if not batch_id:
-        raise FactTableError("batch_id is required")
+        raise ValueError("batch_id is required")
 
     try:
-        with logging.span("create_agreement_fact"):
+        # Create agreement fact
             logging.info("Creating Business Central agreement fact table")
 
             # Get fact configuration
             fact_config = BC_FACT_CONFIGS.get("fact_Agreement")
             if not fact_config:
-                raise ConfigurationError("fact_Agreement configuration not found")
+                raise ValueError("fact_Agreement configuration not found")
 
             # Load header and line entities
             try:
@@ -198,7 +197,7 @@ def create_agreement_fact(
                 line_df = spark.table(f"{silver_path}.{fact_config['source_entities'][0]}")
                 logging.info(f"Loaded headers: {header_df.count()}, lines: {line_df.count()}")
             except Exception as e:
-                raise FactTableError(f"Failed to load agreement entities: {e}") from e
+                raise ValueError(f"Failed to load agreement entities: {e}") from e
 
             # Join header to lines with proper mapping
             join_config = fact_config["join_config"]["header_to_line"]
@@ -209,7 +208,7 @@ def create_agreement_fact(
                 if header_col in header_df.columns and line_col in line_df.columns:
                     join_conditions.append(header_df[header_col] == line_df[line_col])
                 else:
-                    raise ConfigurationError(
+                    raise ValueError(
                         f"Join columns not found: {header_col} in header or {line_col} in line"
                     )
 
@@ -219,7 +218,7 @@ def create_agreement_fact(
 
             # Perform the join
             if not join_conditions:
-                raise ConfigurationError("No valid join conditions for agreement header to line")
+                raise ValueError("No valid join conditions for agreement header to line")
 
             join_condition = join_conditions[0]
             for condition in join_conditions[1:]:
@@ -267,4 +266,4 @@ def create_agreement_fact(
             return result_df
 
     except Exception as e:
-        raise FactTableError(f"Agreement fact creation failed: {e}") from e
+        raise ValueError(f"Agreement fact creation failed: {e}") from e

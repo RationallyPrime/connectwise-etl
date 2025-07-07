@@ -28,7 +28,13 @@ from unified_etl_core.utils.exceptions import (
 # Simple table path construction function
 def construct_table_path(base_path: str, table_name: str) -> str:
     """Construct a table path from base path and table name."""
-    return f"{base_path.rstrip('/')}/{table_name}"
+    # Handle both catalog.schema and path formats
+    if "." in base_path:
+        # It's a catalog.schema format
+        return f"{base_path}.{table_name}"
+    else:
+        # It's a file path format
+        return f"{base_path.rstrip('/')}/{table_name}"
 
 
 def create_bc_dimension_bridge(
@@ -56,7 +62,7 @@ def create_bc_dimension_bridge(
         raise DimensionResolutionError("dimension_types mapping is required")
 
     try:
-        with logging.span("create_bc_dimension_bridge"):
+        # Create BC dimension bridge
             # Read BC dimension framework tables
             try:
                 dim_set_entries = spark.table(
@@ -69,7 +75,7 @@ def create_bc_dimension_bridge(
 
             # Create base bridge with BC $Company column
             base_df = dim_set_entries.select(
-                F.col("`$Company`"), F.col("DimensionSetID")
+                F.col("$Company"), F.col("DimensionSetID")
             ).distinct()
 
             result_df = base_df
@@ -114,7 +120,7 @@ def create_bc_dimension_bridge(
                 )
 
                 # Join to result with BC $Company logic
-                result_df = result_df.join(type_df, ["`$Company`", "DimensionSetID"], "left")
+                result_df = result_df.join(type_df, ["$Company", "DimensionSetID"], "left")
 
             # Add BC dimension presence flags
             for dim_type in dimension_types:
@@ -139,7 +145,7 @@ def create_bc_dimension_bridge(
                 result_df,
                 business_keys=["DimensionSetID"],
                 key_name="DimensionBridgeKey",
-                partition_columns=["`$Company`"],
+                partition_columns=["$Company"],
             )
 
             logging.info(f"BC dimension bridge created: {result_df.count()} records")
@@ -172,7 +178,7 @@ def create_bc_item_attribute_dimension(
         raise DimensionResolutionError("gold_path is required")
 
     try:
-        with logging.span("create_bc_item_attribute_dimension"):
+        # Create BC item attribute dimension
             logging.info("Creating BC item attribute dimension")
 
             # Read BC ItemAttribute and ItemAttributeValue tables
@@ -206,7 +212,7 @@ def create_bc_item_attribute_dimension(
                 item_attributes = attributes_df.join(
                     values_df,
                     (attributes_df["ID"] == values_df["ID"])
-                    & (attributes_df["`$Company`"] == values_df["`$Company`"]),
+                    & (attributes_df["$Company"] == values_df["$Company"]),
                     "inner",
                 )
                 logging.info(f"Joined BC attributes: {item_attributes.count()} rows")
@@ -214,12 +220,12 @@ def create_bc_item_attribute_dimension(
                 raise DimensionResolutionError(f"Failed to join BC attribute tables: {e}") from e
 
             # Generate surrogate key for BC with company partitioning
-            business_keys = ["ID", "Value", "`$Company`"]
+            business_keys = ["ID", "Value", "$Company"]
             item_attributes = generate_surrogate_key(
                 df=item_attributes,
                 business_keys=business_keys,
                 key_name="item_attribute_key",
-                partition_columns=["`$Company`"],
+                partition_columns=["$Company"],
             )
 
             # Add BC processing timestamp
@@ -255,7 +261,7 @@ def create_bc_item_attribute_bridge(
         raise DimensionResolutionError("gold_path is required")
 
     try:
-        with logging.span("create_bc_item_attribute_bridge"):
+        # Create BC item attribute bridge
             logging.info("Creating BC item attribute bridge")
 
             # Read BC Item and ItemAttributeValueMapping tables
@@ -275,7 +281,7 @@ def create_bc_item_attribute_bridge(
                 bridge_df = items_df.join(
                     mapping_df,
                     (items_df["No"] == mapping_df["ItemNo"])
-                    & (items_df["`$Company`"] == mapping_df["`$Company`"]),
+                    & (items_df["$Company"] == mapping_df["$Company"]),
                     "inner",
                 )
                 logging.info(f"BC attribute bridge joined: {bridge_df.count()} rows")
@@ -283,12 +289,12 @@ def create_bc_item_attribute_bridge(
                 raise DimensionResolutionError(f"Failed to join BC bridge tables: {e}") from e
 
             # Generate surrogate key for BC bridge with company partitioning
-            business_keys = ["ItemNo", "ValueID", "`$Company`"]
+            business_keys = ["ItemNo", "ValueID", "$Company"]
             bridge_df = generate_surrogate_key(
                 df=bridge_df,
                 business_keys=business_keys,
                 key_name="item_attribute_bridge_key",
-                partition_columns=["`$Company`"],
+                partition_columns=["$Company"],
             )
 
             # Add BC processing timestamp
@@ -334,7 +340,7 @@ def join_bc_dimension(
         raise DimensionJoinError("dimension_config is required")
 
     try:
-        with logging.span("join_bc_dimension", dimension_name=dimension_name):
+        # Join BC dimension
             # Get BC dimension configuration
             business_keys = dimension_config.get("business_keys")
             if not business_keys:
@@ -364,9 +370,14 @@ def join_bc_dimension(
                     f"Failed to load BC dimension {dim_table_path}: {e}"
                 ) from e
 
+            # CRITICAL FIX: Alias the tables to avoid column name conflicts
+            fact_alias = f"fact_{dimension_name}"
+            dim_alias = f"dim_{dimension_name}"
+
             # Build BC-specific join conditions (includes $Company logic)
             join_conditions = _build_bc_join_conditions(
-                fact_df, dim_df, fact_join_keys, business_keys, dimension_name
+                fact_df, dim_df, fact_join_keys, business_keys, dimension_name,
+                fact_alias=fact_alias, dim_alias=dim_alias
             )
 
             if not join_conditions:
@@ -379,10 +390,46 @@ def join_bc_dimension(
             join_condition = join_conditions[0]
             for condition in join_conditions[1:]:
                 join_condition = join_condition & condition
-
+            
+            fact_df_aliased = fact_df.alias(fact_alias)
+            dim_df_aliased = dim_df.alias(dim_alias)
+            
             # Select only needed columns from BC dimension to avoid conflicts
-            dim_select_cols = ["*"]  # Can be refined to specific columns
-            result_df = fact_df.join(dim_df.select(*dim_select_cols), join_condition, "left")
+            # Get surrogate key and exclude duplicate columns
+            dim_cols_to_select = []
+            
+            # Always include the surrogate key with proper alias
+            if surrogate_key in dim_df.columns:
+                dim_cols_to_select.append(F.col(f"{dim_alias}.{surrogate_key}").alias(surrogate_key))
+            
+            # Get join keys to exclude
+            join_keys_to_exclude = set()
+            if isinstance(fact_join_keys, dict):
+                # fact_join_keys is like {"No": "No", "BuyfromVendorNo": "No"}
+                join_keys_to_exclude.update(fact_join_keys.values())
+            elif isinstance(fact_join_keys, list):
+                # If it's a list, we need to match with business_keys
+                for i, fact_key in enumerate(fact_join_keys):
+                    if i < len(business_keys):
+                        join_keys_to_exclude.add(business_keys[i])
+            
+            # Always exclude $Company and join keys
+            join_keys_to_exclude.add("$Company")
+            
+            # Include dimension-specific columns but exclude ones already in fact or used in joins
+            for col in dim_df.columns:
+                if col not in fact_df.columns and col not in join_keys_to_exclude and col != surrogate_key:
+                    dim_cols_to_select.append(F.col(f"{dim_alias}.{col}").alias(col))
+            
+            # Select all columns from fact table with alias
+            fact_cols = [F.col(f"{fact_alias}.{col}").alias(col) for col in fact_df.columns]
+            
+            # Join and select columns with proper aliasing
+            result_df = fact_df_aliased.join(
+                dim_df_aliased, 
+                join_condition, 
+                "left"
+            ).select(fact_cols + dim_cols_to_select)
 
             # Handle null surrogate keys with BC default (0)
             if surrogate_key in result_df.columns:
@@ -435,6 +482,8 @@ def _build_bc_join_conditions(
     fact_join_keys: list[str] | dict[str, str],
     business_keys: list[str],
     dimension_name: str,
+    fact_alias: str | None = None,
+    dim_alias: str | None = None,
 ) -> list:
     """Build BC-specific join conditions including $Company logic."""
     join_conditions = []
@@ -443,27 +492,51 @@ def _build_bc_join_conditions(
     fact_company_col = None
     dim_company_col = None
 
-    for col_name in ["`$Company`", "$Company"]:
+    for col_name in ["$Company", "$Company"]:
         if col_name in fact_df.columns:
             fact_company_col = col_name
         if col_name in dim_df.columns:
             dim_company_col = col_name
 
     if fact_company_col and dim_company_col:
-        join_conditions.append(fact_df[fact_company_col] == dim_df[dim_company_col])
+        if fact_alias and dim_alias:
+            join_conditions.append(
+                F.col(f"{fact_alias}.{fact_company_col}") == F.col(f"{dim_alias}.{dim_company_col}")
+            )
+        else:
+            join_conditions.append(fact_df[fact_company_col] == dim_df[dim_company_col])
         logging.debug(f"Added BC $Company join condition for {dimension_name}")
 
     # BC business key joins
     if isinstance(fact_join_keys, list):
         for i, fact_key in enumerate(fact_join_keys):
             dim_key = business_keys[i] if i < len(business_keys) else business_keys[0]
+            
+            # Special handling for Date dimension - use DateKey instead of original date column
+            if dimension_name == "Date" and dim_key == "DateKey" and "DateKey" in fact_df.columns:
+                fact_key = "DateKey"  # Use the generated DateKey column
+            
             if fact_key in fact_df.columns and dim_key in dim_df.columns:
-                join_conditions.append(fact_df[fact_key] == dim_df[dim_key])
+                if fact_alias and dim_alias:
+                    join_conditions.append(
+                        F.col(f"{fact_alias}.{fact_key}") == F.col(f"{dim_alias}.{dim_key}")
+                    )
+                else:
+                    join_conditions.append(fact_df[fact_key] == dim_df[dim_key])
 
     elif isinstance(fact_join_keys, dict):
         for fact_key, dim_key in fact_join_keys.items():
+            # Special handling for Date dimension - use DateKey instead of original date column
+            if dimension_name == "Date" and dim_key == "DateKey" and "DateKey" in fact_df.columns:
+                fact_key = "DateKey"  # Use the generated DateKey column
+                
             if fact_key in fact_df.columns and dim_key in dim_df.columns:
-                join_conditions.append(fact_df[fact_key] == dim_df[dim_key])
+                if fact_alias and dim_alias:
+                    join_conditions.append(
+                        F.col(f"{fact_alias}.{fact_key}") == F.col(f"{dim_alias}.{dim_key}")
+                    )
+                else:
+                    join_conditions.append(fact_df[fact_key] == dim_df[dim_key])
 
     return join_conditions
 
@@ -505,7 +578,7 @@ def build_bc_account_hierarchy(
         raise HierarchyBuildError("DataFrame is required")
 
     try:
-        with logging.span("build_bc_account_hierarchy"):
+        # Build BC account hierarchy
             # Auto-detect BC columns if not provided
             if surrogate_key_col is None:
                 key_cols = [col for col in df.columns if col.endswith("Key")]
@@ -522,7 +595,7 @@ def build_bc_account_hierarchy(
                 indentation_col = indent_cols[0]
 
             # BC company column
-            company_col = "`$Company`"
+            company_col = "$Company"
             if company_col not in df.columns:
                 raise HierarchyBuildError(f"BC company column '{company_col}' not found")
 

@@ -104,6 +104,100 @@ SILVER_CONFIG: dict[str, dict[str, Any]] = {
         "calculated_columns": {},
         "drop_columns": ["_etl_bronze_timestamp"],
         "rename_columns": {}
+    },
+    "Customer": {
+        "model": "Customer",
+        "bronze_source": "bronze_bc_Customer",
+        "gold_name": "dim_Customer",
+        "surrogate_keys": [
+            {
+                "name": "CustomerKey",
+                "business_keys": ["No", "$Company"]
+            }
+        ],
+        "business_keys": ["No", "$Company"],
+        "calculated_columns": {},
+        "drop_columns": ["_etl_bronze_timestamp"],
+        "rename_columns": {}
+    },
+    "DimensionSetEntry": {
+        "model": "DimensionSetEntry",
+        "bronze_source": "bronze_bc_DimensionSetEntry",
+        "gold_name": "DimensionSetEntry",
+        "surrogate_keys": [
+            {
+                "name": "DimensionSetEntryKey",
+                "business_keys": ["DimensionSetID", "DimensionCode", "$Company"]
+            }
+        ],
+        "business_keys": ["DimensionSetID", "DimensionCode", "$Company"],
+        "calculated_columns": {},
+        "drop_columns": ["_etl_bronze_timestamp"],
+        "rename_columns": {}
+    },
+    "GLAccount": {
+        "model": "GLAccount",
+        "bronze_source": "bronze_bc_GLAccount",
+        "gold_name": "dim_GLAccount",
+        "surrogate_keys": [
+            {
+                "name": "GLAccountKey",
+                "business_keys": ["No", "$Company"]
+            }
+        ],
+        "business_keys": ["No", "$Company"],
+        "calculated_columns": {},
+        "drop_columns": ["_etl_bronze_timestamp"],
+        "rename_columns": {}
+    },
+    "GLEntry": {
+        "model": "GLEntry",
+        "bronze_source": "bronze_bc_GLEntry",
+        "gold_name": "GLEntry",
+        "surrogate_keys": [
+            {
+                "name": "GLEntryKey",
+                "business_keys": ["EntryNo", "$Company"]
+            }
+        ],
+        "business_keys": ["EntryNo", "$Company"],
+        "calculated_columns": {
+            "IsDebit": "CASE WHEN Amount > 0 THEN true ELSE false END",
+            "IsCredit": "CASE WHEN Amount < 0 THEN true ELSE false END",
+            "AbsoluteAmount": "ABS(Amount)"
+        },
+        "drop_columns": ["_etl_bronze_timestamp"],
+        "rename_columns": {}
+    },
+    "Dimension": {
+        "model": "Dimension",
+        "bronze_source": "bronze_bc_Dimension",
+        "gold_name": "dim_Dimension",
+        "surrogate_keys": [
+            {
+                "name": "DimensionKey",
+                "business_keys": ["Code", "$Company"]
+            }
+        ],
+        "business_keys": ["Code", "$Company"],
+        "calculated_columns": {},
+        "drop_columns": ["_etl_bronze_timestamp"],
+        "rename_columns": {}
+    },
+    "DimensionValue": {
+        "model": "DimensionValue",
+        "bronze_source": "bronze_bc_DimensionValue",
+        "gold_name": "dim_DimensionValue",
+        "surrogate_keys": [
+            {
+                "name": "DimensionValueKey",
+                "business_keys": ["DimensionCode", "Code", "$Company"]
+            }
+        ],
+        "business_keys": ["DimensionCode", "Code", "$Company"],
+        "calculated_columns": {},
+        "drop_columns": ["_etl_bronze_timestamp"],
+        "rename_columns": {}
     }
 }
 
@@ -167,7 +261,8 @@ BC_FACT_CONFIGS: dict[str, dict[str, Any]] = {
             "DiscountPercent"
         ],
         "calculated_columns": {
-            "ContractValue": "Quantity * UnitPrice * (1 - DiscountPercent / 100)"
+            "ContractValue": "Quantity * UnitPrice",
+            "NetAmount": "CASE WHEN Type = 'Credit Memo' THEN -Amount ELSE Amount END"
         }
     }
 }

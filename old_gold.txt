@@ -1,0 +1,2103 @@
+🥇 Checking Gold Schema Tables
+============================================================
+
+📋 Tables in LH.gold schema:
+  - agreement_summary
+  - bridge_dimensions
+  - dim_AccSchedule
+  - dim_Acc_Schedule
+  - dim_accounttype
+  - dim_amsagreementtype
+  - dim_bankaccount
+  - dim_countryregion
+  - dim_currency
+  - dim_customer
+  - dim_customerstatus
+  - dim_date
+  - dim_dimensionbridge
+  - dim_dimensionvalue
+  - dim_fixedasset
+  - dim_glaccount
+  - dim_industrygroup
+  - dim_item
+  - dim_itemattribute
+  - dim_itemattributevalue
+  - dim_itemattributevaluemapping
+  - dim_itemcharge
+  - dim_itemtype
+  - dim_itemvariant
+  - dim_job
+  - dim_language
+  - dim_location
+  - dim_ptecustomernavsystem
+  - dim_pteindustries
+  - dim_resource
+  - dim_salespersonpurchaser
+  - dim_shipmentmethod
+  - dim_unitofmeasure
+  - dim_vendor
+  - dim_vendorstatus
+  - etl_metadata
+  - expense_lines
+  - fact_accountspayable
+  - fact_accountsreceivable
+  - fact_agreement
+  - fact_finance
+  - fact_inventory
+  - fact_inventoryvalue
+  - fact_item
+  - fact_jobs
+  - fact_purchase
+  - fact_sales
+  - invoice_headers
+  - invoice_lines
+
+============================================================
+
+📊 Checking each Gold table schema:
+
+🔍 agreement_summary
+--------------------------------------------------
+Row count: 1933
+Column count: 18
+
+Schema:
+  agreementId: int
+  agreementName: string
+  agreementNumber: string
+  agreementType: string
+  companyName: string
+  customerName: string
+  startDate: timestamp
+  endDate: timestamp
+  status: string
+  billAmount: double
+  invoiceCount: bigint
+  totalInvoiced: double
+  lastInvoiceDate: timestamp
+  lineCount: bigint
+  timeEntryCount: bigint
+  productCount: bigint
+  etlTimestamp: string
+  etlEntity: string
+
+🔍 bridge_dimensions
+--------------------------------------------------
+Row count: 6215
+Column count: 10
+
+Schema:
+  $Company: string
+  DimensionSetID: string
+  TEAMCode: string
+  TEAMName: string
+  PRODUCTCode: string
+  PRODUCTName: string
+  HasTEAMDimension: boolean
+  HasPRODUCTDimension: boolean
+  IsCoreData: boolean
+  DimensionBridgeKey: int
+
+🔍 dim_AccSchedule
+--------------------------------------------------
+Row count: 684
+Column count: 13
+
+Schema:
+  SK_AccSchedule: bigint
+  Schedule Name: string
+  Line No: string
+  Row No: string
+  Line Description: string
+  Totaling: string
+  Show Opposite Sign: boolean
+  Totaling Type Key: int
+  Totaling Type Desc: string
+  $Source: string
+  $Environment: string
+  $Company: string
+  $LoadDate: timestamp
+
+Key columns: ['Totaling Type Key']
+
+🔍 dim_Acc_Schedule
+--------------------------------------------------
+Row count: 0
+Column count: 17
+
+Schema:
+  SK_AccSchedule: bigint
+  Schedule: string
+  Line No: bigint
+  Row No: string
+  Line Description: string
+  Totaling Type: bigint
+  Totaling Type Desc: string
+  Totaling: string
+  Show Opposite Sign: bigint
+  UnaryOperator: string
+  CustomRollup: string
+  Bold: int
+  Indentation: int
+  Row Type: int
+  MD_Company: string
+  MD_Source: string
+  MD_Updated: timestamp
+
+Sample data:
++--------------+--------+-------+------+----------------+-------------+------------------+--------+------------------+-------------+------------+----+-----------+--------+----------+---------+----------+
+|SK_AccSchedule|Schedule|Line No|Row No|Line Description|Totaling Type|Totaling Type Desc|Totaling|Show Opposite Sign|UnaryOperator|CustomRollup|Bold|Indentation|Row Type|MD_Company|MD_Source|MD_Updated|
++--------------+--------+-------+------+----------------+-------------+------------------+--------+------------------+-------------+------------+----+-----------+--------+----------+---------+----------+
++--------------+--------+-------+------+----------------+-------------+------------------+--------+------------------+-------------+------------+----+-----------+--------+----------+---------+----------+
+
+
+🔍 dim_accounttype
+--------------------------------------------------
+Row count: 4
+Column count: 9
+
+Schema:
+  AccountTypeKey: int
+  AccountTypeCode: int
+  usage_count: bigint
+  isActive: boolean
+  effectiveDate: timestamp
+  endDate: timestamp
+  _etl_gold_processed_at: timestamp
+  _etl_source: string
+  _etl_batch_id: string
+
+Key columns: ['AccountTypeKey']
+
+Sample data:
++--------------+---------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|AccountTypeKey|AccountTypeCode|usage_count|isActive|effectiveDate             |endDate|_etl_gold_processed_at    |_etl_source        |_etl_batch_id  |
++--------------+---------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|1             |0              |307        |true    |2025-07-07 14:56:07.997975|NULL   |2025-07-07 14:56:07.997975|dimension_generator|20250707_145606|
+|2             |3              |67         |true    |2025-07-07 14:56:07.997975|NULL   |2025-07-07 14:56:07.997975|dimension_generator|20250707_145606|
+|3             |4              |67         |true    |2025-07-07 14:56:07.997975|NULL   |2025-07-07 14:56:07.997975|dimension_generator|20250707_145606|
+|4             |2              |11         |true    |2025-07-07 14:56:07.997975|NULL   |2025-07-07 14:56:07.997975|dimension_generator|20250707_145606|
++--------------+---------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+
+
+🔍 dim_amsagreementtype
+--------------------------------------------------
+Row count: 12
+Column count: 12
+
+Schema:
+  Code: string
+  Description: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  AMSAgreementTypeKey: int
+
+Key columns: ['AMSAgreementTypeKey']
+
+Sample data:
++-------+----------------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+-------------------------+-------------------------+-------------------+
+|Code   |Description                 |Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt|SystemModifiedBy                      |$Company|SilverCreatedAt          |SilverModifiedAt         |AMSAgreementTypeKey|
++-------+----------------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+-------------------------+-------------------------+-------------------+
+|CRM    |CRM uppfærslugjöld          |30190494 |{44D6AF3E-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:54:28.89827|2025-07-07 11:54:28.89827|1                  |
+|FC-UPPF|FarmControl - Uppfærslugjöld|30190495 |{45D6AF3E-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:54:28.89827|2025-07-07 11:54:28.89827|2                  |
+|HAFDÍS |Hafdís - Þjónustusamningur  |30190496 |{46D6AF3E-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:54:28.89827|2025-07-07 11:54:28.89827|3                  |
+|SERV   |Þjónustusamningur           |30190497 |{47D6AF3E-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:54:28.89827|2025-07-07 11:54:28.89827|4                  |
+|SPLA   |SPLA                        |30190499 |{49D6AF3E-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:54:28.89827|2025-07-07 11:54:28.89827|5                  |
++-------+----------------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+-------------------------+-------------------------+-------------------+
+only showing top 5 rows
+
+
+🔍 dim_bankaccount
+--------------------------------------------------
+Row count: 79
+Column count: 18
+
+Schema:
+  No: string
+  Name: string
+  BankAccountNo: string
+  BankAccPostingGroup: string
+  CurrencyCode: string
+  Blocked: boolean
+  BankBranchNo: string
+  IBAN: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  BankAccountKey: int
+
+Key columns: ['BankAccountKey']
+
+Sample data:
++--------------+-------------------+-------------+-------------------+------------+-------+------------+--------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+--------------+
+|No            |Name               |BankAccountNo|BankAccPostingGroup|CurrencyCode|Blocked|BankBranchNo|IBAN                            |Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt   |SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |BankAccountKey|
++--------------+-------------------+-------------+-------------------+------------+-------+------------+--------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+--------------+
+|0111-15-381448|Landsbankinn 381448|15-381448    |ISK                |NULL        |false  |0111        |NULL                            |118750862|{3173C94C-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-08-27 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:36.626658|2025-07-07 11:54:36.626658|1             |
+|0111-26-002007|Landsbankinn 2007  |26-002007    |ISK                |NULL        |false  |0111        |IS91 0111 2600 2007 6304 0708 70|118750871|{3273C94C-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-08-27 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:36.626658|2025-07-07 11:54:36.626658|2             |
+|0111-26-002008|Landsbankinn 2008  |26-002008    |ISK                |NULL        |false  |0111        |IS29 0111 2600 2008 6304 0708 70|118750872|{3373C94C-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-08-27 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:36.626658|2025-07-07 11:54:36.626658|3             |
+|0162-26-200223|LÍ 200223          |26-200223    |ISK                |NULL        |false  |0162        |NULL                            |118750873|{3308F05F-5439-EF11-8409-7C1E523587BE}|2024-07-03 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|2024-08-27 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:36.626658|2025-07-07 11:54:36.626658|4             |
+|0162-26-200224|LÍ 0162-26-200224  |26-200224    |ISK                |NULL        |false  |0162        |IS02 0162 2620 0224 4111 9927 49|118750875|{8FF6CA9C-1C39-EF11-8409-000D3A69A9A7}|2024-07-03 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|2024-08-27 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:36.626658|2025-07-07 11:54:36.626658|5             |
++--------------+-------------------+-------------+-------------------+------------+-------+------------+--------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+--------------+
+only showing top 5 rows
+
+
+🔍 dim_countryregion
+--------------------------------------------------
+Row count: 57
+Column count: 21
+
+Schema:
+  Code: string
+  Name: string
+  ISOCode: string
+  ISONumericCode: string
+  EUCountryRegionCode: string
+  IntrastatCode: string
+  AddressFormat: int
+  ContactAddressFormat: int
+  VATScheme: string
+  LastModifiedDateTime: timestamp
+  CountyName: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  CountryRegionKey: int
+
+Key columns: ['CountryRegionKey']
+
+Sample data:
++----+---------+-------+--------------+-------------------+-------------+-------------+--------------------+---------+--------------------+----------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|Code|Name     |ISOCode|ISONumericCode|EUCountryRegionCode|IntrastatCode|AddressFormat|ContactAddressFormat|VATScheme|LastModifiedDateTime|CountyName|Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt   |SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |CountryRegionKey|
++----+---------+-------+--------------+-------------------+-------------+-------------+--------------------+---------+--------------------+----------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|AT  |Austria  |AT     |NULL          |NULL               |NULL         |1            |1                   |NULL     |2025-04-14 00:00:00 |NULL      |177695912|{22D1CFF7-7311-401D-ACE2-E27BF8A7F863}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-04-14 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:43.956262|2025-07-07 11:54:43.956262|1               |
+|AU  |Australia|AU     |NULL          |NULL               |NULL         |0            |1                   |NULL     |2025-04-14 00:00:00 |NULL      |177695913|{8EDD855A-155B-4E38-865C-B62E74F77B4E}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-04-14 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:43.956262|2025-07-07 11:54:43.956262|2               |
+|BE  |Belgium  |BE     |NULL          |NULL               |NULL         |0            |1                   |NULL     |2025-04-14 00:00:00 |NULL      |177695914|{D2ACACCE-622C-46D3-BFBB-3FA47171D971}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-04-14 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:43.956262|2025-07-07 11:54:43.956262|3               |
+|BG  |Bulgaria |BG     |NULL          |NULL               |NULL         |1            |1                   |NULL     |2025-04-14 00:00:00 |NULL      |177695915|{4B368E13-EAC2-4DA0-A258-E2771CEAF22D}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-04-14 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:43.956262|2025-07-07 11:54:43.956262|4               |
+|CA  |Canada   |CA     |NULL          |NULL               |NULL         |0            |1                   |0060     |2025-04-14 00:00:00 |NULL      |177695916|{AB443977-BE61-4D74-B055-55FAB1C5A729}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-04-14 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:43.956262|2025-07-07 11:54:43.956262|5               |
++----+---------+-------+--------------+-------------------+-------------+-------------+--------------------+---------+--------------------+----------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+only showing top 5 rows
+
+
+🔍 dim_currency
+--------------------------------------------------
+Row count: 20
+Column count: 13
+
+Schema:
+  Code: string
+  ISOCode: string
+  Description: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  CurrencyKey: int
+
+Key columns: ['CurrencyKey']
+
+Sample data:
++----+-------+--------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+|Code|ISOCode|Description               |Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt   |SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |CurrencyKey|
++----+-------+--------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+|AUD |NULL   |Ástralskur dalur          |179800904|{9A971960-8DE8-4082-8A86-273CA0802718}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-05-08 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:51.289432|2025-07-07 11:54:51.289432|1          |
+|CAD |NULL   |Kanadadollar              |179800907|{57608F3B-44E6-497D-B743-6652EEF6E50C}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-05-08 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:51.289432|2025-07-07 11:54:51.289432|2          |
+|CHF |NULL   |Svissneskur franki        |179800916|{F3E759EC-B52A-425E-8FF5-636B1B2609A2}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-05-08 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:51.289432|2025-07-07 11:54:51.289432|3          |
+|DEM |NULL   |EKKI NOTA Gömul þýsk mörk |30691970 |{9D5787FC-ED7D-44BD-B461-3C382B702DC8}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL               |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:54:51.289432|2025-07-07 11:54:51.289432|4          |
+|DKK |NULL   |Danskar krónur            |179800917|{01696BAD-7F27-488B-91E2-7920D72B95FF}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2025-05-08 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|Wise    |2025-07-07 11:54:51.289432|2025-07-07 11:54:51.289432|5          |
++----+-------+--------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+only showing top 5 rows
+
+
+🔍 dim_customer
+--------------------------------------------------
+Row count: 3706
+Column count: 36
+
+Schema:
+  No: string
+  Name: string
+  Address: string
+  Address2: string
+  City: string
+  Contact: string
+  PhoneNo: string
+  TelexNo: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  ChainName: string
+  BudgetedAmount: decimal(18,6)
+  CreditLimitLCY: decimal(18,6)
+  CustomerPostingGroup: string
+  CurrencyCode: string
+  CustomerPriceGroup: string
+  SalespersonCode: string
+  CustomerDiscGroup: string
+  CountryRegionCode: string
+  Blocked: int
+  GenBusPostingGroup: string
+  PostCode: string
+  County: string
+  PTEIndustryCode: string
+  PTEGroupCode: string
+  PTEGroupingCode: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  CustomerKey: int
+
+Key columns: ['CustomerKey']
+
+🔍 dim_customerstatus
+--------------------------------------------------
+Row count: 4
+Column count: 9
+
+Schema:
+  CustomerStatusKey: int
+  CustomerStatusCode: int
+  usage_count: bigint
+  isActive: boolean
+  effectiveDate: timestamp
+  endDate: timestamp
+  _etl_gold_processed_at: timestamp
+  _etl_source: string
+  _etl_batch_id: string
+
+Key columns: ['CustomerStatusKey']
+
+Sample data:
++-----------------+------------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|CustomerStatusKey|CustomerStatusCode|usage_count|isActive|effectiveDate             |endDate|_etl_gold_processed_at    |_etl_source        |_etl_batch_id  |
++-----------------+------------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|1                |0                 |2958       |true    |2025-07-07 14:55:55.538549|NULL   |2025-07-07 14:55:55.538549|dimension_generator|20250707_145554|
+|2                |3                 |739        |true    |2025-07-07 14:55:55.538549|NULL   |2025-07-07 14:55:55.538549|dimension_generator|20250707_145554|
+|3                |2                 |8          |true    |2025-07-07 14:55:55.538549|NULL   |2025-07-07 14:55:55.538549|dimension_generator|20250707_145554|
+|4                |1                 |1          |true    |2025-07-07 14:55:55.538549|NULL   |2025-07-07 14:55:55.538549|dimension_generator|20250707_145554|
++-----------------+------------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+
+
+🔍 dim_date
+--------------------------------------------------
+Row count: 4018
+Column count: 22
+
+Schema:
+  Date: date
+  DateKey: int
+  CalendarYear: int
+  CalendarQuarterNo: int
+  CalendarQuarter: string
+  CalendarMonthNo: int
+  CalendarMonth: string
+  CalendarDay: int
+  WeekNumber: int
+  WeekDay: string
+  WeekDayNo: int
+  YearMonth: string
+  YearMonthNo: int
+  FiscalYear: int
+  FiscalQuarterNo: bigint
+  FiscalQuarter: string
+  FiscalMonthNo: int
+  IsStartOfMonth: boolean
+  IsEndOfMonth: boolean
+  IsWeekend: boolean
+  PreviousDateKey: int
+  NextDateKey: int
+
+Key columns: ['DateKey', 'PreviousDateKey', 'NextDateKey']
+
+🔍 dim_dimensionbridge
+--------------------------------------------------
+Row count: 6460
+Column count: 3
+
+Schema:
+  $Company: string
+  DimensionSetID: int
+  DimensionBridgeKey: int
+
+Key columns: ['DimensionBridgeKey']
+
+🔍 dim_dimensionvalue
+--------------------------------------------------
+Row count: 892
+Column count: 23
+
+Schema:
+  DimensionCode: string
+  Code: string
+  Name: string
+  DimensionValueType: int
+  Totaling: string
+  Blocked: boolean
+  ConsolidationCode: string
+  Indentation: int
+  GlobalDimensionNo: int
+  MaptoICDimensionCode: string
+  MaptoICDimensionValueCode: string
+  DimensionValueID: int
+  DimensionId: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  DimensionValueKey: int
+
+Key columns: ['DimensionValueKey']
+
+🔍 dim_fixedasset
+--------------------------------------------------
+Row count: 2877
+Column count: 26
+
+Schema:
+  No: string
+  Description: string
+  Description2: string
+  FAClassCode: string
+  FASubclassCode: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  LocationCode: string
+  FALocationCode: string
+  VendorNo: string
+  MainAssetComponent: int
+  ComponentofMainAsset: string
+  ResponsibleEmployee: string
+  SerialNo: string
+  LastDateModified: date
+  Blocked: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  FixedAssetKey: int
+
+Key columns: ['FixedAssetKey']
+
+🔍 dim_glaccount
+--------------------------------------------------
+Row count: 452
+Column count: 56
+
+Schema:
+  No: string
+  Name: string
+  SearchName: string
+  AccountType: int
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  AccountCategory: int
+  IncomeBalance: int
+  DebitCredit: int
+  No2: string
+  Blocked: boolean
+  DirectPosting: boolean
+  ReconciliationAccount: boolean
+  NewPage: boolean
+  NoofBlankLines: int
+  Indentation: int
+  LastModifiedDateTime: timestamp
+  LastDateModified: date
+  Totaling: string
+  ConsolTranslationMethod: int
+  ConsolDebitAcc: string
+  ConsolCreditAcc: string
+  GenPostingType: int
+  GenBusPostingGroup: string
+  GenProdPostingGroup: string
+  AutomaticExtTexts: boolean
+  TaxAreaCode: string
+  TaxLiable: boolean
+  TaxGroupCode: string
+  VATBusPostingGroup: string
+  VATProdPostingGroup: string
+  ExchangeRateAdjustment: int
+  DefaultICPartnerGLAccNo: string
+  OmitDefaultDescrinJnl: boolean
+  AccountSubcategoryEntryNo: int
+  CostTypeNo: string
+  DefaultDeferralTemplateCode: string
+  APIAccountType: int
+  IRSNumber: string
+  IRSNo: string
+  ReviewPolicy: int
+  PTENewNo: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  GLAccountKey: int
+  ParentKey: bigint
+  IsParent: boolean
+  HierarchyLevel: int
+  NodePath: string
+
+Key columns: ['GLAccountKey', 'ParentKey']
+
+🔍 dim_industrygroup
+--------------------------------------------------
+Row count: 32
+Column count: 12
+
+Schema:
+  Code: string
+  Description: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  IndustryGroupKey: int
+
+Key columns: ['IndustryGroupKey']
+
+Sample data:
++----------+---------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|Code      |Description          |Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt|SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |IndustryGroupKey|
++----------+---------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|ALM IÐN   |Almennur iðnaður     |30956968 |{93772599-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:22.229739|2025-07-07 11:55:22.229739|1               |
+|AUGLÝS    |Auglýsingarstofur    |30956969 |{94772599-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:22.229739|2025-07-07 11:55:22.229739|2               |
+|BIFREIÐ   |Bifreiðar            |30956970 |{95772599-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:22.229739|2025-07-07 11:55:22.229739|3               |
+|ENDURSKOÐU|Endurskoðunarþjónusta|30956971 |{96772599-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:22.229739|2025-07-07 11:55:22.229739|4               |
+|FERÐASKRIF|Ferðaskrifstofur     |30956972 |{97772599-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:22.229739|2025-07-07 11:55:22.229739|5               |
++----------+---------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+only showing top 5 rows
+
+
+🔍 dim_item
+--------------------------------------------------
+Row count: 1733
+Column count: 30
+
+Schema:
+  No: string
+  Description: string
+  Description2: string
+  BaseUnitofMeasure: string
+  Type: int
+  InventoryPostingGroup: string
+  ItemDiscGroup: string
+  UnitPrice: decimal(18,6)
+  UnitCost: decimal(18,6)
+  VendorNo: string
+  VendorItemNo: string
+  GrossWeight: decimal(18,6)
+  NetWeight: decimal(18,6)
+  UnitVolume: decimal(18,6)
+  Blocked: boolean
+  GenProdPostingGroup: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  AssemblyPolicy: int
+  ItemCategoryCode: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ItemKey: int
+
+Key columns: ['ItemKey']
+
+🔍 dim_itemattribute
+--------------------------------------------------
+Row count: 2
+Column count: 15
+
+Schema:
+  ID: int
+  Name: string
+  Blocked: boolean
+  Type: int
+  UnitofMeasure: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ItemAttributeKey: int
+
+Key columns: ['ItemAttributeKey']
+
+Sample data:
++---+------------+-------+----+-------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|ID |Name        |Blocked|Type|UnitofMeasure|Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt|SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |ItemAttributeKey|
++---+------------+-------+----+-------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|100|Yfirflokkur |false  |0   |NULL         |31062422 |{24CF9DA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:35.313199|2025-07-07 11:55:35.313199|1               |
+|200|Undirflokkur|false  |0   |NULL         |31062423 |{23CF9DA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:55:35.313199|2025-07-07 11:55:35.313199|2               |
++---+------------+-------+----+-------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+
+
+🔍 dim_itemattributevalue
+--------------------------------------------------
+Row count: 149
+Column count: 16
+
+Schema:
+  AttributeID: int
+  ID: int
+  Value: string
+  NumericValue: decimal(18,6)
+  DateValue: date
+  Blocked: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ItemAttributeValueKey: int
+
+Key columns: ['ItemAttributeValueKey']
+
+🔍 dim_itemattributevaluemapping
+--------------------------------------------------
+Row count: 2825
+Column count: 14
+
+Schema:
+  TableID: int
+  No: string
+  ItemAttributeID: int
+  ItemAttributeValueID: int
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ItemAttributeValueMappingKey: int
+
+Key columns: ['ItemAttributeValueMappingKey']
+
+🔍 dim_itemcharge
+--------------------------------------------------
+Row count: 11
+Column count: 17
+
+Schema:
+  No: string
+  Description: string
+  GenProdPostingGroup: string
+  TaxGroupCode: string
+  VATProdPostingGroup: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ItemChargeKey: int
+
+Key columns: ['ItemChargeKey']
+
+Sample data:
++------+-----------------------------------------+-------------------+------------+-------------------+--------------------+--------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-------------+
+|No    |Description                              |GenProdPostingGroup|TaxGroupCode|VATProdPostingGroup|GlobalDimension1Code|GlobalDimension2Code|Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt|SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |ItemChargeKey|
++------+-----------------------------------------+-------------------+------------+-------------------+--------------------+--------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-------------+
+|2013  |Skuldbinding v/2013 leyfa                |N-STANDARD         |NULL        |024                |NULL                |NULL                |31062529 |{0215FDA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:56:32.473867|2025-07-07 11:56:32.473867|1            |
+|ADD-ON|Add-on                                   |MT_ADDON           |NULL        |024                |NULL                |NULL                |31062530 |{FB14FDA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:56:32.473867|2025-07-07 11:56:32.473867|2            |
+|COM   |Umboðslaun/afsl.                         |UMBOÐSLAUN         |NULL        |024                |NULL                |NULL                |31062531 |{0315FDA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:56:32.473867|2025-07-07 11:56:32.473867|3            |
+|ELVA  |Endurseldur hugb. frá ELVA, kostnaðarauki|ENDUR_HUGB         |NULL        |024                |NULL                |NULL                |31062532 |{FD14FDA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:56:32.473867|2025-07-07 11:56:32.473867|4            |
+|NAV   |Navision, std. sala                      |N-STANDARD         |NULL        |024                |NULL                |NULL                |31062533 |{0015FDA8-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:56:32.473867|2025-07-07 11:56:32.473867|5            |
++------+-----------------------------------------+-------------------+------------+-------------------+--------------------+--------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-------------+
+only showing top 5 rows
+
+
+🔍 dim_itemtype
+--------------------------------------------------
+Row count: 3
+Column count: 9
+
+Schema:
+  ItemTypeKey: int
+  ItemTypeCode: int
+  usage_count: bigint
+  isActive: boolean
+  effectiveDate: timestamp
+  endDate: timestamp
+  _etl_gold_processed_at: timestamp
+  _etl_source: string
+  _etl_batch_id: string
+
+Key columns: ['ItemTypeKey']
+
+Sample data:
++-----------+------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|ItemTypeKey|ItemTypeCode|usage_count|isActive|effectiveDate             |endDate|_etl_gold_processed_at    |_etl_source        |_etl_batch_id  |
++-----------+------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|1          |0           |866        |true    |2025-07-07 14:56:04.630613|NULL   |2025-07-07 14:56:04.630613|dimension_generator|20250707_145603|
+|2          |2           |811        |true    |2025-07-07 14:56:04.630613|NULL   |2025-07-07 14:56:04.630613|dimension_generator|20250707_145603|
+|3          |1           |56         |true    |2025-07-07 14:56:04.630613|NULL   |2025-07-07 14:56:04.630613|dimension_generator|20250707_145603|
++-----------+------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+
+
+🔍 dim_itemvariant
+--------------------------------------------------
+Row count: 1522
+Column count: 19
+
+Schema:
+  Code: string
+  ItemNo: string
+  Description: string
+  Description2: string
+  ItemId: string
+  Blocked: boolean
+  SalesBlocked: boolean
+  PurchasingBlocked: boolean
+  ServiceBlocked: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ItemVariantKey: int
+
+Key columns: ['ItemVariantKey']
+
+🔍 dim_job
+--------------------------------------------------
+Row count: 5336
+Column count: 115
+
+Schema:
+  No: string
+  SearchDescription: string
+  Description: string
+  Description2: string
+  BilltoCustomerNo: string
+  CreationDate: date
+  StartingDate: date
+  EndingDate: date
+  Status: int
+  PersonResponsible: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  JobPostingGroup: string
+  Blocked: int
+  LastDateModified: date
+  CustomerDiscGroup: string
+  CustomerPriceGroup: string
+  LanguageCode: string
+  BilltoName: string
+  BilltoAddress: string
+  BilltoAddress2: string
+  BilltoCity: string
+  BilltoCounty: string
+  BilltoPostCode: string
+  NoSeries: string
+  BilltoCountryRegionCode: string
+  BilltoName2: string
+  Reserve: int
+  WIPMethod: string
+  CurrencyCode: string
+  BilltoContactNo: string
+  BilltoContact: string
+  WIPPostingDate: date
+  InvoiceCurrencyCode: string
+  ExchCalculationCost: int
+  ExchCalculationPrice: int
+  AllowScheduleContractLines: boolean
+  Complete: boolean
+  ApplyUsageLink: boolean
+  WIPPostingMethod: int
+  OverBudget: boolean
+  ProjectManager: string
+  SelltoCustomerNo: string
+  SelltoCustomerName: string
+  SelltoCustomerName2: string
+  SelltoAddress: string
+  SelltoAddress2: string
+  SelltoCity: string
+  SelltoContact: string
+  SelltoPostCode: string
+  SelltoCounty: string
+  SelltoCountryRegionCode: string
+  SelltoPhoneNo: string
+  SelltoEMail: string
+  SelltoContactNo: string
+  ShiptoCode: string
+  ShiptoName: string
+  ShiptoName2: string
+  ShiptoAddress: string
+  ShiptoAddress2: string
+  ShiptoCity: string
+  ShiptoContact: string
+  ShiptoPostCode: string
+  ShiptoCounty: string
+  ShiptoCountryRegionCode: string
+  ExternalDocumentNo: string
+  PaymentMethodCode: string
+  PaymentTermsCode: string
+  YourReference: string
+  PriceCalculationMethod: int
+  CostCalculationMethod: int
+  PTEGroupCode: string
+  PTEForbidtoReopenJobReq: boolean
+  PTETempoID: string
+  PTEJiraPrimaryProjectId: int
+  PTETransactionReportssur: boolean
+  PTECategory: string
+  PTEJobRequestRequired: boolean
+  WJOBNamedEmployees: boolean
+  WJOBRSMReport: int
+  WJOBRSMReportTable: int
+  WJOBTemplate: boolean
+  WJOBType: string
+  WJOBWorkTypeCode: string
+  WJOBRSMCombine: int
+  WJOBScheduleisalsoContract: boolean
+  WJOBCreateSchedulewhenPoste: boolean
+  WJOBMaxHoursWarning: boolean
+  WJOBSupervisor: string
+  WJOBVATBusPostingGroup: string
+  WJOBJournalsReviewedDate: date
+  WJOBCreatedby: string
+  WJOBLastModifiedby: string
+  WJOBShiptoCode: string
+  WJobPAInvoiceMaxhours: decimal(18,6)
+  WJobPAInvoiceMaxAmount: decimal(18,6)
+  WJobPADiscountLimitAmt: decimal(18,6)
+  WJobPAExcLimitDiscount: decimal(18,6)
+  WJobPAProformaperTask: boolean
+  WJobPAIndexCode: string
+  WJobPAContractRefIndex: decimal(18,6)
+  WJobJRJobRequestsRequired: boolean
+  WJOBShowonTransactionReport: int
+  WJOBTransactionGrouping: int
+  WJobPABilltoJobNo: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  JobKey: int
+
+Key columns: ['JobKey']
+
+🔍 dim_language
+--------------------------------------------------
+Row count: 5
+Column count: 13
+
+Schema:
+  Code: string
+  Name: string
+  WindowsLanguageID: int
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  LanguageKey: int
+
+Key columns: ['LanguageKey']
+
+Sample data:
++-----+--------+-----------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+|Code |Name    |WindowsLanguageID|Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt|SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |LanguageKey|
++-----+--------+-----------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+|NULL |NULL    |0                |31191660 |{0E3D1DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:10.040831|2025-07-07 11:57:10.040831|1          |
+|ENU  |Enska   |1033             |31191661 |{0F3D1DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:10.040831|2025-07-07 11:57:10.040831|2          |
+|IS   |Íslenska|1039             |31191662 |{103D1DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:10.040831|2025-07-07 11:57:10.040831|3          |
+|ISL  |Íslenska|1039             |31191663 |{113D1DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:10.040831|2025-07-07 11:57:10.040831|4          |
+|ÞÝSKA|Þýska   |1031             |31191664 |{123D1DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:10.040831|2025-07-07 11:57:10.040831|5          |
++-----+--------+-----------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+
+
+🔍 dim_location
+--------------------------------------------------
+Row count: 8
+Column count: 67
+
+Schema:
+  Code: string
+  Name: string
+  DefaultBinCode: string
+  Name2: string
+  Address: string
+  Address2: string
+  City: string
+  PhoneNo: string
+  PhoneNo2: string
+  TelexNo: string
+  FaxNo: string
+  Contact: string
+  PostCode: string
+  County: string
+  EMail: string
+  HomePage: string
+  CountryRegionCode: string
+  UseAsInTransit: boolean
+  RequirePutaway: boolean
+  RequirePick: boolean
+  CrossDockDueDateCalc: string
+  UseCrossDocking: boolean
+  RequireReceive: boolean
+  RequireShipment: boolean
+  BinMandatory: boolean
+  DirectedPutawayandPick: boolean
+  DefaultBinSelection: int
+  OutboundWhseHandlingTime: string
+  InboundWhseHandlingTime: string
+  PutawayTemplateCode: string
+  UsePutawayWorksheet: boolean
+  PickAccordingtoFEFO: boolean
+  AllowBreakbulk: boolean
+  BinCapacityPolicy: int
+  PickBinPolicy: int
+  CheckWhseClass: boolean
+  PutawayBinPolicy: int
+  OpenShopFloorBinCode: string
+  ToProductionBinCode: string
+  FromProductionBinCode: string
+  ProdConsumpWhseHandling: int
+  AdjustmentBinCode: string
+  ProdOutputWhseHandling: int
+  AlwaysCreatePutawayLine: boolean
+  AlwaysCreatePickLine: boolean
+  SpecialEquipment: int
+  ReceiptBinCode: string
+  ShipmentBinCode: string
+  CrossDockBinCode: string
+  ToAssemblyBinCode: string
+  FromAssemblyBinCode: string
+  AsmtoOrderShptBinCode: string
+  ToJobBinCode: string
+  AsmConsumpWhseHandling: int
+  JobConsumpWhseHandling: int
+  BaseCalendarCode: string
+  UseADCS: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  LocationKey: int
+
+Key columns: ['LocationKey']
+
+Sample data:
++-------+-------------------------+--------------+-----+-------+--------+----+-------+--------+-------+-----+-------+--------+------+-----+--------+-----------------+--------------+--------------+-----------+--------------------+---------------+--------------+---------------+------------+----------------------+-------------------+------------------------+-----------------------+-------------------+-------------------+-------------------+--------------+-----------------+-------------+--------------+----------------+--------------------+-------------------+---------------------+-----------------------+-----------------+----------------------+-----------------------+--------------------+----------------+--------------+---------------+----------------+-----------------+-------------------+---------------------+------------+----------------------+----------------------+----------------+-------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+|Code   |Name                     |DefaultBinCode|Name2|Address|Address2|City|PhoneNo|PhoneNo2|TelexNo|FaxNo|Contact|PostCode|County|EMail|HomePage|CountryRegionCode|UseAsInTransit|RequirePutaway|RequirePick|CrossDockDueDateCalc|UseCrossDocking|RequireReceive|RequireShipment|BinMandatory|DirectedPutawayandPick|DefaultBinSelection|OutboundWhseHandlingTime|InboundWhseHandlingTime|PutawayTemplateCode|UsePutawayWorksheet|PickAccordingtoFEFO|AllowBreakbulk|BinCapacityPolicy|PickBinPolicy|CheckWhseClass|PutawayBinPolicy|OpenShopFloorBinCode|ToProductionBinCode|FromProductionBinCode|ProdConsumpWhseHandling|AdjustmentBinCode|ProdOutputWhseHandling|AlwaysCreatePutawayLine|AlwaysCreatePickLine|SpecialEquipment|ReceiptBinCode|ShipmentBinCode|CrossDockBinCode|ToAssemblyBinCode|FromAssemblyBinCode|AsmtoOrderShptBinCode|ToJobBinCode|AsmConsumpWhseHandling|JobConsumpWhseHandling|BaseCalendarCode|UseADCS|Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt   |SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |LocationKey|
++-------+-------------------------+--------------+-----+-------+--------+----+-------+--------+-------+-----+-------+--------+------+-----+--------+-----------------+--------------+--------------+-----------+--------------------+---------------+--------------+---------------+------------+----------------------+-------------------+------------------------+-----------------------+-------------------+-------------------+-------------------+--------------+-----------------+-------------+--------------+----------------+--------------------+-------------------+---------------------+-----------------------+-----------------+----------------------+-----------------------+--------------------+----------------+--------------+---------------+----------------+-----------------+-------------------+---------------------+------------+----------------------+----------------------+----------------+-------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+|123    |adfs                     |NULL          |NULL |NULL   |NULL    |NULL|NULL   |NULL    |NULL   |NULL |NULL   |NULL    |NULL  |NULL |NULL    |NULL             |false         |false         |false      |NULL                |false          |false         |false          |false       |false                 |0                  |NULL                    |NULL                   |NULL               |false              |false              |false         |0                |0            |false         |0               |NULL                |NULL               |NULL                 |10                     |NULL             |0                     |false                  |false               |0               |NULL          |NULL           |NULL            |NULL             |NULL               |NULL                 |NULL        |10                    |10                    |NULL            |false  |31191675 |{61471DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-03-08 00:00:00|{00000000-0000-0000-0000-000000000001}|Wise    |2025-07-07 11:57:18.853853|2025-07-07 11:57:18.853853|1          |
+|B      |Wise                     |NULL          |NULL |NULL   |NULL    |NULL|NULL   |NULL    |NULL   |NULL |NULL   |NULL    |NULL  |NULL |NULL    |NULL             |false         |false         |false      |NULL                |false          |false         |false          |false       |false                 |0                  |NULL                    |NULL                   |NULL               |false              |false              |false         |0                |0            |false         |0               |NULL                |NULL               |NULL                 |10                     |NULL             |0                     |false                  |false               |0               |NULL          |NULL           |NULL            |NULL             |NULL               |NULL                 |NULL        |10                    |10                    |NULL            |false  |31191676 |{62471DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-03-08 00:00:00|{00000000-0000-0000-0000-000000000001}|Wise    |2025-07-07 11:57:18.853853|2025-07-07 11:57:18.853853|2          |
+|BLUE   |Blue Print               |NULL          |NULL |NULL   |NULL    |NULL|NULL   |NULL    |NULL   |NULL |NULL   |NULL    |NULL  |NULL |NULL    |NULL             |false         |false         |false      |NULL                |false          |false         |false          |false       |false                 |0                  |NULL                    |NULL                   |NULL               |false              |false              |false         |0                |0            |false         |0               |NULL                |NULL               |NULL                 |10                     |NULL             |0                     |false                  |false               |0               |NULL          |NULL           |NULL            |NULL             |NULL               |NULL                 |NULL        |10                    |10                    |NULL            |false  |31191677 |{63471DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-03-08 00:00:00|{00000000-0000-0000-0000-000000000001}|Wise    |2025-07-07 11:57:18.853853|2025-07-07 11:57:18.853853|3          |
+|CELENIA|Celenia Paymnet managemtn|NULL          |NULL |NULL   |NULL    |NULL|NULL   |NULL    |NULL   |NULL |NULL   |NULL    |NULL  |NULL |NULL    |NULL             |false         |false         |false      |NULL                |false          |false         |false          |false       |false                 |0                  |NULL                    |NULL                   |NULL               |false              |false              |false         |0                |0            |false         |0               |NULL                |NULL               |NULL                 |10                     |NULL             |0                     |false                  |false               |0               |NULL          |NULL           |NULL            |NULL             |NULL               |NULL                 |NULL        |10                    |10                    |NULL            |false  |31191678 |{64471DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-03-08 00:00:00|{00000000-0000-0000-0000-000000000001}|Wise    |2025-07-07 11:57:18.853853|2025-07-07 11:57:18.853853|4          |
+|ELVA   |NULL                     |NULL          |NULL |NULL   |NULL    |NULL|NULL   |NULL    |NULL   |NULL |NULL   |NULL    |NULL  |NULL |NULL    |NULL             |false         |false         |false      |NULL                |false          |false         |false          |false       |false                 |0                  |NULL                    |NULL                   |NULL               |false              |false              |false         |0                |0            |false         |0               |NULL                |NULL               |NULL                 |10                     |NULL             |0                     |false                  |false               |0               |NULL          |NULL           |NULL            |NULL             |NULL               |NULL                 |NULL        |10                    |10                    |NULL            |false  |31191679 |{65471DF0-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-03-08 00:00:00|{00000000-0000-0000-0000-000000000001}|Wise    |2025-07-07 11:57:18.853853|2025-07-07 11:57:18.853853|5          |
++-------+-------------------------+--------------+-----+-------+--------+----+-------+--------+-------+-----+-------+--------+------+-----+--------+-----------------+--------------+--------------+-----------+--------------------+---------------+--------------+---------------+------------+----------------------+-------------------+------------------------+-----------------------+-------------------+-------------------+-------------------+--------------+-----------------+-------------+--------------+----------------+--------------------+-------------------+---------------------+-----------------------+-----------------+----------------------+-----------------------+--------------------+----------------+--------------+---------------+----------------+-----------------+-------------------+---------------------+------------+----------------------+----------------------+----------------+-------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+-----------+
+only showing top 5 rows
+
+
+🔍 dim_ptecustomernavsystem
+--------------------------------------------------
+Row count: 3093
+Column count: 20
+
+Schema:
+  CustomerNo: string
+  ObjectVersion: string
+  ClientVersion: string
+  Server: string
+  LicenseNo: string
+  Status: int
+  Blocked: int
+  HostingCompany: string
+  CentaraHostingCompany: string
+  NavLicenseType: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  PTECustomerNAVSystemKey: int
+
+Key columns: ['PTECustomerNAVSystemKey']
+
+🔍 dim_pteindustries
+--------------------------------------------------
+Row count: 38
+Column count: 12
+
+Schema:
+  Code: string
+  Description: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  PTEIndustriesKey: int
+
+Key columns: ['PTEIndustriesKey']
+
+Sample data:
++----+--------------------------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|Code|Description                                       |Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt   |SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |PTEIndustriesKey|
++----+--------------------------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|NULL|NULL                                              |170708265|{7E273C23-05DF-EF11-9344-7C1E5233FF0F}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|Wise    |2025-07-07 11:57:33.465582|2025-07-07 11:57:33.465582|1               |
+|03  |Eldi og ræktun í ferskvatni                       |170708278|{1BBD1A38-05DF-EF11-9344-7C1E5233FF0F}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|Wise    |2025-07-07 11:57:33.465582|2025-07-07 11:57:33.465582|2               |
+|10  |Sjávarútvegur                                     |31397055 |{84772599-ECDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL               |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:33.465582|2025-07-07 11:57:33.465582|3               |
+|20  |Framleiðsla á öðrum lífrænum grunnefnum til efnaið|170708270|{850F1031-05DF-EF11-9344-7C1E5233FF0F}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|Wise    |2025-07-07 11:57:33.465582|2025-07-07 11:57:33.465582|4               |
+|22  |Framleiðsla á plastvörum til nota í sjávarútvegi  |170708306|{D4367B92-05DF-EF11-9344-7C1E5233FF0F}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|2025-01-30 00:00:00|{C167DAB3-9B58-4450-A2AE-45B7363F1EA8}|Wise    |2025-07-07 11:57:33.465582|2025-07-07 11:57:33.465582|5               |
++----+--------------------------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+only showing top 5 rows
+
+
+🔍 dim_resource
+--------------------------------------------------
+Row count: 511
+Column count: 36
+
+Schema:
+  No: string
+  Type: int
+  Name: string
+  Name2: string
+  Address: string
+  Address2: string
+  City: string
+  SocialSecurityNo: string
+  JobTitle: string
+  Education: string
+  EmploymentDate: date
+  ResourceGroupNo: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  BaseUnitofMeasure: string
+  DirectUnitCost: decimal(18,6)
+  UnitCost: decimal(18,6)
+  UnitPrice: decimal(18,6)
+  VendorNo: string
+  Blocked: boolean
+  GenProdPostingGroup: string
+  PostCode: string
+  County: string
+  TimeSheetOwnerUserID: string
+  PTEGroupCode: string
+  PTEGroupLeader: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ResourceKey: int
+
+Key columns: ['ResourceKey']
+
+🔍 dim_salespersonpurchaser
+--------------------------------------------------
+Row count: 187
+Column count: 23
+
+Schema:
+  Code: string
+  Name: string
+  Commission: decimal(18,6)
+  PrivacyBlocked: boolean
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  EMail: string
+  PhoneNo: string
+  JobTitle: string
+  SearchEMail: string
+  EMail2: string
+  Blocked: boolean
+  PTEIDNumber: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  SalespersonPurchaserKey: int
+
+Key columns: ['SalespersonPurchaserKey']
+
+🔍 dim_shipmentmethod
+--------------------------------------------------
+Row count: 28
+Column count: 12
+
+Schema:
+  Code: string
+  Description: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  ShipmentMethodKey: int
+
+Key columns: ['ShipmentMethodKey']
+
+Sample data:
++----------+----------------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-----------------+
+|Code      |Description                             |Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt|SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |ShipmentMethodKey|
++----------+----------------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-----------------+
+|01-FÆRT   |Fært á nýjan vskm.                      |32725327 |{13E96169-EDDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:51.076931|2025-07-07 11:57:51.076931|1                |
+|01-GJALDÞR|Gjaldþrot hættur rekstri                |32725328 |{14E96169-EDDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:51.076931|2025-07-07 11:57:51.076931|2                |
+|01-NÝ LEIÐ|Breytt um leið                          |32725329 |{15E96169-EDDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:51.076931|2025-07-07 11:57:51.076931|3                |
+|01-UPPS1  |Uppsögn fara annað                      |32725330 |{16E96169-EDDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:51.076931|2025-07-07 11:57:51.076931|4                |
+|01-UPPS2  |Uppsögn á samning en er ennþá hjá Wise. |32725331 |{17E96169-EDDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL            |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:51.076931|2025-07-07 11:57:51.076931|5                |
++----------+----------------------------------------+---------+--------------------------------------+-------------------+--------------------------------------+----------------+--------------------------------------+--------+--------------------------+--------------------------+-----------------+
+only showing top 5 rows
+
+
+🔍 dim_unitofmeasure
+--------------------------------------------------
+Row count: 24
+Column count: 14
+
+Schema:
+  Code: string
+  Description: string
+  InternationalStandardCode: string
+  Symbol: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  UnitofMeasureKey: int
+
+Key columns: ['UnitofMeasureKey']
+
+Sample data:
++------+-----------+-------------------------+------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|Code  |Description|InternationalStandardCode|Symbol|Timestamp|SystemId                              |SystemCreatedAt    |SystemCreatedBy                       |SystemModifiedAt   |SystemModifiedBy                      |$Company|SilverCreatedAt           |SilverModifiedAt          |UnitofMeasureKey|
++------+-----------+-------------------------+------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+|.     |Vinna      |EA                       |NULL  |169143496|{C3689A28-A0CD-EF11-B8EC-000D3AB98585}|2025-01-08 00:00:00|{224CEB72-FEBC-4A6C-8F91-81F59241BC9E}|2025-01-08 00:00:00|{41F64B8A-9AAE-41BF-9B7F-27CF7A35DBA4}|Wise    |2025-07-07 11:57:56.276256|2025-07-07 11:57:56.276256|1               |
+|AÐILAR|NULL       |NULL                     |NULL  |32729304 |{D25EE66B-4A18-4452-B529-EB3D345EA2C9}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|NULL               |{00000000-0000-0000-0000-000000000000}|Wise    |2025-07-07 11:57:56.276256|2025-07-07 11:57:56.276256|2               |
+|DAGUR |Dagur      |DAY                      |NULL  |77769420 |{421C5F39-ABD4-4B05-9815-0BA3031D5F64}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-06-05 00:00:00|{83C316A4-29E0-493C-A3F0-04083A394FFF}|Wise    |2025-07-07 11:57:56.276256|2025-07-07 11:57:56.276256|3               |
+|DAYS  |Dagar      |DAY                      |NULL  |77769421 |{C9F1349C-EDDC-EE11-9D1A-6805CA8D750B}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-06-05 00:00:00|{83C316A4-29E0-493C-A3F0-04083A394FFF}|Wise    |2025-07-07 11:57:56.276256|2025-07-07 11:57:56.276256|4               |
+|EIN   |NULL       |EA                       |NULL  |77769427 |{0E236F9E-873E-4D11-A4E5-B59155C8A4DF}|1900-01-01 00:00:00|{00000000-0000-0000-0000-000000000000}|2024-06-05 00:00:00|{83C316A4-29E0-493C-A3F0-04083A394FFF}|Wise    |2025-07-07 11:57:56.276256|2025-07-07 11:57:56.276256|5               |
++------+-----------+-------------------------+------+---------+--------------------------------------+-------------------+--------------------------------------+-------------------+--------------------------------------+--------+--------------------------+--------------------------+----------------+
+only showing top 5 rows
+
+
+🔍 dim_vendor
+--------------------------------------------------
+Row count: 2588
+Column count: 99
+
+Schema:
+  No: string
+  Name: string
+  SearchName: string
+  Name2: string
+  Address: string
+  Address2: string
+  City: string
+  Contact: string
+  PhoneNo: string
+  TelexNo: string
+  OurAccountNo: string
+  TerritoryCode: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  BudgetedAmount: decimal(18,6)
+  VendorPostingGroup: string
+  CurrencyCode: string
+  LanguageCode: string
+  RegistrationNumber: string
+  StatisticsGroup: int
+  PaymentTermsCode: string
+  FinChargeTermsCode: string
+  PurchaserCode: string
+  ShipmentMethodCode: string
+  ShippingAgentCode: string
+  InvoiceDiscCode: string
+  CountryRegionCode: string
+  Blocked: int
+  PaytoVendorNo: string
+  Priority: int
+  PaymentMethodCode: string
+  FormatRegion: string
+  LastModifiedDateTime: timestamp
+  LastDateModified: date
+  ApplicationMethod: int
+  PricesIncludingVAT: boolean
+  FaxNo: string
+  TelexAnswerBack: string
+  VATRegistrationNo: string
+  GenBusPostingGroup: string
+  GLN: string
+  PostCode: string
+  County: string
+  EORINumber: string
+  EMail: string
+  HomePage: string
+  NoSeries: string
+  TaxAreaCode: string
+  TaxLiable: boolean
+  VATBusPostingGroup: string
+  BlockPaymentTolerance: boolean
+  ICPartnerCode: string
+  Prepayment: decimal(18,6)
+  PartnerType: int
+  IntrastatPartnerType: int
+  ExcludefromPmtPractices: boolean
+  CompanySizeCode: string
+  PrivacyBlocked: boolean
+  DisableSearchbyName: boolean
+  CreditorNo: string
+  AllowMultiplePostingGroups: boolean
+  PreferredBankAccountCode: string
+  CoupledtoCRM: boolean
+  CashFlowPaymentTermsCode: string
+  PrimaryContactNo: string
+  MobilePhoneNo: string
+  ResponsibilityCenter: string
+  LocationCode: string
+  LeadTimeCalculation: string
+  PriceCalculationMethod: int
+  BaseCalendarCode: string
+  DocumentSendingProfile: string
+  ValidateEUVatRegNo: boolean
+  CurrencyId: string
+  PaymentTermsId: string
+  PaymentMethodId: string
+  OverReceiptCode: string
+  PTEMicrosoftafslttur: decimal(18,6)
+  PTEGjaldkeri: string
+  PTESmigjaldkera: string
+  PTEHeitikeju: string
+  PTEAfmrkuntgjaldaflokks: string
+  PTEEkkiuppskrifa: boolean
+  PTEPrentalaunamia: boolean
+  PTEjafnaargreislur: decimal(18,6)
+  PTEEkkigreislutillgu: boolean
+  PTEContractor: boolean
+  PTESleppagreislutillgu: boolean
+  CTRContractor: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+  VendorKey: int
+
+Key columns: ['VendorKey']
+
+🔍 dim_vendorstatus
+--------------------------------------------------
+Row count: 2
+Column count: 9
+
+Schema:
+  VendorStatusKey: int
+  VendorStatusCode: int
+  usage_count: bigint
+  isActive: boolean
+  effectiveDate: timestamp
+  endDate: timestamp
+  _etl_gold_processed_at: timestamp
+  _etl_source: string
+  _etl_batch_id: string
+
+Key columns: ['VendorStatusKey']
+
+Sample data:
++---------------+----------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|VendorStatusKey|VendorStatusCode|usage_count|isActive|effectiveDate             |endDate|_etl_gold_processed_at    |_etl_source        |_etl_batch_id  |
++---------------+----------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+|1              |0               |2500       |true    |2025-07-07 14:56:00.781022|NULL   |2025-07-07 14:56:00.781022|dimension_generator|20250707_145559|
+|2              |2               |88         |true    |2025-07-07 14:56:00.781022|NULL   |2025-07-07 14:56:00.781022|dimension_generator|20250707_145559|
++---------------+----------------+-----------+--------+--------------------------+-------+--------------------------+-------------------+---------------+
+
+
+🔍 etl_metadata
+--------------------------------------------------
+Row count: 4
+Column count: 5
+
+Schema:
+  layer: string
+  run_id: string
+  processing_time: timestamp
+  success: boolean
+  details: string
+
+🔍 expense_lines
+--------------------------------------------------
+Row count: 6551
+Column count: 15
+
+Schema:
+  invoiceId: int
+  invoiceNumber: string
+  lineNumber: int
+  expenseType: string
+  quantity: double
+  lineAmount: double
+  description: string
+  workDate: timestamp
+  employee: string
+  agreementId: int
+  etlTimestamp: string
+  parentAgreementId: int
+  agreement_type: string
+  final_agreement_number: string
+  etlEntity: string
+
+🔍 fact_accountspayable
+--------------------------------------------------
+Row count: 168854
+Column count: 89
+
+Schema:
+  EntryNo: int
+  VendorNo: string
+  PostingDate: date
+  DocumentType: int
+  DocumentNo: string
+  Description: string
+  VendorName: string
+  CurrencyCode: string
+  PurchaseLCY: decimal(18,6)
+  InvDiscountLCY: decimal(18,6)
+  BuyfromVendorNo: string
+  VendorPostingGroup: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  PurchaserCode: string
+  UserID: string
+  SourceCode: string
+  OnHold: string
+  AppliestoDocType: int
+  AppliestoDocNo: string
+  Open: boolean
+  DueDate: date
+  PmtDiscountDate: date
+  OriginalPmtDiscPossible: decimal(18,6)
+  PmtDiscRcdLCY: decimal(18,6)
+  OrigPmtDiscPossibleLCY: decimal(18,6)
+  Positive: boolean
+  ClosedbyEntryNo: int
+  ClosedatDate: date
+  ClosedbyAmount: decimal(18,6)
+  AppliestoID: string
+  JournalTemplName: string
+  JournalBatchName: string
+  ReasonCode: string
+  BalAccountType: int
+  BalAccountNo: string
+  TransactionNo: int
+  ClosedbyAmountLCY: decimal(18,6)
+  DocumentDate: date
+  ExternalDocumentNo: string
+  NoSeries: string
+  ClosedbyCurrencyCode: string
+  ClosedbyCurrencyAmount: decimal(18,6)
+  AdjustedCurrencyFactor: decimal(18,6)
+  OriginalCurrencyFactor: decimal(18,6)
+  RemainingPmtDiscPossible: decimal(18,6)
+  PmtDiscToleranceDate: date
+  MaxPaymentTolerance: decimal(18,6)
+  AcceptedPaymentTolerance: decimal(18,6)
+  AcceptedPmtDiscTolerance: boolean
+  PmtToleranceLCY: decimal(18,6)
+  AmounttoApply: decimal(18,6)
+  ICPartnerCode: string
+  ApplyingEntry: boolean
+  Reversed: boolean
+  ReversedbyEntryNo: int
+  ReversedEntryNo: int
+  Prepayment: boolean
+  CreditorNo: string
+  PaymentReference: string
+  PaymentMethodCode: string
+  AppliestoExtDocNo: string
+  InvoiceReceivedDate: date
+  RecipientBankAccount: string
+  MessagetoRecipient: string
+  ExportedtoPaymentFile: boolean
+  DimensionSetID: int
+  RemittoCode: string
+  PTEGreia: boolean
+  PTEtgjaldaflokkur: string
+  PTEFastanmer: string
+  PTEContractor: boolean
+  PTEGrseill: boolean
+  PTEUppskrifaaf: string
+  PTEsamykktur: boolean
+  PTEMttkudagsetning: date
+  PTEBankatexti: string
+  PTEGreisluform: int
+  PTEbkaur: boolean
+  CTRContractor: boolean
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+
+Measure columns:
+  - ClosedbyAmount
+  - ClosedbyAmountLCY
+  - ClosedbyCurrencyAmount
+  - AmounttoApply
+
+🔍 fact_accountsreceivable
+--------------------------------------------------
+Row count: 474276
+Column count: 83
+
+Schema:
+  EntryNo: int
+  CustomerNo: string
+  PostingDate: date
+  DocumentType: int
+  DocumentNo: string
+  Description: string
+  CustomerName: string
+  YourReference: string
+  CurrencyCode: string
+  SalesLCY: decimal(18,6)
+  ProfitLCY: decimal(18,6)
+  InvDiscountLCY: decimal(18,6)
+  SelltoCustomerNo: string
+  CustomerPostingGroup: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  SalespersonCode: string
+  UserID: string
+  SourceCode: string
+  OnHold: string
+  AppliestoDocType: int
+  AppliestoDocNo: string
+  Open: boolean
+  DueDate: date
+  PmtDiscountDate: date
+  OriginalPmtDiscPossible: decimal(18,6)
+  PmtDiscGivenLCY: decimal(18,6)
+  OrigPmtDiscPossibleLCY: decimal(18,6)
+  Positive: boolean
+  ClosedbyEntryNo: int
+  ClosedatDate: date
+  ClosedbyAmount: decimal(18,6)
+  AppliestoID: string
+  JournalTemplName: string
+  JournalBatchName: string
+  ReasonCode: string
+  BalAccountType: int
+  BalAccountNo: string
+  TransactionNo: int
+  ClosedbyAmountLCY: decimal(18,6)
+  DocumentDate: date
+  ExternalDocumentNo: string
+  CalculateInterest: boolean
+  ClosingInterestCalculated: boolean
+  NoSeries: string
+  ClosedbyCurrencyCode: string
+  ClosedbyCurrencyAmount: decimal(18,6)
+  AdjustedCurrencyFactor: decimal(18,6)
+  OriginalCurrencyFactor: decimal(18,6)
+  RemainingPmtDiscPossible: decimal(18,6)
+  PmtDiscToleranceDate: date
+  MaxPaymentTolerance: decimal(18,6)
+  LastIssuedReminderLevel: int
+  AcceptedPaymentTolerance: decimal(18,6)
+  AcceptedPmtDiscTolerance: boolean
+  PmtToleranceLCY: decimal(18,6)
+  AmounttoApply: decimal(18,6)
+  ICPartnerCode: string
+  ApplyingEntry: boolean
+  Reversed: boolean
+  ReversedbyEntryNo: int
+  ReversedEntryNo: int
+  Prepayment: boolean
+  PaymentReference: string
+  PaymentMethodCode: string
+  AppliestoExtDocNo: string
+  RecipientBankAccount: string
+  MessagetoRecipient: string
+  ExportedtoPaymentFile: boolean
+  DimensionSetID: int
+  DirectDebitMandateID: string
+  PaymentPrediction: int
+  PredictionConfidence-1301: string
+  PredictionConfidence: decimal(18,6)
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+
+Measure columns:
+  - ClosedbyAmount
+  - ClosedbyAmountLCY
+  - ClosedbyCurrencyAmount
+  - AmounttoApply
+
+🔍 fact_agreement
+--------------------------------------------------
+Row count: 337761
+Column count: 22
+
+Schema:
+  agreement_fact_key: int
+  fact_created_at: timestamp
+  No: string
+  SelltoCustomerNo: string
+  BilltoCustomerNo: string
+  Status: string
+  DocumentType: boolean
+  ActiveFrom: boolean
+  ActiveTo: boolean
+  AgreementType: string
+  $Company: string
+  DocumentNo: string
+  LineNo: int
+  Description: string
+  Amount: decimal(18,6)
+  AmountIncludingVAT: decimal(18,6)
+  Quantity: decimal(18,6)
+  UnitPrice: decimal(18,6)
+  Type: string
+  PostingDate: date
+  AgreementLineno: string
+  Percentage: string
+
+Measure columns:
+  - Amount
+  - AmountIncludingVAT
+  - Quantity
+  - UnitPrice
+
+🔍 fact_finance
+--------------------------------------------------
+Row count: 1896553
+Column count: 20
+
+Schema:
+  $Company: string
+  EntryNo: int
+  GLAccountNo: string
+  GLAccountKey: int
+  DocumentNo: string
+  PostingDate: date
+  DateKey: int
+  PostingYear: int
+  FiscalYear: int
+  FiscalQuarter: string
+  DimensionBridgeKey: int
+  TeamCode: string
+  TeamName: string
+  ProductCode: string
+  ProductName: string
+  HasTeamDimension: boolean
+  HasProductDimension: boolean
+  IsCoreData: boolean
+  Amount: decimal(18,6)
+  AmountSign: int
+
+Measure columns:
+  - Amount
+  - AmountSign
+
+🔍 fact_inventory
+--------------------------------------------------
+Row count: 311207
+Column count: 22
+
+Schema:
+  $Company: string
+  ItemNo: string
+  ItemKey: int
+  PostingDate: date
+  DateKey: int
+  PostingYear: int
+  FiscalYear: int
+  FiscalQuarter: string
+  Quantity: decimal(18,6)
+  QuantitySign: int
+  Cost: decimal(18,6)
+  CostSign: int
+  LocationCode: string
+  LocationKey: int
+  DimensionBridgeKey: int
+  TeamCode: string
+  TeamName: string
+  ProductCode: string
+  ProductName: string
+  HasTeamDimension: boolean
+  HasProductDimension: boolean
+  IsCoreData: boolean
+
+Measure columns:
+  - Quantity
+  - QuantitySign
+  - Cost
+  - CostSign
+
+🔍 fact_inventoryvalue
+--------------------------------------------------
+Row count: 381621
+Column count: 46
+
+Schema:
+  EntryNo: int
+  ItemNo: string
+  PostingDate: date
+  ItemLedgerEntryType: int
+  SourceNo: string
+  DocumentNo: string
+  Description: string
+  LocationCode: string
+  InventoryPostingGroup: string
+  SourcePostingGroup: string
+  ItemLedgerEntryNo: int
+  ValuedQuantity: decimal(18,6)
+  ItemLedgerEntryQuantity: decimal(18,6)
+  InvoicedQuantity: decimal(18,6)
+  CostperUnit: decimal(18,6)
+  SalesAmountActual: decimal(18,6)
+  SalespersPurchCode: string
+  DiscountAmount: decimal(18,6)
+  SourceCode: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  CostAmountActual: decimal(18,6)
+  CostPostedtoGL: decimal(18,6)
+  GenBusPostingGroup: string
+  GenProdPostingGroup: string
+  DocumentType: int
+  DocumentLineNo: int
+  EntryType: int
+  PurchaseAmountActual: decimal(18,6)
+  PurchaseAmountExpected: decimal(18,6)
+  SalesAmountExpected: decimal(18,6)
+  CostAmountExpected: decimal(18,6)
+  CostAmountNonInvtbl: decimal(18,6)
+  DimensionSetID: int
+  VariantCode: string
+  Adjustment: boolean
+  Type: int
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+
+Measure columns:
+  - ValuedQuantity
+  - ItemLedgerEntryQuantity
+  - InvoicedQuantity
+  - CostperUnit
+  - SalesAmountActual
+  - DiscountAmount
+  - CostAmountActual
+  - CostPostedtoGL
+  - PurchaseAmountActual
+  - PurchaseAmountExpected
+
+🔍 fact_item
+--------------------------------------------------
+Row count: 151209
+Column count: 21
+
+Schema:
+  $Company: string
+  EntryNo: int
+  ItemNo: string
+  PostingDate: date
+  DateKey: int
+  FiscalYear: int
+  FiscalQuarter: string
+  Quantity: decimal(18,6)
+  QuantitySign: int
+  DocumentNo: string
+  EntryType: string
+  ItemKey: int
+  LocationKey: int
+  DimensionBridgeKey: int
+  TeamCode: string
+  TeamName: string
+  ProductCode: string
+  ProductName: string
+  HasTeamDimension: boolean
+  HasProductDimension: boolean
+  IsCoreData: boolean
+
+Measure columns:
+  - Quantity
+  - QuantitySign
+
+🔍 fact_jobs
+--------------------------------------------------
+Row count: 2304815
+Column count: 102
+
+Schema:
+  EntryNo: int
+  JobNo: string
+  PostingDate: date
+  DocumentNo: string
+  Type: int
+  No: string
+  Description: string
+  Quantity: decimal(18,6)
+  DirectUnitCostLCY: decimal(18,6)
+  UnitCostLCY: decimal(18,6)
+  TotalCostLCY: decimal(18,6)
+  UnitPriceLCY: decimal(18,6)
+  TotalPriceLCY: decimal(18,6)
+  ResourceGroupNo: string
+  UnitofMeasureCode: string
+  LocationCode: string
+  JobPostingGroup: string
+  GlobalDimension1Code: string
+  GlobalDimension2Code: string
+  WorkTypeCode: string
+  CustomerPriceGroup: string
+  UserID: string
+  SourceCode: string
+  ShptMethodCode: string
+  AmttoPosttoGL: decimal(18,6)
+  AmtPostedtoGL: decimal(18,6)
+  EntryType: int
+  JournalBatchName: string
+  ReasonCode: string
+  TransactionType: string
+  TransportMethod: string
+  CountryRegionCode: string
+  GenBusPostingGroup: string
+  GenProdPostingGroup: string
+  EntryExitPoint: string
+  DocumentDate: date
+  ExternalDocumentNo: string
+  Area: string
+  TransactionSpecification: string
+  NoSeries: string
+  AdditionalCurrencyTotalCost: decimal(18,6)
+  AddCurrencyTotalPrice: decimal(18,6)
+  AddCurrencyLineAmount: decimal(18,6)
+  DimensionSetID: int
+  JobTaskNo: string
+  LineAmountLCY: decimal(18,6)
+  UnitCost: decimal(18,6)
+  TotalCost: decimal(18,6)
+  UnitPrice: decimal(18,6)
+  TotalPrice: decimal(18,6)
+  LineAmount: decimal(18,6)
+  LineDiscountAmount: decimal(18,6)
+  LineDiscountAmountLCY: decimal(18,6)
+  CurrencyCode: string
+  CurrencyFactor: decimal(18,6)
+  Description2: string
+  LedgerEntryType: int
+  LedgerEntryNo: int
+  SerialNo: string
+  LotNo: string
+  LineDiscount: decimal(18,6)
+  LineType: int
+  OriginalUnitCostLCY: decimal(18,6)
+  OriginalTotalCostLCY: decimal(18,6)
+  OriginalUnitCost: decimal(18,6)
+  OriginalTotalCost: decimal(18,6)
+  OriginalTotalCostACY: decimal(18,6)
+  Adjusted: boolean
+  DateTimeAdjusted: timestamp
+  VariantCode: string
+  BinCode: string
+  QtyperUnitofMeasure: decimal(18,6)
+  QuantityBase: decimal(18,6)
+  ServiceOrderNo: string
+  PostedServiceShipmentNo: string
+  PackageNo: string
+  PTEOldPhaseCode: string
+  PTEJobAnalyzesType: int
+  PTECustomerNo: string
+  PTECustomerName: string
+  PTEEmployeeDivision: string
+  PTEJiraWorklogid: int
+  PTEDescription3: string
+  WJOBReviewedby: string
+  WJOBWork: boolean
+  WJOBJobType: string
+  WJOBManuallyModified: boolean
+  WJOBReviewed: boolean
+  WJOBRegbyResource: string
+  WJOBResourceName: string
+  WJobExternalDocument2: string
+  WJobPAProformaNo: string
+  WJobJRRequestNo: string
+  Timestamp: string
+  SystemId: string
+  SystemCreatedAt: timestamp
+  SystemCreatedBy: string
+  SystemModifiedAt: timestamp
+  SystemModifiedBy: string
+  $Company: string
+  SilverCreatedAt: timestamp
+  SilverModifiedAt: timestamp
+
+Measure columns:
+  - Quantity
+  - DirectUnitCostLCY
+  - UnitCostLCY
+  - TotalCostLCY
+  - UnitPriceLCY
+  - TotalPriceLCY
+  - CustomerPriceGroup
+  - AdditionalCurrencyTotalCost
+  - AddCurrencyTotalPrice
+  - AddCurrencyLineAmount
+
+🔍 fact_purchase
+--------------------------------------------------
+Row count: 260
+Column count: 23
+
+Schema:
+  $Company: string
+  DocumentNo: string
+  LineNo: int
+  PostingDate: date
+  DateKey: int
+  PostingYear: int
+  FiscalYear: int
+  FiscalQuarter: string
+  Amount: decimal(18,6)
+  AmountSign: int
+  Quantity: decimal(18,6)
+  QuantitySign: int
+  ItemKey: int
+  VendorKey: int
+  DimensionBridgeKey: int
+  TeamCode: string
+  TeamName: string
+  ProductCode: string
+  ProductName: string
+  HasTeamDimension: boolean
+  HasProductDimension: boolean
+  GoldCreatedAt: timestamp
+  GoldModifiedAt: timestamp
+
+Measure columns:
+  - Amount
+  - AmountSign
+  - Quantity
+  - QuantitySign
+
+🔍 fact_sales
+--------------------------------------------------
+Row count: 16898
+Column count: 22
+
+Schema:
+  $Company: string
+  DocumentNo: string
+  LineNo: int
+  PostingDate: date
+  DateKey: int
+  PostingYear: int
+  FiscalYear: int
+  FiscalQuarter: string
+  Amount: decimal(18,6)
+  AmountSign: int
+  Quantity: decimal(18,6)
+  QuantitySign: int
+  ItemKey: int
+  CustomerKey: int
+  DimensionBridgeKey: int
+  TeamCode: string
+  TeamName: string
+  ProductCode: string
+  ProductName: string
+  HasTeamDimension: boolean
+  HasProductDimension: boolean
+  IsCoreData: boolean
+
+Measure columns:
+  - Amount
+  - AmountSign
+  - Quantity
+  - QuantitySign
+
+🔍 invoice_headers
+--------------------------------------------------
+Row count: 37294
+Column count: 23
+
+Schema:
+  invoiceId: int
+  invoiceNumber: string
+  invoiceType: string
+  status: string
+  companyId: int
+  companyName: string
+  billToCompanyId: int
+  billToCompanyName: string
+  invoiceDate: timestamp
+  dueDate: timestamp
+  subtotal: double
+  total: double
+  salesTax: double
+  agreementId: int
+  projectId: int
+  ticketId: int
+  etlTimestamp: string
+  parentAgreementId: int
+  agreement_type: string
+  final_agreement_number: string
+  vat_percentage: double
+  is_agreement_invoice: boolean
+  etlEntity: string
+
+🔍 invoice_lines
+--------------------------------------------------
+Row count: 108505
+Column count: 21
+
+Schema:
+  invoiceId: int
+  lineNumber: int
+  timeEntryId: int
+  productId: int
+  memo: string
+  quantity: double
+  lineAmount: double
+  description: string
+  documentDate: string
+  price: double
+  cost: double
+  agreementId: int
+  employeeId: int
+  workRoleId: int
+  workTypeId: int
+  parentAgreementId: int
+  agreement_type: string
+  final_agreement_number: string
+  itemIdentifier: int
+  discountApplicable: boolean
+  etlEntity: string

@@ -1,0 +1,51 @@
+$Company,DimensionSetID,TEAMCode,TEAMName,PRODUCTCode,PRODUCTName,HasTEAMDimension,HasPRODUCTDimension,IsCoreData,DimensionBridgeKey
+Wise,5483,04,All,30310,Hýsing ,true,true,false,4242
+Wise,5550,33,Project Managers,10120,Bankasamskipti,true,true,false,4313
+Wise,6312,51,Sales,13140,Hafnarkerfi,true,true,false,4782
+Wise,6426,20,Department: Development,12210,Centara,true,true,false,4893
+Wise,6504,51,Sales,11510,Launakerfi ,true,true,false,4977
+Wise,6510,51,Sales,13110,Sveitarstjóri,true,true,false,4984
+Wise,6536,14,Customer Success,60810,Wise Courier,true,true,false,5011
+Wise,6635,20,Department: Development,60810,Wise Courier,true,true,false,5116
+Wise,6675,33,Project Managers,12110,Innfl. Tollakerfi ,true,true,false,5159
+Wise,6895,04,All,70660,MSP Endurs. vélb.,true,true,false,5386
+Wise,6911,26,Retail,12210,Centara,true,true,false,5401
+Wise,6916,26,Retail,20110,Veskislausn,true,true,false,5405
+Wise,6922,50,Department: Sales & Marketing,40110,Wise BI,true,true,false,5412
+Wise,6936,44,Cloud Center of Excellence,13210,Sveitagátt,true,true,false,5426
+Wise,6939,44,Cloud Center of Excellence,13110,Sveitarstjóri,true,true,false,5428
+Wise,6945,44,Cloud Center of Excellence,20110,Veskislausn,true,true,false,5433
+Wise,6950,26,Retail,12220,Centara Express /nyja,true,true,false,5438
+Wise,6968,04,All,70660,MSP Endurs. vélb.,true,true,false,5455
+Wise,7060,43,OnPrem,10140,Rafrænir reikningar,true,true,false,5528
+Wise,7077,41,Infrastructure,70620,"MSP Hýsing, kerfi,bún, sýnd, net",true,true,false,5546
+Wise,7101,04,All,70620,"MSP Hýsing, kerfi,bún, sýnd, net",true,true,false,5572
+Wise,7215,40,MSP,30310,Hýsing ,true,true,false,5681
+Wise,7230,50,Department: Sales & Marketing,10225,Wise MT útgáfa,true,true,false,5697
+Wise,7233,52,Marketing,13112,Sveitarstjóri 22,true,true,false,5700
+Wise,7242,44,Cloud Center of Excellence,10230,Þjóðarsýn,true,true,false,5709
+Wise,7284,50,Department: Sales & Marketing,50110,Saas lausnir ,true,true,false,5753
+Wise,7288,04,All,70665,MSP Endurs.hugb. vara 3jiað.,true,true,false,5757
+Wise,7303,50,Department: Sales & Marketing,10120,Bankasamskipti,true,true,false,5773
+Wise,7310,50,Department: Sales & Marketing,13110,Sveitarstjóri,true,true,false,5781
+Wise,8350,13,Executives & CEO office,10120,Bankasamskipti,true,true,false,5901
+Wise,8356,42,Service Desk,10170,Sérfræðiverkbókhald,true,true,false,5906
+Wise,8385,40,MSP,70660,MSP Endurs. vélb.,true,true,false,5938
+Wise,8386,40,MSP,70640,MSP Vélb.eigin leiga,true,true,false,5939
+Wise,8413,33,Project Managers,11520,Ferðauppgjör,true,true,false,5967
+Wise,8437,40,MSP,70170,SPLA leyfi MSP,true,true,false,5991
+Wise,8448,33,Project Managers,10222,Skýrslupakki,true,true,false,6003
+Wise,8461,40,MSP,70110,Öll CSP leyfi ,true,true,false,6017
+Wise,8470,26,Retail,12240,SmartPOS,true,true,false,6026
+Wise,8488,33,Project Managers,13112,Sveitarstjóri 22,true,true,false,6045
+Wise,8491,42,Service Desk,12110,Innfl. Tollakerfi ,true,true,false,6047
+Wise,8515,13,Executives & CEO office,30310,Hýsing ,true,true,false,6071
+Wise,8524,40,MSP,70110,Öll CSP leyfi ,true,true,false,6080
+Wise,8411,50,Department: Sales & Marketing,30110,Coredata,true,true,true,5965
+Wise,5565,32,D365,10120,Bankasamskipti,true,true,false,4329
+Wise,5566,32,D365,60710,Öll áskrift frá 3ja aðila BC/Dynamics,true,true,false,4330
+Wise,6471,32,D365,70310,Öll on prem áskrift frá Micro ,true,true,false,4941
+Wise,6483,32,D365,10126,Wisecard,true,true,false,4954
+Wise,6494,32,D365,11530,Mannauðskerfi,true,true,false,4966
+Wise,6581,32,D365,14140,Skuldabréfakerfi,true,true,false,5059
+Wise,6694,32,D365,10130,Innheimtukerfi,true,true,false,5179
