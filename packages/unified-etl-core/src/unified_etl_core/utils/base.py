@@ -28,62 +28,41 @@ class ErrorLevel(str, Enum):
 
 
 class ErrorCode(str, Enum):
-    """Error codes for the application."""
-
-    # General Errors (1xxx)
-    UNKNOWN = "1000"
-    INVALID_REQUEST = "1001"
-    INVALID_INPUT = "1002"
-    NOT_FOUND = "1003"
-    PROCESSING_FAILED = "1004"
-    CONFIG_INVALID = "1005"
-    CONFIG_MISSING = "1006"
-    TIMEOUT = "1007"
-    INVALID_EMAIL = "1008"
-    INVALID_EMAIL_DOMAIN = "1009"
-    USER_ALREADY_EXISTS = "1010"
-    USER_CREATION_FAILED = "1011"
-    USER_NOT_FOUND = "1012"
-    INVALID_TOKEN = "1013"
-
-    # API Errors (2xxx)
-    AUTHENTICATION_FAILED = "2001"
-    AUTHORIZATION_FAILED = "2002"
-    RATE_LIMITED = "2003"  # Unified rate limit error code
-    CONTENT_NOT_FOUND = "2004"
-    CIRCUIT_OPEN = "2005"
-
-    # Database Errors (3xxx)
-    DB_CONNECTION = "3001"
-    DB_QUERY = "3002"
-    DB_VALIDATION = "3003"
-    DB_RECORD_NOT_FOUND = "3004"
-    DB_OPERATION = "3005"
-
-    # AI/ML Errors (4xxx)
-    MODEL_ERROR = "4001"
-    MODEL_INITIALIZATION_ERROR = "4002"
-    EMBEDDING_FAILED = "4003"
-
-    # Infrastructure Errors (5xxx)
-    RESOURCE_ERROR = "5001"
-    SERVICE_UNAVAILABLE = "5002"
-    QUEUE_ERROR = "5003"
-
-    # Storage Errors (6xxx)
-    STORAGE_ERROR = "6001"
-    STORAGE_CONNECTION = "6002"
-    STORAGE_OPERATION = "6003"
-
-    # ETL Errors (7xxx)
-    DIMENSION_RESOLUTION_FAILED = "7001"
-    DIMENSION_JOIN_FAILED = "7002"
-    DIMENSION_HIERARCHY_FAILED = "7003"
-    FACT_CREATION_FAILED = "7101"
-    FACT_VALIDATION_FAILED = "7102"
-    TRANSFORM_FAILED = "7201"
-    SCHEMA_MISMATCH = "7202"
-    TYPE_CONVERSION_FAILED = "7203"
+    """ETL-specific error codes."""
+    
+    # Configuration & Validation (1xxx)
+    CONFIG_MISSING = "1001"          # Required config key missing
+    CONFIG_INVALID = "1002"          # Config value invalid
+    VALIDATION_FAILED = "1003"       # Data validation failed
+    SCHEMA_MISMATCH = "1004"         # Expected vs actual schema
+    
+    # Source System Errors (2xxx)  
+    API_AUTH_FAILED = "2001"         # CW/BC authentication
+    API_RATE_LIMITED = "2002"        # Hit rate limits
+    API_RESPONSE_INVALID = "2003"    # Malformed API response
+    API_FIELD_MISSING = "2004"       # Required field not in response
+    
+    # Bronze Layer (3xxx)
+    BRONZE_EXTRACT_FAILED = "3001"   # API extraction failed
+    BRONZE_VALIDATION_FAILED = "3002" # Pydantic validation failed
+    BRONZE_WRITE_FAILED = "3003"     # Failed to write to storage
+    
+    # Silver Layer (4xxx)
+    SILVER_TRANSFORM_FAILED = "4001"  # Spark transformation failed
+    SILVER_TYPE_CONVERSION = "4002"   # Type casting failed
+    SILVER_FLATTEN_FAILED = "4003"    # Nested column flattening failed
+    SILVER_SCD_FAILED = "4004"        # SCD Type 2 processing failed
+    
+    # Gold Layer (5xxx)
+    GOLD_DIMENSION_FAILED = "5001"    # Dimension resolution/join
+    GOLD_FACT_FAILED = "5002"         # Fact table creation
+    GOLD_SURROGATE_KEY = "5003"       # Surrogate key generation
+    GOLD_AGGREGATION = "5004"         # Aggregation/calculation failed
+    
+    # Infrastructure (6xxx)
+    SPARK_SESSION_FAILED = "6001"     # Spark initialization
+    STORAGE_ACCESS_FAILED = "6002"    # OneLake/Delta access
+    MEMORY_EXCEEDED = "6003"          # OOM or resource limits
 
 
 class ErrorDetails(BaseModel):

@@ -120,7 +120,7 @@ class ModelGenerator(ABC):
             files_to_process = [output]
         elif output.is_dir():
             # Add header to all .py files in directory
-            files_to_process = list(output.glob("*.py"))
+            files_to_process: list[Path] = list(output.glob("*.py"))
         else:
             logger.warning(f"Output {output} is neither file nor directory")
             return

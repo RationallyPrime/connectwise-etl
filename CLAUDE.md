@@ -1,522 +1,58 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working with the Unified ETL Framework.
 
-## Project Overview
+## Overview
 
-The Unified ETL Framework integrates company data from ConnectWise PSA and Microsoft Business Central APIs, loading it directly into Microsoft Fabric OneLake using a proper medallion architecture. The framework handles API limitations with intelligent field selection and provides a generic, configuration-driven approach to ETL processing.
+ETL framework integrating ConnectWise PSA and Business Central APIs into Microsoft Fabric OneLake using medallion architecture.
 
-## Current Architecture
+## Package Structure
 
-After comprehensive consolidation, the project now follows a clean package-based structure:
+- **[packages/unified-etl-core/](packages/unified-etl-core/CLAUDE.md)**: Generic ETL patterns
+- **[packages/unified-etl-connectwise/](packages/unified-etl-connectwise/CLAUDE.md)**: ConnectWise adapter
+- **[packages/unified-etl-businesscentral/](packages/unified-etl-businesscentral/CLAUDE.md)**: Business Central adapter
 
-- **packages/unified-etl-core/**: Foundation framework with generic patterns
-- **packages/unified-etl-connectwise/**: ConnectWise PSA adapter with business logic
-- **packages/unified-etl-businesscentral/**: Business Central adapter (in progress)
-- **Eliminated duplication**: Removed fabric_api/ and BC_ETL-main/ (180+ files, ~40k lines)
-- **Fail-fast philosophy**: ALL parameters required, no optional behaviors
-- **CamelCase preservation**: Configured to maintain source system naming conventions
-
-## Medallion Architecture - Separation of Concerns
-
-### Bronze Layer (Validated Raw Data)
-
-**Purpose**: Extract and land validated raw data from source systems
-
-- **Pydantic validation during extraction**: Validate API responses with Pydantic models
-- Store validated raw data with original structure
-- Preserve original field names and data types
-- Add extraction metadata (timestamp, source, batch_id)
-- **Key insight**: API data is small enough for row-by-row Pydantic validation
-
-**Implementation Details**:
-
-- API clients in integration packages (e.g., `unified_etl_connectwise/client.py`)
-- Model validation via `model_class.model_validate(item)`
-- Structured error records with raw data preserved
-
-### Silver Layer (Schema Transformation & Standardization)
-
-**Purpose**: Transform and standardize data structure using Spark (no row-by-row processing)
-
-- **SKIP validation**: Data already validated in Bronze layer (see `silver.py` line 415)
-- **Apply SparkDantic schema**: Models MUST inherit from SparkModel (runtime validated)
-- **Flatten nested columns**: CamelCase preserved as `parentFieldChildField`
-- **Convert data types**: Comprehensive TYPE_MAPPING with 16+ type conversions
-- **SCD Type 1/2**: Slowly Changing Dimension with REQUIRED business keys
-- **Fail-fast approach**: ALL parameters required, explicit ValueError on missing
-
-**Implementation Details**:
-
-- Assumes Fabric global spark: `sys.modules["__main__"].spark`
-- No optional entity_config fields - all required
-- Naming conflict resolution with suffix counters
-- JSON columns converted to strings for nested data
-
-**Files**:
-
-- `packages/unified-etl-core/src/unified_etl_core/silver.py`
-
-### Gold Layer (Business Enhancement)
-
-**Purpose**: Add business intelligence constructs and dimensional modeling
-
-- **Add surrogate keys**: Window-based dense_rank with required business keys
-- **Generic fact creation**: ALL parameters required (no defaults)
-- **Entity type tagging**: Add EntityType column for multi-entity facts
-- **ETL metadata**: Universal tracking (\_etl_gold_processed_at, \_etl_batch_id)
-- **Custom exceptions**: FactTableError, SurrogateKeyError for granular handling
-
-**Implementation Details**:
-
-- Inline implementations to avoid circular imports
-- Business-specific logic in integration packages (e.g., `create_time_entry_fact`)
-- Model naming convention: "timeentry" not "time_entry" (no underscores)
-
-**Files**:
-
-- `packages/unified-etl-core/src/unified_etl_core/gold.py`
-- `packages/unified-etl-core/src/unified_etl_core/facts.py`
-- `packages/unified-etl-core/src/unified_etl_core/dimensions.py`
-- `packages/unified-etl-core/src/unified_etl_core/date_utils.py`
-
-## Implementation Status
-
-### ✅ Completed: Phase 1 - Consolidation & Framework
-
-- Eliminated code duplication (180+ files, ~40k lines)
-- Created generic fact table creator with fail-fast approach
-- Updated pyproject.toml for camelCase preservation
-- Fixed import paths and modularized packages
-- Comprehensive documentation for both packages
-
-### ✅ Completed: Phase 2 - Business Logic & Modularization
-
-- Fixed Tímapottur detection (`r"Tímapottur\s*:?"` regex pattern)
-- Modularized transforms.py (1000+ → 350 lines) via aikido refactor:
-  - `date_utils.py` → core package
-  - `agreement_utils.py` → ConnectWise package
-- Created dimension generator in core package
-- Fixed regenerate_models_v2.py to handle directory outputs
-- Reorganized project structure (/docs, /scripts, /sql)
-
-### 🔄 Current Phase: Data Refresh & Testing
-
-1. **Refresh stale Fabric data** (2 weeks old)
-2. **Test all fact creators** with new business logic
-3. **Validate $18M cost recovery** via comprehensive time entry facts
-
-### 📋 Next Phase: Advanced Features
-
-- Business Central integration completion
-- Schema evolution handling
-- Multi-source integration (Jira, ServiceNow)
-- Performance optimization for large datasets
-
-## Key Business Logic & Patterns
-
-### ConnectWise Agreement Types (Icelandic)
-
-- **yÞjónusta**: Billable service agreements
-- **Tímapottur**: Prepaid hours (special handling - excluded from invoices)
-- **Innri verkefni**: Internal projects (non-billable)
-- **Rekstrarþjónusta/Alrekstur**: Operations/maintenance
-- **Hugbúnaðarþjónusta/Office 365**: Software service agreements
-
-### Critical Implementation Patterns
-
-1. **Fail-Fast Philosophy**: ALL function parameters required, no defaults
-
-   ```python
-   # WRONG: def create_fact(df, config=None)
-   # RIGHT: def create_fact(df: DataFrame, config: dict[str, Any])
-   ```
-
-2. **Model Naming Convention**: No underscores in table names
-
-   ```python
-   models = {
-       "timeentry": models.TimeEntry,    # NOT "time_entry"
-       "expenseentry": models.ExpenseEntry  # NOT "expense_entry"
-   }
-   ```
-
-3. **Tímapottur Detection**: Must match exact pattern with space/colon
-
-   ```python
-   r"Tímapottur\s*:?"  # Matches "Tímapottur :" in data
-   ```
-
-4. **Cost Recovery Strategy**: Create comprehensive fact_time_entry including ALL work
-   - Captures internal projects (missing $18M)
-   - Includes non-billable work
-   - Tracks Tímapottur consumption
-
-## Development Setup
-
-### Environment Setup
-
-The project uses uv for dependency management:
-
-```bash
-# Install uv if needed
-pip install uv
-
-# Install dependencies
-uv pip install -e .
-
-# Install optional Azure dependencies
-uv pip install -e ".[azure]"
-```
-
-### Python Requirements
-
-- Python ≥3.11
-- Key dependencies: requests, pandas, pyarrow, pydantic ≥2.11.4, pyspark, sparkdantic
-
-## Model Generation
-
-### Current Configuration (configs/generation.toml)
-
-```toml
-[datamodel-codegen]
-input-file-type = "openapi"
-output-file-type = "pydantic_v2"
-base-class = "sparkdantic.SparkModel"
-snake-case-field = false  # Preserve camelCase - CRITICAL
-aliased-fields = true
-field-constraints = true
-use-schema-description = true
-enable-version-header = true
-disable-timestamp = true
-openapi-scopes = "schemas"
-
-[validation]
-strict-nullable = true
-use-standard-collections = true
-```
-
-### Regenerating Models
-
-```bash
-# Using the v2 generator with auto-detection
-python scripts/regenerate_models_v2.py \
-    PSA_OpenAPI_schema.json \
-    packages/unified-etl-connectwise/src/unified_etl_connectwise/models/models.py
-
-# Or with explicit format
-python scripts/regenerate_models_v2.py \
-    BC_CDM_manifest.json \
-    packages/unified-etl-businesscentral/src/unified_etl_businesscentral/models/ \
-    --format cdm
-
-# Direct datamodel-codegen (fallback)
-datamodel-codegen \
-    --input PSA_OpenAPI_schema.json \
-    --output models.py \
-    --base-class sparkdantic.SparkModel \
-    --snake-case-field false
-```
-
-## Testing
-
-Run tests with pytest:
-
-```bash
-# Run all tests
-pytest
-
-# Run specific test categories
-pytest tests/unit/         # Unit tests
-pytest tests/test_*.py     # Integration tests
-
-# Run with coverage
-pytest --cov=unified_etl
-```
-
-## Code Quality Tools
-
-### Type Checking
-
-```bash
-pyright
-```
-
-### Linting
-
-```bash
-ruff check .
-ruff format .
-```
-
-## Build and Deployment
-
-### Building the Package
-
-```bash
-# Using pip build
-python -m pip install build
-python -m build --wheel
-```
-
-### Deploying to Microsoft Fabric
-
-1. Create a Lakehouse in your workspace
-2. Add secrets to your workspace Key Vault:
-   - `CW_COMPANY`, `CW_PUBLIC_KEY`, `CW_PRIVATE_KEY`, `CW_CLIENTID`
-   - `BC_TENANT_ID`, `BC_CLIENT_ID`, `BC_CLIENT_SECRET`
-3. Upload the wheel file to your lakehouse
-4. Create a Notebook and attach your Lakehouse
-5. Install the wheel:
-   ```python
-   %pip install /lakehouse/Files/dist/unified_etl-0.1.0-py3-none-any.whl
-   ```
-6. Run the ETL pipeline
-
-## Core Components
-
-### unified-etl-core Package
-
-- **Silver Processing** (`silver.py`): Schema transformation, NO validation (already done in Bronze)
-- **Fact Creation** (`facts.py`): Generic fact table creator, ALL parameters required
-- **Dimensions** (`dimensions.py`): Generic dimension generator from enum columns
-- **Date Utils** (`date_utils.py`): Date dimension and spine generation
-- **Gold Utils** (`gold.py`): Surrogate keys, ETL metadata, date dimensions
-- **Generators** (`generators/`): Model generation framework (OpenAPI, CDM)
-
-### unified-etl-connectwise Package
-
-- **Client** (`client.py`): Unified API client with field selection & pagination
-- **API Utils** (`api_utils.py`): Field generation from Pydantic models
-- **Agreement Utils** (`agreement_utils.py`): Icelandic business logic
-- **Transforms** (`transforms.py`): Fact creators (time_entry, invoice_line, agreement_period)
-- **Config** (`config.py`): Silver layer configurations
-- **Models** (`models/models.py`): Auto-generated from OpenAPI, inherit SparkModel
-
-### unified-etl-businesscentral Package
-
-- **Gold Transforms** (`transforms/gold.py`): BC-specific dimensional modeling
-- Account hierarchy, dimension bridges, item attributes
-
-## Data Flow
+## Architecture
 
 ```
 Source APIs → Bronze (Validated) → Silver (Transformed) → Gold (Enhanced)
      ↓              ↓                    ↓                   ↓
   Paginated    Pydantic Valid      Spark Schema        Dimensional
-  API Calls    Raw Structure       Flattened           + Surrogate Keys
-               Original Fields     Type Casted         + Business Logic
-                                  Column Mapped        + Calculated Metrics
+  API Calls    Row-by-Row          Distributed         + Surrogate Keys
+               Validation           Processing          + Business Logic
 ```
 
-**Key Performance Insight**:
+## Core Principles
 
-- Bronze validation happens during API extraction (small, paginated datasets)
-- Silver uses distributed Spark operations (no collect(), no row-by-row processing)
-- This architecture scales to millions of rows in Silver/Gold layers
+1. **Fail-Fast**: ALL parameters required, no defaults
+2. **CamelCase**: Preserve source system naming
+3. **Model Names**: No underscores ("timeentry" not "time_entry")
+4. **Performance**: No collect() after Bronze layer
 
-## Key Features
+## Setup
 
-- **Medallion Architecture**: Proper separation of concerns across Bronze→Silver→Gold
-- **Scalable Validation**: Pydantic validation in Bronze (small API data), Spark transformations in Silver (large datasets)
-- **Generic Processing**: Configuration-driven, not entity-specific
-- **CamelCase Preservation**: Maintains source system naming conventions
-- **SparkDantic Integration**: Automatic Spark schema generation from Pydantic models
-- **Schema Evolution**: Graceful handling of API changes
-- **Fabric Optimization**: Native OneLake integration with Delta tables
-- **Resilient Processing**: Retry logic, error handling, and recovery strategies
-- **Performance at Scale**: No collect() or row-by-row processing after Bronze layer
-
-## Running the Pipeline
-
-```python
-from unified_etl.main import run_etl_pipeline
-
-# Run complete pipeline
-run_etl_pipeline(
-    sources=["connectwise", "business_central"],
-    layers=["bronze", "silver", "gold"],
-    lakehouse_root="/lakehouse/default/Tables/"
-)
-
-# Run specific layer
-from unified_etl.pipeline.silver_gold import run_silver_to_gold_pipeline
-run_silver_to_gold_pipeline(
-    entity_configs=["agreement", "invoice", "time_entry"],
-    lakehouse_root="/lakehouse/default/Tables/"
-)
-```
-
-# Using Gemini CLI for Large Codebase Analysis
-
-When analyzing large codebases or multiple files that might exceed context limits, use the Gemini CLI with its massive
-context window. Use `gemini -p` to leverage Google Gemini's large context capacity.
-
-## File and Directory Inclusion Syntax
-
-Use the `@` syntax to include files and directories in your Gemini prompts. The paths should be relative to WHERE you run the
-gemini command:
-
-### Examples:
-
-**Single file analysis:**
-
-````bash
-gemini -p "@src/main.py Explain this file's purpose and structure"
-
-Multiple files:
-gemini -p "@package.json @src/index.js Analyze the dependencies used in the code"
-
-Entire directory:
-gemini -p "@src/ Summarize the architecture of this codebase"
-
-Multiple directories:
-gemini -p "@src/ @tests/ Analyze test coverage for the source code"
-
-Current directory and subdirectories:
-gemini -p "@./ Give me an overview of this entire project"
-
-#
-Or use --all_files flag:
-gemini --all_files -p "Analyze the project structure and dependencies"
-
-Implementation Verification Examples
-
-Check if a feature is implemented:
-gemini -p "@src/ @lib/ Has dark mode been implemented in this codebase? Show me the relevant files and functions"
-
-Verify authentication implementation:
-gemini -p "@src/ @middleware/ Is JWT authentication implemented? List all auth-related endpoints and middleware"
-
-Check for specific patterns:
-gemini -p "@src/ Are there any React hooks that handle WebSocket connections? List them with file paths"
-
-Verify error handling:
-gemini -p "@src/ @api/ Is proper error handling implemented for all API endpoints? Show examples of try-catch blocks"
-
-Check for rate limiting:
-gemini -p "@backend/ @middleware/ Is rate limiting implemented for the API? Show the implementation details"
-
-Verify caching strategy:
-gemini -p "@src/ @lib/ @services/ Is Redis caching implemented? List all cache-related functions and their usage"
-
-Check for specific security measures:
-gemini -p "@src/ @api/ Are SQL injection protections implemented? Show how user inputs are sanitized"
-
-Verify test coverage for features:
-gemini -p "@src/payment/ @tests/ Is the payment processing module fully tested? List all test cases"
-
-When to Use Gemini CLI
-
-Use gemini -p when:
-- Analyzing entire codebases or large directories
-- Comparing multiple large files
-- Need to understand project-wide patterns or architecture
-- Current context window is insufficient for the task
-- Working with files totaling more than 100KB
-- Verifying if specific features, patterns, or security measures are implemented
-- Checking for the presence of certain coding patterns across the entire codebase
-
-Important Notes
-
-- Paths in @ syntax are relative to your current working directory when invoking gemini
-- The CLI will include file contents directly in the context
-- No need for --yolo flag for read-only analysis
-- Gemini's context window can handle entire codebases that would overflow Claude's context
-- When checking implementations, be specific about what you're looking for to get accurate results # Using Gemini CLI for Large Codebase Analysis
-
-
-When analyzing large codebases or multiple files that might exceed context limits, use the Gemini CLI with its massive
-context window. Use `gemini -p` to leverage Google Gemini's large context capacity.
-
-
-## File and Directory Inclusion Syntax
-
-
-Use the `@` syntax to include files and directories in your Gemini prompts. The paths should be relative to WHERE you run the
- gemini command:
-
-
-### Examples:
-
-
-**Single file analysis:**
 ```bash
-gemini -p "@src/main.py Explain this file's purpose and structure"
+pip install uv
+uv pip install -e .
+```
 
+Python ≥3.11
 
-Multiple files:
-gemini -p "@package.json @src/index.js Analyze the dependencies used in the code"
+## Model Generation
 
+```bash
+# ConnectWise (OpenAPI)
+python scripts/regenerate_models_v2.py PSA_OpenAPI_schema.json packages/unified-etl-connectwise/src/unified_etl_connectwise/models/models.py
 
-Entire directory:
-gemini -p "@src/ Summarize the architecture of this codebase"
+# Business Central (CDM)
+python scripts/regenerate_models_v2.py BC_CDM_manifest.json packages/unified-etl-businesscentral/src/unified_etl_businesscentral/models/ --format cdm
+```
 
+## Testing
 
-Multiple directories:
-gemini -p "@src/ @tests/ Analyze test coverage for the source code"
+```bash
+pytest
+pyright
+ruff check .
+```
 
-
-Current directory and subdirectories:
-gemini -p "@./ Give me an overview of this entire project"
-# Or use --all_files flag:
-gemini --all_files -p "Analyze the project structure and dependencies"
-
-
-Implementation Verification Examples
-
-
-Check if a feature is implemented:
-gemini -p "@src/ @lib/ Has dark mode been implemented in this codebase? Show me the relevant files and functions"
-
-
-Verify authentication implementation:
-gemini -p "@src/ @middleware/ Is JWT authentication implemented? List all auth-related endpoints and middleware"
-
-
-Check for specific patterns:
-gemini -p "@src/ Are there any React hooks that handle WebSocket connections? List them with file paths"
-
-
-Verify error handling:
-gemini -p "@src/ @api/ Is proper error handling implemented for all API endpoints? Show examples of try-catch blocks"
-
-
-Check for rate limiting:
-gemini -p "@backend/ @middleware/ Is rate limiting implemented for the API? Show the implementation details"
-
-
-Verify caching strategy:
-gemini -p "@src/ @lib/ @services/ Is Redis caching implemented? List all cache-related functions and their usage"
-
-
-Check for specific security measures:
-gemini -p "@src/ @api/ Are SQL injection protections implemented? Show how user inputs are sanitized"
-
-
-Verify test coverage for features:
-gemini -p "@src/payment/ @tests/ Is the payment processing module fully tested? List all test cases"
-
-
-When to Use Gemini CLI
-
-
-Use gemini -p when:
-- Analyzing entire codebases or large directories
-- Comparing multiple large files
-- Need to understand project-wide patterns or architecture
-- Current context window is insufficient for the task
-- Working with files totaling more than 100KB
-- Verifying if specific features, patterns, or security measures are implemented
-- Checking for the presence of certain coding patterns across the entire codebase
-
-
-Important Notes
-
-
-- Paths in @ syntax are relative to your current working directory when invoking gemini
-- The CLI will include file contents directly in the context
-- No need for --yolo flag for read-only analysis
-- Gemini's context window can handle entire codebases that would overflow Claude's context
-- When checking implementations, be specific about what you're looking for to get accurate results
-````

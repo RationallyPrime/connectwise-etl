@@ -3,38 +3,65 @@
 from ..base import ApplicationError, ErrorCode, ErrorLevel
 
 
-# Convenience exception aliases that use specific ETL error codes
-class DimensionResolutionError(ApplicationError):
-    """Raised when dimension resolution fails."""
+# Three main exception classes for ETL framework
+class ETLConfigError(ApplicationError):
+    """Configuration and setup errors (1xxx codes).
+    
+    Use for:
+    - Missing required configuration
+    - Invalid configuration values
+    - Schema mismatches
+    - Validation failures during setup
+    """
 
-    def __init__(self, message: str, **kwargs):
+    def __init__(self, message: str, code: ErrorCode = ErrorCode.CONFIG_INVALID, **kwargs):
         super().__init__(
             message=message,
-            code=ErrorCode.DIMENSION_RESOLUTION_FAILED,
-            level=ErrorLevel.ERROR,
+            code=code,
+            level=kwargs.pop("level", ErrorLevel.ERROR),
             **kwargs
         )
 
 
-class DimensionJoinError(ApplicationError):
-    """Raised when dimension join operations fail."""
+class ETLProcessingError(ApplicationError):
+    """Runtime processing errors (2xxx-5xxx codes).
+    
+    Use for:
+    - API/source system failures
+    - Bronze layer extraction/validation
+    - Silver layer transformations
+    - Gold layer dimensional modeling
+    """
 
-    def __init__(self, message: str, **kwargs):
+    def __init__(self, message: str, code: ErrorCode, **kwargs):
         super().__init__(
             message=message,
-            code=ErrorCode.DIMENSION_JOIN_FAILED,
-            level=ErrorLevel.ERROR,
+            code=code,
+            level=kwargs.pop("level", ErrorLevel.ERROR),
             **kwargs
         )
 
 
-class HierarchyBuildError(ApplicationError):
-    """Raised when hierarchy building fails."""
+class ETLInfrastructureError(ApplicationError):
+    """Infrastructure/platform errors (6xxx codes).
+    
+    Use for:
+    - Spark session failures
+    - Storage access issues
+    - Memory/resource limits
+    - Platform-level problems
+    """
 
-    def __init__(self, message: str, **kwargs):
+    def __init__(self, message: str, code: ErrorCode = ErrorCode.SPARK_SESSION_FAILED, **kwargs):
         super().__init__(
             message=message,
-            code=ErrorCode.DIMENSION_HIERARCHY_FAILED,
-            level=ErrorLevel.ERROR,
+            code=code,
+            level=kwargs.pop("level", ErrorLevel.CRITICAL),
             **kwargs
         )
+
+
+# Legacy aliases for backward compatibility (to be deprecated)
+DimensionResolutionError = ETLProcessingError
+DimensionJoinError = ETLProcessingError
+HierarchyBuildError = ETLProcessingError
