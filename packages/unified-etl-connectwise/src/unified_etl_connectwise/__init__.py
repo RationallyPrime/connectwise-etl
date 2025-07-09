@@ -1,5 +1,7 @@
 """ConnectWise PSA adapter for Unified ETL Framework."""
 
+import logging
+
 from .client import ConnectWiseClient, ConnectWiseExtractor
 from .models import models as models_module
 from .transforms import (
@@ -10,11 +12,14 @@ from .transforms import (
 
 __version__ = "1.0.0"
 
+logger = logging.getLogger(__name__)
+
 # Integration interface for core framework
 try:
     extractor = ConnectWiseClient(config={})  # ConnectWiseExtractor is now an alias
-except Exception:
+except Exception as e:
     # Failed to initialize (likely missing credentials), set to None
+    logger.debug(f"ConnectWise client initialization skipped: {e}")
     extractor = None
 
 models = {

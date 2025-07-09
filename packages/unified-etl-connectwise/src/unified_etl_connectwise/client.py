@@ -5,7 +5,7 @@ Combines low-level API access with high-level data extraction capabilities.
 
 Key features:
 * **Simplified authentication** - Uses environment variables directly from Fabric
-* **Robust retry/back-off** - Shared HTTP session transparently retries 5× on 429/50x
+* **Robust retry/back-off** - Shared HTTP session transparently retries 5x on 429/50x
 * **Pydantic integration** - Automatic field selection and validation
 * **Clean logging** - Detailed logging of API interactions
 """
@@ -21,6 +21,9 @@ import requests
 from pyspark.sql import DataFrame
 from requests.adapters import HTTPAdapter
 from requests.models import Response
+from unified_etl_core.utils.base import ErrorCode
+from unified_etl_core.utils.decorators import with_etl_error_handling
+from unified_etl_core.utils.exceptions import ETLConfigError, ETLProcessingError
 from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
@@ -220,6 +223,7 @@ class ConnectWiseClient:
         resp.raise_for_status()
         return resp
 
+    @with_etl_error_handling(operation="paginate_api")
     def paginate(
         self,
         endpoint: str,
@@ -311,6 +315,22 @@ class ConnectWiseClient:
                     break
 
                 page += 1
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    raise ETLProcessingError(
+                        f"Rate limited while fetching {entity_name}",
+                        code=ErrorCode.API_RATE_LIMITED,
+                        details={"entity_name": entity_name, "page": page, "endpoint": endpoint}
+                    ) from e
+                elif e.response.status_code >= 500:
+                    raise ETLProcessingError(
+                        f"Server error while fetching {entity_name}",
+                        code=ErrorCode.API_RESPONSE_INVALID,
+                        details={"entity_name": entity_name, "page": page, "status_code": e.response.status_code}
+                    ) from e
+                else:
+                    logger.error(f"HTTP error fetching {entity_name} page {page}: {e}")
+                    break
             except Exception as e:
                 logger.error(f"Error fetching {entity_name} page {page}: {e!s}")
                 break
@@ -344,17 +364,24 @@ class ConnectWiseClient:
 
         model_name = model_name_mapping.get(entity_name)
         if not model_name:
-            raise ValueError(
-                f"Unknown entity: {entity_name}. Available entities: {list(model_name_mapping.keys())}"
+            raise ETLConfigError(
+                f"Unknown entity: {entity_name}. Available entities: {list(model_name_mapping.keys())}",
+                code=ErrorCode.CONFIG_INVALID,
+                details={"entity_name": entity_name, "available_entities": list(model_name_mapping.keys())}
             )
 
         # Get the model class from the module
         model_class = getattr(models_module, model_name, None)
         if not model_class:
-            raise ValueError(f"Model class {model_name} not found in models module")
+            raise ETLConfigError(
+                f"Model class {model_name} not found in models module",
+                code=ErrorCode.CONFIG_MISSING,
+                details={"model_name": model_name}
+            )
 
         return model_class
 
+    @with_etl_error_handling(operation="extract_data")
     def extract(
         self,
         endpoint: str,
@@ -448,8 +475,13 @@ class ConnectWiseClient:
             if endpoint.startswith(ep):
                 return entity
 
-        raise ValueError(f"Cannot determine entity name from endpoint: {endpoint}")
+        raise ETLConfigError(
+            f"Cannot determine entity name from endpoint: {endpoint}",
+            code=ErrorCode.CONFIG_INVALID,
+            details={"endpoint": endpoint}
+        )
 
+    @with_etl_error_handling(operation="extract_all")
     def extract_all(self) -> dict[str, list[dict[str, Any]]]:
         """Extract all supported entities and return as dictionary of entity data.
 
