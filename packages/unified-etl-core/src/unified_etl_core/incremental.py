@@ -9,6 +9,8 @@ from typing import Any
 
 from pyspark.sql import DataFrame, SparkSession
 
+from .utils.decorators import with_etl_error_handling
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,6 +20,7 @@ class IncrementalProcessor:
     def __init__(self, spark: SparkSession):
         self.spark = spark
 
+    @with_etl_error_handling(operation="get_last_etl_timestamp")
     def get_last_etl_timestamp(self, table_name: str) -> datetime | None:
         """Get the maximum ETL timestamp from a table to know when it was last updated."""
         try:

@@ -27,7 +27,7 @@ class OpenAPIGenerator(ModelGenerator):
                 raise ValueError(f"File doesn't appear to be OpenAPI: {source}")
 
         except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON in OpenAPI schema: {e}")
+            raise ValueError(f"Invalid JSON in OpenAPI schema: {e}") from e
 
         return source
 

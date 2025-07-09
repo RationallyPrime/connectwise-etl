@@ -9,8 +9,7 @@ from typing import TypeVar, cast
 import structlog
 from typing_extensions import ParamSpec
 
-from ..base import ErrorLevel
-from ..utils.exceptions import ApplicationError
+from .base import ApplicationError, ErrorLevel
 
 # Type variables for generic function signatures
 P = ParamSpec("P")

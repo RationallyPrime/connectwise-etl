@@ -15,10 +15,19 @@ from pyspark.sql.window import Window
 
 # Import ETL metadata function from facts module
 from .facts import _add_etl_metadata
+from .utils.base import ErrorCode
+from .utils.decorators import with_etl_error_handling
+from .utils.exceptions import ETLInfrastructureError, ETLProcessingError
+
+# Legacy exception aliases for backward compatibility
+DimensionResolutionError = ETLProcessingError
+DimensionJoinError = ETLProcessingError
+HierarchyBuildError = ETLProcessingError
 
 logger = logging.getLogger(__name__)
 
 
+@with_etl_error_handling(operation="create_dimension_from_column")
 def create_dimension_from_column(
     spark: SparkSession,
     source_table: str,
@@ -70,6 +79,7 @@ def create_dimension_from_column(
     return result
 
 
+@with_etl_error_handling(operation="create_all_dimensions")
 def create_all_dimensions(
     spark: SparkSession,
     dimension_configs: list[tuple[str, str, str]],
@@ -113,6 +123,7 @@ def create_all_dimensions(
     return dimensions
 
 
+@with_etl_error_handling(operation="create_batch_dimensions")
 def create_batch_dimensions(
     spark: SparkSession,
     dimension_configs: list[tuple[str, str, str]],
@@ -197,6 +208,7 @@ def _create_dimension_from_dataframe(
     return result
 
 
+@with_etl_error_handling(operation="create_rich_dimension")
 def create_rich_dimension(
     spark: SparkSession,
     dimension_config: dict,
@@ -221,8 +233,11 @@ def create_rich_dimension(
         table_df = spark.table(source_table)
         available_columns = table_df.columns
     except Exception as e:
-        logger.error(f"Could not access table {source_table}: {e}")
-        raise
+        raise ETLInfrastructureError(
+            f"Could not access table {source_table}: {e}",
+            code=ErrorCode.STORAGE_ACCESS_FAILED,
+            details={"source_table": source_table, "error": str(e)}
+        ) from e
 
     # Extract referenced columns from CASE expressions
     import re
@@ -291,6 +306,7 @@ def create_rich_dimension(
     return result
 
 
+@with_etl_error_handling(operation="create_rich_dimensions")
 def create_rich_dimensions(
     spark: SparkSession,
     rich_dimension_configs: dict,
@@ -334,6 +350,7 @@ def create_rich_dimensions(
 
 
 # Utility function to join fact tables with dimensions
+@with_etl_error_handling(operation="add_dimension_keys")
 def add_dimension_keys(
     fact_df: DataFrame, spark: SparkSession, dimension_mappings: list[tuple[str, str, str, str]]
 ) -> DataFrame:
@@ -359,8 +376,8 @@ def add_dimension_keys(
             # Try with Lakehouse prefix if simple path fails
             try:
                 dim_df = spark.table(f"Lakehouse.gold.{dim_table}")
-            except:
-                logger.error(f"Could not find dimension table {dim_table}: {e}")
+            except Exception as e2:
+                logger.error(f"Could not find dimension table {dim_table}: {e}, {e2}")
                 continue
 
         # Join to get key - use broadcast for small dimension tables

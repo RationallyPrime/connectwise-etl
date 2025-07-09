@@ -29,36 +29,36 @@ class ErrorLevel(str, Enum):
 
 class ErrorCode(str, Enum):
     """ETL-specific error codes."""
-    
+
     # Configuration & Validation (1xxx)
     CONFIG_MISSING = "1001"          # Required config key missing
     CONFIG_INVALID = "1002"          # Config value invalid
     VALIDATION_FAILED = "1003"       # Data validation failed
     SCHEMA_MISMATCH = "1004"         # Expected vs actual schema
-    
-    # Source System Errors (2xxx)  
+
+    # Source System Errors (2xxx)
     API_AUTH_FAILED = "2001"         # CW/BC authentication
     API_RATE_LIMITED = "2002"        # Hit rate limits
     API_RESPONSE_INVALID = "2003"    # Malformed API response
     API_FIELD_MISSING = "2004"       # Required field not in response
-    
+
     # Bronze Layer (3xxx)
     BRONZE_EXTRACT_FAILED = "3001"   # API extraction failed
     BRONZE_VALIDATION_FAILED = "3002" # Pydantic validation failed
     BRONZE_WRITE_FAILED = "3003"     # Failed to write to storage
-    
+
     # Silver Layer (4xxx)
     SILVER_TRANSFORM_FAILED = "4001"  # Spark transformation failed
     SILVER_TYPE_CONVERSION = "4002"   # Type casting failed
     SILVER_FLATTEN_FAILED = "4003"    # Nested column flattening failed
     SILVER_SCD_FAILED = "4004"        # SCD Type 2 processing failed
-    
+
     # Gold Layer (5xxx)
     GOLD_DIMENSION_FAILED = "5001"    # Dimension resolution/join
     GOLD_FACT_FAILED = "5002"         # Fact table creation
     GOLD_SURROGATE_KEY = "5003"       # Surrogate key generation
     GOLD_AGGREGATION = "5004"         # Aggregation/calculation failed
-    
+
     # Infrastructure (6xxx)
     SPARK_SESSION_FAILED = "6001"     # Spark initialization
     STORAGE_ACCESS_FAILED = "6002"    # OneLake/Delta access

@@ -27,6 +27,10 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 
+from .utils.base import ErrorCode
+from .utils.decorators import with_etl_error_handling
+from .utils.exceptions import ETLConfigError, ETLProcessingError
+
 
 def create_date_dimension(
     spark: SparkSession,
@@ -176,6 +180,7 @@ def _is_us_holiday(dt: date) -> bool:
     return bool(dt.month == 12 and dt.day == 25)
 
 
+@with_etl_error_handling(operation="generate_surrogate_key")
 def generate_surrogate_key(
     df: DataFrame,
     business_keys: list[str],
@@ -194,22 +199,30 @@ def generate_surrogate_key(
         start_value: Starting value for surrogate key
     """
     if not df:
-        raise ValueError("DataFrame is required")
+        raise ETLConfigError("DataFrame is required", code=ErrorCode.CONFIG_MISSING)
     if not business_keys:
-        raise ValueError("business_keys list is required and cannot be empty")
+        raise ETLConfigError("business_keys list is required and cannot be empty", code=ErrorCode.CONFIG_MISSING)
     if not key_name:
-        raise ValueError("key_name is required")
+        raise ETLConfigError("key_name is required", code=ErrorCode.CONFIG_MISSING)
 
     # Validate business keys exist
     missing_keys = [k for k in business_keys if k not in df.columns]
     if missing_keys:
-        raise ValueError(f"Business key columns not found in DataFrame: {missing_keys}")
+        raise ETLProcessingError(
+            f"Business key columns not found in DataFrame: {missing_keys}",
+            code=ErrorCode.GOLD_SURROGATE_KEY,
+            details={"missing_keys": missing_keys, "available_columns": df.columns}
+        )
 
     # Validate partition columns if provided
     if partition_columns:
         missing_partitions = [k for k in partition_columns if k not in df.columns]
         if missing_partitions:
-            raise ValueError(f"Partition columns not found in DataFrame: {missing_partitions}")
+            raise ETLProcessingError(
+                f"Partition columns not found in DataFrame: {missing_partitions}",
+                code=ErrorCode.GOLD_SURROGATE_KEY,
+                details={"missing_partitions": missing_partitions, "available_columns": df.columns}
+            )
 
     try:
         # Create window spec
@@ -227,7 +240,11 @@ def generate_surrogate_key(
 
         # Verify key was generated
         if key_name not in result_df.columns:
-            raise ValueError(f"Failed to generate surrogate key column: {key_name}")
+            raise ETLProcessingError(
+                f"Failed to generate surrogate key column: {key_name}",
+                code=ErrorCode.GOLD_SURROGATE_KEY,
+                details={"key_name": key_name}
+            )
 
         # Log statistics
         key_count = result_df.select(key_name).distinct().count()
@@ -240,9 +257,14 @@ def generate_surrogate_key(
         return result_df
 
     except Exception as e:
-        raise ValueError(f"Surrogate key generation failed: {e}") from e
+        raise ETLProcessingError(
+            f"Surrogate key generation failed: {e}",
+            code=ErrorCode.GOLD_SURROGATE_KEY,
+            details={"key_name": key_name, "business_keys": business_keys, "error": str(e)}
+        ) from e
 
 
+@with_etl_error_handling(operation="create_date_dimension_table")
 def create_or_update_date_dimension_table(
     spark: SparkSession,
     lakehouse_root: str,
@@ -263,9 +285,9 @@ def create_or_update_date_dimension_table(
         force_recreate: Whether to force recreation
     """
     if not spark:
-        raise ValueError("SparkSession is required")
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
     if not lakehouse_root:
-        raise ValueError("lakehouse_root is required")
+        raise ETLConfigError("lakehouse_root is required", code=ErrorCode.CONFIG_MISSING)
 
     try:
         # Set default date range if not provided
@@ -293,9 +315,11 @@ def create_or_update_date_dimension_table(
 
     except Exception as e:
         logging.error(f"Date dimension creation failed: {e}")
+        # Since this returns bool, we'll just return False on error instead of re-raising
         return False
 
 
+@with_etl_error_handling(operation="add_date_key_column")
 def add_date_key_column(
     df: DataFrame, date_column: str, date_key_column: str | None = None
 ) -> DataFrame:
@@ -308,11 +332,15 @@ def add_date_key_column(
         date_key_column: Target DateKey column name (defaults to f"{date_column}Key")
     """
     if not df:
-        raise ValueError("DataFrame is required")
+        raise ETLConfigError("DataFrame is required", code=ErrorCode.CONFIG_MISSING)
     if not date_column:
-        raise ValueError("date_column is required")
+        raise ETLConfigError("date_column is required", code=ErrorCode.CONFIG_MISSING)
     if date_column not in df.columns:
-        raise ValueError(f"Date column '{date_column}' not found in DataFrame")
+        raise ETLProcessingError(
+            f"Date column '{date_column}' not found in DataFrame",
+            code=ErrorCode.GOLD_DIMENSION_FAILED,
+            details={"date_column": date_column, "available_columns": df.columns}
+        )
 
     if date_key_column is None:
         date_key_column = f"{date_column}Key"
@@ -325,7 +353,11 @@ def add_date_key_column(
         return result_df
 
     except Exception as e:
-        raise ValueError(f"DateKey generation failed: {e}") from e
+        raise ETLProcessingError(
+            f"DateKey generation failed: {e}",
+            code=ErrorCode.GOLD_DIMENSION_FAILED,
+            details={"date_column": date_column, "date_key_column": date_key_column, "error": str(e)}
+        ) from e
 
 
 def add_etl_metadata(df: DataFrame, layer: str = "gold", source: str | None = None) -> DataFrame:

@@ -35,7 +35,12 @@ from pyspark.sql.types import (
 from pyspark.sql.window import Window
 from sparkdantic import SparkModel
 
+from .utils.base import ErrorCode
+from .utils.decorators import with_etl_error_handling
+from .utils.exceptions import ETLConfigError, ETLProcessingError
 
+
+@with_etl_error_handling(operation="validate_batch")
 def validate_batch(
     data: list[dict[str, Any]], model_class: type[SparkModel]
 ) -> tuple[list[SparkModel], list[dict[str, Any]]]:
@@ -107,6 +112,7 @@ TYPE_MAPPING = {
 }
 
 
+@with_etl_error_handling(operation="validate_with_pydantic")
 def validate_with_pydantic(
     df: DataFrame, model_class: type[SparkModel], sample_size: int = 1000
 ) -> tuple[int, int, list[dict[str, Any]]]:
@@ -134,20 +140,28 @@ def validate_with_pydantic(
     return valid_count, invalid_count, validation_errors
 
 
+@with_etl_error_handling(operation="generate_spark_schema")
 def generate_spark_schema_from_pydantic(model_class: type[SparkModel]) -> StructType:
     """Generate Spark schema from Pydantic model. SparkDantic is REQUIRED."""
     if not hasattr(model_class, "model_spark_schema"):
-        raise ValueError(
+        raise ETLConfigError(
             f"Model {model_class.__name__} must inherit from SparkModel. "
-            f"All models must be auto-generated with SparkDantic support."
+            f"All models must be auto-generated with SparkDantic support.",
+            code=ErrorCode.SCHEMA_MISMATCH,
+            details={"model": model_class.__name__, "source": "generate_spark_schema"}
         )
 
     try:
         return model_class.model_spark_schema()
     except Exception as e:
-        raise ValueError(f"Failed to generate Spark schema for {model_class.__name__}: {e}") from e
+        raise ETLProcessingError(
+            f"Failed to generate Spark schema for {model_class.__name__}: {e}",
+            code=ErrorCode.SILVER_TRANSFORM_FAILED,
+            details={"model": model_class.__name__, "error": str(e)}
+        ) from e
 
 
+@with_etl_error_handling(operation="apply_data_types")
 def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
     """Apply data type conversions based on configuration."""
     result_df = df
@@ -182,8 +196,11 @@ def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
             else:
                 result_df = result_df.withColumn(column, F.col(column).cast(spark_type))
         except Exception as e:
-            logging.error(f"Type conversion failed for {column} -> {target_type}: {e}")
-            raise ValueError(f"Type conversion failed: {column}") from e
+            raise ETLProcessingError(
+                f"Type conversion failed for {column} -> {target_type}: {e}",
+                code=ErrorCode.SILVER_TYPE_CONVERSION,
+                details={"column": column, "target_type": target_type, "error": str(e)}
+            ) from e
 
     return result_df
 
@@ -272,6 +289,7 @@ def flatten_nested_columns(df: DataFrame, max_depth: int = 3) -> DataFrame:
     return flatten_nested_columns(result_df, max_depth - 1)
 
 
+@with_etl_error_handling(operation="parse_json_columns")
 def parse_json_columns(df: DataFrame, json_columns: list[str]) -> DataFrame:
     """Parse specified JSON string columns into structured data."""
     result_df = df
@@ -286,8 +304,11 @@ def parse_json_columns(df: DataFrame, json_columns: list[str]) -> DataFrame:
                 f"{col_name}_parsed", F.from_json(F.col(col_name), "string")
             )
         except Exception as e:
-            logging.error(f"JSON parsing failed for {col_name}: {e}")
-            raise ValueError(f"JSON parsing failed: {col_name}") from e
+            raise ETLProcessingError(
+                f"JSON parsing failed for {col_name}: {e}",
+                code=ErrorCode.SILVER_TRANSFORM_FAILED,
+                details={"column": col_name, "error": str(e)}
+            ) from e
 
     return result_df
 
@@ -304,19 +325,32 @@ def standardize_column_names(df: DataFrame, entity_config: dict[str, Any]) -> Da
     return result_df
 
 
+@with_etl_error_handling(operation="apply_scd_type_1")
 def apply_scd_type_1(
     df: DataFrame, business_keys: list[str], timestamp_col: str = "SystemModifiedAt"
 ) -> DataFrame:
     """Apply SCD Type 1 (overwrite) logic. Business keys are REQUIRED."""
     if not business_keys:
-        raise ValueError("SCD Type 1 requires business_keys to be specified")
+        raise ETLConfigError(
+            "SCD Type 1 requires business_keys to be specified",
+            code=ErrorCode.CONFIG_MISSING,
+            details={"source": "apply_scd_type_1", "operation": "validate_config"}
+        )
 
     missing_keys = [key for key in business_keys if key not in df.columns]
     if missing_keys:
-        raise ValueError(f"Business keys not found in DataFrame: {missing_keys}")
+        raise ETLProcessingError(
+            f"Business keys not found in DataFrame: {missing_keys}",
+            code=ErrorCode.SILVER_SCD_FAILED,
+            details={"missing_keys": missing_keys, "available_columns": df.columns}
+        )
 
     if timestamp_col not in df.columns:
-        raise ValueError(f"Timestamp column '{timestamp_col}' not found in DataFrame")
+        raise ETLProcessingError(
+            f"Timestamp column '{timestamp_col}' not found in DataFrame",
+            code=ErrorCode.SILVER_SCD_FAILED,
+            details={"timestamp_col": timestamp_col, "available_columns": df.columns}
+        )
 
     try:
         window = Window.partitionBy(*business_keys).orderBy(F.desc(timestamp_col))
@@ -330,9 +364,14 @@ def apply_scd_type_1(
         return result_df
 
     except Exception as e:
-        raise ValueError(f"SCD Type 1 processing failed: {e}") from e
+        raise ETLProcessingError(
+            f"SCD Type 1 processing failed: {e}",
+            code=ErrorCode.SILVER_SCD_FAILED,
+            details={"business_keys": business_keys, "timestamp_col": timestamp_col, "error": str(e)}
+        ) from e
 
 
+@with_etl_error_handling(operation="apply_scd_type_2")
 def apply_scd_type_2(
     df: DataFrame,
     business_keys: list[str],
@@ -343,14 +382,26 @@ def apply_scd_type_2(
 ) -> DataFrame:
     """Apply SCD Type 2 (historize) logic. Business keys are REQUIRED."""
     if not business_keys:
-        raise ValueError("SCD Type 2 requires business_keys to be specified")
+        raise ETLConfigError(
+            "SCD Type 2 requires business_keys to be specified",
+            code=ErrorCode.CONFIG_MISSING,
+            details={"source": "apply_scd_type_2", "operation": "validate_config"}
+        )
 
     missing_keys = [key for key in business_keys if key not in df.columns]
     if missing_keys:
-        raise ValueError(f"Business keys not found in DataFrame: {missing_keys}")
+        raise ETLProcessingError(
+            f"Business keys not found in DataFrame: {missing_keys}",
+            code=ErrorCode.SILVER_SCD_FAILED,
+            details={"missing_keys": missing_keys, "available_columns": df.columns}
+        )
 
     if timestamp_col not in df.columns:
-        raise ValueError(f"Timestamp column '{timestamp_col}' not found in DataFrame")
+        raise ETLProcessingError(
+            f"Timestamp column '{timestamp_col}' not found in DataFrame",
+            code=ErrorCode.SILVER_SCD_FAILED,
+            details={"timestamp_col": timestamp_col, "available_columns": df.columns}
+        )
 
     try:
         window = Window.partitionBy(*business_keys).orderBy(timestamp_col)
@@ -367,7 +418,11 @@ def apply_scd_type_2(
         return result_df
 
     except Exception as e:
-        raise ValueError(f"SCD Type 2 processing failed: {e}") from e
+        raise ETLProcessingError(
+            f"SCD Type 2 processing failed: {e}",
+            code=ErrorCode.SILVER_SCD_FAILED,
+            details={"business_keys": business_keys, "timestamp_col": timestamp_col, "error": str(e)}
+        ) from e
 
 
 def add_etl_metadata(df: DataFrame, source: str) -> DataFrame:
@@ -449,6 +504,7 @@ def apply_silver_transformations(
     return silver_df
 
 
+@with_etl_error_handling(operation="process_bronze_to_silver")
 def process_bronze_to_silver(
     entity_name: str,
     bronze_table_name: str,
@@ -462,15 +518,15 @@ def process_bronze_to_silver(
     ALL parameters are REQUIRED. No optional behaviors.
     """
     if not entity_name:
-        raise ValueError("entity_name is required")
+        raise ETLConfigError("entity_name is required", code=ErrorCode.CONFIG_MISSING)
     if not bronze_table_name:
-        raise ValueError("bronze_table_name is required")
+        raise ETLConfigError("bronze_table_name is required", code=ErrorCode.CONFIG_MISSING)
     if not lakehouse_root:
-        raise ValueError("lakehouse_root is required")
+        raise ETLConfigError("lakehouse_root is required", code=ErrorCode.CONFIG_MISSING)
     if not entity_config:
-        raise ValueError("entity_config is required")
+        raise ETLConfigError("entity_config is required", code=ErrorCode.CONFIG_MISSING)
     if not model_class:
-        raise ValueError("model_class is required")
+        raise ETLConfigError("model_class is required", code=ErrorCode.CONFIG_MISSING)
 
     # Get Fabric global spark session
     spark = sys.modules["__main__"].spark
@@ -484,7 +540,11 @@ def process_bronze_to_silver(
         record_count = bronze_df.count()
         logging.info(f"Bronze records: {record_count}")
     except Exception as e:
-        raise ValueError(f"Failed to read Bronze table {bronze_path}: {e}") from e
+        raise ETLProcessingError(
+            f"Failed to read Bronze table {bronze_path}: {e}",
+            code=ErrorCode.BRONZE_EXTRACT_FAILED,
+            details={"bronze_path": bronze_path, "error": str(e)}
+        ) from e
 
     # Apply Silver transformations
     silver_df = apply_silver_transformations(bronze_df, entity_config, model_class)
@@ -499,4 +559,8 @@ def process_bronze_to_silver(
         )
         logging.info(f"Silver written: {record_count} records")
     except Exception as e:
-        raise ValueError(f"Failed to write Silver table {silver_path}: {e}") from e
+        raise ETLProcessingError(
+            f"Failed to write Silver table {silver_path}: {e}",
+            code=ErrorCode.STORAGE_ACCESS_FAILED,
+            details={"silver_path": silver_path, "record_count": record_count, "error": str(e)}
+        ) from e

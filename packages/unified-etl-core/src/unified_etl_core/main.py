@@ -393,7 +393,7 @@ def process_integration(
                             # Try with Lakehouse.silver prefix if not fully qualified
                             try:
                                 silver_df = spark.table(f"Lakehouse.silver.{silver_table}")
-                            except:
+                            except Exception:
                                 # Fallback to just table name
                                 silver_df = spark.table(silver_table)
 
@@ -432,7 +432,7 @@ def process_integration(
                                                 timeentry_df = spark.table(
                                                     f"Lakehouse.silver.{timeentry_table}"
                                                 )
-                                            except:
+                                            except Exception:
                                                 timeentry_df = spark.table(timeentry_table)
 
                                         # Load products
@@ -450,7 +450,7 @@ def process_integration(
                                                 productitem_df = spark.table(
                                                     f"Lakehouse.silver.{productitem_table}"
                                                 )
-                                            except:
+                                            except Exception:
                                                 productitem_df = spark.table(productitem_table)
 
                                         # Load agreements for hierarchy resolution
@@ -468,7 +468,7 @@ def process_integration(
                                                 agreement_df = spark.table(
                                                     f"Lakehouse.silver.{agreement_table}"
                                                 )
-                                            except:
+                                            except Exception:
                                                 agreement_df = spark.table(agreement_table)
 
                                         logging.info(
@@ -503,7 +503,7 @@ def process_integration(
                                         )
                                         if spark.catalog.tableExists(member_table):
                                             member_df = spark.table(member_table)
-                                    except:
+                                    except Exception:
                                         logging.debug("Member table not available for enrichment")
 
                                     # Load agreement data for hierarchy resolution
@@ -524,7 +524,7 @@ def process_integration(
                                             )
                                         elif spark.catalog.tableExists(agreement_table):
                                             agreement_df = spark.table(agreement_table)
-                                    except:
+                                    except Exception:
                                         logging.debug(
                                             "Agreement table not available for enrichment"
                                         )
@@ -562,7 +562,7 @@ def process_integration(
                                             )
                                         elif spark.catalog.tableExists(agreement_table):
                                             agreement_df = spark.table(agreement_table)
-                                    except:
+                                    except Exception:
                                         logging.debug(
                                             "Agreement table not available for enrichment"
                                         )

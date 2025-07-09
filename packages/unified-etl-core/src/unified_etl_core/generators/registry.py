@@ -3,6 +3,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import ClassVar
 
 from unified_etl_core.generators.base import ModelGenerator
 from unified_etl_core.generators.cdm import CDMGenerator
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 class GeneratorRegistry:
     """Central registry for all generators."""
 
-    _generators: dict[str, type[ModelGenerator]] = {
+    _generators: ClassVar[dict[str, type[ModelGenerator]]] = {
         "openapi": OpenAPIGenerator,
         "cdm": CDMGenerator,
         # "jsonschema": JSONSchemaGenerator,  # To be implemented

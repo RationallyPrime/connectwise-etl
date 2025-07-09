@@ -1,12 +1,12 @@
 """ETL-specific error handling using error codes."""
 
-from ..base import ApplicationError, ErrorCode, ErrorLevel
+from .base import ApplicationError, ErrorCode, ErrorLevel
 
 
 # Three main exception classes for ETL framework
 class ETLConfigError(ApplicationError):
     """Configuration and setup errors (1xxx codes).
-    
+
     Use for:
     - Missing required configuration
     - Invalid configuration values
@@ -25,7 +25,7 @@ class ETLConfigError(ApplicationError):
 
 class ETLProcessingError(ApplicationError):
     """Runtime processing errors (2xxx-5xxx codes).
-    
+
     Use for:
     - API/source system failures
     - Bronze layer extraction/validation
@@ -44,7 +44,7 @@ class ETLProcessingError(ApplicationError):
 
 class ETLInfrastructureError(ApplicationError):
     """Infrastructure/platform errors (6xxx codes).
-    
+
     Use for:
     - Spark session failures
     - Storage access issues

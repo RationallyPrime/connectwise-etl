@@ -4,7 +4,12 @@ import importlib
 import logging
 from typing import Any
 
+from .utils.base import ErrorCode
+from .utils.decorators import with_etl_error_handling
+from .utils.exceptions import ETLConfigError
 
+
+@with_etl_error_handling(operation="detect_available_integrations")
 def detect_available_integrations() -> dict[str, Any]:
     """Dynamically detect which integration packages are available."""
     integrations = {}
@@ -33,22 +38,32 @@ def detect_available_integrations() -> dict[str, Any]:
     return integrations
 
 
+@with_etl_error_handling(operation="get_integration_models")
 def get_integration_models(integration_name: str):
     """Get models for a specific integration."""
     integrations = detect_available_integrations()
 
     if not integrations.get(integration_name, {}).get("available"):
-        raise ImportError(f"Integration '{integration_name}' is not available")
+        raise ETLConfigError(
+            f"Integration '{integration_name}' is not available",
+            code=ErrorCode.CONFIG_MISSING,
+            details={"integration_name": integration_name}
+        )
 
     return integrations[integration_name]["models"]
 
 
+@with_etl_error_handling(operation="get_integration_extractor")
 def get_integration_extractor(integration_name: str):
     """Get extractor for a specific integration."""
     integrations = detect_available_integrations()
 
     if not integrations.get(integration_name, {}).get("available"):
-        raise ImportError(f"Integration '{integration_name}' is not available")
+        raise ETLConfigError(
+            f"Integration '{integration_name}' is not available",
+            code=ErrorCode.CONFIG_MISSING,
+            details={"integration_name": integration_name}
+        )
 
     return integrations[integration_name]["extractor"]
 

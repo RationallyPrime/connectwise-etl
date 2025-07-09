@@ -19,13 +19,13 @@ import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
 
+from .utils.base import ErrorCode
+from .utils.decorators import with_etl_error_handling
+from .utils.exceptions import ETLConfigError, ETLProcessingError
 
-class FactTableError(Exception):
-    """Exception raised during fact table operations."""
-
-
-class SurrogateKeyError(Exception):
-    """Exception raised during surrogate key generation."""
+# Legacy exception aliases for backward compatibility
+FactTableError = ETLProcessingError
+SurrogateKeyError = ETLProcessingError
 
 
 def _add_etl_metadata(df: DataFrame, layer: str = "gold", source: str | None = None) -> DataFrame:
@@ -45,6 +45,7 @@ def _add_etl_metadata(df: DataFrame, layer: str = "gold", source: str | None = N
     return metadata_df
 
 
+@with_etl_error_handling(operation="generate_surrogate_key")
 def _generate_surrogate_key(
     df: DataFrame,
     business_keys: list[str],
@@ -54,16 +55,20 @@ def _generate_surrogate_key(
 ) -> DataFrame:
     """Generate surrogate keys (inline to avoid circular imports)."""
     if not df:
-        raise SurrogateKeyError("DataFrame is required")
+        raise ETLConfigError("DataFrame is required", code=ErrorCode.CONFIG_MISSING)
     if not business_keys:
-        raise SurrogateKeyError("business_keys list is required and cannot be empty")
+        raise ETLConfigError("business_keys list is required and cannot be empty", code=ErrorCode.CONFIG_MISSING)
     if not key_name:
-        raise SurrogateKeyError("key_name is required")
+        raise ETLConfigError("key_name is required", code=ErrorCode.CONFIG_MISSING)
 
     # Validate business keys exist
     missing_keys = [k for k in business_keys if k not in df.columns]
     if missing_keys:
-        raise SurrogateKeyError(f"Business key columns not found in DataFrame: {missing_keys}")
+        raise ETLProcessingError(
+            f"Business key columns not found in DataFrame: {missing_keys}",
+            code=ErrorCode.GOLD_SURROGATE_KEY,
+            details={"missing_keys": missing_keys, "available_columns": df.columns}
+        )
 
     try:
         # Create window spec
@@ -82,7 +87,11 @@ def _generate_surrogate_key(
         return result_df
 
     except Exception as e:
-        raise SurrogateKeyError(f"Surrogate key generation failed: {e}") from e
+        raise ETLProcessingError(
+            f"Surrogate key generation failed: {e}",
+            code=ErrorCode.GOLD_SURROGATE_KEY,
+            details={"key_name": key_name, "business_keys": business_keys, "error": str(e)}
+        ) from e
 
 
 def create_generic_fact_table(
