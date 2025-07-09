@@ -6,5 +6,12 @@
     "windsurfPyright.analysis.inlayHints.variableTypes": true,
     "windsurfPyright.analysis.typeCheckingMode": "strict",
     "ruff.configuration": "pyproject.toml",
-    "ruff.nativeServer": "on"
+    "ruff.nativeServer": "on",
+    "ruff.configurationPreference": "filesystemFirst",
+    "ruff.path": [
+        ".venv/bin/ruff"
+    ],
+    "ruff.interpreter": [
+        ".venv/bin/python"
+    ]
 }

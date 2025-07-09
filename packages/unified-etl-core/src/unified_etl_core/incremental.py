@@ -3,9 +3,12 @@
 Uses existing _etl_timestamp columns for change tracking - no separate watermark table needed!
 """
 
+from pyspark.sql.types import Row
+
+
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pyspark.sql import DataFrame, SparkSession
 
@@ -28,9 +31,9 @@ class IncrementalProcessor:
                 return None
 
             # Bronze uses etlTimestamp, Silver/Gold use _etl_processed_at
-            timestamp_col = "etlTimestamp" if "bronze" in table_name else "_etl_processed_at"
+            timestamp_col: Literal['etlTimestamp', '_etl_processed_at'] = "etlTimestamp" if "bronze" in table_name else "_etl_processed_at"
 
-            result = self.spark.sql(f"""
+            result: list[Row] = self.spark.sql(f"""
                 SELECT MAX({timestamp_col}) as last_refresh
                 FROM {table_name}
             """).collect()
@@ -57,9 +60,9 @@ class IncrementalProcessor:
             logger.info(f"Getting records from {source_table} since {since_timestamp}")
 
             # Bronze uses etlTimestamp, Silver/Gold use _etl_processed_at
-            timestamp_col = "etlTimestamp" if "bronze" in source_table else "_etl_processed_at"
+            timestamp_col: Literal['etlTimestamp', '_etl_processed_at'] = "etlTimestamp" if "bronze" in source_table else "_etl_processed_at"
 
-            return self.spark.sql(f"""
+            return self.spark.sql(sqlQuery=f"""
                 SELECT * FROM {source_table}
                 WHERE {timestamp_col} > '{since_timestamp.isoformat()}'
             """)
@@ -91,20 +94,20 @@ class IncrementalProcessor:
         source_df.createOrReplaceTempView(temp_view)
 
         # Get columns that exist in both source and target
-        target_columns = self.spark.table(target_table).columns
-        source_columns = source_df.columns
+        target_columns: list[str] = self.spark.table(target_table).columns
+        source_columns: list[str] = source_df.columns
 
         # Only update columns that exist in the target table
-        common_columns = [col for col in source_columns if col in target_columns]
-        update_cols = [col for col in common_columns if col != merge_key]
-        update_expr = ", ".join([f"target.{col} = source.{col}" for col in update_cols])
+        common_columns: list[str] = [col for col in source_columns if col in target_columns]
+        update_cols: list[str] = [col for col in common_columns if col != merge_key]
+        update_expr: str = ", ".join([f"target.{col} = source.{col}" for col in update_cols])
 
         # For insert, only use columns that exist in target
-        insert_cols = ", ".join(common_columns)
-        insert_values = ", ".join([f"source.{col}" for col in common_columns])
+        insert_cols: str = ", ".join(common_columns)
+        insert_values: str = ", ".join([f"source.{col}" for col in common_columns])
 
         # Execute MERGE
-        merge_sql = f"""
+        merge_sql: str = f"""
         MERGE INTO {target_table} AS target
         USING {temp_view} AS source
         ON target.{merge_key} = source.{merge_key}
@@ -133,10 +136,10 @@ class IncrementalProcessor:
         source_df.createOrReplaceTempView(temp_view)
 
         # Build merge conditions
-        merge_conditions = " AND ".join([f"target.{key} = source.{key}" for key in business_keys])
+        merge_conditions: str = " AND ".join([f"target.{key} = source.{key}" for key in business_keys])
 
         # Execute MERGE
-        merge_sql = f"""
+        merge_sql: str = f"""
         MERGE INTO {target_table} AS target
         USING {temp_view} AS source
         ON {merge_conditions}
@@ -158,10 +161,10 @@ class IncrementalProcessor:
         source_df.createOrReplaceTempView(temp_view)
 
         # Build merge conditions
-        merge_conditions = " AND ".join([f"target.{key} = source.{key}" for key in merge_keys])
+        merge_conditions: str = " AND ".join([f"target.{key} = source.{key}" for key in merge_keys])
 
         # Execute MERGE
-        merge_sql = f"""
+        merge_sql: str = f"""
         MERGE INTO {target_table} AS target
         USING {temp_view} AS source
         ON {merge_conditions}
@@ -169,8 +172,8 @@ class IncrementalProcessor:
         WHEN NOT MATCHED THEN INSERT *
         """
 
-        self.spark.sql(merge_sql)
-        self.spark.catalog.dropTempView(temp_view)
+        self.spark.sql(sqlQuery=merge_sql)
+        self.spark.catalog.dropTempView(viewName=temp_view)
 
         return source_df.count()
 
@@ -204,7 +207,7 @@ def build_incremental_conditions(
 def get_incremental_lookback_days(entity_name: str, default: int = 30) -> int:
     """Get the appropriate lookback period for an entity."""
     # Entity-specific lookback periods
-    lookback_config = {
+    lookback_config: dict[str, int] = {
         "Agreement": 90,  # Agreements change less frequently
         "TimeEntry": 30,  # Recent time entries
         "ExpenseEntry": 30,  # Recent expenses

@@ -940,6 +940,7 @@ source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
     { name = "pyspark" },
+    { name = "ruff" },
     { name = "unified-etl-core" },
 ]
 
@@ -994,6 +995,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.21.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
     { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.14.0" },
+    { name = "ruff", specifier = ">=0.11.9" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.9" },
     { name = "types-pyyaml", marker = "extra == 'dev'" },
     { name = "types-requests", marker = "extra == 'dev'" },
