@@ -9,8 +9,15 @@ from unified_etl_core.incremental import (
     get_incremental_lookback_days,
 )
 from unified_etl_core.integrations import detect_available_integrations, list_available_integrations
+from unified_etl_core.utils.base import ErrorCode
+from unified_etl_core.utils.decorators import with_etl_error_handling
+from unified_etl_core.utils.exceptions import (
+    ETLInfrastructureError,
+    ETLProcessingError,
+)
 
 
+@with_etl_error_handling(operation="run_etl_pipeline")
 def run_etl_pipeline(
     integrations: list[str] | None = None,
     layers: list[str] | None = None,
@@ -64,6 +71,7 @@ def run_etl_pipeline(
             continue
 
 
+@with_etl_error_handling(operation="process_integration")
 def process_integration(
     integration_name: str,
     integration_info: dict[str, Any],
@@ -86,13 +94,16 @@ def process_integration(
             try:
                 from datetime import datetime, timedelta
 
-                import pyspark.sql.functions as F
+                import pyspark.sql.functions as F  # noqa: N812
                 from pyspark.sql import SparkSession
 
                 spark = SparkSession.getActiveSession()
                 logging.info(f"Silver layer: SparkSession.getActiveSession() returned: {spark}")
                 if not spark:
-                    raise RuntimeError("No active Spark session found")
+                    raise ETLInfrastructureError(
+                        "No active Spark session found",
+                        code=ErrorCode.SPARK_SESSION_ERROR
+                    )
 
                 # Import incremental utilities if in incremental mode
                 incremental_processor: IncrementalProcessor | None = None
@@ -198,8 +209,11 @@ def process_integration(
                             logging.info(f"Stored {len(raw_data)} records in {table_name}")
 
             except Exception as e:
-                logging.error(f"Bronze layer failed for {integration_name}: {e}")
-                raise
+                raise ETLProcessingError(
+                    f"Bronze layer failed for {integration_name}",
+                    code=ErrorCode.BRONZE_EXTRACTION_ERROR,
+                    details={"integration": integration_name, "error": str(e)}
+                ) from e
 
     if "silver" in layers:
         logging.info(f"Running silver layer for {integration_name}")
@@ -210,7 +224,10 @@ def process_integration(
                 spark = SparkSession.getActiveSession()
                 logging.info(f"Silver layer: SparkSession.getActiveSession() returned: {spark}")
                 if not spark:
-                    raise RuntimeError("No active Spark session found")
+                    raise ETLInfrastructureError(
+                        "No active Spark session found",
+                        code=ErrorCode.SPARK_SESSION_ERROR
+                    )
 
                 # Import incremental utilities if in incremental mode
                 incremental_processor = None
@@ -323,8 +340,11 @@ def process_integration(
                         continue
 
             except Exception as e:
-                logging.error(f"Silver layer failed for {integration_name}: {e}")
-                raise
+                raise ETLProcessingError(
+                    f"Silver layer failed for {integration_name}",
+                    code=ErrorCode.SILVER_TRANSFORMATION_ERROR,
+                    details={"integration": integration_name, "error": str(e)}
+                ) from e
 
     if "gold" in layers:
         logging.info(f"Running gold layer for {integration_name}")
@@ -349,8 +369,11 @@ def process_integration(
                     refresh_connectwise_dimensions(spark)
                     logging.info("✅ ConnectWise dimensions created successfully")
                 except Exception as e:
-                    logging.error(f"Failed to create ConnectWise dimensions: {e}")
-                    raise
+                    raise ETLProcessingError(
+                        "Failed to create ConnectWise dimensions",
+                        code=ErrorCode.DIMENSION_CREATION_ERROR,
+                        details={"integration": "connectwise", "error": str(e)}
+                    ) from e
 
             # Check for integration-specific transforms
             integration_transforms = None
@@ -636,8 +659,11 @@ def process_integration(
                     logging.warning(f"Could not create calculated dimensions: {e}")
 
         except Exception as e:
-            logging.error(f"Gold layer failed for {integration_name}: {e}")
-            raise
+            raise ETLProcessingError(
+                f"Gold layer failed for {integration_name}",
+                code=ErrorCode.GOLD_PROCESSING_ERROR,
+                details={"integration": integration_name, "error": str(e)}
+            ) from e
 
 
 if __name__ == "__main__":
