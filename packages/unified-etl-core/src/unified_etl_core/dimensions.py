@@ -9,382 +9,321 @@ Following CLAUDE.md: Generic where possible, specialized where necessary.
 
 import logging
 
-import pyspark.sql.functions as F
+import pyspark.sql.functions as F  # noqa: N812
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 
-# Import ETL metadata function from facts module
+from .config import DimensionConfig, DimensionMapping, ETLConfig
 from .facts import _add_etl_metadata
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
-from .utils.exceptions import ETLInfrastructureError, ETLProcessingError
-
-# Legacy exception aliases for backward compatibility
-DimensionResolutionError = ETLProcessingError
-DimensionJoinError = ETLProcessingError
-HierarchyBuildError = ETLProcessingError
+from .utils.exceptions import ETLConfigError, ETLProcessingError
 
 logger = logging.getLogger(__name__)
 
 
 @with_etl_error_handling(operation="create_dimension_from_column")
 def create_dimension_from_column(
+    config: ETLConfig,
+    dimension_config: DimensionConfig,
     spark: SparkSession,
-    source_table: str,
-    column_name: str,
-    dimension_name: str,
-    include_counts: bool = True,
 ) -> DataFrame:
     """Create a dimension table from a single column.
 
     Args:
+        config: ETL configuration
+        dimension_config: Dimension configuration
         spark: SparkSession
-        source_table: Source table name (e.g., "silver_cw_timeentry" or "Lakehouse.silver.silver_cw_timeentry")
-        column_name: Column to extract values from
-        dimension_name: Name for the dimension (without dim_ prefix)
-        include_counts: Whether to include usage counts
 
     Returns:
         DataFrame with dimension data
     """
-    # Read the source table dynamically
-    source_df = spark.table(source_table)
+    # Validate config - FAIL FAST
+    dimension_config.validate_config()
+    
+    if not spark:
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
+    
+    # Read the source table
+    source_df = spark.table(dimension_config.source_table)
 
-    # Use DataFrame API instead of SQL query
+    # Validate source column exists
+    if dimension_config.source_column not in source_df.columns:
+        raise ETLProcessingError(
+            f"Source column '{dimension_config.source_column}' not found in table",
+            code=ErrorCode.GOLD_DIMENSION_ERROR,
+            details={
+                "column": dimension_config.source_column,
+                "table": dimension_config.source_table,
+                "available_columns": source_df.columns
+            }
+        )
+    
+    # Extract distinct values with counts
     df = (
-        source_df.where(F.col(column_name).isNotNull())
-        .groupBy(column_name)
+        source_df.where(F.col(dimension_config.source_column).isNotNull())
+        .groupBy(dimension_config.source_column)
         .agg(F.count("*").alias("usage_count"))
-        .withColumnRenamed(column_name, f"{dimension_name}Code")
+        .withColumnRenamed(dimension_config.source_column, dimension_config.natural_key_column)
         .orderBy(F.desc("usage_count"))
     )
 
-    # Add surrogate key using row_number
+    # Add surrogate key
     window = Window.orderBy(F.desc("usage_count"))
-    dim_df = df.withColumn(f"{dimension_name}Key", F.row_number().over(window))
+    dim_df = df.withColumn(dimension_config.surrogate_key_column, F.row_number().over(window))
 
-    # Reorder columns and add metadata
+    # Add unknown member if configured
+    if dimension_config.add_unknown_member:
+        unknown_row = spark.createDataFrame(
+            [(dimension_config.unknown_member_key, 
+              "Unknown", 
+              0, 
+              dimension_config.unknown_member_description)],
+            [dimension_config.surrogate_key_column, 
+             dimension_config.natural_key_column, 
+             "usage_count", 
+             dimension_config.description_column]
+        )
+        dim_df = unknown_row.union(
+            dim_df.withColumn(
+                dimension_config.description_column,
+                F.col(dimension_config.natural_key_column)
+            )
+        )
+    else:
+        dim_df = dim_df.withColumn(
+            dimension_config.description_column,
+            F.col(dimension_config.natural_key_column)
+        )
+
+    # Build final dimension with required columns
     result = dim_df.select(
-        F.col(f"{dimension_name}Key"),
-        F.col(f"{dimension_name}Code"),
-        F.col("usage_count") if include_counts else F.lit(None).alias("usage_count"),
-        F.lit(True).alias("isActive"),
-        F.current_timestamp().alias("effectiveDate"),
-        F.lit(None).cast("timestamp").alias("endDate"),
+        F.col(dimension_config.surrogate_key_column),
+        F.col(dimension_config.natural_key_column),
+        F.col(dimension_config.description_column),
+        F.col("usage_count"),
+        F.lit(True).alias("IsActive"),
+        F.current_timestamp().alias("EffectiveDate"),
+        F.lit(None).cast("timestamp").alias("EndDate"),
     )
 
-    # Add standard ETL metadata using existing pattern
-    result = _add_etl_metadata(result, layer="gold", source="dimension_generator")
+    # Add additional columns if specified
+    for col in dimension_config.additional_columns:
+        if col in source_df.columns:
+            # Get the most common value for this additional column
+            result = result.join(
+                source_df.groupBy(dimension_config.source_column, col)
+                .count()
+                .withColumnRenamed(dimension_config.source_column, dimension_config.natural_key_column),
+                on=dimension_config.natural_key_column,
+                how="left"
+            ).drop("count")
+
+    # Add ETL metadata if configured
+    if dimension_config.add_audit_columns:
+        result = _add_etl_metadata(result, layer="gold", source="dimension_generator")
 
     return result
 
 
 @with_etl_error_handling(operation="create_all_dimensions")
 def create_all_dimensions(
+    config: ETLConfig,
+    dimension_configs: list[DimensionConfig],
     spark: SparkSession,
-    dimension_configs: list[tuple[str, str, str]],
-    lakehouse_root: str = "/lakehouse/default/Tables/",
-) -> dict:
+) -> dict[str, DataFrame]:
     """Create all dimension tables from configuration.
 
     Args:
+        config: ETL configuration
+        dimension_configs: List of dimension configurations
         spark: SparkSession
-        dimension_configs: List of (source_table, column_name, dimension_name) tuples
-        lakehouse_root: Root path for lakehouse tables
 
     Returns:
         Dictionary of dimension name -> DataFrame
     """
+    if not dimension_configs:
+        raise ETLConfigError(
+            "At least one dimension configuration is required",
+            code=ErrorCode.CONFIG_MISSING
+        )
+    
+    if not spark:
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
+    
     dimensions = {}
 
-    for source_table, column_name, dimension_name in dimension_configs:
+    for dim_config in dimension_configs:
+        # Validate config
+        dim_config.validate_config()
+        
         logger.info(
-            f"Creating dimension: dim{dimension_name} from {source_table}.{column_name}"
+            f"Creating dimension: dim_{dim_config.name} from {dim_config.source_table}.{dim_config.source_column}"
         )
 
-        # Create dimension DataFrame - FAIL FAST on errors
+        # Create dimension DataFrame
         dim_df = create_dimension_from_column(
+            config=config,
+            dimension_config=dim_config,
             spark=spark,
-            source_table=source_table,
-            column_name=column_name,
-            dimension_name=dimension_name,
         )
 
         # Store in dictionary
-        dimensions[f"dim{dimension_name}"] = dim_df
+        dim_key = f"dim_{dim_config.name}"
+        dimensions[dim_key] = dim_df
 
-        # Write to gold layer using saveAsTable for proper Fabric integration
-        table_name = f"Lakehouse.gold.dim{dimension_name}"
+        # Get table name from config
+        table_name = config.get_table_name(
+            "gold", 
+            "shared",  # Dimensions are shared across integrations
+            dim_config.name,
+            table_type="dim"
+        )
 
         dim_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(table_name)
-
-        logger.info(f"Created dim{dimension_name} with {dim_df.count()} values")
-
-    return dimensions
-
-
-@with_etl_error_handling(operation="create_batch_dimensions")
-def create_batch_dimensions(
-    spark: SparkSession,
-    dimension_configs: list[tuple[str, str, str]],
-    lakehouse_root: str = "/lakehouse/default/Tables/",
-) -> dict:
-    """Create dimensions efficiently by batching operations per source table.
-
-    Args:
-        spark: SparkSession
-        dimension_configs: List of (source_table, column_name, dimension_name) tuples
-        lakehouse_root: Root path for lakehouse tables
-
-    Returns:
-        Dictionary of dimension name -> DataFrame
-    """
-    from collections import defaultdict
-
-    dimensions = {}
-
-    # Group configs by source table for efficient processing
-    table_groups = defaultdict(list)
-    for source_table, column_name, dimension_name in dimension_configs:
-        table_groups[source_table].append((column_name, dimension_name))
-
-    # Process each table once, creating multiple dimensions
-    for source_table, columns in table_groups.items():
-        logger.info(f"Processing {len(columns)} dimensions from {source_table}")
-
-        # Read source table once
-        source_df = spark.table(source_table)
-
-        # Create all dimensions from this table
-        for column_name, dimension_name in columns:
-            logger.info(f"Creating dim{dimension_name} from {column_name}")
-
-            # Create dimension using already-loaded source_df
-            dim_df = _create_dimension_from_dataframe(
-                source_df, column_name, dimension_name
-            )
-
-            # Store and write
-            dimensions[f"dim{dimension_name}"] = dim_df
-            table_name = f"Lakehouse.gold.dim{dimension_name}"
-
-            dim_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(table_name)
-
-            logger.info(f"Created dim{dimension_name} with {dim_df.count()} values")
+        logger.info(f"Created {table_name} with {dim_df.count()} values")
 
     return dimensions
 
 
-def _create_dimension_from_dataframe(
-    source_df: DataFrame, column_name: str, dimension_name: str
-) -> DataFrame:
-    """Create dimension from already-loaded DataFrame."""
-    # Use DataFrame API instead of SQL query
-    df = (
-        source_df.where(F.col(column_name).isNotNull())
-        .groupBy(column_name)
-        .agg(F.count("*").alias("usage_count"))
-        .withColumnRenamed(column_name, f"{dimension_name}Code")
-        .orderBy(F.desc("usage_count"))
-    )
-
-    # Add surrogate key using row_number
-    window = Window.orderBy(F.desc("usage_count"))
-    dim_df = df.withColumn(f"{dimension_name}Key", F.row_number().over(window))
-
-    # Reorder columns and add metadata
-    result = dim_df.select(
-        F.col(f"{dimension_name}Key"),
-        F.col(f"{dimension_name}Code"),
-        F.col("usage_count"),
-        F.lit(True).alias("isActive"),
-        F.current_timestamp().alias("effectiveDate"),
-        F.lit(None).cast("timestamp").alias("endDate"),
-    )
-
-    # Add standard ETL metadata
-    result = _add_etl_metadata(result, layer="gold", source="dimension_generator")
-
-    return result
 
 
-@with_etl_error_handling(operation="create_rich_dimension")
-def create_rich_dimension(
+@with_etl_error_handling(operation="create_date_dimension")
+def create_date_dimension(
+    config: ETLConfig,
     spark: SparkSession,
-    dimension_config: dict,
-    dimension_name: str,
+    start_date: str,
+    end_date: str,
 ) -> DataFrame:
-    """Create a rich dimension table with additional business context columns.
+    """Create a date dimension table.
 
     Args:
+        config: ETL configuration
         spark: SparkSession
-        dimension_config: Dictionary with source_table, primary_column, additional_columns
-        dimension_name: Name for the dimension
+        start_date: Start date (YYYY-MM-DD)
+        end_date: End date (YYYY-MM-DD)
 
     Returns:
-        DataFrame with rich dimension data
+        DataFrame with date dimension
     """
-    source_table = dimension_config["source_table"]
-    primary_column = dimension_config["primary_column"]
-    additional_columns = dimension_config.get("additional_columns", {})
-
-    # Get table schema to validate columns exist
-    try:
-        table_df = spark.table(source_table)
-        available_columns = table_df.columns
-    except Exception as e:
-        raise ETLInfrastructureError(
-            f"Could not access table {source_table}: {e}",
-            code=ErrorCode.STORAGE_ACCESS_FAILED,
-            details={"source_table": source_table, "error": str(e)}
-        ) from e
-
-    # Extract referenced columns from CASE expressions
-    import re
-    def extract_column_refs(expr):
-        """Extract column names referenced in expressions."""
-        # Pattern to match column names (alphanumeric + underscore)
-        pattern = r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b'
-        matches = re.findall(pattern, expr)
-        # Filter out SQL keywords and function names
-        sql_keywords = {'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'LIKE', 'RLIKE', 'IN', 'OR', 'AND', 'true', 'false'}
-        return [m for m in matches if m not in sql_keywords and m in available_columns]
-
-    # Build SQL query with proper GROUP BY handling
-    additional_selects = []
-    group_by_cols = [primary_column]
-
-    for col_name, col_expr in additional_columns.items():
-        if col_expr.startswith("CASE"):
-            # Complex expression - extract referenced columns
-            additional_selects.append(f"({col_expr}) as {col_name}")
-            # Add referenced columns to GROUP BY
-            refs = extract_column_refs(col_expr)
-            for ref in refs:
-                if ref not in group_by_cols:
-                    group_by_cols.append(ref)
-        else:
-            # Simple column reference - check if it exists
-            if col_expr in available_columns:
-                additional_selects.append(f"{col_expr} as {col_name}")
-                if col_expr not in group_by_cols:
-                    group_by_cols.append(col_expr)
-            else:
-                logger.warning(f"Column {col_expr} not found in {source_table}, using NULL")
-                additional_selects.append(f"NULL as {col_name}")
-
-    # Build the complete SQL query
-    sql_query = f"""
-    SELECT
-        {', '.join(group_by_cols)},
-        {', '.join(additional_selects) if additional_selects else "'N/A' as placeholder"},
-        COUNT(*) as usage_count
-    FROM {source_table}
-    WHERE {primary_column} IS NOT NULL
-    GROUP BY {', '.join(group_by_cols)}
-    ORDER BY usage_count DESC
-    """
-
-    # Execute query
-    df = spark.sql(sql_query)
-
-    # Add surrogate key
-    window = Window.orderBy(F.desc("usage_count"))
-    dim_df = df.withColumn(f"{dimension_name}Key", F.row_number().over(window))
-
-    # Rename primary column to standard naming
-    dim_df = dim_df.withColumnRenamed(primary_column, f"{dimension_name}Code")
-
-    # Add standard dimension metadata
-    dim_df = dim_df.withColumn("isActive", F.lit(True))
-    dim_df = dim_df.withColumn("effectiveDate", F.current_timestamp())
-    dim_df = dim_df.withColumn("endDate", F.lit(None).cast("timestamp"))
-
+    if not spark:
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
+    if not start_date:
+        raise ETLConfigError("start_date is required", code=ErrorCode.CONFIG_MISSING)
+    if not end_date:
+        raise ETLConfigError("end_date is required", code=ErrorCode.CONFIG_MISSING)
+    
+    # Create date range using Spark SQL
+    
+    # Generate date sequence using Spark
+    date_df = spark.sql(f"""
+        SELECT 
+            date_col as DateKey,
+            date_col as Date,
+            YEAR(date_col) as Year,
+            MONTH(date_col) as Month,
+            DAY(date_col) as Day,
+            DAYOFWEEK(date_col) as DayOfWeek,
+            WEEKDAY(date_col) as Weekday,
+            WEEKOFYEAR(date_col) as WeekOfYear,
+            QUARTER(date_col) as Quarter,
+            DAYOFYEAR(date_col) as DayOfYear,
+            DATE_FORMAT(date_col, 'MMMM') as MonthName,
+            DATE_FORMAT(date_col, 'MMM') as MonthShortName,
+            DATE_FORMAT(date_col, 'EEEE') as DayName,
+            DATE_FORMAT(date_col, 'EEE') as DayShortName,
+            CASE 
+                WHEN DAYOFWEEK(date_col) IN (1, 7) THEN TRUE 
+                ELSE FALSE 
+            END as IsWeekend,
+            CASE 
+                WHEN MONTH(date_col) = 1 THEN 'Q4'
+                WHEN MONTH(date_col) <= 3 THEN 'Q1'
+                WHEN MONTH(date_col) <= 6 THEN 'Q2'
+                WHEN MONTH(date_col) <= 9 THEN 'Q3'
+                ELSE 'Q4'
+            END as FiscalQuarter,
+            CASE 
+                WHEN MONTH(date_col) >= 10 THEN YEAR(date_col) + 1
+                ELSE YEAR(date_col)
+            END as FiscalYear
+        FROM (
+            SELECT EXPLODE(SEQUENCE(
+                TO_DATE('{start_date}', 'yyyy-MM-dd'),
+                TO_DATE('{end_date}', 'yyyy-MM-dd'),
+                INTERVAL 1 DAY
+            )) as date_col
+        )
+    """)
+    
     # Add ETL metadata
-    result = _add_etl_metadata(dim_df, layer="gold", source="rich_dimension_generator")
-
+    result = _add_etl_metadata(date_df, layer="gold", source="date_dimension")
+    
     return result
-
-
-@with_etl_error_handling(operation="create_rich_dimensions")
-def create_rich_dimensions(
-    spark: SparkSession,
-    rich_dimension_configs: dict,
-    lakehouse_root: str = "/lakehouse/default/Tables/",
-) -> dict:
-    """Create rich dimension tables with business context.
-
-    Args:
-        spark: SparkSession
-        rich_dimension_configs: Dictionary of dimension_name -> config
-        lakehouse_root: Root path for lakehouse tables
-
-    Returns:
-        Dictionary of dimension name -> DataFrame
-    """
-    dimensions = {}
-
-    for dimension_name, config in rich_dimension_configs.items():
-        logger.info(f"Creating rich dimension: dim{dimension_name}")
-
-        # Create rich dimension
-        dim_df = create_rich_dimension(
-            spark=spark,
-            dimension_config=config,
-            dimension_name=dimension_name
-        )
-
-        # Store in dictionary
-        dimensions[f"dim{dimension_name}"] = dim_df
-
-        # Write to gold layer
-        table_name = f"Lakehouse.gold.dim{dimension_name}"
-        dim_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(table_name)
-
-        logger.info(f"Created dim{dimension_name} with {dim_df.count()} values")
-
-    return dimensions
-
-
-# Generic utilities only - source-specific configs belong in their packages
 
 
 # Utility function to join fact tables with dimensions
 @with_etl_error_handling(operation="add_dimension_keys")
 def add_dimension_keys(
-    fact_df: DataFrame, spark: SparkSession, dimension_mappings: list[tuple[str, str, str, str]]
+    config: ETLConfig,
+    fact_df: DataFrame,
+    dimension_mappings: list[DimensionMapping],
+    spark: SparkSession,
 ) -> DataFrame:
     """Add dimension keys to fact table.
 
     Args:
+        config: ETL configuration
         fact_df: Fact table DataFrame
+        dimension_mappings: List of dimension mapping configurations
         spark: SparkSession
-        dimension_mappings: List of (fact_column, dim_table, dim_code_column, key_column)
 
     Returns:
         Fact DataFrame with dimension keys added
     """
+    if not dimension_mappings:
+        return fact_df  # No dimensions to join
+        
+    if not spark:
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
+    
     result_df = fact_df
 
-    for fact_col, dim_table, dim_code_col, key_col in dimension_mappings:
-        # Read dimension table - check if it already has catalog/schema prefix
-        table_path = dim_table if "." in dim_table else f"gold.{dim_table}"
-
-        try:
-            dim_df = spark.table(table_path)
-        except Exception as e:
-            # Try with Lakehouse prefix if simple path fails
-            try:
-                dim_df = spark.table(f"Lakehouse.gold.{dim_table}")
-            except Exception as e2:
-                logger.error(f"Could not find dimension table {dim_table}: {e}, {e2}")
-                continue
+    for mapping in dimension_mappings:
+        # Validate fact column exists
+        if mapping.fact_column not in result_df.columns:
+            raise ETLProcessingError(
+                f"Fact column '{mapping.fact_column}' not found",
+                code=ErrorCode.GOLD_DIMENSION_ERROR,
+                details={
+                    "column": mapping.fact_column,
+                    "available_columns": result_df.columns
+                }
+            )
+        
+        # Read dimension table
+        dim_df = spark.table(mapping.dimension_table)
+        
+        # Validate dimension columns exist
+        if mapping.dimension_key_column not in dim_df.columns:
+            raise ETLProcessingError(
+                f"Dimension key column '{mapping.dimension_key_column}' not found in {mapping.dimension_table}",
+                code=ErrorCode.GOLD_DIMENSION_ERROR,
+                details={
+                    "column": mapping.dimension_key_column,
+                    "table": mapping.dimension_table,
+                    "available_columns": dim_df.columns
+                }
+            )
 
         # Join to get key - use broadcast for small dimension tables
         result_df = result_df.join(
-            F.broadcast(dim_df.select(dim_code_col, key_col)),
-            result_df[fact_col] == dim_df[dim_code_col],
+            F.broadcast(dim_df.select(
+                F.col(mapping.dimension_key_column),
+                F.col(mapping.surrogate_key_column)
+            )),
+            result_df[mapping.fact_column] == dim_df[mapping.dimension_key_column],
             "left",
-        ).drop(dim_code_col)
+        ).drop(mapping.dimension_key_column)
 
     return result_df

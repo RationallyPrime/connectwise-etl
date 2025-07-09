@@ -13,13 +13,12 @@ No optional behaviors. No silent failures. Fail fast.
 """
 
 import logging
-import sys
 from datetime import datetime
 from typing import Any
 
 import pyspark.sql.functions as F  # noqa: N812
 from pydantic import ValidationError
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import (
     ArrayType,
     BooleanType,
@@ -35,6 +34,7 @@ from pyspark.sql.types import (
 from pyspark.sql.window import Window
 from sparkdantic import SparkModel
 
+from .config import ETLConfig, EntityConfig
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
 from .utils.exceptions import ETLConfigError, ETLProcessingError
@@ -67,18 +67,16 @@ def validate_batch(
     return valid_models, validation_errors
 
 
+@with_etl_error_handling(operation="convert_models_to_dataframe")
 def convert_models_to_dataframe(
     valid_models: list[SparkModel], model_class: type[SparkModel]
 ) -> DataFrame:
     """Convert validated SparkModel instances to DataFrame using SparkDantic."""
-    if not valid_models:
-        raise ValueError("No valid models to convert to DataFrame")
-
     # Get SparkDantic schema
     schema = model_class.model_spark_schema()
 
     # Convert models to dictionaries
-    model_dicts = [model.model_dump() for model in valid_models]
+    model_dicts: list[dict[str, Any]] = [model.model_dump() for model in valid_models]
 
     # Create DataFrame with proper schema (using Fabric's global spark session)
     import sys
@@ -117,6 +115,7 @@ def validate_with_pydantic(
     df: DataFrame, model_class: type[SparkModel], sample_size: int = 1000
 ) -> tuple[int, int, list[dict[str, Any]]]:
     """Validate DataFrame against Pydantic model. Model is REQUIRED."""
+    
     sample_data = df.limit(sample_size).toPandas().to_dict("records")
     valid_count = 0
     invalid_count = 0
@@ -162,50 +161,66 @@ def generate_spark_schema_from_pydantic(model_class: type[SparkModel]) -> Struct
 
 
 @with_etl_error_handling(operation="apply_data_types")
-def apply_data_types(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
+def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
     """Apply data type conversions based on configuration."""
+    # Validate config first
+    entity_config.validate_config()
+    
     result_df = df
-    column_mappings = entity_config.get("column_mappings", {})
+    column_mappings = entity_config.column_mappings
 
-    # If no mappings, just return as-is
+    # Column mappings are REQUIRED - no defensive coding
     if not column_mappings:
-        logging.info("No column mappings provided, skipping type conversions")
-        return result_df
+        raise ETLConfigError(
+            "Column mappings are required for data type conversion",
+            code=ErrorCode.CONFIG_MISSING,
+            details={"entity": entity_config.name}
+        )
 
-    for column, mapping in column_mappings.items():
-        if column not in result_df.columns:
-            continue
-
-        target_type = mapping.get("target_type")
-        if not target_type:
-            continue
-
-        spark_type = TYPE_MAPPING.get(target_type.lower())
-        if not spark_type:
-            logging.warning(f"Unknown target type '{target_type}' for column '{column}'")
-            continue
-
-        try:
-            # Get the current column type
-            fields_dict = {field.name: field for field in result_df.schema.fields}
-            current_type = fields_dict[column].dataType
-            logging.info(f"Converting {column} from {current_type} to {spark_type}")
-
-            if target_type.lower() in ["timestamp", "datetime", "datetime2"]:
-                result_df = result_df.withColumn(column, F.to_timestamp(F.col(column)))
-            else:
-                result_df = result_df.withColumn(column, F.col(column).cast(spark_type))
-        except Exception as e:
+    for column_name, mapping in column_mappings.items():
+        if mapping.source_column not in result_df.columns:
             raise ETLProcessingError(
-                f"Type conversion failed for {column} -> {target_type}: {e}",
-                code=ErrorCode.SILVER_TYPE_CONVERSION,
-                details={"column": column, "target_type": target_type, "error": str(e)}
-            ) from e
+                f"Source column '{mapping.source_column}' not found in DataFrame",
+                code=ErrorCode.SILVER_TRANSFORM_FAILED,
+                details={
+                    "column": mapping.source_column,
+                    "available_columns": result_df.columns
+                }
+            )
+
+        spark_type = TYPE_MAPPING.get(mapping.target_type.value.lower())
+        if not spark_type:
+            raise ETLConfigError(
+                f"Unknown target type '{mapping.target_type}' for column '{mapping.source_column}'",
+                code=ErrorCode.CONFIG_INVALID,
+                details={"column": mapping.source_column, "target_type": mapping.target_type}
+            )
+
+        # Get the current column type
+        fields_dict = {field.name: field for field in result_df.schema.fields}
+        current_type = fields_dict[mapping.source_column].dataType
+        logging.info(f"Converting {mapping.source_column} from {current_type} to {spark_type}")
+
+        if mapping.target_type.value.lower() in ["timestamp", "datetime", "datetime2"]:
+            result_df = result_df.withColumn(
+                mapping.target_column, 
+                F.to_timestamp(F.col(mapping.source_column))
+            )
+        else:
+            result_df = result_df.withColumn(
+                mapping.target_column,
+                F.col(mapping.source_column).cast(spark_type)
+            )
+        
+        # Remove old column if renamed
+        if mapping.source_column != mapping.target_column:
+            result_df = result_df.drop(mapping.source_column)
 
     return result_df
 
 
-def flatten_nested_columns(df: DataFrame, max_depth: int = 3) -> DataFrame:
+@with_etl_error_handling(operation="flatten_nested_columns")
+def flatten_nested_columns(df: DataFrame, max_depth: int) -> DataFrame:
     """Flatten nested columns (structs, maps, arrays) into separate columns."""
     # Return early for empty DataFrames
     if df.isEmpty():
@@ -313,10 +328,12 @@ def parse_json_columns(df: DataFrame, json_columns: list[str]) -> DataFrame:
     return result_df
 
 
-def standardize_column_names(df: DataFrame, entity_config: dict[str, Any]) -> DataFrame:
+@with_etl_error_handling(operation="standardize_column_names")
+def standardize_column_names(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
     """Standardize column names. Preserves camelCase per CLAUDE.md."""
     result_df = df
-    column_standards = entity_config.get("column_standards", {})
+    # Use column mappings for renaming
+    column_standards = {m.source_column: m.target_column for m in entity_config.column_mappings.values()}
 
     for old_name, new_name in column_standards.items():
         if old_name in result_df.columns:
@@ -327,7 +344,7 @@ def standardize_column_names(df: DataFrame, entity_config: dict[str, Any]) -> Da
 
 @with_etl_error_handling(operation="apply_scd_type_1")
 def apply_scd_type_1(
-    df: DataFrame, business_keys: list[str], timestamp_col: str = "SystemModifiedAt"
+    df: DataFrame, business_keys: list[str], timestamp_col: str
 ) -> DataFrame:
     """Apply SCD Type 1 (overwrite) logic. Business keys are REQUIRED."""
     if not business_keys:
@@ -375,7 +392,7 @@ def apply_scd_type_1(
 def apply_scd_type_2(
     df: DataFrame,
     business_keys: list[str],
-    timestamp_col: str = "SystemModifiedAt",
+    timestamp_col: str,
     valid_from_col: str = "ValidFrom",
     valid_to_col: str = "ValidTo",
     is_current_col: str = "IsCurrent",
@@ -425,10 +442,14 @@ def apply_scd_type_2(
         ) from e
 
 
+@with_etl_error_handling(operation="add_etl_metadata")
 def add_etl_metadata(df: DataFrame, source: str) -> DataFrame:
     """Add ETL metadata columns. Source is REQUIRED."""
     if not source:
-        raise ValueError("Source system name is required for ETL metadata")
+        raise ETLConfigError(
+            "Source system name is required for ETL metadata",
+            code=ErrorCode.CONFIG_MISSING
+        )
 
     return (
         df.withColumn("_etl_processed_at", F.current_timestamp())
@@ -437,8 +458,9 @@ def add_etl_metadata(df: DataFrame, source: str) -> DataFrame:
     )
 
 
+@with_etl_error_handling(operation="apply_silver_transformations")
 def apply_silver_transformations(
-    df: DataFrame, entity_config: dict[str, Any], model_class: type[SparkModel]
+    df: DataFrame, entity_config: EntityConfig, model_class: type[SparkModel]
 ) -> DataFrame:
     """
     Apply comprehensive Silver transformations.
@@ -448,11 +470,8 @@ def apply_silver_transformations(
         entity_config: REQUIRED entity configuration
         model_class: REQUIRED Pydantic model for validation
     """
-    if not entity_config:
-        raise ValueError("Entity configuration is required")
-
-    if not model_class:
-        raise ValueError("Pydantic model class is required")
+    # Validate config first - FAIL FAST
+    entity_config.validate_config()
 
     # Validate the model has SparkDantic support
     _ = generate_spark_schema_from_pydantic(model_class)
@@ -460,107 +479,80 @@ def apply_silver_transformations(
     silver_df = df
 
     # 1. Add ETL metadata (source is required)
-    source = entity_config.get("source")
-    if not source:
-        raise ValueError("Source system must be specified in entity_config")
-    silver_df = add_etl_metadata(silver_df, source)
+    silver_df = add_etl_metadata(silver_df, entity_config.source)
 
     # 2. Skip validation for Silver - data was validated in Bronze
     # Per CLAUDE.md: Bronze validates during API extraction, Silver transforms
     logging.info("Skipping validation - data was validated in Bronze layer")
 
     # 3. Parse JSON columns if specified
-    json_columns = entity_config.get("json_columns", [])
-    if json_columns:
-        silver_df = parse_json_columns(silver_df, json_columns)
+    if entity_config.json_columns:
+        silver_df = parse_json_columns(silver_df, entity_config.json_columns)
 
     # 4. Apply data type conversions
     silver_df = apply_data_types(silver_df, entity_config)
 
     # 5. Flatten nested structures if configured
-    if entity_config.get("flatten_nested", False):
-        max_depth = entity_config.get("flatten_max_depth", 3)
-        silver_df = flatten_nested_columns(silver_df, max_depth)
+    if entity_config.flatten_nested:
+        silver_df = flatten_nested_columns(silver_df, entity_config.flatten_max_depth)
 
     # 6. Standardize column names
     silver_df = standardize_column_names(silver_df, entity_config)
 
     # 7. Apply SCD logic if configured
-    scd_config = entity_config.get("scd")
-    if scd_config:
-        scd_type = scd_config.get("type", 1)
-        business_keys = scd_config.get("business_keys")
-
-        if not business_keys:
-            raise ValueError("SCD configuration requires business_keys")
-
-        if scd_type == 1:
-            silver_df = apply_scd_type_1(silver_df, business_keys)
-        elif scd_type == 2:
-            silver_df = apply_scd_type_2(silver_df, business_keys)
+    if entity_config.scd:
+        entity_config.scd.validate_business_keys()
+        
+        if entity_config.scd.type == 1:
+            silver_df = apply_scd_type_1(
+                silver_df, 
+                entity_config.scd.business_keys,
+                entity_config.scd.timestamp_column
+            )
+        elif entity_config.scd.type == 2:
+            silver_df = apply_scd_type_2(
+                silver_df,
+                entity_config.scd.business_keys,
+                entity_config.scd.timestamp_column
+            )
         else:
-            raise ValueError(f"Unsupported SCD type: {scd_type}")
+            raise ETLConfigError(
+                f"Unsupported SCD type: {entity_config.scd.type}",
+                code=ErrorCode.CONFIG_INVALID
+            )
 
     return silver_df
 
 
 @with_etl_error_handling(operation="process_bronze_to_silver")
 def process_bronze_to_silver(
-    entity_name: str,
-    bronze_table_name: str,
-    lakehouse_root: str,
-    entity_config: dict[str, Any],
+    config: ETLConfig,
+    entity_config: EntityConfig,
     model_class: type[SparkModel],
+    spark: SparkSession,
 ) -> None:
     """
     Process Bronze to Silver with unified transformations.
 
     ALL parameters are REQUIRED. No optional behaviors.
     """
-    if not entity_name:
-        raise ETLConfigError("entity_name is required", code=ErrorCode.CONFIG_MISSING)
-    if not bronze_table_name:
-        raise ETLConfigError("bronze_table_name is required", code=ErrorCode.CONFIG_MISSING)
-    if not lakehouse_root:
-        raise ETLConfigError("lakehouse_root is required", code=ErrorCode.CONFIG_MISSING)
-    if not entity_config:
-        raise ETLConfigError("entity_config is required", code=ErrorCode.CONFIG_MISSING)
-    if not model_class:
-        raise ETLConfigError("model_class is required", code=ErrorCode.CONFIG_MISSING)
+    # Validate configs - FAIL FAST
+    entity_config.validate_config()
 
-    # Get Fabric global spark session
-    spark = sys.modules["__main__"].spark
+    # Get table names from config
+    bronze_table = config.get_table_name("bronze", entity_config.source, entity_config.name)
+    silver_table = config.get_table_name("silver", entity_config.source, entity_config.name)
+    
+    logging.info(f"Processing {entity_config.name}: {bronze_table} -> {silver_table}")
 
     # Read Bronze data
-    bronze_path = f"{lakehouse_root}bronze/{bronze_table_name}"
-    logging.info(f"Reading Bronze: {bronze_path}")
-
-    try:
-        bronze_df = spark.read.format("delta").load(bronze_path)
-        record_count = bronze_df.count()
-        logging.info(f"Bronze records: {record_count}")
-    except Exception as e:
-        raise ETLProcessingError(
-            f"Failed to read Bronze table {bronze_path}: {e}",
-            code=ErrorCode.BRONZE_EXTRACT_FAILED,
-            details={"bronze_path": bronze_path, "error": str(e)}
-        ) from e
+    bronze_df = spark.table(bronze_table)
+    record_count = bronze_df.count()
+    logging.info(f"Bronze records: {record_count}")
 
     # Apply Silver transformations
     silver_df = apply_silver_transformations(bronze_df, entity_config, model_class)
 
     # Write to Silver
-    silver_path = f"{lakehouse_root}silver/silver_{entity_name}"
-    logging.info(f"Writing Silver: {silver_path}")
-
-    try:
-        silver_df.write.format("delta").mode("overwrite").option("mergeSchema", "true").save(
-            silver_path
-        )
-        logging.info(f"Silver written: {record_count} records")
-    except Exception as e:
-        raise ETLProcessingError(
-            f"Failed to write Silver table {silver_path}: {e}",
-            code=ErrorCode.STORAGE_ACCESS_FAILED,
-            details={"silver_path": silver_path, "record_count": record_count, "error": str(e)}
-        ) from e
+    silver_df.write.mode("overwrite").option("mergeSchema", "true").saveAsTable(silver_table)
+    logging.info(f"Silver written: {record_count} records to {silver_table}")

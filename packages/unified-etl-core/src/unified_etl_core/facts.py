@@ -13,30 +13,31 @@ Following CLAUDE.md: Generic where possible, specialized where necessary.
 
 # Inline implementations to avoid circular imports
 from datetime import datetime
-from typing import Any
 
 import pyspark.sql.functions as F  # noqa: N812
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 
+from .config import ETLConfig, FactConfig
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
 from .utils.exceptions import ETLConfigError, ETLProcessingError
 
-# Legacy exception aliases for backward compatibility
-FactTableError = ETLProcessingError
-SurrogateKeyError = ETLProcessingError
 
-
-def _add_etl_metadata(df: DataFrame, layer: str = "gold", source: str | None = None) -> DataFrame:
+@with_etl_error_handling(operation="add_etl_metadata")
+def _add_etl_metadata(df: DataFrame, layer: str, source: str) -> DataFrame:
     """Add universal ETL metadata columns (inline to avoid circular imports)."""
     if not df:
-        raise FactTableError("DataFrame is required")
+        raise ETLConfigError("DataFrame is required", code=ErrorCode.CONFIG_MISSING)
+    if not layer:
+        raise ETLConfigError("Layer is required", code=ErrorCode.CONFIG_MISSING)
+    if not source:
+        raise ETLConfigError("Source is required", code=ErrorCode.CONFIG_MISSING)
 
-    metadata_df = df.withColumn(f"_etl_{layer}_processed_at", F.current_timestamp())
-
-    if source:
-        metadata_df = metadata_df.withColumn("_etl_source", F.lit(source))
+    metadata_df = (
+        df.withColumn(f"_etl_{layer}_processed_at", F.current_timestamp())
+        .withColumn("_etl_source", F.lit(source))
+    )
 
     metadata_df = metadata_df.withColumn(
         "_etl_batch_id", F.lit(datetime.now().strftime("%Y%m%d_%H%M%S"))
@@ -94,68 +95,80 @@ def _generate_surrogate_key(
         ) from e
 
 
+@with_etl_error_handling(operation="create_generic_fact_table")
 def create_generic_fact_table(
+    config: ETLConfig,
+    fact_config: FactConfig,
     silver_df: DataFrame,
-    entity_name: str,
-    surrogate_keys: list[dict[str, Any]],
-    business_keys: list[dict[str, Any]],
-    calculated_columns: dict[str, str],
-    source: str,
+    spark: SparkSession,
 ) -> DataFrame:
     """
     Create fact table using universal patterns. All parameters REQUIRED.
 
     Args:
+        config: REQUIRED ETL configuration
+        fact_config: REQUIRED fact table configuration
         silver_df: REQUIRED silver DataFrame
-        entity_name: REQUIRED entity name
-        surrogate_keys: REQUIRED surrogate key configurations
-        business_keys: REQUIRED business key configurations
-        calculated_columns: REQUIRED calculated column configurations
-        source: REQUIRED source system name
+        spark: REQUIRED SparkSession
     """
+    # Validate configs - FAIL FAST
+    fact_config.validate_config()
+    
     if not silver_df:
-        raise FactTableError("silver_df is required")
-    if not entity_name:
-        raise FactTableError("entity_name is required")
-    if surrogate_keys is None:
-        raise FactTableError("surrogate_keys is required")
-    if business_keys is None:
-        raise FactTableError("business_keys is required")
-    if calculated_columns is None:
-        raise FactTableError("calculated_columns is required")
-    if not source:
-        raise FactTableError("source is required")
+        raise ETLConfigError("silver_df is required", code=ErrorCode.CONFIG_MISSING)
+    if not spark:
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
 
     fact_df = silver_df
 
     # 1. Generate surrogate keys (REQUIRED)
-    for key_config in surrogate_keys:
+    for surrogate_key in fact_config.surrogate_keys:
         fact_df = _generate_surrogate_key(
             df=fact_df,
-            business_keys=key_config["business_keys"],
-            key_name=key_config["name"],
-            partition_columns=key_config.get("partition_columns"),
+            business_keys=fact_config.business_keys,
+            key_name=surrogate_key,
+            partition_columns=None,
         )
 
     # 2. Add calculated columns (REQUIRED)
-    for col_name, col_expression in calculated_columns.items():
-        fact_df = fact_df.withColumn(col_name, F.expr(col_expression))
+    for calc_col in fact_config.calculated_columns:
+        fact_df = fact_df.withColumn(calc_col.name, F.expr(calc_col.expression))
 
-    # 3. Add business key columns (REQUIRED)
-    for biz_key in business_keys:
-        source_columns = biz_key["source_columns"]
-        key_name = biz_key["name"]
-
-        if len(source_columns) == 1:
-            fact_df = fact_df.withColumn(key_name, F.col(source_columns[0]))
-        else:
-            concat_expr = F.concat_ws("_", *[F.col(col) for col in source_columns])
-            fact_df = fact_df.withColumn(key_name, concat_expr)
+    # 3. Create composite business key if multiple keys
+    if len(fact_config.business_keys) > 1:
+        concat_expr = F.concat_ws("_", *[F.col(col) for col in fact_config.business_keys])
+        fact_df = fact_df.withColumn("BusinessKey", concat_expr)
+    else:
+        fact_df = fact_df.withColumn("BusinessKey", F.col(fact_config.business_keys[0]))
 
     # 4. Add universal ETL metadata (REQUIRED)
-    fact_df = _add_etl_metadata(fact_df, layer="gold", source=source)
+    if fact_config.add_audit_columns:
+        fact_df = _add_etl_metadata(fact_df, layer="gold", source=fact_config.source)
 
-    # 5. Add entity identifier (REQUIRED)
-    fact_df = fact_df.withColumn("EntityType", F.lit(entity_name))
+    # 5. Add entity identifier if multi-entity fact
+    if fact_config.add_entity_type:
+        fact_df = fact_df.withColumn(
+            fact_config.entity_type_column, 
+            F.lit(fact_config.name)
+        )
 
-    return fact_df
+    # 6. Select final columns in proper order
+    final_columns = (
+        fact_config.surrogate_keys +
+        fact_config.business_keys +
+        fact_config.dimension_columns +
+        fact_config.measure_columns +
+        [col.name for col in fact_config.calculated_columns]
+    )
+    
+    if fact_config.add_entity_type:
+        final_columns.append(fact_config.entity_type_column)
+        
+    if fact_config.add_audit_columns:
+        final_columns.extend([
+            "_etl_gold_processed_at",
+            "_etl_source",
+            "_etl_batch_id"
+        ])
+    
+    return fact_df.select(*final_columns)

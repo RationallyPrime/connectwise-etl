@@ -1,17 +1,21 @@
 """Cross-integration ETL orchestration using dynamic integration detection."""
 
 import logging
-from typing import Any
+from typing import Literal
 
+from pyspark.sql import SparkSession
+
+from unified_etl_core.config import ETLConfig
 from unified_etl_core.incremental import (
     IncrementalProcessor,
     build_incremental_conditions,
     get_incremental_lookback_days,
 )
-from unified_etl_core.integrations import detect_available_integrations, list_available_integrations
+from unified_etl_core.integrations import detect_available_integrations
 from unified_etl_core.utils.base import ErrorCode
 from unified_etl_core.utils.decorators import with_etl_error_handling
 from unified_etl_core.utils.exceptions import (
+    ETLConfigError,
     ETLInfrastructureError,
     ETLProcessingError,
 )
@@ -19,67 +23,89 @@ from unified_etl_core.utils.exceptions import (
 
 @with_etl_error_handling(operation="run_etl_pipeline")
 def run_etl_pipeline(
-    integrations: list[str] | None = None,
-    layers: list[str] | None = None,
-    config: dict[str, Any] | None = None,
-    table_mappings: dict[str, dict[str, str]] | None = None,
-    mode: str = "full",
-    lookback_days: int = 30,
+    config: ETLConfig,
+    spark: SparkSession,
+    integrations: list[str],
+    layers: list[Literal["bronze", "silver", "gold"]],
+    mode: Literal["full", "incremental"],
+    lookback_days: int,
 ) -> None:
     """
     Run ETL pipeline across all available integrations.
 
     Args:
-        integrations: List of integration names to process (default: all available)
-        layers: List of layers to process (default: ["bronze", "silver", "gold"])
-        config: Pipeline configuration
-        table_mappings: Optional custom table name mappings by layer
-            Example: {"bronze": {"agreement": "bronze_cw_agreement"}}
-        mode: "full" for complete refresh or "incremental" for delta processing
-        lookback_days: For incremental mode, how many days to look back (default: 30)
+        config: REQUIRED ETL configuration
+        spark: REQUIRED SparkSession
+        integrations: REQUIRED list of integration names to process
+        layers: REQUIRED list of layers to process
+        mode: REQUIRED processing mode ("full" or "incremental")
+        lookback_days: REQUIRED lookback days for incremental mode
     """
+    # Validate inputs - FAIL FAST
+    if not config:
+        raise ETLConfigError("ETL configuration is required", code=ErrorCode.CONFIG_MISSING)
+    if not spark:
+        raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
+    if not integrations:
+        raise ETLConfigError("At least one integration must be specified", code=ErrorCode.CONFIG_MISSING)
+    if not layers:
+        raise ETLConfigError("At least one layer must be specified", code=ErrorCode.CONFIG_MISSING)
+    if mode not in ["full", "incremental"]:
+        raise ETLConfigError(
+            f"Invalid mode '{mode}'. Must be 'full' or 'incremental'",
+            code=ErrorCode.CONFIG_INVALID
+        )
+    if lookback_days <= 0:
+        raise ETLConfigError(
+            "lookback_days must be positive",
+            code=ErrorCode.CONFIG_INVALID
+        )
+    
     # Detect available integrations
     available_integrations = detect_available_integrations()
-    integration_names = integrations or list_available_integrations()
-    layers = layers or ["bronze", "silver", "gold"]
 
-    if not integration_names:
-        logging.warning("No integrations available! Install integration packages.")
-        return
+    # Validate requested integrations are available
+    for integration_name in integrations:
+        if integration_name not in config.integrations:
+            raise ETLConfigError(
+                f"Integration '{integration_name}' not configured",
+                code=ErrorCode.CONFIG_MISSING,
+                details={"requested": integration_name, "available": list(config.integrations.keys())}
+            )
+        if not available_integrations.get(integration_name, {}).get("available"):
+            raise ETLInfrastructureError(
+                f"Integration '{integration_name}' is configured but not available (package not installed?)",
+                code=ErrorCode.STORAGE_ACCESS_FAILED,
+                details={"integration": integration_name}
+            )
 
-    logging.info(f"Running ETL pipeline for integrations: {integration_names}")
+    logging.info(f"Running ETL pipeline for integrations: {integrations}")
     logging.info(f"Processing layers: {layers}")
     logging.info(f"Mode: {mode}, Lookback days: {lookback_days}")
 
-    for integration_name in integration_names:
-        if not available_integrations.get(integration_name, {}).get("available"):
-            logging.warning(f"Skipping {integration_name}: not available")
-            continue
+    for integration_name in integrations:
+        # Process integration through specified layers
+        process_integration(
+            config=config,
+            spark=spark,
+            integration_name=integration_name,
+            integration_info=available_integrations[integration_name],
+            layers=layers,
+            mode=mode,
+            lookback_days=lookback_days,
+        )
 
-        try:
-            process_integration(
-                integration_name,
-                integration_info=available_integrations[integration_name],
-                layers=layers,
-                config=config,
-                table_mappings=table_mappings,
-                mode=mode,
-                lookback_days=lookback_days,
-            )
-        except Exception as e:
-            logging.error(f"Failed processing {integration_name}: {e}")
-            continue
 
 
 @with_etl_error_handling(operation="process_integration")
 def process_integration(
+    config: ETLConfig,
+    spark: SparkSession,
     integration_name: str,
-    integration_info: dict[str, Any],
-    layers: list[str],
-    config: dict[str, Any] | None = None,
-    table_mappings: dict[str, dict[str, str]] | None = None,
-    mode: str = "full",
-    lookback_days: int = 30,
+    integration_info: dict[str, object],
+    layers: list[Literal["bronze", "silver", "gold"]],
+    mode: Literal["full", "incremental"],
+    lookback_days: int,
 ) -> None:
     """Process a single integration through specified layers."""
     logging.info(f"Processing integration: {integration_name} in {mode} mode")
@@ -91,144 +117,110 @@ def process_integration(
     if "bronze" in layers:
         logging.info(f"Running bronze layer for {integration_name}")
         if extractor:
-            try:
-                from datetime import datetime, timedelta
+            from datetime import datetime, timedelta
 
-                import pyspark.sql.functions as F  # noqa: N812
-                from pyspark.sql import SparkSession
+            import pyspark.sql.functions as F  # noqa: N812
 
-                spark = SparkSession.getActiveSession()
-                logging.info(f"Silver layer: SparkSession.getActiveSession() returned: {spark}")
-                if not spark:
-                    raise ETLInfrastructureError(
-                        "No active Spark session found",
-                        code=ErrorCode.SPARK_SESSION_ERROR
-                    )
+            # Import incremental utilities if in incremental mode
+            incremental_processor: IncrementalProcessor | None = None
+            if mode == "incremental":
+                incremental_processor = IncrementalProcessor(spark)
 
-                # Import incremental utilities if in incremental mode
-                incremental_processor: IncrementalProcessor | None = None
-                if mode == "incremental":
-                    incremental_processor = IncrementalProcessor(spark)
+            # Process each entity based on mode
+            if hasattr(extractor, "extract") and integration_name == "connectwise":
+                # ConnectWise-specific extraction with conditions support
+                endpoints = {
+                    "Agreement": "/finance/agreements",
+                    "TimeEntry": "/time/entries",
+                    "ExpenseEntry": "/expense/entries",
+                    "ProductItem": "/procurement/products",
+                    "PostedInvoice": "/finance/invoices/posted",
+                    "UnpostedInvoice": "/finance/invoices",
+                }
 
-                # Process each entity based on mode
-                if hasattr(extractor, "extract") and integration_name == "connectwise":
-                    # ConnectWise-specific extraction with conditions support
-                    endpoints = {
-                        "Agreement": "/finance/agreements",
-                        "TimeEntry": "/time/entries",
-                        "ExpenseEntry": "/expense/entries",
-                        "ProductItem": "/procurement/products",
-                        "PostedInvoice": "/finance/invoices/posted",
-                        "UnpostedInvoice": "/finance/invoices",
-                    }
-
-                    for entity_name, endpoint in endpoints.items():
-                        try:
-                            # Build extraction conditions for incremental mode
-                            conditions = None
-                            if mode == "incremental":
-                                entity_lookback = get_incremental_lookback_days(
-                                    entity_name, lookback_days
-                                )
-                                since_date = (
-                                    datetime.now() - timedelta(days=entity_lookback)
-                                ).strftime("%Y-%m-%d")
-                                conditions = build_incremental_conditions(entity_name, since_date)
-
-                                if conditions:
-                                    logging.info(
-                                        f"Incremental extraction for {entity_name} with conditions: {conditions}"
-                                    )
-
-                            # Extract data with conditions
-                            bronze_df = extractor.extract(
-                                endpoint=endpoint, conditions=conditions, page_size=1000
+                for entity_name, endpoint in endpoints.items():
+                    try:
+                        # Build extraction conditions for incremental mode
+                        conditions = None
+                        if mode == "incremental":
+                            entity_lookback = get_incremental_lookback_days(
+                                entity_name, lookback_days
                             )
+                            since_date = (
+                                datetime.now() - timedelta(days=entity_lookback)
+                            ).strftime("%Y-%m-%d")
+                            conditions = build_incremental_conditions(entity_name, since_date)
 
-                            # Add ETL metadata - use existing column names for compatibility
-                            bronze_df = bronze_df.withColumn("etlTimestamp", F.current_timestamp())
-                            bronze_df = bronze_df.withColumn("etlEntity", F.lit(entity_name))
-
-                            record_count = bronze_df.count()
-                            if record_count == 0:
-                                logging.info(f"No new records for {entity_name}")
-                                continue
-
-                            # Determine table name
-                            if table_mappings and "bronze" in table_mappings:
-                                table_name = table_mappings["bronze"].get(
-                                    entity_name, f"bronze_cw_{entity_name.lower()}"
-                                )
-                            else:
-                                table_name = f"bronze_cw_{entity_name.lower()}"
-
-                            # Add schema prefix if needed
-                            if "." not in table_name:
-                                table_name = f"Lakehouse.bronze.{table_name}"
-
-                            # Write based on mode
-                            if mode == "incremental" and spark.catalog.tableExists(table_name) and incremental_processor is not None:
-                                # Use MERGE for incremental
-                                merged, total = incremental_processor.merge_bronze_incremental(
-                                    bronze_df, table_name
-                                )
+                            if conditions:
                                 logging.info(
-                                    f"Merged {merged} records into {table_name} (total: {total})"
+                                    f"Incremental extraction for {entity_name} with conditions: {conditions}"
                                 )
-                            else:
-                                # Full overwrite
-                                bronze_df.write.mode("overwrite").saveAsTable(table_name)
-                                logging.info(f"Stored {record_count} records in {table_name}")
 
-                        except Exception as e:
-                            logging.error(f"Failed to process {entity_name}: {e}")
+                        # Extract data with conditions
+                        bronze_df = extractor.extract(
+                            endpoint=endpoint, conditions=conditions, page_size=1000
+                        )
+
+                        # Add ETL metadata - use existing column names for compatibility
+                        bronze_df = bronze_df.withColumn("etlTimestamp", F.current_timestamp())
+                        bronze_df = bronze_df.withColumn("etlEntity", F.lit(entity_name))
+
+                        record_count = bronze_df.count()
+                        if record_count == 0:
+                            logging.info(f"No new records for {entity_name}")
                             continue
 
-                else:
-                    # Fallback to extract_all for other integrations
-                    bronze_data = extractor.extract_all()
+                        # Get table name from config
+                        table_name = config.get_table_name(
+                            "bronze", 
+                            integration_name, 
+                            entity_name.lower()
+                        )
 
-                    # Store each entity in separate bronze table
-                    for entity_name, raw_data in bronze_data.items():
-                        if raw_data:
-                            bronze_df = spark.createDataFrame(raw_data)
-                            # Use custom table mapping or default pattern
-                            if table_mappings and "bronze" in table_mappings:
-                                table_name = table_mappings["bronze"].get(
-                                    entity_name, f"bronze_cw_{entity_name}"
-                                )
-                            else:
-                                table_name = f"bronze_cw_{entity_name}"
-                            # Write to proper location
-                            if "." in table_name:
-                                bronze_df.write.mode("overwrite").saveAsTable(table_name)
-                            else:
-                                bronze_df.write.mode("overwrite").saveAsTable(
-                                    f"Lakehouse.bronze.{table_name}"
-                                )
-                            logging.info(f"Stored {len(raw_data)} records in {table_name}")
+                        # Write based on mode
+                        if mode == "incremental" and spark.catalog.tableExists(table_name) and incremental_processor is not None:
+                            # Use MERGE for incremental
+                            merged, total = incremental_processor.merge_bronze_incremental(
+                                bronze_df, table_name
+                            )
+                            logging.info(
+                                f"Merged {merged} records into {table_name} (total: {total})"
+                            )
+                        else:
+                            # Full overwrite
+                            bronze_df.write.mode("overwrite").saveAsTable(table_name)
+                            logging.info(f"Stored {record_count} records in {table_name}")
 
-            except Exception as e:
-                raise ETLProcessingError(
-                    f"Bronze layer failed for {integration_name}",
-                    code=ErrorCode.BRONZE_EXTRACTION_ERROR,
-                    details={"integration": integration_name, "error": str(e)}
-                ) from e
+                    except Exception as e:
+                        raise ETLProcessingError(
+                            f"Failed to process {entity_name}",
+                            code=ErrorCode.BRONZE_EXTRACTION_ERROR,
+                            details={"entity": entity_name, "error": str(e)}
+                        ) from e
+
+            else:
+                # Fallback to extract_all for other integrations
+                bronze_data = extractor.extract_all()
+
+                # Store each entity in separate bronze table
+                for entity_name, raw_data in bronze_data.items():
+                    if raw_data:
+                        bronze_df = spark.createDataFrame(raw_data)
+                        
+                        # Get table name from config
+                        table_name = config.get_table_name(
+                            "bronze",
+                            integration_name,
+                            entity_name.lower()
+                        )
+                        
+                        bronze_df.write.mode("overwrite").saveAsTable(table_name)
+                        logging.info(f"Stored {len(raw_data)} records in {table_name}")
 
     if "silver" in layers:
         logging.info(f"Running silver layer for {integration_name}")
         if models:
             try:
-                from pyspark.sql import SparkSession
-
-                spark = SparkSession.getActiveSession()
-                logging.info(f"Silver layer: SparkSession.getActiveSession() returned: {spark}")
-                if not spark:
-                    raise ETLInfrastructureError(
-                        "No active Spark session found",
-                        code=ErrorCode.SPARK_SESSION_ERROR
-                    )
-
                 # Import incremental utilities if in incremental mode
                 incremental_processor = None
                 if mode == "incremental":
@@ -236,29 +228,19 @@ def process_integration(
 
                 # Silver: Validate and transform each entity
                 for entity_name, model_class in models.items():
-                    # Use custom table mapping or default pattern
-                    if table_mappings and "bronze" in table_mappings:
-                        bronze_table = table_mappings["bronze"].get(
-                            entity_name, f"bronze_cw_{entity_name}"
-                        )
-                    else:
-                        bronze_table = f"bronze_cw_{entity_name}"
-
-                    # Get Silver table name
-                    if table_mappings and "silver" in table_mappings:
-                        silver_table = table_mappings["silver"].get(
-                            entity_name, f"silver_cw_{entity_name}"
-                        )
-                    else:
-                        silver_table = f"silver_cw_{entity_name}"
+                    # Get table names from config
+                    bronze_table = config.get_table_name(
+                        "bronze", 
+                        integration_name, 
+                        entity_name.lower()
+                    )
+                    silver_table = config.get_table_name(
+                        "silver", 
+                        integration_name, 
+                        entity_name.lower()
+                    )
 
                     try:
-                        # Add schema prefix if needed
-                        if "." not in bronze_table:
-                            bronze_table = f"Lakehouse.bronze.{bronze_table}"
-                        if "." not in silver_table:
-                            silver_table = f"Lakehouse.silver.{silver_table}"
-
                         # Get data based on mode
                         if mode == "incremental" and incremental_processor:
                             # Get only changed records from Bronze
@@ -278,13 +260,34 @@ def process_integration(
 
                         # Silver layer: Use proven flattening logic
                         from unified_etl_core import silver
+                        from unified_etl_core.config import EntityConfig
 
-                        # Apply the silver transformations with proper flattening
-                        entity_config = {
-                            "source": integration_name,
-                            "flatten_nested": True,  # Enable flattening
-                            "flatten_max_depth": 3,
-                        }
+                        # Get entity config from integration config
+                        integration_config = config.integrations.get(integration_name)
+                        if not integration_config:
+                            raise ETLConfigError(
+                                f"Integration '{integration_name}' not found in config",
+                                code=ErrorCode.CONFIG_MISSING
+                            )
+                        
+                        # Check if we have entity-specific config
+                        entity_configs = getattr(integration_config, 'entity_configs', {})
+                        if entity_name.lower() in entity_configs:
+                            entity_config = entity_configs[entity_name.lower()]
+                        else:
+                            # Create default entity config
+                            entity_config = EntityConfig(
+                                name=entity_name.lower(),
+                                source=integration_name,
+                                flatten_nested=True,
+                                flatten_max_depth=3,
+                                json_columns=[],
+                                column_mappings={},
+                                scd=None,
+                                business_keys=["id"] if "id" in bronze_df.columns else [],
+                                timestamp_column="_etl_processed_at",
+                                partition_columns=[]
+                            )
 
                         try:
                             # This will flatten structs with camelCase naming
@@ -298,7 +301,7 @@ def process_integration(
                             logging.error(f"Silver transformation error: {e}")
                             # Fallback: just flatten without other transformations
                             try:
-                                silver_df = silver.flatten_nested_columns(bronze_df)
+                                silver_df = silver.flatten_nested_columns(bronze_df, 3)
                                 logging.info("Used direct flattening as fallback")
                             except Exception as e2:
                                 logging.error(f"Flattening also failed: {e2}")
@@ -311,17 +314,8 @@ def process_integration(
                             and incremental_processor
                             and spark.catalog.tableExists(silver_table)
                         ):
-                            # Get business keys from config (default to 'id')
-                            from unified_etl_connectwise.config import SILVER_CONFIG
-
-                            business_keys = ["id"]  # default
-                            if (
-                                integration_name == "connectwise"
-                                and entity_name in SILVER_CONFIG.get("entities", {})
-                            ):
-                                business_keys = SILVER_CONFIG["entities"][entity_name].get(
-                                    "business_keys", ["id"]
-                                )
+                            # Get business keys from entity config
+                            business_keys = entity_config.business_keys or ["id"]
 
                             # Use MERGE for incremental
                             processed_count = incremental_processor.merge_silver_scd1(
@@ -349,14 +343,7 @@ def process_integration(
     if "gold" in layers:
         logging.info(f"Running gold layer for {integration_name}")
         try:
-            from pyspark.sql import SparkSession
-
             from unified_etl_core import facts
-
-            spark = SparkSession.getActiveSession()
-            logging.info(f"SparkSession.getActiveSession() returned: {spark}")
-            if not spark:
-                raise RuntimeError("No active Spark session found")
 
             # Create dimensions FIRST before facts (facts need dimensions to exist)
             if integration_name == "connectwise":
@@ -396,245 +383,182 @@ def process_integration(
                     logging.warning(f"Could not import Business Central transforms: {e}")
 
             # Gold: Create fact tables using configuration
-            entity_configs = config.get("entities", {}) if config else {}
-            logging.info(f"Gold layer entity_configs: {list(entity_configs.keys())}")
-            for entity_name, entity_config in entity_configs.items():
-                if entity_config.get("source") == integration_name:
-                    logging.info(f"Processing gold entity: {entity_name} for integration: {integration_name}")
-                    try:
-                        # Use custom table mapping or default pattern
-                        if table_mappings and "silver" in table_mappings:
-                            silver_table = table_mappings["silver"].get(
-                                entity_name, f"silver_cw_{entity_name}"
-                            )
-                        else:
-                            silver_table = f"silver_cw_{entity_name}"
-                        # Handle fully qualified table names
-                        if "." in silver_table:
-                            silver_df = spark.table(silver_table)
-                        else:
-                            # Try with Lakehouse.silver prefix if not fully qualified
-                            try:
-                                silver_df = spark.table(f"Lakehouse.silver.{silver_table}")
-                            except Exception:
-                                # Fallback to just table name
-                                silver_df = spark.table(silver_table)
+            integration_config = config.integrations.get(integration_name)
+            if not integration_config:
+                logging.warning(f"No integration config found for {integration_name}")
+                return
 
-                        # Check if integration has specific transform for this entity
-                        gold_dfs = {}
-                        transform_used = False
+            # Check if integration has fact configs
+            fact_configs = getattr(integration_config, 'fact_configs', {})
+            logging.info(f"Gold layer fact_configs: {list(fact_configs.keys())}")
+            
+            for fact_name, fact_config in fact_configs.items():
+                logging.info(f"Processing gold fact: {fact_name} for integration: {integration_name}")
+                try:
+                    # Get table names from config
+                    silver_table = config.get_table_name(
+                        "silver", 
+                        integration_name, 
+                        fact_config.source_entity
+                    )
+                    gold_table = config.get_table_name(
+                        "gold", 
+                        integration_name, 
+                        fact_name,
+                        table_type="fact"
+                    )
+                    
+                    # Read silver data
+                    silver_df = spark.table(silver_table)
 
-                        if integration_transforms:
-                            # ConnectWise specific transforms
-                            if integration_name == "connectwise":
-                                if entity_name == "agreement" and hasattr(
-                                    integration_transforms, "create_agreement_dimensions"
-                                ):
-                                    logging.info("Using ConnectWise agreement-specific transforms")
-                                    gold_dfs = integration_transforms.create_agreement_dimensions(
-                                        spark=spark, agreement_df=silver_df, config=entity_config
-                                    )
-                                    transform_used = True
-                                elif entity_name == "invoice" and hasattr(
-                                    integration_transforms, "create_invoice_facts"
-                                ):
-                                    # For ConnectWise, need to load time entries and products to create invoice lines
-                                    try:
-                                        # Load time entries
-                                        timeentry_table = (
-                                            table_mappings["silver"].get(
-                                                "timeentry", "silver_cw_timeentry"
-                                            )
-                                            if table_mappings and "silver" in table_mappings
-                                            else "silver_cw_timeentry"
-                                        )
-                                        if "." in timeentry_table:
-                                            timeentry_df = spark.table(timeentry_table)
-                                        else:
-                                            try:
-                                                timeentry_df = spark.table(
-                                                    f"Lakehouse.silver.{timeentry_table}"
-                                                )
-                                            except Exception:
-                                                timeentry_df = spark.table(timeentry_table)
+                    # Check if integration has specific transform for this fact
+                    gold_dfs = {}
+                    transform_used = False
 
-                                        # Load products
-                                        productitem_table = (
-                                            table_mappings["silver"].get(
-                                                "productitem", "silver_cw_productitem"
-                                            )
-                                            if table_mappings and "silver" in table_mappings
-                                            else "silver_cw_productitem"
-                                        )
-                                        if "." in productitem_table:
-                                            productitem_df = spark.table(productitem_table)
-                                        else:
-                                            try:
-                                                productitem_df = spark.table(
-                                                    f"Lakehouse.silver.{productitem_table}"
-                                                )
-                                            except Exception:
-                                                productitem_df = spark.table(productitem_table)
-
-                                        # Load agreements for hierarchy resolution
-                                        agreement_table = (
-                                            table_mappings["silver"].get(
-                                                "agreement", "silver_cw_agreement"
-                                            )
-                                            if table_mappings and "silver" in table_mappings
-                                            else "silver_cw_agreement"
-                                        )
-                                        if "." in agreement_table:
-                                            agreement_df = spark.table(agreement_table)
-                                        else:
-                                            try:
-                                                agreement_df = spark.table(
-                                                    f"Lakehouse.silver.{agreement_table}"
-                                                )
-                                            except Exception:
-                                                agreement_df = spark.table(agreement_table)
-
-                                        logging.info(
-                                            "Using ConnectWise invoice-specific transforms"
-                                        )
-                                        gold_dfs = integration_transforms.create_invoice_facts(
-                                            spark=spark,
-                                            invoice_df=silver_df,
-                                            config=entity_config,
-                                            timeEntryDf=timeentry_df,
-                                            productItemDf=productitem_df,
-                                            agreementDf=agreement_df,
-                                        )
-                                        transform_used = True
-                                    except Exception as e:
-                                        logging.warning(
-                                            f"Could not load related tables for specialized transform: {e}"
-                                        )
-                                elif entity_name == "timeentry" and hasattr(
-                                    integration_transforms, "create_time_entry_fact"
-                                ):
-                                    logging.info("Using ConnectWise time entry-specific transforms")
-                                    # Load member data for cost enrichment if available
-                                    member_df = None
-                                    try:
-                                        member_table = (
-                                            table_mappings["silver"].get(
-                                                "member", "silver_cw_member"
-                                            )
-                                            if table_mappings and "silver" in table_mappings
-                                            else "silver_cw_member"
-                                        )
-                                        if spark.catalog.tableExists(member_table):
-                                            member_df = spark.table(member_table)
-                                    except Exception:
-                                        logging.debug("Member table not available for enrichment")
-
-                                    # Load agreement data for hierarchy resolution
-                                    agreement_df = None
-                                    try:
-                                        agreement_table = (
-                                            table_mappings["silver"].get(
-                                                "agreement", "silver_cw_agreement"
-                                            )
-                                            if table_mappings and "silver" in table_mappings
-                                            else "silver_cw_agreement"
-                                        )
-                                        if spark.catalog.tableExists(
-                                            f"Lakehouse.silver.{agreement_table}"
-                                        ):
-                                            agreement_df = spark.table(
-                                                f"Lakehouse.silver.{agreement_table}"
-                                            )
-                                        elif spark.catalog.tableExists(agreement_table):
-                                            agreement_df = spark.table(agreement_table)
-                                    except Exception:
-                                        logging.debug(
-                                            "Agreement table not available for enrichment"
-                                        )
-
-                                    gold_df = integration_transforms.create_time_entry_fact(
-                                        spark=spark,
-                                        time_entry_df=silver_df,
-                                        member_df=member_df,
-                                        agreement_df=agreement_df,
-                                        config=entity_config,
-                                    )
-                                    gold_dfs = {"fact_timeentry": gold_df}
-                                    transform_used = True
-                                elif entity_name == "expenseentry" and hasattr(
-                                    integration_transforms, "create_expense_entry_fact"
-                                ):
-                                    logging.info(
-                                        "Using ConnectWise expense entry-specific transforms"
-                                    )
-                                    # Load agreement data for hierarchy resolution
-                                    agreement_df = None
-                                    try:
-                                        agreement_table = (
-                                            table_mappings["silver"].get(
-                                                "agreement", "silver_cw_agreement"
-                                            )
-                                            if table_mappings and "silver" in table_mappings
-                                            else "silver_cw_agreement"
-                                        )
-                                        if spark.catalog.tableExists(
-                                            f"Lakehouse.silver.{agreement_table}"
-                                        ):
-                                            agreement_df = spark.table(
-                                                f"Lakehouse.silver.{agreement_table}"
-                                            )
-                                        elif spark.catalog.tableExists(agreement_table):
-                                            agreement_df = spark.table(agreement_table)
-                                    except Exception:
-                                        logging.debug(
-                                            "Agreement table not available for enrichment"
-                                        )
-
-                                    gold_df = integration_transforms.create_expense_entry_fact(
-                                        spark=spark,
-                                        expense_df=silver_df,
-                                        agreement_df=agreement_df,
-                                        config=entity_config,
-                                    )
-                                    gold_dfs = {"fact_expenseentry": gold_df}
-                                    transform_used = True
-
-                        # Fallback to generic transform if no specific transform was used
-                        if not transform_used:
-                            logging.info(f"Using generic fact table creation for {entity_name}")
-                            gold_df = facts.create_generic_fact_table(
-                                silver_df=silver_df,
-                                entity_name=entity_name,
-                                surrogate_keys=entity_config["surrogate_keys"],
-                                business_keys=entity_config["business_keys"],
-                                calculated_columns=entity_config["calculated_columns"],
-                                source=integration_name,
-                            )
-                            gold_dfs = {f"fact_{entity_name}": gold_df}
-
-                        # Write all generated fact tables
-                        for fact_name, gold_df in gold_dfs.items():
-                            # Use custom table mapping or default pattern
-                            if table_mappings and "gold" in table_mappings:
-                                gold_table = table_mappings["gold"].get(
-                                    fact_name, f"gold_cw_{fact_name}"
+                    if integration_transforms:
+                        # ConnectWise specific transforms - check if custom transform exists
+                        if integration_name == "connectwise":
+                            if fact_name == "agreement" and hasattr(
+                                integration_transforms, "create_agreement_dimensions"
+                            ):
+                                logging.info("Using ConnectWise agreement-specific transforms")
+                                gold_dfs = integration_transforms.create_agreement_dimensions(
+                                    spark=spark, agreement_df=silver_df, config=fact_config
                                 )
-                            else:
-                                gold_table = f"gold_cw_{fact_name}"
-                            # Write to proper location
-                            if "." in gold_table:
-                                gold_df.write.mode("overwrite").option(
-                                    "mergeSchema", "true"
-                                ).saveAsTable(gold_table)
-                            else:
-                                gold_df.write.mode("overwrite").option(
-                                    "mergeSchema", "true"
-                                ).saveAsTable(f"Lakehouse.gold.{gold_table}")
-                            logging.info(f"Created fact table {gold_table}")
+                                transform_used = True
+                            elif fact_name == "invoice" and hasattr(
+                                integration_transforms, "create_invoice_facts"
+                            ):
+                                # For ConnectWise, need to load time entries and products to create invoice lines
+                                try:
+                                    # Load time entries
+                                    timeentry_table = config.get_table_name(
+                                        "silver", integration_name, "timeentry"
+                                    )
+                                    timeentry_df = spark.table(timeentry_table)
 
-                    except Exception as e:
-                        logging.error(f"Gold processing failed for {entity_name}: {e}")
-                        continue
+                                    # Load products
+                                    productitem_table = config.get_table_name(
+                                        "silver", integration_name, "productitem"
+                                    )
+                                    productitem_df = spark.table(productitem_table)
+
+                                    # Load agreements for hierarchy resolution
+                                    agreement_table = config.get_table_name(
+                                        "silver", integration_name, "agreement"
+                                    )
+                                    agreement_df = spark.table(agreement_table)
+
+                                    logging.info(
+                                        "Using ConnectWise invoice-specific transforms"
+                                    )
+                                    gold_dfs = integration_transforms.create_invoice_facts(
+                                        spark=spark,
+                                        invoice_df=silver_df,
+                                        config=fact_config,
+                                        timeEntryDf=timeentry_df,
+                                        productItemDf=productitem_df,
+                                        agreementDf=agreement_df,
+                                    )
+                                    transform_used = True
+                                except Exception as e:
+                                    logging.warning(
+                                        f"Could not load related tables for specialized transform: {e}"
+                                    )
+                            elif fact_name == "timeentry" and hasattr(
+                                integration_transforms, "create_time_entry_fact"
+                            ):
+                                logging.info("Using ConnectWise time entry-specific transforms")
+                                # Load member data for cost enrichment if available
+                                member_df = None
+                                try:
+                                    member_table = config.get_table_name(
+                                        "silver", integration_name, "member"
+                                    )
+                                    if spark.catalog.tableExists(member_table):
+                                        member_df = spark.table(member_table)
+                                except Exception:
+                                    logging.debug("Member table not available for enrichment")
+
+                                # Load agreement data for hierarchy resolution
+                                agreement_df = None
+                                try:
+                                    agreement_table = config.get_table_name(
+                                        "silver", integration_name, "agreement"
+                                    )
+                                    if spark.catalog.tableExists(agreement_table):
+                                        agreement_df = spark.table(agreement_table)
+                                except Exception:
+                                    logging.debug(
+                                        "Agreement table not available for enrichment"
+                                    )
+
+                                gold_df = integration_transforms.create_time_entry_fact(
+                                    spark=spark,
+                                    time_entry_df=silver_df,
+                                    member_df=member_df,
+                                    agreement_df=agreement_df,
+                                    config=fact_config,
+                                )
+                                gold_dfs = {"fact_timeentry": gold_df}
+                                transform_used = True
+                            elif fact_name == "expenseentry" and hasattr(
+                                integration_transforms, "create_expense_entry_fact"
+                            ):
+                                logging.info(
+                                    "Using ConnectWise expense entry-specific transforms"
+                                )
+                                # Load agreement data for hierarchy resolution
+                                agreement_df = None
+                                try:
+                                    agreement_table = config.get_table_name(
+                                        "silver", integration_name, "agreement"
+                                    )
+                                    if spark.catalog.tableExists(agreement_table):
+                                        agreement_df = spark.table(agreement_table)
+                                except Exception:
+                                    logging.debug(
+                                        "Agreement table not available for enrichment"
+                                    )
+
+                                gold_df = integration_transforms.create_expense_entry_fact(
+                                    spark=spark,
+                                    expense_df=silver_df,
+                                    agreement_df=agreement_df,
+                                    config=fact_config,
+                                )
+                                gold_dfs = {"fact_expenseentry": gold_df}
+                                transform_used = True
+
+                    # Fallback to generic transform if no specific transform was used
+                    if not transform_used:
+                        logging.info(f"Using generic fact table creation for {fact_name}")
+                        gold_df = facts.create_generic_fact_table(
+                            config=config,
+                            fact_config=fact_config,
+                            silver_df=silver_df,
+                            spark=spark,
+                        )
+                        gold_dfs = {fact_name: gold_df}
+
+                    # Write all generated fact tables
+                    for table_name, gold_df in gold_dfs.items():
+                        # Use config for table name if custom name not provided
+                        if table_name == fact_name:
+                            final_table_name = gold_table
+                        else:
+                            final_table_name = config.get_table_name(
+                                "gold", integration_name, table_name, table_type="fact"
+                            )
+                        
+                        gold_df.write.mode("overwrite").option(
+                            "mergeSchema", "true"
+                        ).saveAsTable(final_table_name)
+                        logging.info(f"Created fact table {final_table_name}")
+
+                except Exception as e:
+                    logging.error(f"Gold processing failed for {fact_name}: {e}")
+                    continue
 
             # Create dimensions from gold calculated columns after facts are created
             if integration_name == "connectwise":
@@ -644,17 +568,40 @@ def process_integration(
                     logging.info("Creating dimensions from gold calculated columns...")
 
                     # LineType dimension from invoice lines
-                    if spark.catalog.tableExists("Lakehouse.gold.gold_cw_fact_invoice_line"):
-                        line_type_dim = create_dimension_from_column(
-                            spark=spark,
-                            source_table="gold_cw_fact_invoice_line",
-                            column_name="LineType",
-                            dimension_name="line_type"
+                    invoice_line_table = config.get_table_name(
+                        "gold", integration_name, "invoice_line", table_type="fact"
+                    )
+                    if spark.catalog.tableExists(invoice_line_table):
+                        from unified_etl_core.config import DimensionConfig, DimensionType
+                        
+                        line_type_dim_config = DimensionConfig(
+                            name="line_type",
+                            type=DimensionType.STANDARD,
+                            source_table=invoice_line_table,
+                            source_column="LineType",
+                            natural_key_column="LineType",
+                            surrogate_key_column="LineTypeKey",
+                            description_column="LineTypeDescription",
+                            additional_columns=[],
+                            add_unknown_member=True,
+                            unknown_member_key=-1,
+                            unknown_member_description="Unknown Line Type",
+                            add_audit_columns=True
                         )
-                        line_type_dim.write.mode("overwrite").format("delta").saveAsTable("Lakehouse.gold.dim_line_type")
-                        logging.info(f"Created dim_line_type: {line_type_dim.count()} rows")
+                        
+                        line_type_dim = create_dimension_from_column(
+                            config=config,
+                            dimension_config=line_type_dim_config,
+                            spark=spark,
+                        )
+                        
+                        dim_table_name = config.get_table_name(
+                            "gold", "shared", "line_type", table_type="dim"
+                        )
+                        line_type_dim.write.mode("overwrite").format("delta").saveAsTable(dim_table_name)
+                        logging.info(f"Created {dim_table_name}: {line_type_dim.count()} rows")
                     else:
-                        logging.warning("gold_cw_fact_invoice_line table not found, skipping LineType dimension")
+                        logging.warning(f"{invoice_line_table} table not found, skipping LineType dimension")
                 except Exception as e:
                     logging.warning(f"Could not create calculated dimensions: {e}")
 
@@ -667,8 +614,28 @@ def process_integration(
 
 
 if __name__ == "__main__":
-    # Example: Run pipeline for all available integrations
-    run_etl_pipeline()
-
-    # Example: Run specific integrations and layers
-    # run_etl_pipeline(integrations=["connectwise", "businesscentral"], layers=["silver", "gold"])
+    # Example usage - all parameters are REQUIRED
+    # from unified_etl_core.config import ETLConfig
+    # from pyspark.sql import SparkSession
+    # 
+    # config = ETLConfig(
+    #     lakehouse_name="MyLakehouse",
+    #     database_name="MyDatabase",
+    #     layers={"bronze": LayerConfig(schema="bronze"), "silver": LayerConfig(schema="silver"), "gold": LayerConfig(schema="gold")},
+    #     integrations={}
+    # )
+    # spark = SparkSession.builder.appName("ETL-Pipeline").getOrCreate()
+    # 
+    # run_etl_pipeline(
+    #     config=config,
+    #     spark=spark,
+    #     integrations=["connectwise", "businesscentral"],
+    #     layers=["silver", "gold"],
+    #     mode="full",
+    #     lookback_days=30
+    # )
+    
+    raise ETLConfigError(
+        "All parameters are required. See example usage above.",
+        code=ErrorCode.CONFIG_MISSING
+    )
