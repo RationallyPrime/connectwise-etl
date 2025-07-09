@@ -4,7 +4,7 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame, SparkSession
 from unified_etl_core.utils import logging
 from unified_etl_core.utils.config import get_table_config
-from unified_etl_core.utils.exceptions import DimensionResolutionError
+from unified_etl_core.utils.decorators import with_etl_error_handling
 
 
 def detect_global_dimension_columns(df: DataFrame) -> tuple[str | None, str | None]:
@@ -29,6 +29,7 @@ def detect_global_dimension_columns(df: DataFrame) -> tuple[str | None, str | No
     return global_dim1_col, global_dim2_col
 
 
+@with_etl_error_handling(operation="resolve_dimensions")
 def resolve_dimensions(
     df: DataFrame,
     spark_session: SparkSession,
@@ -50,8 +51,7 @@ def resolve_dimensions(
     Raises:
         DimensionResolutionError: If dimension resolution fails
     """
-    try:
-        with logging.span("resolve_dimensions"):
+    with logging.span("resolve_dimensions"):
             # Get global dimension columns
             global_dim1_col, global_dim2_col = detect_global_dimension_columns(df)
 
@@ -153,8 +153,3 @@ def resolve_dimensions(
                 )
 
             return result_df
-
-    except Exception as e:
-        error_msg = f"Failed to resolve dimensions: {e!s}"
-        logging.error(error_msg)
-        raise DimensionResolutionError(error_msg) from e
