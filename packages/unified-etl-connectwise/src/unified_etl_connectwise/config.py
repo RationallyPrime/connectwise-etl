@@ -1,3 +1,4 @@
+
 """ConnectWise typed configuration using the new unified configuration system."""
 
 from unified_etl_core.config import (
@@ -10,10 +11,10 @@ from unified_etl_core.config import (
     SCDConfig,
     FactConfig,
     DimensionMapping,
-    CalculatedColumn,
-    DataType,
     TableNamingConvention,
 )
+from unified_etl_core.config.entity import DataType
+from unified_etl_core.config.fact import CalculatedColumn
 
 
 def create_connectwise_config() -> ETLConfig:
@@ -596,3 +597,188 @@ AGREEMENT_CONFIG = {
     "fact_timeentry": create_timeentry_fact_config(),
     "fact_expenseentry": create_expenseentry_fact_config(),
 }
+
+
+def get_time_entry_dimension_mappings() -> list[DimensionMapping]:
+    """Get dimension mappings for time entry fact table."""
+    return [
+        DimensionMapping(
+            fact_column="billableOption",
+            dimension_table="dimBillableStatus", 
+            dimension_key_column="BillableStatusCode",
+            surrogate_key_column="BillableStatusKey"
+        ),
+        DimensionMapping(
+            fact_column="status",
+            dimension_table="dimTimeEntryStatus",
+            dimension_key_column="TimeEntryStatusCode",
+            surrogate_key_column="TimeEntryStatusKey"
+        ),
+        DimensionMapping(
+            fact_column="chargeToType",
+            dimension_table="dimChargeType",
+            dimension_key_column="ChargeTypeCode",
+            surrogate_key_column="ChargeTypeKey"
+        ),
+        DimensionMapping(
+            fact_column="workTypeId",
+            dimension_table="dimWorkType",
+            dimension_key_column="WorkTypeCode",
+            surrogate_key_column="WorkTypeKey"
+        ),
+        DimensionMapping(
+            fact_column="workRoleId",
+            dimension_table="dimWorkRole",
+            dimension_key_column="WorkRoleCode",
+            surrogate_key_column="WorkRoleKey"
+        ),
+        DimensionMapping(
+            fact_column="departmentId",
+            dimension_table="dimDepartment",
+            dimension_key_column="DepartmentCode",
+            surrogate_key_column="DepartmentKey"
+        ),
+        DimensionMapping(
+            fact_column="businessUnitId",
+            dimension_table="dimBusinessUnit",
+            dimension_key_column="BusinessUnitCode",
+            surrogate_key_column="BusinessUnitKey"
+        ),
+        DimensionMapping(
+            fact_column="memberId",
+            dimension_table="dimMember",
+            dimension_key_column="MemberCode",
+            surrogate_key_column="MemberKey"
+        ),
+        DimensionMapping(
+            fact_column="companyId",
+            dimension_table="dimCompany",
+            dimension_key_column="CompanyCode",
+            surrogate_key_column="CompanyKey"
+        ),
+    ]
+
+
+def get_invoice_line_dimension_mappings() -> list[DimensionMapping]:
+    """Get dimension mappings for invoice line fact table.
+    
+    Only includes mappings for columns that actually exist in the fact table:
+    - productClass: Product classification (Service/Product)
+    - applyToType: Invoice application type (Services/Agreement/etc.)
+    - status: Invoice status from statusName
+    - companyId: Company identifier
+    - employeeId: Employee/member identifier (from time entries)
+    """
+    return [
+        DimensionMapping(
+            fact_column="productClass",
+            dimension_table="dimProductClass",
+            dimension_key_column="ProductClassCode",
+            surrogate_key_column="ProductClassKey"
+        ),
+        DimensionMapping(
+            fact_column="applyToType",
+            dimension_table="dimInvoiceApplyType",
+            dimension_key_column="InvoiceApplyTypeCode",
+            surrogate_key_column="InvoiceApplyTypeKey"
+        ),
+        DimensionMapping(
+            fact_column="status",
+            dimension_table="dimInvoiceStatus",
+            dimension_key_column="InvoiceStatusCode",
+            surrogate_key_column="InvoiceStatusKey"
+        ),
+        DimensionMapping(
+            fact_column="companyId",
+            dimension_table="dimCompany",
+            dimension_key_column="CompanyCode",
+            surrogate_key_column="CompanyKey"
+        ),
+        DimensionMapping(
+            fact_column="employeeId",
+            dimension_table="dimMember",
+            dimension_key_column="MemberCode",
+            surrogate_key_column="MemberKey"
+        ),
+    ]
+
+
+def get_expense_dimension_mappings() -> list[DimensionMapping]:
+    """Get dimension mappings for expense fact table."""
+    return [
+        DimensionMapping(
+            fact_column="billableOption",
+            dimension_table="dimBillableStatus",
+            dimension_key_column="BillableStatusCode",
+            surrogate_key_column="BillableStatusKey"
+        ),
+        DimensionMapping(
+            fact_column="chargeToType",
+            dimension_table="dimChargeType",
+            dimension_key_column="ChargeTypeCode",
+            surrogate_key_column="ChargeTypeKey"
+        ),
+        DimensionMapping(
+            fact_column="status",
+            dimension_table="dimExpenseStatus",
+            dimension_key_column="ExpenseStatusCode",
+            surrogate_key_column="ExpenseStatusKey"
+        ),
+        DimensionMapping(
+            fact_column="classificationId",
+            dimension_table="dimExpenseClassification",
+            dimension_key_column="ExpenseClassificationCode",
+            surrogate_key_column="ExpenseClassificationKey"
+        ),
+        DimensionMapping(
+            fact_column="memberId",
+            dimension_table="dimMember",
+            dimension_key_column="MemberCode",
+            surrogate_key_column="MemberKey"
+        ),
+        DimensionMapping(
+            fact_column="companyId",
+            dimension_table="dimCompany",
+            dimension_key_column="CompanyCode",
+            surrogate_key_column="CompanyKey"
+        ),
+    ]
+
+
+def get_default_etl_config() -> ETLConfig:
+    """Get a default ETL config for dimension key operations."""
+    return ETLConfig(
+        bronze=LayerConfig(
+            catalog="Lakehouse",
+            schema="bronze",
+            prefix="bronze_",
+            naming_convention=TableNamingConvention.UNDERSCORE
+        ),
+        silver=LayerConfig(
+            catalog="Lakehouse",
+            schema="silver",
+            prefix="silver_",
+            naming_convention=TableNamingConvention.UNDERSCORE
+        ),
+        gold=LayerConfig(
+            catalog="Lakehouse",
+            schema="gold",
+            prefix="gold_",
+            naming_convention=TableNamingConvention.UNDERSCORE
+        ),
+        integrations={
+            "connectwise": IntegrationConfig(
+                name="connectwise",
+                abbreviation="cw",
+                base_url="https://api-na.myconnectwise.net",
+                enabled=True
+            )
+        },
+        spark=SparkConfig(
+            app_name="ConnectWise-ETL",
+            session_type="fabric",
+            config_overrides={}
+        ),
+        fail_on_error=True,
+        audit_columns=True
+    )

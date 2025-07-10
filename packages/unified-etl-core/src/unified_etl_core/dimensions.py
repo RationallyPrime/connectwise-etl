@@ -294,7 +294,7 @@ def add_dimension_keys(
         if mapping.fact_column not in result_df.columns:
             raise ETLProcessingError(
                 f"Fact column '{mapping.fact_column}' not found",
-                code=ErrorCode.GOLD_DIMENSION_ERROR,
+                code=ErrorCode.GOLD_DIMENSION_FAILED,
                 details={
                     "column": mapping.fact_column,
                     "available_columns": result_df.columns
@@ -308,7 +308,7 @@ def add_dimension_keys(
         if mapping.dimension_key_column not in dim_df.columns:
             raise ETLProcessingError(
                 f"Dimension key column '{mapping.dimension_key_column}' not found in {mapping.dimension_table}",
-                code=ErrorCode.GOLD_DIMENSION_ERROR,
+                code=ErrorCode.GOLD_DIMENSION_FAILED,
                 details={
                     "column": mapping.dimension_key_column,
                     "table": mapping.dimension_table,
