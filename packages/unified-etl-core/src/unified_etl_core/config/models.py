@@ -98,7 +98,14 @@ class ETLConfig(BaseModel):
         elif table_type == "fact":
             base_name = f"fact_{entity}"
         else:
-            base_name = f"{layer_config.prefix}{integration_config.abbreviation}_{entity}"
+            # Build base name with proper handling of empty prefix/abbreviation
+            parts = []
+            if layer_config.prefix:
+                parts.append(layer_config.prefix)
+            if integration_config.abbreviation:
+                parts.append(integration_config.abbreviation)
+            parts.append(entity)
+            base_name = "_".join(parts)
         
         # Return fully qualified name
         return f"{layer_config.catalog}.{layer_config.schema}.{base_name}"

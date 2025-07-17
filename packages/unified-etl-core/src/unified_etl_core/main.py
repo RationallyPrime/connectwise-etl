@@ -279,14 +279,16 @@ def process_integration(
                             entity_config = EntityConfig(
                                 name=entity_name.lower(),
                                 source=integration_name,
+                                model_class_name=model_class.__name__,
                                 flatten_nested=True,
                                 flatten_max_depth=3,
+                                preserve_columns=[],
                                 json_columns=[],
                                 column_mappings={},
                                 scd=None,
                                 business_keys=["id"] if "id" in bronze_df.columns else [],
-                                timestamp_column="_etl_processed_at",
-                                partition_columns=[]
+                                add_audit_columns=True,
+                                strip_null_columns=True
                             )
 
                         try:

@@ -222,6 +222,17 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
 @with_etl_error_handling(operation="flatten_nested_columns")
 def flatten_nested_columns(df: DataFrame, max_depth: int) -> DataFrame:
     """Flatten nested columns (structs, maps, arrays) into separate columns."""
+    # Type validation to prevent string/int comparison errors
+    if not isinstance(max_depth, int):
+        try:
+            max_depth = int(max_depth)
+        except (ValueError, TypeError) as e:
+            raise ETLProcessingError(
+                f"max_depth must be an integer, got {type(max_depth).__name__}: {max_depth}",
+                code=ErrorCode.SILVER_TRANSFORM_FAILED,
+                details={"max_depth": max_depth, "type": type(max_depth).__name__}
+            ) from e
+    
     # Return early for empty DataFrames
     if df.isEmpty():
         return df

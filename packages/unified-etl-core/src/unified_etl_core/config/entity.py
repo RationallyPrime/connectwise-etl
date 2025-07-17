@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from unified_etl_core.utils.base import ErrorCode
 from unified_etl_core.utils.exceptions import ETLConfigError
@@ -61,7 +61,7 @@ class EntityConfig(BaseModel):
     
     # Processing configuration - REQUIRED
     flatten_nested: bool = Field(description="Whether to flatten nested structures")
-    flatten_max_depth: int = Field(description="Maximum depth for flattening")
+    flatten_max_depth: int = Field(description="Maximum depth for flattening", ge=0)
     preserve_columns: list[str] = Field(description="Columns to preserve as-is")
     
     # Column configurations - REQUIRED
@@ -75,6 +75,19 @@ class EntityConfig(BaseModel):
     # Audit configuration - REQUIRED
     add_audit_columns: bool = Field(description="Add ETL audit columns")
     strip_null_columns: bool = Field(description="Remove columns with all nulls")
+    
+    @field_validator('flatten_max_depth')
+    @classmethod
+    def validate_flatten_max_depth(cls, v) -> int:
+        """Ensure flatten_max_depth is always an integer."""
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                raise ValueError(f"flatten_max_depth must be an integer, got string: {v}")
+        if not isinstance(v, int):
+            raise ValueError(f"flatten_max_depth must be an integer, got {type(v).__name__}: {v}")
+        return v
     
     def validate_config(self) -> None:
         """Validate entity configuration. FAIL FAST on issues."""

@@ -267,46 +267,46 @@ def create_bc_item_attribute_bridge(
 
     try:
         # Create BC item attribute bridge
-            logging.info("Creating BC item attribute bridge")
+        logging.info("Creating BC item attribute bridge")
 
-            # Read BC Item and ItemAttributeValueMapping tables
-            try:
-                items_df = spark.table(construct_table_path(silver_path, "Item"))
-                mapping_df = spark.table(
-                    construct_table_path(silver_path, "ItemAttributeValueMapping")
-                )
-                logging.info(
-                    f"Loaded BC bridge tables: {items_df.count()} items, {mapping_df.count()} mappings"
-                )
-            except Exception as e:
-                raise DimensionResolutionError(f"Failed to read BC bridge tables: {e}") from e
-
-            # BC-specific join on No/ItemNo and $Company
-            try:
-                bridge_df = items_df.join(
-                    mapping_df,
-                    (items_df["No"] == mapping_df["ItemNo"])
-                    & (items_df["$Company"] == mapping_df["$Company"]),
-                    "inner",
-                )
-                logging.info(f"BC attribute bridge joined: {bridge_df.count()} rows")
-            except Exception as e:
-                raise DimensionResolutionError(f"Failed to join BC bridge tables: {e}") from e
-
-            # Generate surrogate key for BC bridge with company partitioning
-            business_keys = ["ItemNo", "ValueID", "$Company"]
-            bridge_df = generate_surrogate_key(
-                df=bridge_df,
-                business_keys=business_keys,
-                key_name="item_attribute_bridge_key",
-                partition_columns=["$Company"],
+        # Read BC Item and ItemAttributeValueMapping tables
+        try:
+            items_df = spark.table(construct_table_path(silver_path, "Item"))
+            mapping_df = spark.table(
+                construct_table_path(silver_path, "ItemAttributeValueMapping")
             )
+            logging.info(
+                f"Loaded BC bridge tables: {items_df.count()} items, {mapping_df.count()} mappings"
+            )
+        except Exception as e:
+            raise DimensionResolutionError(f"Failed to read BC bridge tables: {e}") from e
 
-            # Add BC processing timestamp
-            bridge_df = bridge_df.withColumn("bridge_created_at", F.current_timestamp())
+        # BC-specific join on No/ItemNo and $Company
+        try:
+            bridge_df = items_df.join(
+                mapping_df,
+                (items_df["No"] == mapping_df["ItemNo"])
+                & (items_df["$Company"] == mapping_df["$Company"]),
+                "inner",
+            )
+            logging.info(f"BC attribute bridge joined: {bridge_df.count()} rows")
+        except Exception as e:
+            raise DimensionResolutionError(f"Failed to join BC bridge tables: {e}") from e
 
-            logging.info(f"BC item attribute bridge created: {bridge_df.count()} records")
-            return bridge_df
+        # Generate surrogate key for BC bridge with company partitioning
+        business_keys = ["ItemNo", "ValueID", "$Company"]
+        bridge_df = generate_surrogate_key(
+            df=bridge_df,
+            business_keys=business_keys,
+            key_name="item_attribute_bridge_key",
+            partition_columns=["$Company"],
+        )
+
+        # Add BC processing timestamp
+        bridge_df = bridge_df.withColumn("bridge_created_at", F.current_timestamp())
+
+        logging.info(f"BC item attribute bridge created: {bridge_df.count()} records")
+        return bridge_df
 
     except Exception as e:
         raise DimensionResolutionError(f"BC item attribute bridge creation failed: {e}") from e
