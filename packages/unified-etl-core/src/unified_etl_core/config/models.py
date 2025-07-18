@@ -18,7 +18,7 @@ class TableNamingConvention(str, Enum):
 class LayerConfig(BaseModel):
     """Configuration for a medallion layer. ALL FIELDS REQUIRED."""
     model_config = ConfigDict(frozen=True)
-    
+
     catalog: str = Field(description="Catalog name (e.g., Lakehouse)")
     schema: str = Field(description="Schema name (bronze, silver, gold)")
     prefix: str = Field(description="Table prefix (bronze_, silver_, gold_)")
@@ -28,7 +28,7 @@ class LayerConfig(BaseModel):
 class IntegrationConfig(BaseModel):
     """Configuration for an integration. ALL FIELDS REQUIRED."""
     model_config = ConfigDict(frozen=True)
-    
+
     name: str = Field(description="Integration name (connectwise, businesscentral)")
     abbreviation: str = Field(description="Short code (cw, bc)")
     base_url: str = Field(description="Base URL for API access")
@@ -38,7 +38,7 @@ class IntegrationConfig(BaseModel):
 class SparkConfig(BaseModel):
     """Spark session configuration. ALL FIELDS REQUIRED."""
     model_config = ConfigDict(frozen=True)
-    
+
     app_name: str = Field(description="Spark application name")
     session_type: Literal["fabric", "local", "databricks"] = Field(description="Session type")
     config_overrides: dict[str, str] = Field(description="Additional Spark config")
@@ -47,24 +47,24 @@ class SparkConfig(BaseModel):
 class ETLConfig(BaseModel):
     """Root configuration for entire ETL system. ZERO OPTIONAL FIELDS."""
     model_config = ConfigDict(frozen=True)
-    
+
     # Layer configurations - ALL REQUIRED
     bronze: LayerConfig = Field(description="Bronze layer configuration")
     silver: LayerConfig = Field(description="Silver layer configuration")
     gold: LayerConfig = Field(description="Gold layer configuration")
-    
+
     # Integration configurations - ALL REQUIRED
     integrations: dict[str, IntegrationConfig] = Field(description="Integration configurations")
-    
+
     # Spark configuration - REQUIRED
     spark: SparkConfig = Field(description="Spark session configuration")
-    
+
     # Global settings - ALL REQUIRED
     fail_on_error: bool = Field(description="Fail fast on errors")
     audit_columns: bool = Field(description="Add ETL audit columns")
-    
+
     def get_table_name(
-        self, 
+        self,
         layer: Literal["bronze", "silver", "gold"],
         integration: str,
         entity: str,
@@ -73,7 +73,7 @@ class ETLConfig(BaseModel):
         """Generate fully qualified table name. FAIL FAST on missing config."""
         # Get layer config - REQUIRED
         layer_config = getattr(self, layer)
-        
+
         # Get integration config - FAIL FAST if missing
         if integration not in self.integrations:
             raise ETLConfigError(
@@ -81,9 +81,9 @@ class ETLConfig(BaseModel):
                 code=ErrorCode.CONFIG_MISSING,
                 details={"integration": integration, "available": list(self.integrations.keys())}
             )
-        
+
         integration_config = self.integrations[integration]
-        
+
         # Validate entity name - REQUIRED
         if not entity:
             raise ETLConfigError(
@@ -91,7 +91,7 @@ class ETLConfig(BaseModel):
                 code=ErrorCode.CONFIG_MISSING,
                 details={"layer": layer, "integration": integration}
             )
-        
+
         # Build table name components
         if table_type == "dim":
             base_name = f"dim_{entity}"
@@ -106,10 +106,10 @@ class ETLConfig(BaseModel):
                 parts.append(integration_config.abbreviation)
             parts.append(entity)
             base_name = "_".join(parts)
-        
+
         # Return fully qualified name
         return f"{layer_config.catalog}.{layer_config.schema}.{base_name}"
-    
+
     def get_layer_path(
         self,
         layer: Literal["bronze", "silver", "gold"],

@@ -3,14 +3,12 @@
 Uses existing _etl_timestamp columns for change tracking - no separate watermark table needed!
 """
 
-from pyspark.sql.types import Row
-
-
 import logging
 from datetime import datetime
 from typing import Any, Literal
 
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import Row
 
 from .utils.decorators import with_etl_error_handling
 

@@ -2,15 +2,15 @@
 """ConnectWise typed configuration using the new unified configuration system."""
 
 from unified_etl_core.config import (
-    ETLConfig,
-    LayerConfig,
-    IntegrationConfig,
-    SparkConfig,
-    EntityConfig,
     ColumnMapping,
-    SCDConfig,
-    FactConfig,
     DimensionMapping,
+    ETLConfig,
+    EntityConfig,
+    FactConfig,
+    IntegrationConfig,
+    LayerConfig,
+    SCDConfig,
+    SparkConfig,
     TableNamingConvention,
 )
 from unified_etl_core.config.entity import DataType
@@ -19,7 +19,7 @@ from unified_etl_core.config.fact import CalculatedColumn
 
 def create_connectwise_config() -> ETLConfig:
     """Create typed ConnectWise ETL configuration. ALL FIELDS REQUIRED."""
-    
+
     # Layer configurations
     bronze_layer = LayerConfig(
         catalog="Lakehouse",
@@ -27,21 +27,21 @@ def create_connectwise_config() -> ETLConfig:
         prefix="bronze_",
         naming_convention=TableNamingConvention.UNDERSCORE
     )
-    
+
     silver_layer = LayerConfig(
         catalog="Lakehouse",
-        schema="silver", 
+        schema="silver",
         prefix="silver_",
         naming_convention=TableNamingConvention.UNDERSCORE
     )
-    
+
     gold_layer = LayerConfig(
         catalog="Lakehouse",
         schema="gold",
         prefix="gold_",
         naming_convention=TableNamingConvention.UNDERSCORE
     )
-    
+
     # ConnectWise integration config
     connectwise_integration = IntegrationConfig(
         name="connectwise",
@@ -49,14 +49,14 @@ def create_connectwise_config() -> ETLConfig:
         base_url="https://api-na.myconnectwise.net",
         enabled=True
     )
-    
+
     # Spark configuration
     spark_config = SparkConfig(
         app_name="ConnectWise-ETL",
         session_type="fabric",
         config_overrides={}
     )
-    
+
     return ETLConfig(
         bronze=bronze_layer,
         silver=silver_layer,
@@ -92,12 +92,12 @@ def get_connectwise_fact_configs() -> dict[str, FactConfig]:
 
 def create_agreement_entity_config() -> EntityConfig:
     """Create Agreement entity configuration."""
-    
+
     # Column mappings for nested API fields
     column_mappings = {
         "info_lastUpdated": ColumnMapping(
             source_column="_info.lastUpdated",
-            target_column="lastUpdated", 
+            target_column="lastUpdated",
             target_type=DataType.TIMESTAMP,
             transformation="to_timestamp(_info.lastUpdated)"
         ),
@@ -138,14 +138,14 @@ def create_agreement_entity_config() -> EntityConfig:
             transformation="type.name"
         ),
     }
-    
+
     # SCD Type 2 configuration
     scd_config = SCDConfig(
         type=2,
         business_keys=["id"],
         timestamp_column="lastUpdated"
     )
-    
+
     return EntityConfig(
         name="agreement",
         source="connectwise",
@@ -164,7 +164,7 @@ def create_agreement_entity_config() -> EntityConfig:
 
 def create_timeentry_entity_config() -> EntityConfig:
     """Create TimeEntry entity configuration."""
-    
+
     column_mappings = {
         "info_lastUpdated": ColumnMapping(
             source_column="_info.lastUpdated",
@@ -191,13 +191,13 @@ def create_timeentry_entity_config() -> EntityConfig:
             transformation="agreement.id"
         ),
     }
-    
+
     scd_config = SCDConfig(
         type=1,
         business_keys=["id"],
         timestamp_column="lastUpdated"
     )
-    
+
     return EntityConfig(
         name="timeentry",
         source="connectwise",
@@ -216,7 +216,7 @@ def create_timeentry_entity_config() -> EntityConfig:
 
 def create_expenseentry_entity_config() -> EntityConfig:
     """Create ExpenseEntry entity configuration."""
-    
+
     column_mappings = {
         "info_lastUpdated": ColumnMapping(
             source_column="_info.lastUpdated",
@@ -237,13 +237,13 @@ def create_expenseentry_entity_config() -> EntityConfig:
             transformation="member.id"
         ),
     }
-    
+
     scd_config = SCDConfig(
         type=1,
         business_keys=["id"],
         timestamp_column="lastUpdated"
     )
-    
+
     return EntityConfig(
         name="expenseentry",
         source="connectwise",
@@ -262,7 +262,7 @@ def create_expenseentry_entity_config() -> EntityConfig:
 
 def create_productitem_entity_config() -> EntityConfig:
     """Create ProductItem entity configuration."""
-    
+
     column_mappings = {
         "info_lastUpdated": ColumnMapping(
             source_column="_info.lastUpdated",
@@ -271,7 +271,7 @@ def create_productitem_entity_config() -> EntityConfig:
             transformation="to_timestamp(_info.lastUpdated)"
         ),
     }
-    
+
     return EntityConfig(
         name="productitem",
         source="connectwise",
@@ -290,7 +290,7 @@ def create_productitem_entity_config() -> EntityConfig:
 
 def create_invoice_entity_config() -> EntityConfig:
     """Create Posted Invoice entity configuration."""
-    
+
     column_mappings = {
         "info_lastUpdated": ColumnMapping(
             source_column="_info.lastUpdated",
@@ -305,7 +305,7 @@ def create_invoice_entity_config() -> EntityConfig:
             transformation="company.id"
         ),
     }
-    
+
     return EntityConfig(
         name="invoice",
         source="connectwise",
@@ -324,7 +324,7 @@ def create_invoice_entity_config() -> EntityConfig:
 
 def create_unposted_invoice_entity_config() -> EntityConfig:
     """Create Unposted Invoice entity configuration."""
-    
+
     column_mappings = {
         "info_lastUpdated": ColumnMapping(
             source_column="_info.lastUpdated",
@@ -339,7 +339,7 @@ def create_unposted_invoice_entity_config() -> EntityConfig:
             transformation="company.id"
         ),
     }
-    
+
     return EntityConfig(
         name="unpostedinvoice",
         source="connectwise",
@@ -358,7 +358,7 @@ def create_unposted_invoice_entity_config() -> EntityConfig:
 
 def create_agreement_fact_config() -> FactConfig:
     """Create Agreement fact table configuration."""
-    
+
     dimension_mappings = [
         DimensionMapping(
             fact_column="companyId",
@@ -367,13 +367,13 @@ def create_agreement_fact_config() -> FactConfig:
             surrogate_key_column="CompanyKey"
         ),
         DimensionMapping(
-            fact_column="typeId", 
+            fact_column="typeId",
             dimension_table="Lakehouse.gold.dim_agreement_type",
             dimension_key_column="typeId",
             surrogate_key_column="AgreementTypeKey"
         ),
     ]
-    
+
     calculated_columns = [
         CalculatedColumn(
             name="AgreementDurationDays",
@@ -400,7 +400,7 @@ def create_agreement_fact_config() -> FactConfig:
             data_type="string"
         ),
     ]
-    
+
     return FactConfig(
         name="agreement",
         source="connectwise",
@@ -420,7 +420,7 @@ def create_agreement_fact_config() -> FactConfig:
 
 def create_timeentry_fact_config() -> FactConfig:
     """Create TimeEntry fact table configuration."""
-    
+
     dimension_mappings = [
         DimensionMapping(
             fact_column="companyId",
@@ -441,7 +441,7 @@ def create_timeentry_fact_config() -> FactConfig:
             surrogate_key_column="AgreementKey"
         ),
     ]
-    
+
     calculated_columns = [
         CalculatedColumn(
             name="HoursBillable",
@@ -449,7 +449,7 @@ def create_timeentry_fact_config() -> FactConfig:
             data_type="decimal"
         ),
         CalculatedColumn(
-            name="HoursNonBillable", 
+            name="HoursNonBillable",
             expression="case when billableOption != 'Billable' then hoursActual else 0 end",
             data_type="decimal"
         ),
@@ -459,7 +459,7 @@ def create_timeentry_fact_config() -> FactConfig:
             data_type="boolean"
         ),
     ]
-    
+
     return FactConfig(
         name="timeentry",
         source="connectwise",
@@ -479,7 +479,7 @@ def create_timeentry_fact_config() -> FactConfig:
 
 def create_expenseentry_fact_config() -> FactConfig:
     """Create ExpenseEntry fact table configuration."""
-    
+
     dimension_mappings = [
         DimensionMapping(
             fact_column="companyId",
@@ -494,7 +494,7 @@ def create_expenseentry_fact_config() -> FactConfig:
             surrogate_key_column="MemberKey"
         ),
     ]
-    
+
     calculated_columns = [
         CalculatedColumn(
             name="ExpenseBillable",
@@ -503,11 +503,11 @@ def create_expenseentry_fact_config() -> FactConfig:
         ),
         CalculatedColumn(
             name="ExpenseNonBillable",
-            expression="case when billableOption != 'Billable' then amount else 0 end", 
+            expression="case when billableOption != 'Billable' then amount else 0 end",
             data_type="decimal"
         ),
     ]
-    
+
     return FactConfig(
         name="expenseentry",
         source="connectwise",
@@ -527,11 +527,11 @@ def create_expenseentry_fact_config() -> FactConfig:
 
 def create_invoice_line_fact_config() -> FactConfig:
     """Create Invoice Line fact table configuration."""
-    
+
     dimension_mappings = [
         DimensionMapping(
             fact_column="companyId",
-            dimension_table="Lakehouse.gold.dim_company", 
+            dimension_table="Lakehouse.gold.dim_company",
             dimension_key_column="companyId",
             surrogate_key_column="CompanyKey"
         ),
@@ -542,7 +542,7 @@ def create_invoice_line_fact_config() -> FactConfig:
             surrogate_key_column="AgreementKey"
         ),
     ]
-    
+
     calculated_columns = [
         CalculatedColumn(
             name="LineType",
@@ -562,7 +562,7 @@ def create_invoice_line_fact_config() -> FactConfig:
             data_type="decimal"
         ),
     ]
-    
+
     return FactConfig(
         name="invoice_line",
         source="connectwise",
@@ -604,7 +604,7 @@ def get_time_entry_dimension_mappings() -> list[DimensionMapping]:
     return [
         DimensionMapping(
             fact_column="billableOption",
-            dimension_table="dimBillableStatus", 
+            dimension_table="dimBillableStatus",
             dimension_key_column="BillableStatusCode",
             surrogate_key_column="BillableStatusKey"
         ),

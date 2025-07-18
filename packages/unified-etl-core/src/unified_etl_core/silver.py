@@ -115,7 +115,7 @@ def validate_with_pydantic(
     df: DataFrame, model_class: type[SparkModel], sample_size: int = 1000
 ) -> tuple[int, int, list[dict[str, Any]]]:
     """Validate DataFrame against Pydantic model. Model is REQUIRED."""
-    
+
     sample_data = df.limit(sample_size).toPandas().to_dict("records")
     valid_count = 0
     invalid_count = 0
@@ -165,7 +165,7 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
     """Apply data type conversions based on configuration."""
     # Validate config first
     entity_config.validate_config()
-    
+
     result_df = df
     column_mappings = entity_config.column_mappings
 
@@ -203,7 +203,7 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
 
         if mapping.target_type.value.lower() in ["timestamp", "datetime", "datetime2"]:
             result_df = result_df.withColumn(
-                mapping.target_column, 
+                mapping.target_column,
                 F.to_timestamp(F.col(mapping.source_column))
             )
         else:
@@ -211,7 +211,7 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
                 mapping.target_column,
                 F.col(mapping.source_column).cast(spark_type)
             )
-        
+
         # Remove old column if renamed
         if mapping.source_column != mapping.target_column:
             result_df = result_df.drop(mapping.source_column)
@@ -232,7 +232,7 @@ def flatten_nested_columns(df: DataFrame, max_depth: int) -> DataFrame:
                 code=ErrorCode.SILVER_TRANSFORM_FAILED,
                 details={"max_depth": max_depth, "type": type(max_depth).__name__}
             ) from e
-    
+
     # Return early for empty DataFrames
     if df.isEmpty():
         return df
@@ -513,10 +513,10 @@ def apply_silver_transformations(
     # 7. Apply SCD logic if configured
     if entity_config.scd:
         entity_config.scd.validate_business_keys()
-        
+
         if entity_config.scd.type == 1:
             silver_df = apply_scd_type_1(
-                silver_df, 
+                silver_df,
                 entity_config.scd.business_keys,
                 entity_config.scd.timestamp_column
             )
@@ -553,7 +553,7 @@ def process_bronze_to_silver(
     # Get table names from config
     bronze_table = config.get_table_name("bronze", entity_config.source, entity_config.name)
     silver_table = config.get_table_name("silver", entity_config.source, entity_config.name)
-    
+
     logging.info(f"Processing {entity_config.name}: {bronze_table} -> {silver_table}")
 
     # Read Bronze data

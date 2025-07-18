@@ -60,7 +60,7 @@ def run_etl_pipeline(
             "lookback_days must be positive",
             code=ErrorCode.CONFIG_INVALID
         )
-    
+
     # Detect available integrations
     available_integrations = detect_available_integrations()
 
@@ -172,8 +172,8 @@ def process_integration(
 
                         # Get table name from config
                         table_name = config.get_table_name(
-                            "bronze", 
-                            integration_name, 
+                            "bronze",
+                            integration_name,
                             entity_name.lower()
                         )
 
@@ -206,14 +206,14 @@ def process_integration(
                 for entity_name, raw_data in bronze_data.items():
                     if raw_data:
                         bronze_df = spark.createDataFrame(raw_data)
-                        
+
                         # Get table name from config
                         table_name = config.get_table_name(
                             "bronze",
                             integration_name,
                             entity_name.lower()
                         )
-                        
+
                         bronze_df.write.mode("overwrite").saveAsTable(table_name)
                         logging.info(f"Stored {len(raw_data)} records in {table_name}")
 
@@ -230,13 +230,13 @@ def process_integration(
                 for entity_name, model_class in models.items():
                     # Get table names from config
                     bronze_table = config.get_table_name(
-                        "bronze", 
-                        integration_name, 
+                        "bronze",
+                        integration_name,
                         entity_name.lower()
                     )
                     silver_table = config.get_table_name(
-                        "silver", 
-                        integration_name, 
+                        "silver",
+                        integration_name,
                         entity_name.lower()
                     )
 
@@ -269,7 +269,7 @@ def process_integration(
                                 f"Integration '{integration_name}' not found in config",
                                 code=ErrorCode.CONFIG_MISSING
                             )
-                        
+
                         # Check if we have entity-specific config
                         entity_configs = getattr(integration_config, 'entity_configs', {})
                         if entity_name.lower() in entity_configs:
@@ -393,23 +393,23 @@ def process_integration(
             # Check if integration has fact configs
             fact_configs = getattr(integration_config, 'fact_configs', {})
             logging.info(f"Gold layer fact_configs: {list(fact_configs.keys())}")
-            
+
             for fact_name, fact_config in fact_configs.items():
                 logging.info(f"Processing gold fact: {fact_name} for integration: {integration_name}")
                 try:
                     # Get table names from config
                     silver_table = config.get_table_name(
-                        "silver", 
-                        integration_name, 
+                        "silver",
+                        integration_name,
                         fact_config.source_entity
                     )
                     gold_table = config.get_table_name(
-                        "gold", 
-                        integration_name, 
+                        "gold",
+                        integration_name,
                         fact_name,
                         table_type="fact"
                     )
-                    
+
                     # Read silver data
                     silver_df = spark.table(silver_table)
 
@@ -552,7 +552,7 @@ def process_integration(
                             final_table_name = config.get_table_name(
                                 "gold", integration_name, table_name, table_type="fact"
                             )
-                        
+
                         gold_df.write.mode("overwrite").option(
                             "mergeSchema", "true"
                         ).saveAsTable(final_table_name)
@@ -575,7 +575,7 @@ def process_integration(
                     )
                     if spark.catalog.tableExists(invoice_line_table):
                         from unified_etl_core.config import DimensionConfig, DimensionType
-                        
+
                         line_type_dim_config = DimensionConfig(
                             name="line_type",
                             type=DimensionType.STANDARD,
@@ -590,13 +590,13 @@ def process_integration(
                             unknown_member_description="Unknown Line Type",
                             add_audit_columns=True
                         )
-                        
+
                         line_type_dim = create_dimension_from_column(
                             config=config,
                             dimension_config=line_type_dim_config,
                             spark=spark,
                         )
-                        
+
                         dim_table_name = config.get_table_name(
                             "gold", "shared", "line_type", table_type="dim"
                         )
@@ -619,7 +619,7 @@ if __name__ == "__main__":
     # Example usage - all parameters are REQUIRED
     # from unified_etl_core.config import ETLConfig
     # from pyspark.sql import SparkSession
-    # 
+    #
     # config = ETLConfig(
     #     lakehouse_name="MyLakehouse",
     #     database_name="MyDatabase",
@@ -627,7 +627,7 @@ if __name__ == "__main__":
     #     integrations={}
     # )
     # spark = SparkSession.builder.appName("ETL-Pipeline").getOrCreate()
-    # 
+    #
     # run_etl_pipeline(
     #     config=config,
     #     spark=spark,
@@ -636,7 +636,7 @@ if __name__ == "__main__":
     #     mode="full",
     #     lookback_days=30
     # )
-    
+
     raise ETLConfigError(
         "All parameters are required. See example usage above.",
         code=ErrorCode.CONFIG_MISSING

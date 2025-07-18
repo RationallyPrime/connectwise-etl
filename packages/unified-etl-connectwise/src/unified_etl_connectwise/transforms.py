@@ -201,7 +201,8 @@ def create_time_entry_fact(
 
     # Add dimension keys for enum columns using new rich dimensions
     from unified_etl_core.dimensions import add_dimension_keys
-    from .config import get_time_entry_dimension_mappings, get_default_etl_config
+
+    from .config import get_default_etl_config, get_time_entry_dimension_mappings
 
     dimension_mappings = get_time_entry_dimension_mappings()
 
@@ -216,12 +217,11 @@ def create_time_entry_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    from unified_etl_core.config import ETLConfig
     if isinstance(config, dict) or config is None:
         etl_config = get_default_etl_config()
     else:
         etl_config = config
-    
+
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
     # Add ETL metadata
@@ -442,7 +442,8 @@ def create_invoice_line_fact(
 
     # Add dimension keys for enum columns using new rich dimensions
     from unified_etl_core.dimensions import add_dimension_keys
-    from .config import get_invoice_line_dimension_mappings, get_default_etl_config
+
+    from .config import get_default_etl_config, get_invoice_line_dimension_mappings
 
     dimension_mappings = get_invoice_line_dimension_mappings()
 
@@ -466,12 +467,11 @@ def create_invoice_line_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    from unified_etl_core.config import ETLConfig
     if isinstance(config, dict) or config is None:
         etl_config = get_default_etl_config()
     else:
         etl_config = config
-    
+
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
     # Add ETL metadata
@@ -734,7 +734,8 @@ def create_expense_entry_fact(
 
     # Add dimension keys for enum columns using new rich dimensions
     from unified_etl_core.dimensions import add_dimension_keys
-    from .config import get_expense_dimension_mappings, get_default_etl_config
+
+    from .config import get_default_etl_config, get_expense_dimension_mappings
 
     dimension_mappings = get_expense_dimension_mappings()
 
@@ -749,12 +750,11 @@ def create_expense_entry_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    from unified_etl_core.config import ETLConfig
     if isinstance(config, dict) or config is None:
         etl_config = get_default_etl_config()
     else:
         etl_config = config
-    
+
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
     # Add ETL metadata

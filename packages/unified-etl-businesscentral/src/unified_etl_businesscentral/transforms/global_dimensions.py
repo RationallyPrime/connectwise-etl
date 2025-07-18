@@ -6,7 +6,6 @@ Following warehouse schema patterns for dim_GD1 through dim_GD8.
 """
 
 import logging
-from typing import Any
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
@@ -15,7 +14,7 @@ from unified_etl_core.utils.base import ErrorCode
 from unified_etl_core.utils.decorators import with_etl_error_handling
 from unified_etl_core.utils.exceptions import ETLConfigError, ETLProcessingError
 
-from .gold import construct_table_path
+from .gold_utils import construct_table_path
 
 
 @with_etl_error_handling(operation="create_global_dimensions")
@@ -46,9 +45,9 @@ def create_global_dimensions(
         raise ETLConfigError("gold_path is required", code=ErrorCode.CONFIG_MISSING)
     if not dimension_mapping:
         raise ETLConfigError("dimension_mapping is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     logging.info("Creating BC global dimensions")
-    
+
     # Load DimensionValue table once
     try:
         dim_values = spark.table(construct_table_path(silver_path, "DimensionValue"))
@@ -59,20 +58,20 @@ def create_global_dimensions(
             code=ErrorCode.DATA_ACCESS_ERROR,
             details={"silver_path": silver_path}
         ) from e
-    
+
     results = {}
-    
+
     # Process each global dimension
     for gd_name, dim_code in dimension_mapping.items():
         logging.info(f"Processing {gd_name} with dimension code: {dim_code}")
-        
+
         # Filter for specific dimension code
         gd_df = dim_values.filter(F.col("DimensionCode") == dim_code)
-        
+
         if gd_df.count() == 0:
             logging.warning(f"No values found for {gd_name} (code: {dim_code})")
             continue
-        
+
         # Map DimensionValueType to description
         gd_df = gd_df.withColumn(
             "Dimension Value Type Desc",
@@ -83,7 +82,7 @@ def create_global_dimensions(
             .when(F.col("DimensionValueType") == 4, "End-Total")
             .otherwise("Unknown")
         )
-        
+
         # Rename columns to match warehouse schema pattern
         gd_df = gd_df.select(
             F.col("Code").alias(f"{gd_name} Code"),
@@ -98,7 +97,7 @@ def create_global_dimensions(
             F.col("$Company"),
             F.current_timestamp().alias("$LoadDate")
         )
-        
+
         # Generate surrogate key
         gd_df = generate_surrogate_key(
             df=gd_df,
@@ -106,10 +105,10 @@ def create_global_dimensions(
             key_name=f"SK_{gd_name}",
             partition_columns=["$Company"]
         )
-        
+
         logging.info(f"Created {gd_name} dimension: {gd_df.count()} rows")
         results[f"dim_{gd_name}"] = gd_df
-    
+
     return results
 
 
@@ -132,9 +131,9 @@ def create_date_dimension(
     """
     if not spark:
         raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     logging.info(f"Creating date dimension from {start_date} to {end_date}")
-    
+
     # Generate date range
     date_df = spark.sql(f"""
         SELECT 
@@ -182,12 +181,12 @@ def create_date_dimension(
             )) as date_value
         )
     """)
-    
+
     logging.info(f"Created date dimension: {date_df.count()} rows")
     return date_df
 
 
-@with_etl_error_handling(operation="create_due_date_dimension") 
+@with_etl_error_handling(operation="create_due_date_dimension")
 def create_due_date_dimension(spark: SparkSession) -> DataFrame:
     """
     Create due date dimension for aging analysis.
@@ -200,14 +199,14 @@ def create_due_date_dimension(spark: SparkSession) -> DataFrame:
     """
     if not spark:
         raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     logging.info("Creating due date dimension")
-    
+
     # Create due date buckets
     due_date_df = spark.createDataFrame([
         # Future/Not Due
         (-365, 0, "Not Due", 0, "0 - Not Due", 0, "0 - Not Due", 1, "Not Due"),
-        # Current  
+        # Current
         (0, 0, "Due", 1, "1 - Current", 1, "1 - Current", 2, "Current"),
         # 1-30 days
         (1, 1, "Due", 1, "1 - 1-30 days", 1, "1 - 1-30 days", 3, "1-30 days"),
@@ -221,18 +220,19 @@ def create_due_date_dimension(spark: SparkSession) -> DataFrame:
         # Over 90 days
         (91, 1, "Due", 4, "4 - Over 90 days", 2, "2 - Over 90 days", 6, "Over 90 days"),
         (365, 1, "Due", 4, "4 - Over 90 days", 2, "2 - Over 90 days", 6, "Over 90 days"),
-    ], ["Due Days", "Due Not Due", "Due Not Due Desc", "Bucket 30 days", 
-        "Bucket 30 days Desc", "Bucket 90 days", "Bucket 90 days Desc", 
+    ], ["Due Days", "Due Not Due", "Due Not Due Desc", "Bucket 30 days",
+        "Bucket 30 days Desc", "Bucket 90 days", "Bucket 90 days Desc",
         "Bucket Order", "Bucket Desc"])
-    
+
     # Add surrogate key
     due_date_df = due_date_df.withColumn("SK_DueDate", F.row_number().over(F.orderBy("Due Days")))
-    
+
     # Add metadata
     due_date_df = due_date_df.withColumn("$Source", F.lit("BC")) \
         .withColumn("$Environment", F.lit("Production")) \
         .withColumn("$Company", F.lit("ALL")) \
         .withColumn("$LoadDate", F.current_timestamp())
-    
+
     logging.info(f"Created due date dimension: {due_date_df.count()} rows")
     return due_date_df
+

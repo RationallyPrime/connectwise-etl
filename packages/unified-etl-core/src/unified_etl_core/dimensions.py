@@ -40,10 +40,10 @@ def create_dimension_from_column(
     """
     # Validate config - FAIL FAST
     dimension_config.validate_config()
-    
+
     if not spark:
         raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     # Read the source table
     source_df = spark.table(dimension_config.source_table)
 
@@ -58,7 +58,7 @@ def create_dimension_from_column(
                 "available_columns": source_df.columns
             }
         )
-    
+
     # Extract distinct values with counts
     df = (
         source_df.where(F.col(dimension_config.source_column).isNotNull())
@@ -75,13 +75,13 @@ def create_dimension_from_column(
     # Add unknown member if configured
     if dimension_config.add_unknown_member:
         unknown_row = spark.createDataFrame(
-            [(dimension_config.unknown_member_key, 
-              "Unknown", 
-              0, 
+            [(dimension_config.unknown_member_key,
+              "Unknown",
+              0,
               dimension_config.unknown_member_description)],
-            [dimension_config.surrogate_key_column, 
-             dimension_config.natural_key_column, 
-             "usage_count", 
+            [dimension_config.surrogate_key_column,
+             dimension_config.natural_key_column,
+             "usage_count",
              dimension_config.description_column]
         )
         dim_df = unknown_row.union(
@@ -147,16 +147,16 @@ def create_all_dimensions(
             "At least one dimension configuration is required",
             code=ErrorCode.CONFIG_MISSING
         )
-    
+
     if not spark:
         raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     dimensions = {}
 
     for dim_config in dimension_configs:
         # Validate config
         dim_config.validate_config()
-        
+
         logger.info(
             f"Creating dimension: dim_{dim_config.name} from {dim_config.source_table}.{dim_config.source_column}"
         )
@@ -174,7 +174,7 @@ def create_all_dimensions(
 
         # Get table name from config
         table_name = config.get_table_name(
-            "gold", 
+            "gold",
             "shared",  # Dimensions are shared across integrations
             dim_config.name,
             table_type="dim"
@@ -212,9 +212,9 @@ def create_date_dimension(
         raise ETLConfigError("start_date is required", code=ErrorCode.CONFIG_MISSING)
     if not end_date:
         raise ETLConfigError("end_date is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     # Create date range using Spark SQL
-    
+
     # Generate date sequence using Spark
     date_df = spark.sql(f"""
         SELECT 
@@ -255,10 +255,10 @@ def create_date_dimension(
             )) as date_col
         )
     """)
-    
+
     # Add ETL metadata
     result = _add_etl_metadata(date_df, layer="gold", source="date_dimension")
-    
+
     return result
 
 
@@ -283,10 +283,10 @@ def add_dimension_keys(
     """
     if not dimension_mappings:
         return fact_df  # No dimensions to join
-        
+
     if not spark:
         raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
-    
+
     result_df = fact_df
 
     for mapping in dimension_mappings:
@@ -300,10 +300,10 @@ def add_dimension_keys(
                     "available_columns": result_df.columns
                 }
             )
-        
+
         # Read dimension table
         dim_df = spark.table(mapping.dimension_table)
-        
+
         # Validate dimension columns exist
         if mapping.dimension_key_column not in dim_df.columns:
             raise ETLProcessingError(

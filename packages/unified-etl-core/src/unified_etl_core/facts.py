@@ -113,7 +113,7 @@ def create_generic_fact_table(
     """
     # Validate configs - FAIL FAST
     fact_config.validate_config()
-    
+
     if not silver_df:
         raise ETLConfigError("silver_df is required", code=ErrorCode.CONFIG_MISSING)
     if not spark:
@@ -148,7 +148,7 @@ def create_generic_fact_table(
     # 5. Add entity identifier if multi-entity fact
     if fact_config.add_entity_type:
         fact_df = fact_df.withColumn(
-            fact_config.entity_type_column, 
+            fact_config.entity_type_column,
             F.lit(fact_config.name)
         )
 
@@ -160,15 +160,15 @@ def create_generic_fact_table(
         fact_config.measure_columns +
         [col.name for col in fact_config.calculated_columns]
     )
-    
+
     if fact_config.add_entity_type:
         final_columns.append(fact_config.entity_type_column)
-        
+
     if fact_config.add_audit_columns:
         final_columns.extend([
             "_etl_gold_processed_at",
             "_etl_source",
             "_etl_batch_id"
         ])
-    
+
     return fact_df.select(*final_columns)

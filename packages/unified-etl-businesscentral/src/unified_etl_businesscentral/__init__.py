@@ -23,16 +23,16 @@ extractor = None  # BC doesn't need extractor - data comes from BC2ADLS
 
 # Import models for framework integration
 from .models.models import (
+    CompanyInformation,
+    Currency,
     Customer,
-    Vendor,
-    Item,
+    Dimension,
+    DimensionSetEntry,
+    DimensionValue,
     GLAccount,
     GLEntry,
-    Currency,
-    CompanyInformation,
-    Dimension,
-    DimensionValue,
-    DimensionSetEntry,
+    Item,
+    Vendor,
 )
 
 models = {
@@ -57,7 +57,7 @@ __all__ = [
     "create_bc_item_attribute_bridge",
     "create_bc_item_attribute_dimension",
     "create_purchase_fact",
-    "join_bc_dimension",
     "extractor",
+    "join_bc_dimension",
     "models",
 ]

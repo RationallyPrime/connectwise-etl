@@ -16,7 +16,7 @@ from unified_etl_core.utils.decorators import with_etl_error_handling
 from unified_etl_core.utils.exceptions import ETLConfigError, ETLProcessingError
 
 from ..config import BC_FACT_CONFIGS
-from .gold import join_bc_dimension
+from .gold_utils import join_bc_dimension
 
 
 @with_etl_error_handling(operation="create_purchase_fact")
@@ -57,26 +57,26 @@ def create_purchase_fact(
     # Load source entities
     source_dfs = []
     for entity in fact_config["source_entities"]:
-                try:
-                    df = spark.table(f"{silver_path}.{entity}")
-                    # Add entity type for tracking
-                    df = df.withColumn("_entity_type", F.lit(entity))
-                    source_dfs.append(df)
-                    logging.info(f"Loaded {entity}: {df.count()} rows")
-                except Exception as e:
-                    raise ETLProcessingError(
-                        f"Failed to load entity {entity}",
-                        code=ErrorCode.DATA_ACCESS_ERROR,
-                        details={"entity": entity, "silver_path": silver_path}
-                    ) from e
+        try:
+            df = spark.table(f"{silver_path}.{entity}")
+            # Add entity type for tracking
+            df = df.withColumn("_entity_type", F.lit(entity))
+            source_dfs.append(df)
+            logging.info(f"Loaded {entity}: {df.count()} rows")
+        except Exception as e:
+            raise ETLProcessingError(
+                f"Failed to load entity {entity}",
+                code=ErrorCode.DATA_ACCESS_ERROR,
+                details={"entity": entity, "silver_path": silver_path}
+            ) from e
 
     # Union all purchase line sources
     if not source_dfs:
-                raise ETLProcessingError(
-                    "No source data found for purchase fact",
-                    code=ErrorCode.DATA_NOT_FOUND,
-                    details={"fact_type": "purchase"}
-                )
+        raise ETLProcessingError(
+            "No source data found for purchase fact",
+            code=ErrorCode.DATA_NOT_FOUND,
+            details={"fact_type": "purchase"}
+        )
 
     union_df = source_dfs[0]
     for df in source_dfs[1:]:
@@ -93,68 +93,65 @@ def create_purchase_fact(
 
     # Join Item dimension - fix the mapping
     if "Item" in fact_config["dimensions"]:
-                dim_config = fact_config["dimensions"]["Item"]
-                # The fact table has "No" column, dimension has "No" column
-                result_df = join_bc_dimension(
-                    spark=spark,
-                    fact_df=result_df,
-                    dimension_name="Item",
-                    fact_join_keys=dim_config["join_keys"],  # {"No": "No"}
-                    gold_path=gold_path,
-                    dimension_config={
-                        "business_keys": ["No", "$Company"],
-                        "gold_name": "dim_Item"
-                    }
-                )
+        dim_config = fact_config["dimensions"]["Item"]
+        # The fact table has "No" column, dimension has "No" column
+        result_df = join_bc_dimension(
+            spark=spark,
+            fact_df=result_df,
+            dimension_name="Item",
+            fact_join_keys=dim_config["join_keys"],  # {"No": "No"}
+            gold_path=gold_path,
+            dimension_config={
+                "business_keys": ["No", "$Company"],
+                "gold_name": "dim_Item"
+            }
+        )
 
     # Join Vendor dimension - fix the mapping
     if "Vendor" in fact_config["dimensions"]:
-                dim_config = fact_config["dimensions"]["Vendor"]
-                # The fact table has "BuyfromVendorNo" column, dimension has "No" column
-                result_df = join_bc_dimension(
-                    spark=spark,
-                    fact_df=result_df,
-                    dimension_name="Vendor",
-                    fact_join_keys=dim_config["join_keys"],  # {"BuyfromVendorNo": "No"}
-                    gold_path=gold_path,
-                    dimension_config={
-                        "business_keys": ["No", "$Company"],
-                        "gold_name": "dim_Vendor"
-                    }
-                )
+        dim_config = fact_config["dimensions"]["Vendor"]
+        # The fact table has "BuyfromVendorNo" column, dimension has "No" column
+        result_df = join_bc_dimension(
+            spark=spark,
+            fact_df=result_df,
+            dimension_name="Vendor",
+            fact_join_keys=dim_config["join_keys"],  # {"BuyfromVendorNo": "No"}
+            gold_path=gold_path,
+            dimension_config={
+                "business_keys": ["No", "$Company"],
+                "gold_name": "dim_Vendor"
+            }
+        )
 
     # Join Date dimension
     if "Date" in fact_config["dimensions"]:
-                dim_config = fact_config["dimensions"]["Date"]
-                result_df = join_bc_dimension(
-                    spark=spark,
-                    fact_df=result_df,
-                    dimension_name="Date",
-                    fact_join_keys=dim_config["join_keys"],
-                    gold_path=gold_path,
-                    dimension_config={
-                        "business_keys": ["DateKey"],
-                        "gold_name": "dim_Date"
-                    }
-                )
+        dim_config = fact_config["dimensions"]["Date"]
+        result_df = join_bc_dimension(
+            spark=spark,
+            fact_df=result_df,
+            dimension_name="Date",
+            fact_join_keys=dim_config["join_keys"],
+            gold_path=gold_path,
+            dimension_config={
+                "business_keys": ["DateKey"],
+                "gold_name": "dim_Date"
+            }
+        )
 
     # Join DimensionBridge if available
     if "DimensionBridge" in fact_config["dimensions"]:
-        try:
-            dim_config = fact_config["dimensions"]["DimensionBridge"]
-            result_df = join_bc_dimension(
-                spark=spark,
-                fact_df=result_df,
-                dimension_name="DimensionBridge",
-                fact_join_keys=dim_config["join_keys"],
-                gold_path=gold_path,
-                dimension_config={
-                    "business_keys": ["DimensionSetID", "$Company"],
-                    "gold_name": "dim_DimensionBridge"
-                }
-            )
-        except Exception as e:
-            logging.warning(f"DimensionBridge join failed (may not exist yet): {e}")
+        dim_config = fact_config["dimensions"]["DimensionBridge"]
+        result_df = join_bc_dimension(
+            spark=spark,
+            fact_df=result_df,
+            dimension_name="DimensionBridge",
+            fact_join_keys=dim_config["join_keys"],
+            gold_path=gold_path,
+            dimension_config={
+                "business_keys": ["DimensionSetID", "$Company"],
+                "gold_name": "dim_DimensionBridge"
+            }
+        )
 
     # Add ETL metadata
     result_df = result_df.withColumn("_etl_batch_id", F.lit(batch_id))
@@ -256,29 +253,29 @@ def create_agreement_fact(
     # Join dimensions
     for dim_name, dim_config in fact_config["dimensions"].items():
         if dim_name == "Customer":
-                    result_df = join_bc_dimension(
-                        spark=spark,
-                        fact_df=result_df,
-                        dimension_name="Customer",
-                        fact_join_keys=dim_config["join_keys"],
-                        gold_path=gold_path,
-                        dimension_config={
-                            "business_keys": ["No", "$Company"],
-                            "gold_name": "dim_Customer"
-                        }
-                    )
+            result_df = join_bc_dimension(
+                spark=spark,
+                fact_df=result_df,
+                dimension_name="Customer",
+                fact_join_keys=dim_config["join_keys"],
+                gold_path=gold_path,
+                dimension_config={
+                    "business_keys": ["No", "$Company"],
+                    "gold_name": "dim_Customer"
+                }
+            )
         elif dim_name == "Date":
-                    result_df = join_bc_dimension(
-                        spark=spark,
-                        fact_df=result_df,
-                        dimension_name="Date",
-                        fact_join_keys=dim_config["join_keys"],
-                        gold_path=gold_path,
-                        dimension_config={
-                            "business_keys": ["DateKey"],
-                            "gold_name": "dim_Date"
-                        }
-                    )
+            result_df = join_bc_dimension(
+                spark=spark,
+                fact_df=result_df,
+                dimension_name="Date",
+                fact_join_keys=dim_config["join_keys"],
+                gold_path=gold_path,
+                dimension_config={
+                    "business_keys": ["DateKey"],
+                    "gold_name": "dim_Date"
+                }
+            )
 
     # Add ETL metadata
     result_df = result_df.withColumn("_etl_batch_id", F.lit(batch_id))
