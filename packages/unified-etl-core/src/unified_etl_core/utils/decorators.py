@@ -50,7 +50,7 @@ def with_etl_error_handling(
                     return await cast("Callable[P, Awaitable[T]]", func)(*args, **kwargs)
                 except ApplicationError as e:
                     logger.log(
-                        e.level.value,
+                        e.level.to_logging_level(),
                         f"ETL error in {op_name}",
                         error_code=e.code.value,
                         error_message=str(e),
@@ -63,7 +63,7 @@ def with_etl_error_handling(
                     return cast("T", None)
                 except Exception as e:
                     logger.log(
-                        error_level.value,
+                        error_level.to_logging_level(),
                         f"Unexpected error in {op_name}",
                         operation=op_name,
                         error_type=type(e).__name__,
@@ -85,7 +85,7 @@ def with_etl_error_handling(
                     return func(*args, **kwargs)
                 except ApplicationError as e:
                     logger.log(
-                        e.level.value,
+                        e.level.to_logging_level(),
                         f"ETL error in {op_name}",
                         error_code=e.code.value,
                         error_message=str(e),
@@ -98,7 +98,7 @@ def with_etl_error_handling(
                     return cast("T", None)
                 except Exception as e:
                     logger.log(
-                        error_level.value,
+                        error_level.to_logging_level(),
                         f"Unexpected error in {op_name}",
                         operation=op_name,
                         error_type=type(e).__name__,

@@ -10,7 +10,7 @@ Contains BC-specific transformations that were moved from unified-etl-core:
 
 from .config import BC_FACT_CONFIGS, SILVER_CONFIG
 from .transforms.facts import create_agreement_fact, create_purchase_fact
-from .transforms.gold import (
+from .transforms.gold_utils import (
     build_bc_account_hierarchy,
     create_bc_dimension_bridge,
     create_bc_item_attribute_bridge,
