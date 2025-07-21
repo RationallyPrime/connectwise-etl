@@ -29,6 +29,7 @@ def detect_available_integrations() -> dict[str, Any]:
                 "available": True,
                 "extractor": getattr(module, "extractor", None),
                 "models": getattr(module, "models", None),
+                "entity_configs": getattr(module, "entity_configs", None),
             }
             logging.info(f"✅ Integration '{name}' detected and loaded")
         except ImportError:

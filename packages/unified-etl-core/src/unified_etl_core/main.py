@@ -270,26 +270,31 @@ def process_integration(
                                 code=ErrorCode.CONFIG_MISSING
                             )
 
-                        # Check if we have entity-specific config
-                        entity_configs = getattr(integration_config, 'entity_configs', {})
-                        if entity_name.lower() in entity_configs:
-                            entity_config = entity_configs[entity_name.lower()]
+                        # Check if we have entity-specific config from integration
+                        integration_entity_configs = integration_info.get("entity_configs", {})
+                        if entity_name.lower() in integration_entity_configs:
+                            entity_config = integration_entity_configs[entity_name.lower()]
                         else:
-                            # Create default entity config
-                            entity_config = EntityConfig(
-                                name=entity_name.lower(),
-                                source=integration_name,
-                                model_class_name=model_class.__name__,
-                                flatten_nested=True,
-                                flatten_max_depth=3,
-                                preserve_columns=[],
-                                json_columns=[],
-                                column_mappings={},
-                                scd=None,
-                                business_keys=["id"] if "id" in bronze_df.columns else [],
-                                add_audit_columns=True,
-                                strip_null_columns=True
-                            )
+                            # Check if we have entity-specific config in integration config (legacy)
+                            entity_configs = getattr(integration_config, 'entity_configs', {})
+                            if entity_name.lower() in entity_configs:
+                                entity_config = entity_configs[entity_name.lower()]
+                            else:
+                                # Create default entity config
+                                entity_config = EntityConfig(
+                                    name=entity_name.lower(),
+                                    source=integration_name,
+                                    model_class_name=model_class.__name__,
+                                    flatten_nested=True,
+                                    flatten_max_depth=3,
+                                    preserve_columns=[],
+                                    json_columns=[],
+                                    column_mappings={},
+                                    scd=None,
+                                    business_keys=["id"] if "id" in bronze_df.columns else [],
+                                    add_audit_columns=True,
+                                    strip_null_columns=True
+                                )
 
                         try:
                             # This will flatten structs with camelCase naming

@@ -43,51 +43,48 @@ if not spark:
 from unified_etl_core.main import run_etl_pipeline
 from unified_etl_core.config import ETLConfig, LayerConfig, IntegrationConfig, SparkConfig, TableNamingConvention
 
-# Create proper ETL configuration following fail-fast philosophy
+# Simple batch ID for tracking
 batch_id = f"bc_full_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-# ALL parameters are REQUIRED - fail-fast philosophy
+# Minimal ETL config - framework handles entity configs automatically
 etl_config = ETLConfig(
-    # Layer configurations - ALL REQUIRED
     bronze=LayerConfig(
         catalog="LH",
-        schema="bronze",
-        prefix="bronze_",
+        schema="bronze", 
+        prefix="",  # BC2ADLS tables have no prefix
         naming_convention=TableNamingConvention.CAMELCASE
     ),
     silver=LayerConfig(
         catalog="LH",
         schema="silver",
-        prefix="silver_",
+        prefix="",
         naming_convention=TableNamingConvention.CAMELCASE
     ),
     gold=LayerConfig(
         catalog="LH",
         schema="gold",
-        prefix="gold_",
+        prefix="",
         naming_convention=TableNamingConvention.CAMELCASE
     ),
-    # Integration configurations - ALL REQUIRED
     integrations={
         "businesscentral": IntegrationConfig(
             name="businesscentral",
-            abbreviation="bc",
+            abbreviation="",  # No abbreviation for BC2ADLS
             base_url="https://api.businesscentral.dynamics.com/",
             enabled=True
+            # Entity configs handled automatically by framework
         )
     },
-    # Spark configuration - REQUIRED
     spark=SparkConfig(
         app_name="bc_full_refresh",
         session_type="fabric",
         config_overrides={}
     ),
-    # Global settings - ALL REQUIRED
     fail_on_error=True,
     audit_columns=True
 )
 
-print(f"✅ Configuration initialized")
+print(f"✅ Configuration initialized - entity configs handled by framework")
 print(f"   Batch ID: {batch_id}")
 
 
