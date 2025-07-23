@@ -14,11 +14,12 @@ The framework provides a **configuration-driven, fail-fast ETL pipeline** that t
 
 - 🏗️ **Package-Based Architecture**: Clean separation between core and integrations
 - ⚡ **Fail-Fast Philosophy**: All parameters required, explicit errors, no silent failures
-- 🔄 **SparkDantic Integration**: Automatic Spark schema generation from Pydantic models  
+- 🔄 **SparkDantic Integration**: Seamless Pydantic→Spark schema conversion for distributed processing
 - 🏛️ **True Medallion Architecture**: Bronze (validated) → Silver (transformed) → Gold (enriched)
 - 🎯 **Business Logic Support**: Handles complex rules like Icelandic agreement types
 - 🔧 **Microsoft Fabric Optimized**: Built for Fabric Spark runtime environment
 - 📊 **Generic Patterns**: Reusable dimension and fact creators
+- ⚡ **Performance Strategy**: Row-by-row validation in Bronze, distributed Spark in Silver/Gold
 
 ## 🏛️ Architecture
 
@@ -211,6 +212,66 @@ BC_CLIENT_SECRET=xxx
 
 ## 💡 Key Concepts
 
+### SparkDantic Integration Strategy
+
+The framework is built on a **schema-first architecture** where SparkDantic models define the data contract across all layers:
+
+```python
+# 1. Models inherit from SparkModel (not BaseModel)
+from sparkdantic import SparkModel
+
+class TimeEntry(SparkModel):
+    id: int
+    timeStart: datetime
+    actualHours: float
+
+# 2. Runtime schema generation in core framework (silver.py:69)
+schema = model_class.model_spark_schema()
+df = spark.createDataFrame(validated_data, schema=schema)
+
+# 3. Fail-fast SparkDantic validation (silver.py:116-122)
+if not hasattr(model_class, "model_spark_schema"):
+    raise ETLConfigError(
+        f"Model {model_class.__name__} must inherit from SparkModel. "
+        f"All models must be auto-generated with SparkDantic support."
+    )
+```
+
+**Core Framework Integration**:
+- **Entity Configs**: Store actual model classes for runtime schema access (`config/entity.py:61`)
+- **Silver Layer**: Pure SparkDantic schema generation - NO FALLBACKS (`silver.py:181`)
+- **Type Mapping**: Schema-driven conversions using `spark_schema_fields.get()` (`silver.py:196`)
+- **Model Generation**: Auto-configured with SparkDantic base class (`generators/base.py:31`)
+
+**Performance Strategy**: Small API batches get row-by-row Pydantic validation in Bronze, then distributed Spark processing takes over in Silver/Gold for millions of rows.
+
+### Generic vs Specific Architecture
+
+**Generic Core Framework** (packages/unified-etl-core/):
+```python
+# Reusable patterns that work for any data source
+from unified_etl_core.dimensions import add_dimension_keys
+from unified_etl_core.facts import add_etl_metadata
+
+fact_df = add_dimension_keys(config, df, dimension_mappings, spark)
+fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
+```
+
+**Source-Specific Business Logic** (packages/unified-etl-connectwise/):
+```python
+# ConnectWise-specific Icelandic business rules
+AGREEMENT_TYPE_PATTERNS = {
+    r"Tímapottur\s*:?": (AgreementType.PREPAID_HOURS, "prepaid"),
+    r"yÞjónusta": (AgreementType.BILLABLE_SERVICE, "billable"),
+    r"Innri verkefni": (AgreementType.INTERNAL_PROJECT, "internal")
+}
+
+# Complex agreement hierarchy with parent-child resolution
+def resolve_agreement_hierarchy(agreement_df, time_entry_df):
+    # 764 lines of ConnectWise-specific logic
+    # Uses generic core patterns but implements specific business rules
+```
+
 ### Fail-Fast Philosophy
 
 All functions require ALL parameters - no optional behaviors:
@@ -230,21 +291,11 @@ def create_fact(df: DataFrame, config: dict[str, Any]):
 
 ### Layer Responsibilities
 
-1. **Bronze**: Validate with Pydantic during API extraction
-2. **Silver**: Transform with Spark, SKIP validation (already done)
-3. **Gold**: Add business intelligence (facts, dimensions, metrics)
+1. **Bronze**: Row-by-row Pydantic validation during API extraction (`client.py:446`)
+2. **Silver**: Runtime SparkDantic schema application - NO validation needed (`silver.py:69`)
+3. **Gold**: Business intelligence on properly-typed DataFrames (`transforms.py`)
 
-### Business Logic Examples
-
-Icelandic agreement type handling:
-
-```python
-AGREEMENT_TYPE_PATTERNS = {
-    r"Tímapottur\s*:?": (AgreementType.PREPAID_HOURS, "prepaid"),
-    r"yÞjónusta": (AgreementType.BILLABLE_SERVICE, "billable"),
-    r"Innri verkefni": (AgreementType.INTERNAL_PROJECT, "internal")
-}
-```
+**Key Insight**: Silver layer enforces **pure SparkDantic integration with zero fallbacks** - if models don't inherit from `SparkModel`, the framework fails fast rather than attempting manual schema mapping.
 
 ## 🏭 Production Deployment
 
