@@ -58,6 +58,7 @@ class EntityConfig(BaseModel):
     name: str = Field(description="Entity name")
     source: str = Field(description="Source integration name")
     model_class_name: str = Field(description="Pydantic model class name")
+    model_class: type | None = Field(default=None, description="Actual Pydantic model class for SparkDantic schema generation")
 
     # Processing configuration - REQUIRED
     flatten_nested: bool = Field(description="Whether to flatten nested structures")

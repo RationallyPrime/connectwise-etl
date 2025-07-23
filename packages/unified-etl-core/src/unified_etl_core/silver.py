@@ -21,15 +21,8 @@ from pydantic import ValidationError
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import (
     ArrayType,
-    BooleanType,
-    DateType,
-    DecimalType,
-    DoubleType,
-    IntegerType,
     MapType,
-    StringType,
     StructType,
-    TimestampType,
 )
 from pyspark.sql.window import Window
 from sparkdantic import SparkModel
@@ -85,29 +78,7 @@ def convert_models_to_dataframe(
     return spark.createDataFrame(model_dicts, schema)
 
 
-# Complete type mapping for data type conversion
-TYPE_MAPPING = {
-    "string": StringType(),
-    "varchar": StringType(),
-    "nvarchar": StringType(),
-    "char": StringType(),
-    "nchar": StringType(),
-    "text": StringType(),
-    "int": IntegerType(),
-    "integer": IntegerType(),
-    "bigint": IntegerType(),
-    "float": DoubleType(),
-    "double": DoubleType(),
-    "real": DoubleType(),
-    "decimal": DecimalType(18, 2),
-    "numeric": DecimalType(18, 2),
-    "boolean": BooleanType(),
-    "bool": BooleanType(),
-    "bit": BooleanType(),
-    "date": DateType(),
-    "datetime": TimestampType(),
-    "timestamp": TimestampType(),
-}
+# Pure SparkDantic integration - no manual type mapping needed
 
 
 @with_etl_error_handling(operation="validate_with_pydantic")
@@ -162,7 +133,7 @@ def generate_spark_schema_from_pydantic(model_class: type[SparkModel]) -> Struct
 
 @with_etl_error_handling(operation="apply_data_types")
 def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
-    """Apply data type conversions based on configuration."""
+    """Apply data type conversions using SparkDantic schema generation."""
     # Validate config first
     entity_config.validate_config()
 
@@ -177,44 +148,85 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
             details={"entity": entity_config.name}
         )
 
-    for column_name, mapping in column_mappings.items():
+    # Get SparkDantic schema for the model if available
+    spark_schema_fields = {}
+    if hasattr(entity_config, 'model_class') and entity_config.model_class:
+        try:
+            model_schema = entity_config.model_class.model_spark_schema()
+            spark_schema_fields = {field.name: field.dataType for field in model_schema.fields}
+        except Exception as e:
+            logging.warning(f"Could not generate SparkDantic schema for {entity_config.name}: {e}")
+
+    for _, mapping in column_mappings.items():
+        # Handle flattened column names that may have suffixes like 'Code-1'
+        actual_source_column = mapping.source_column
         if mapping.source_column not in result_df.columns:
-            raise ETLProcessingError(
-                f"Source column '{mapping.source_column}' not found in DataFrame",
-                code=ErrorCode.SILVER_TRANSFORM_FAILED,
+            # Look for columns that start with the source column name followed by a dash and number
+            matching_cols = [col for col in result_df.columns if col.startswith(f"{mapping.source_column}-")]
+            if matching_cols:
+                # Use the first matching column (assumes single match is expected)
+                actual_source_column = matching_cols[0]
+                logging.info(f"Found flattened column '{actual_source_column}' for mapping '{mapping.source_column}'")
+            else:
+                raise ETLProcessingError(
+                    f"Source column '{mapping.source_column}' not found in DataFrame (also checked for flattened variants)",
+                    code=ErrorCode.SILVER_TRANSFORM_FAILED,
+                    details={
+                        "column": mapping.source_column,
+                        "available_columns": result_df.columns,
+                        "checked_patterns": [f"{mapping.source_column}-*"]
+                    }
+                )
+
+        # PURE SparkDantic integration - NO FALLBACKS
+        if not spark_schema_fields:
+            raise ETLConfigError(
+                f"SparkDantic schema required but not available for entity '{entity_config.name}' - model_class must be provided",
+                code=ErrorCode.CONFIG_MISSING,
                 details={
-                    "column": mapping.source_column,
-                    "available_columns": result_df.columns
+                    "entity": entity_config.name,
+                    "model_class_name": entity_config.model_class_name,
+                    "model_class_available": entity_config.model_class is not None
                 }
             )
-
-        spark_type = TYPE_MAPPING.get(mapping.target_type.value.lower())
+        
+        # Get type from SparkDantic model schema ONLY
+        spark_type = spark_schema_fields.get(mapping.source_column)
+        # Try actual source column name if different (for flattened columns)
+        if not spark_type and actual_source_column != mapping.source_column:
+            spark_type = spark_schema_fields.get(actual_source_column)
+        
         if not spark_type:
             raise ETLConfigError(
-                f"Unknown target type '{mapping.target_type}' for column '{mapping.source_column}'",
+                f"Column '{mapping.source_column}' not found in SparkDantic schema for model '{entity_config.model_class_name}'",
                 code=ErrorCode.CONFIG_INVALID,
-                details={"column": mapping.source_column, "target_type": mapping.target_type}
+                details={
+                    "column": mapping.source_column,
+                    "actual_source_column": actual_source_column,
+                    "available_sparkdantic_fields": list(spark_schema_fields.keys()),
+                    "model_class": entity_config.model_class_name
+                }
             )
 
         # Get the current column type
         fields_dict = {field.name: field for field in result_df.schema.fields}
-        current_type = fields_dict[mapping.source_column].dataType
-        logging.info(f"Converting {mapping.source_column} from {current_type} to {spark_type}")
+        current_type = fields_dict[actual_source_column].dataType
+        logging.info(f"Converting {actual_source_column} from {current_type} to {spark_type}")
 
         if mapping.target_type.value.lower() in ["timestamp", "datetime", "datetime2"]:
             result_df = result_df.withColumn(
                 mapping.target_column,
-                F.to_timestamp(F.col(mapping.source_column))
+                F.to_timestamp(F.col(actual_source_column))
             )
         else:
             result_df = result_df.withColumn(
                 mapping.target_column,
-                F.col(mapping.source_column).cast(spark_type)
+                F.col(actual_source_column).cast(spark_type)
             )
 
         # Remove old column if renamed
-        if mapping.source_column != mapping.target_column:
-            result_df = result_df.drop(mapping.source_column)
+        if actual_source_column != mapping.target_column:
+            result_df = result_df.drop(actual_source_column)
 
     return result_df
 
@@ -500,8 +512,11 @@ def apply_silver_transformations(
     if entity_config.json_columns:
         silver_df = parse_json_columns(silver_df, entity_config.json_columns)
 
-    # 4. Apply data type conversions
-    silver_df = apply_data_types(silver_df, entity_config)
+    # 4. Apply data type conversions (only if column mappings exist)
+    if entity_config.column_mappings:
+        silver_df = apply_data_types(silver_df, entity_config)
+    else:
+        logging.info("Skipping data type conversion - no column mappings defined")
 
     # 5. Flatten nested structures if configured
     if entity_config.flatten_nested:

@@ -1,7 +1,7 @@
 """Cross-integration ETL orchestration using dynamic integration detection."""
 
 import logging
-from typing import Literal
+from typing import Any, Literal
 
 from pyspark.sql import SparkSession
 
@@ -102,7 +102,7 @@ def process_integration(
     config: ETLConfig,
     spark: SparkSession,
     integration_name: str,
-    integration_info: dict[str, object],
+    integration_info: dict[str, Any],
     layers: list[Literal["bronze", "silver", "gold"]],
     mode: Literal["full", "incremental"],
     lookback_days: int,

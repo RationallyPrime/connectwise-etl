@@ -20,7 +20,7 @@ class LayerConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     catalog: str = Field(description="Catalog name (e.g., Lakehouse)")
-    schema: str = Field(description="Schema name (bronze, silver, gold)")
+    schema_name: str = Field(description="Schema name (bronze, silver, gold)", alias="schema")
     prefix: str = Field(description="Table prefix (bronze_, silver_, gold_)")
     naming_convention: TableNamingConvention = Field(description="Naming convention for tables")
 
