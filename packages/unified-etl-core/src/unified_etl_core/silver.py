@@ -191,10 +191,9 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
             )
         
         # Get type from SparkDantic model schema ONLY
+        # The source_column from config should match model field names (Code, Description)
+        # The actual_source_column is from DataFrame (Code-1, Description-15)
         spark_type = spark_schema_fields.get(mapping.source_column)
-        # Try actual source column name if different (for flattened columns)
-        if not spark_type and actual_source_column != mapping.source_column:
-            spark_type = spark_schema_fields.get(actual_source_column)
         
         if not spark_type:
             raise ETLConfigError(
