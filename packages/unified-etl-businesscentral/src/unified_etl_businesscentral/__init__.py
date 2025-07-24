@@ -19,33 +19,71 @@ from .transforms.gold_utils import (
 )
 
 # Integration interface for core framework
-extractor = None  # BC doesn't need extractor - data comes from BC2ADLS
+from .processor import BusinessCentralBronzeProcessor
 
-# Import models for framework integration
-from .models.models import (
+# BC extractor processes BC2ADLS data with Pydantic validation
+extractor = BusinessCentralBronzeProcessor
+
+# Import all regenerated models with proper CDM field aliases from consolidated models
+from .models import (
+    AccountingPeriod,
     CompanyInformation,
     Currency,
+    CustLedgerEntry,
     Customer,
+    DetailedCustLedgEntry,
+    DetailedVendorLedgEntry,
     Dimension,
     DimensionSetEntry,
     DimensionValue,
     GLAccount,
     GLEntry,
+    GeneralLedgerSetup,
     Item,
+    Job,
+    JobLedgerEntry,
+    Resource,
+    SalesInvoiceHeader,
+    SalesInvoiceLine,
     Vendor,
+    VendorLedgerEntry,
 )
 
 models = {
+    # Core entities
     "customer": Customer,
     "vendor": Vendor,
     "item": Item,
+    "resource": Resource,
+    "companyinformation": CompanyInformation,
+    
+    # Financial entities
     "glaccount": GLAccount,
     "glentry": GLEntry,
     "currency": Currency,
-    "companyinformation": CompanyInformation,
+    "generalledgersetup": GeneralLedgerSetup,
+    
+    # Dimension entities
     "dimension": Dimension,
     "dimensionvalue": DimensionValue,
     "dimensionsetentry": DimensionSetEntry,
+    
+    # Ledger entries
+    "custledgerentry": CustLedgerEntry,
+    "vendorledgerentry": VendorLedgerEntry,
+    "detailedcustledgentry": DetailedCustLedgEntry,
+    "detailedvendorledgentry": DetailedVendorLedgEntry,
+    
+    # Sales entities
+    "salesinvoiceheader": SalesInvoiceHeader,
+    "salesinvoiceline": SalesInvoiceLine,
+    
+    # Job/Project entities
+    "job": Job,
+    "jobledgerentry": JobLedgerEntry,
+    
+    # Setup entities
+    "accountingperiod": AccountingPeriod,
 }
 
 # Export entity configurations for framework integration
@@ -59,13 +97,17 @@ def get_entity_configs():
         # Convert to lowercase for framework compatibility
         key = entity_name.lower()
         
+        # Get the actual model class for SparkDantic integration
+        model_class = models.get(config["model"].lower())
+        
+        # SKIP entities without model classes (not yet generated)
+        if model_class is None:
+            continue
+        
         # Convert BC rename_columns to proper ColumnMapping objects
         column_mappings = _convert_rename_columns_to_mappings(
             config["model"], config.get("rename_columns", {})
         )
-        
-        # Get the actual model class for SparkDantic integration
-        model_class = models.get(config["model"].lower())
         
         entity_configs[key] = EntityConfig(
             name=key,
@@ -159,6 +201,7 @@ entity_configs = get_entity_configs()
 __all__ = [
     "BC_FACT_CONFIGS",
     "SILVER_CONFIG",
+    "BusinessCentralBronzeProcessor",
     "build_bc_account_hierarchy",
     "create_agreement_fact",
     "create_bc_dimension_bridge",

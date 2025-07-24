@@ -31,12 +31,19 @@ models = {
     # "productrecurring": models_module.ProductRecurring,  # Commenting out - table doesn't exist in bronze
 }
 
+# Import entity configs from the modern config system
+from .config import get_connectwise_entity_configs
+
+# Export entity configs for framework integration
+entity_configs = get_connectwise_entity_configs()
+
 __all__ = [
     "ConnectWiseClient",
     "ConnectWiseExtractor",
     "create_expense_entry_fact",
     "create_invoice_line_fact",
     "create_time_entry_fact",
+    "entity_configs",
     "extractor",
     "models",
 ]

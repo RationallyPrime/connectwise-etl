@@ -52,13 +52,18 @@ SILVER_CONFIG: dict[str, dict[str, Any]] = {
         "surrogate_keys": [
             {
                 "name": "ItemKey",
-                "business_keys": ["No", "$Company"]
+                "business_keys": ["No_1", "field_Company"]
             }
         ],
-        "business_keys": ["No", "$Company"],
+        "business_keys": ["No_1", "field_Company"],
         "calculated_columns": {},
         "drop_columns": ["_etl_bronze_timestamp"],
-        "rename_columns": {}
+        "rename_columns": {
+            "No_1": "ItemNo",
+            "Description_3": "ItemDescription",
+            "Type_10": "ItemType",
+            "Blocked_54": "IsBlocked"
+        }
     },
     "Vendor": {
         "model": "Vendor",
@@ -207,17 +212,17 @@ SILVER_CONFIG: dict[str, dict[str, Any]] = {
         "surrogate_keys": [
             {
                 "name": "CurrencyKey",
-                "business_keys": ["Code-1", "$Company"]
+                "business_keys": ["Code_1", "field_Company"]
             }
         ],
-        "business_keys": ["Code-1", "$Company"],
+        "business_keys": ["Code_1", "field_Company"],
         "calculated_columns": {
-            "Currency": "CONCAT(`Code-1`, ' - ', `Description-15`)"
+            "Currency": "CONCAT(`Code_1`, ' - ', `Description_15`)"
         },
         "drop_columns": ["_etl_bronze_timestamp"],
         "rename_columns": {
-            "Code-1": "CurrencyCode",
-            "Description-15": "CurrencyName"
+            "Code_1": "CurrencyCode",
+            "Description_15": "CurrencyName"
         }
     },
     "Resource": {
@@ -255,7 +260,7 @@ SILVER_CONFIG: dict[str, dict[str, Any]] = {
         "calculated_columns": {},
         "drop_columns": ["_etl_bronze_timestamp"],
         "rename_columns": {
-            "Name-2": "CompanyName"
+            "Name": "CompanyName"
         }
     },
     "SalesInvoiceHeader": {
