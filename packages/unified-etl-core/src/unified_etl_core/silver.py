@@ -16,7 +16,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pydantic import ValidationError
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import (
@@ -189,12 +189,12 @@ def apply_data_types(df: DataFrame, entity_config: EntityConfig) -> DataFrame:
                     "model_class_available": entity_config.model_class is not None
                 }
             )
-        
+
         # Get type from SparkDantic model schema ONLY
         # The source_column from config should match model field names (Code, Description)
         # The actual_source_column is from DataFrame (Code-1, Description-15)
         spark_type = spark_schema_fields.get(mapping.source_column)
-        
+
         if not spark_type:
             raise ETLConfigError(
                 f"Column '{mapping.source_column}' not found in SparkDantic schema for model '{entity_config.model_class_name}'",

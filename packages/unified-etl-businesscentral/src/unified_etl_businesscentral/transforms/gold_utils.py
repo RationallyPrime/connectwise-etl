@@ -13,7 +13,7 @@ Following CLAUDE.md: Business logic is specialized, not generic.
 import logging
 from typing import Any
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import LongType
 from pyspark.sql.window import Window

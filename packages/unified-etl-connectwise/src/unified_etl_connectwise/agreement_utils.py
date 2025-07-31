@@ -7,7 +7,7 @@ import logging
 import re
 from enum import Enum
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 
 logger = logging.getLogger(__name__)

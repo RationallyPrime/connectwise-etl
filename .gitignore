@@ -135,6 +135,7 @@ unified_etl_workspace/
 uv.lock
 .mcp.json
 pyproject.toml.backup
+ms-fabric-mcp/
 
 # Reference files
 # Src/  # Removed - we want to track Src/ManageAPI
@@ -154,6 +155,5 @@ explore_*.ipynb
 refresh_*.ipynb
 
 # VS Code settings (keep project settings, ignore local)
-.vscode/settings.json
 
 # Build artifacts are in dist/.gitignore already

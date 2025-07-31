@@ -119,7 +119,7 @@ def process_integration(
         if extractor:
             from datetime import datetime, timedelta
 
-            import pyspark.sql.functions as F  # noqa: N812
+            import pyspark.sql.functions as F
 
             # Import incremental utilities if in incremental mode
             incremental_processor: IncrementalProcessor | None = None
@@ -198,50 +198,6 @@ def process_integration(
                             details={"entity": entity_name, "error": str(e)}
                         ) from e
 
-            elif integration_name == "businesscentral":
-                # Business Central-specific Bronze processing (reads from existing bronze tables)
-                logging.info("Processing Business Central Bronze layer from existing bronze tables")
-                
-                # BC extractor is a class, need to instantiate it
-                if hasattr(extractor, "__call__"):  # It's a class
-                    # Instantiate BC processor (reads from bronze tables directly)
-                    bc_processor = extractor(spark)
-                    
-                    # Get BC models and configs
-                    bc_models = integration_info.get("models", {})
-                    
-                    # Process BC entities using the same pattern as other integrations
-                    for entity_name, model_class in bc_models.items():
-                        try:
-                            # Process BC2ADLS data with Pydantic validation
-                            bronze_df = bc_processor.process_entity(entity_name, model_class)
-                            
-                            # Add ETL metadata
-                            bronze_df = bronze_df.withColumn("etlTimestamp", F.current_timestamp())
-                            bronze_df = bronze_df.withColumn("etlEntity", F.lit(entity_name))
-                            
-                            record_count = bronze_df.count()
-                            if record_count == 0:
-                                logging.info(f"No records found for BC entity {entity_name}")
-                                continue
-                                
-                            # Get table name from config
-                            table_name = config.get_table_name(
-                                "bronze",
-                                integration_name,
-                                entity_name.lower()
-                            )
-                            
-                            # BC typically does full refresh (BC2ADLS is the source of truth)
-                            bronze_df.write.mode("overwrite").saveAsTable(table_name)
-                            logging.info(f"Stored {record_count} BC records in {table_name}")
-                            
-                        except Exception as e:
-                            logging.error(f"Failed to process BC entity {entity_name}: {e}")
-                            continue
-                else:
-                    logging.warning("BC extractor is not a class - falling back to extract_all")
-                    
             else:
                 # Fallback to extract_all for other integrations
                 bronze_data = extractor.extract_all()
@@ -424,14 +380,6 @@ def process_integration(
 
                 except ImportError as e:
                     logging.warning(f"Could not import ConnectWise transforms: {e}")
-            elif integration_name == "businesscentral":
-                try:
-                    from unified_etl_businesscentral.transforms import gold as bc_transforms
-
-                    integration_transforms = bc_transforms
-                    logging.info("Using Business Central-specific transforms")
-                except ImportError as e:
-                    logging.warning(f"Could not import Business Central transforms: {e}")
 
             # Gold: Create fact tables using configuration
             integration_config = config.integrations.get(integration_name)

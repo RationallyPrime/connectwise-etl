@@ -64,7 +64,8 @@ members = ["packages/*"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-include = ["packages/*/src/**"]
+include = ["packages/*/src/**/*.py"]  # Only Python files
+extend-include = ["scripts/*.py"]
 exclude = [
     ".venv",
     "venv",
@@ -72,6 +73,9 @@ exclude = [
     "dist",
     "__pycache__",
     "unified_etl/models/",  # Exclude generated models
+    "**/*.md",  # Exclude markdown
+    "**/*_cdm_schema.py",  # Exclude CDM schema files with invalid names
+    "ms-fabric-mcp/**",
 ]
 
 [tool.ruff.lint]
@@ -91,6 +95,11 @@ select = [
 ignore = [
     "E501",  # line too long, handled by formatter
     "N815",  # camelCase function and variable names
+    "E402",  # module import not at top of file (needed for conditional imports)
+    "B904",  # raise without from inside except (often verbose)
+    "F403",  # star imports (used in __init__.py files)
+    "F405",  # undefined from star imports
+    "N812",  # lowercase imported as non-lowercase (F for functions)
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -122,11 +131,41 @@ exclude = [
     "**/build/**",
     "**/models/generated.py",  # Exclude generated models from type checking
     "**/tests/**",
+    "ms-fabric-mcp/**",  # Exclude external MCP server
 ]
+
+# Strict typing for better code quality
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+analyzeUnannotatedFunctions = true
+
+# Enable useful checks
 enableTypeIgnoreComments = true
 useLibraryCodeForTypes = true
-reportMissingTypeStubs = "none"
+deprecateTypingAliases = true
+
+# Report configuration optimized for your project
+reportMissingImports = "error"
+reportMissingTypeStubs = "none"  # Don't complain about missing stubs
 reportUnusedImport = "warning"
+reportUnusedClass = "warning"
+reportUnusedFunction = "warning"
+reportUnusedVariable = "warning"
+reportDuplicateImport = "warning"
+reportOptionalCall = "warning"
+reportOptionalIterable = "warning"
+reportOptionalContextManager = "warning"
+reportOptionalOperand = "warning"
+reportTypedDictNotRequiredAccess = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+reportUnnecessaryComparison = "warning"
+reportAssertAlwaysTrue = "warning"
+reportSelfClsParameterName = "warning"
+reportMatchNotExhaustive = "warning"
+
+# Suppress noisy checks for Pydantic/SparkDantic models
 reportPrivateUsage = false
 reportOptionalMemberAccess = false
 reportPrivateImportUsage = false
@@ -139,7 +178,6 @@ reportUnknownMemberType = "none"
 reportUnknownArgumentType = "none"
 reportUnknownVariableType = "none"
 reportAttributeAccessIssue = "none"
-reportOptionalCall = "warning"
 
 # datamodel-codegen configuration moved to integration-specific config files:
 # - configs/psa-codegen.toml (ConnectWise PSA)  

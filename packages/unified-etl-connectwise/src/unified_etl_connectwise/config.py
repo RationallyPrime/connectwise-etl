@@ -388,9 +388,9 @@ def create_agreement_fact_config() -> FactConfig:
         CalculatedColumn(
             name="AgreementTypeIcelandic",
             expression="""
-            case 
+            case
                 when upper(typeName) like '%TÍMAPOTTUR%' then 'Tímapottur'
-                when upper(typeName) like '%ÞJÓNUSTA%' then 'Þjónusta' 
+                when upper(typeName) like '%ÞJÓNUSTA%' then 'Þjónusta'
                 when upper(typeName) like '%INNRI%' then 'Innri verkefni'
                 when upper(typeName) like '%REKSTRAR%' then 'Rekstrarþjónusta'
                 when upper(typeName) like '%HUGBÚNAÐUR%' then 'Hugbúnaðarþjónusta'
@@ -547,7 +547,7 @@ def create_invoice_line_fact_config() -> FactConfig:
         CalculatedColumn(
             name="LineType",
             expression="""
-            case 
+            case
                 when upper(description) like '%TIME%' then 'Time'
                 when upper(description) like '%EXPENSE%' then 'Expense'
                 when upper(description) like '%PRODUCT%' then 'Product'
@@ -661,7 +661,7 @@ def get_time_entry_dimension_mappings() -> list[DimensionMapping]:
 
 def get_invoice_line_dimension_mappings() -> list[DimensionMapping]:
     """Get dimension mappings for invoice line fact table.
-    
+
     Only includes mappings for columns that actually exist in the fact table:
     - productClass: Product classification (Service/Product)
     - applyToType: Invoice application type (Services/Agreement/etc.)

@@ -4,7 +4,7 @@ import logging
 from logging import Logger
 from typing import Any
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from unified_etl_core.date_utils import add_date_key
 from unified_etl_core.gold import add_etl_metadata
@@ -217,10 +217,7 @@ def create_time_entry_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    if isinstance(config, dict) or config is None:
-        etl_config = get_default_etl_config()
-    else:
-        etl_config = config
+    etl_config = get_default_etl_config() if isinstance(config, dict) or config is None else config
 
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
@@ -467,10 +464,7 @@ def create_invoice_line_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    if isinstance(config, dict) or config is None:
-        etl_config = get_default_etl_config()
-    else:
-        etl_config = config
+    etl_config = get_default_etl_config() if isinstance(config, dict) or config is None else config
 
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
@@ -750,10 +744,7 @@ def create_expense_entry_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    if isinstance(config, dict) or config is None:
-        etl_config = get_default_etl_config()
-    else:
-        etl_config = config
+    etl_config = get_default_etl_config() if isinstance(config, dict) or config is None else config
 
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 

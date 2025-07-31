@@ -14,7 +14,7 @@ Following CLAUDE.md: Generic where possible, specialized where necessary.
 # Inline implementations to avoid circular imports
 from datetime import datetime
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 

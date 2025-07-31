@@ -9,7 +9,7 @@ Following CLAUDE.md principles:
 
 import logging
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from unified_etl_core.utils.base import ErrorCode
 from unified_etl_core.utils.decorators import with_etl_error_handling

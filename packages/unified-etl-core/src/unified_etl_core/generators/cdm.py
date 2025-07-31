@@ -108,9 +108,9 @@ class CDMConverter:
 
         return name, prop_def, is_required
 
-    def _build_schema(self, entity_name: str, properties: dict, required: list[str]) -> dict:
+    def _build_schema(self, entity_name: str, properties: dict, required: list[str]) -> dict[str, Any]:
         """Build complete JSON Schema for entity."""
-        schema = {
+        schema: dict[str, Any] = {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "title": entity_name,
             "type": "object",
@@ -118,7 +118,7 @@ class CDMConverter:
         }
 
         if required:
-            schema["required"] = required
+            schema["required"] = list(required)
 
         return schema
 

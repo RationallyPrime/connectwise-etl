@@ -6,7 +6,7 @@ Generic date-related functions that can be reused across any data source.
 import logging
 from datetime import datetime
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 
 logger = logging.getLogger(__name__)

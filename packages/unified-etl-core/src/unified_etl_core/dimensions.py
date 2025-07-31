@@ -9,7 +9,7 @@ Following CLAUDE.md: Generic where possible, specialized where necessary.
 
 import logging
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 
@@ -217,7 +217,7 @@ def create_date_dimension(
 
     # Generate date sequence using Spark
     date_df = spark.sql(f"""
-        SELECT 
+        SELECT
             date_col as DateKey,
             date_col as Date,
             YEAR(date_col) as Year,
@@ -232,18 +232,18 @@ def create_date_dimension(
             DATE_FORMAT(date_col, 'MMM') as MonthShortName,
             DATE_FORMAT(date_col, 'EEEE') as DayName,
             DATE_FORMAT(date_col, 'EEE') as DayShortName,
-            CASE 
-                WHEN DAYOFWEEK(date_col) IN (1, 7) THEN TRUE 
-                ELSE FALSE 
+            CASE
+                WHEN DAYOFWEEK(date_col) IN (1, 7) THEN TRUE
+                ELSE FALSE
             END as IsWeekend,
-            CASE 
+            CASE
                 WHEN MONTH(date_col) = 1 THEN 'Q4'
                 WHEN MONTH(date_col) <= 3 THEN 'Q1'
                 WHEN MONTH(date_col) <= 6 THEN 'Q2'
                 WHEN MONTH(date_col) <= 9 THEN 'Q3'
                 ELSE 'Q4'
             END as FiscalQuarter,
-            CASE 
+            CASE
                 WHEN MONTH(date_col) >= 10 THEN YEAR(date_col) + 1
                 ELSE YEAR(date_col)
             END as FiscalYear

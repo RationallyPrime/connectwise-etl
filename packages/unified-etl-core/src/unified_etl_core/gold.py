@@ -15,7 +15,7 @@ Following CLAUDE.md: Generic where possible, specialized where necessary.
 import logging
 from datetime import date, datetime, timedelta
 
-import pyspark.sql.functions as F  # noqa: N812
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import (
     BooleanType,

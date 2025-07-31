@@ -26,14 +26,14 @@ def create_global_dimensions(
 ) -> dict[str, DataFrame]:
     """
     Create global dimension tables (GD1-GD8) from DimensionValue table.
-    
+
     Args:
         spark: REQUIRED SparkSession
         silver_path: REQUIRED path to silver layer
-        gold_path: REQUIRED path to gold layer  
+        gold_path: REQUIRED path to gold layer
         dimension_mapping: REQUIRED mapping of GD1-GD8 to dimension codes
                           e.g., {"GD1": "TEAM", "GD2": "PRODUCT", ...}
-    
+
     Returns:
         Dictionary of dimension name to DataFrame
     """
@@ -120,12 +120,12 @@ def create_date_dimension(
 ) -> DataFrame:
     """
     Create date dimension table following warehouse schema.
-    
+
     Args:
         spark: REQUIRED SparkSession
         start_date: Start date for dimension (default: 2020-01-01)
         end_date: End date for dimension (default: 2030-12-31)
-    
+
     Returns:
         Date dimension DataFrame
     """
@@ -136,7 +136,7 @@ def create_date_dimension(
 
     # Generate date range
     date_df = spark.sql(f"""
-        SELECT 
+        SELECT
             date_value as DateValue,
             CAST(DATE_FORMAT(date_value, 'yyyyMMdd') AS INT) as SK_Date,
             DAY(date_value) as Day,
@@ -161,13 +161,13 @@ def create_date_dimension(
             DATE_TRUNC('month', date_value) as StartOfMonth,
             LAST_DAY(date_value) as EndOfMonth,
             -- Current filters
-            CASE WHEN DATE_FORMAT(date_value, 'yyyy-MM') = DATE_FORMAT(CURRENT_DATE(), 'yyyy-MM') 
+            CASE WHEN DATE_FORMAT(date_value, 'yyyy-MM') = DATE_FORMAT(CURRENT_DATE(), 'yyyy-MM')
                  THEN 1 ELSE 0 END as CurrentMonthFilter,
-            CASE WHEN DATE_FORMAT(date_value, 'yyyy-MM') = DATE_FORMAT(CURRENT_DATE(), 'yyyy-MM') 
+            CASE WHEN DATE_FORMAT(date_value, 'yyyy-MM') = DATE_FORMAT(CURRENT_DATE(), 'yyyy-MM')
                  THEN 'Current Month' ELSE 'Other' END as CurrentMonthFilterDesc,
-            CASE WHEN YEAR(date_value) = YEAR(CURRENT_DATE()) 
+            CASE WHEN YEAR(date_value) = YEAR(CURRENT_DATE())
                  THEN 1 ELSE 0 END as CurrentYearFilter,
-            CASE WHEN YEAR(date_value) = YEAR(CURRENT_DATE()) 
+            CASE WHEN YEAR(date_value) = YEAR(CURRENT_DATE())
                  THEN 'Current Year' ELSE 'Other' END as CurrentYearFilterDesc,
             -- Metadata
             'BC' as MD_Source,
@@ -175,8 +175,8 @@ def create_date_dimension(
             CURRENT_TIMESTAMP() as MD_Updated
         FROM (
             SELECT EXPLODE(SEQUENCE(
-                TO_DATE('{start_date}'), 
-                TO_DATE('{end_date}'), 
+                TO_DATE('{start_date}'),
+                TO_DATE('{end_date}'),
                 INTERVAL 1 DAY
             )) as date_value
         )
@@ -190,10 +190,10 @@ def create_date_dimension(
 def create_due_date_dimension(spark: SparkSession) -> DataFrame:
     """
     Create due date dimension for aging analysis.
-    
+
     Args:
         spark: REQUIRED SparkSession
-        
+
     Returns:
         Due date dimension DataFrame
     """

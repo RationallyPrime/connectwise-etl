@@ -10,12 +10,13 @@ The Unified ETL Framework integrates company data from ConnectWise PSA and Micro
 
 After comprehensive consolidation, the project now follows a clean package-based structure:
 
-- **packages/unified-etl-core/**: Foundation framework with generic patterns
+- **packages/unified-etl-core/**: Foundation framework optimized for ConnectWise patterns
 - **packages/unified-etl-connectwise/**: ConnectWise PSA adapter with business logic
-- **packages/unified-etl-businesscentral/**: Business Central adapter (in progress)
+- **packages/unified-etl-businesscentral/**: Business Central adapter with dedicated pipeline
 - **Eliminated duplication**: Removed fabric_api/ and BC_ETL-main/ (180+ files, ~40k lines)
 - **Fail-fast philosophy**: ALL parameters required, no optional behaviors
 - **CamelCase preservation**: Configured to maintain source system naming conventions
+- **Separated pipelines**: BC and ConnectWise use different orchestration respecting their data patterns
 
 ## Medallion Architecture - Separation of Concerns
 
@@ -327,25 +328,35 @@ Source APIs → Bronze (Validated) → Silver (Transformed) → Gold (Enhanced)
 - **Resilient Processing**: Retry logic, error handling, and recovery strategies
 - **Performance at Scale**: No collect() or row-by-row processing after Bronze layer
 
-## Running the Pipeline
+## Running the Pipelines
+
+### ConnectWise Pipeline (API-based)
 
 ```python
-from unified_etl.main import run_etl_pipeline
+from unified_etl_core.main import run_etl_pipeline
 
-# Run complete pipeline
+# Run ConnectWise ETL using core framework
 run_etl_pipeline(
-    sources=["connectwise", "business_central"],
+    sources=["connectwise"],
     layers=["bronze", "silver", "gold"],
     lakehouse_root="/lakehouse/default/Tables/"
 )
+```
 
-# Run specific layer
-from unified_etl.pipeline.silver_gold import run_silver_to_gold_pipeline
-run_silver_to_gold_pipeline(
-    entity_configs=["agreement", "invoice", "time_entry"],
-    lakehouse_root="/lakehouse/default/Tables/"
+### Business Central Pipeline (BC2ADLS-based)
+
+```python
+from unified_etl_businesscentral import run_bc_pipeline
+
+# Run Business Central ETL with dedicated pipeline
+results = run_bc_pipeline(
+    lakehouse_root="/lakehouse/default/Tables/",
+    entities=["Customer", "Item", "GLEntry"],  # Optional
+    layers=["bronze", "silver", "gold"]       # Optional
 )
 ```
+
+**Note**: BC and ConnectWise now use separate pipelines optimized for their data patterns. See [docs/separated-pipelines.md](docs/separated-pipelines.md) for details.
 
 ## Package Structure Links
 
