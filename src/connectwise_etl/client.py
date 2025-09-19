@@ -21,10 +21,11 @@ import requests
 from pyspark.sql import DataFrame
 from requests.adapters import HTTPAdapter
 from requests.models import Response
+from urllib3.util.retry import Retry
+
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
 from .utils.exceptions import ETLConfigError, ETLProcessingError
-from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
 

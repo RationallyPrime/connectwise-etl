@@ -43,14 +43,13 @@ class OpenAPIGenerator(ModelGenerator):
         ]
 
         # Add any OpenAPI-specific config
-        openapi_config = self.config.get("openapi", {})
+        openapi_config = self.config.get("generation", {}).get("openapi", {})
 
         if openapi_config.get("validation", True):
             args.append("--enable-version-header")
 
-        if not openapi_config.get("snake_case_field", True):
-            # This is actually controlled in base args
-            pass
+        if openapi_config.get("parent_scoped_naming", False):
+            args.append("--parent-scoped-naming")
 
         return args
 

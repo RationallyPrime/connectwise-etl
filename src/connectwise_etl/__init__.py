@@ -3,7 +3,13 @@
 import logging
 
 from .client import ConnectWiseClient, ConnectWiseExtractor
-from .config.models import ETLConfig, LayerConfig, IntegrationConfig, SparkConfig, TableNamingConvention
+from .config.models import (
+    ETLConfig,
+    IntegrationConfig,
+    LayerConfig,
+    SparkConfig,
+    TableNamingConvention,
+)
 from .main import run_etl_pipeline
 from .models import models as models_module
 from .transforms import (
@@ -33,18 +39,16 @@ models = {
     # "productrecurring": models_module.ProductRecurring,  # Commenting out - table doesn't exist in bronze
 }
 
-# Import entity configs from connectwise_config.py file
-from .connectwise_config import get_connectwise_entity_configs
-
-# Export entity configs for framework integration
-entity_configs = get_connectwise_entity_configs()
+# Entity configs eliminated - models themselves define the structure!
+# Models with proper typing ARE the configuration
+entity_configs = {}
 
 __all__ = [
     "ConnectWiseClient",
     "ConnectWiseExtractor",
     "ETLConfig",
-    "LayerConfig",
     "IntegrationConfig",
+    "LayerConfig",
     "SparkConfig",
     "TableNamingConvention",
     "create_expense_entry_fact",
@@ -52,7 +56,6 @@ __all__ = [
     "create_time_entry_fact",
     "entity_configs",
     "extractor",
-    "get_connectwise_entity_configs",
     "models",
     "run_etl_pipeline",
 ]

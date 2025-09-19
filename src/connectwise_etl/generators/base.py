@@ -28,9 +28,9 @@ class ModelGenerator(ABC):
         self.base_args = [
             "datamodel-codegen",
             "--base-class",
-            self.config.get("base_class", "sparkdantic.SparkModel"),
+            self.config.get("generation", {}).get("base_class", "sparkdantic.SparkModel"),
             "--target-python-version",
-            self.config.get("target_python", "3.11"),
+            self.config.get("generation", {}).get("target_python", "3.11"),
             "--use-standard-collections",
             "--use-union-operator",
             "--strict-nullable",
@@ -40,11 +40,16 @@ class ModelGenerator(ABC):
         ]
 
         # Add config-based args
-        if not self.config.get("snake_case_field", True):
+        generation_config = self.config.get("generation", {})
+
+        if not generation_config.get("snake_case_field", True):
             self.base_args.append("--keep-model-order")
 
-        if self.config.get("aliased_fields", True):
+        if generation_config.get("aliased_fields", True):
             self.base_args.append("--use-annotated")
+
+        if generation_config.get("use_subclass_enum", False):
+            self.base_args.append("--use-subclass-enum")
 
     def _load_config(self, config_path: Path) -> dict[str, Any]:
         """Load configuration from TOML file."""

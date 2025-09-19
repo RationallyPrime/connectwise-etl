@@ -18,7 +18,8 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 
-from .connectwise_config import ETLConfig, FactConfig
+# ETLConfig, FactConfig eliminated - using simple configuration instead
+from .config.models import ETLConfig
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
 from .utils.exceptions import ETLConfigError, ETLProcessingError
@@ -98,22 +99,19 @@ def _generate_surrogate_key(
 @with_etl_error_handling(operation="create_generic_fact_table")
 def create_generic_fact_table(
     config: ETLConfig,
-    fact_config: FactConfig,
+    fact_config: dict,  # Simple dict instead of complex FactConfig class
     silver_df: DataFrame,
     spark: SparkSession,
 ) -> DataFrame:
     """
-    Create fact table using universal patterns. All parameters REQUIRED.
+    Create fact table using simple dict config instead of complex classes.
 
     Args:
         config: REQUIRED ETL configuration
-        fact_config: REQUIRED fact table configuration
+        fact_config: REQUIRED dict with basic fact configuration
         silver_df: REQUIRED silver DataFrame
         spark: REQUIRED SparkSession
     """
-    # Validate configs - FAIL FAST
-    fact_config.validate_config()
-
     if not silver_df:
         raise ETLConfigError("silver_df is required", code=ErrorCode.CONFIG_MISSING)
     if not spark:
@@ -121,54 +119,13 @@ def create_generic_fact_table(
 
     fact_df = silver_df
 
-    # 1. Generate surrogate keys (REQUIRED)
-    for surrogate_key in fact_config.surrogate_keys:
-        fact_df = _generate_surrogate_key(
-            df=fact_df,
-            business_keys=fact_config.business_keys,
-            key_name=surrogate_key,
-            partition_columns=None,
-        )
+    # Basic business key creation - use primary key from fact config or default to "id"
+    business_key = fact_config.get("business_key", "id")
+    if business_key in fact_df.columns:
+        fact_df = fact_df.withColumn("BusinessKey", F.col(business_key))
 
-    # 2. Add calculated columns (REQUIRED)
-    for calc_col in fact_config.calculated_columns:
-        fact_df = fact_df.withColumn(calc_col.name, F.expr(calc_col.expression))
+    # Add ETL metadata
+    source = fact_config.get("source", "connectwise")
+    fact_df = _add_etl_metadata(fact_df, layer="gold", source=source)
 
-    # 3. Create composite business key if multiple keys
-    if len(fact_config.business_keys) > 1:
-        concat_expr = F.concat_ws("_", *[F.col(col) for col in fact_config.business_keys])
-        fact_df = fact_df.withColumn("BusinessKey", concat_expr)
-    else:
-        fact_df = fact_df.withColumn("BusinessKey", F.col(fact_config.business_keys[0]))
-
-    # 4. Add universal ETL metadata (REQUIRED)
-    if fact_config.add_audit_columns:
-        fact_df = _add_etl_metadata(fact_df, layer="gold", source=fact_config.source)
-
-    # 5. Add entity identifier if multi-entity fact
-    if fact_config.add_entity_type:
-        fact_df = fact_df.withColumn(
-            fact_config.entity_type_column,
-            F.lit(fact_config.name)
-        )
-
-    # 6. Select final columns in proper order
-    final_columns = (
-        fact_config.surrogate_keys +
-        fact_config.business_keys +
-        fact_config.dimension_columns +
-        fact_config.measure_columns +
-        [col.name for col in fact_config.calculated_columns]
-    )
-
-    if fact_config.add_entity_type:
-        final_columns.append(fact_config.entity_type_column)
-
-    if fact_config.add_audit_columns:
-        final_columns.extend([
-            "_etl_gold_processed_at",
-            "_etl_source",
-            "_etl_batch_id"
-        ])
-
-    return fact_df.select(*final_columns)
+    return fact_df

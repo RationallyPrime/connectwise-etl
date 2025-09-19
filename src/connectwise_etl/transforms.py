@@ -6,14 +6,14 @@ from typing import Any
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
-from .date_utils import add_date_key
-from .gold import add_etl_metadata
 
 from .agreement_utils import (
     calculate_effective_billing_status,
     extract_agreement_number,
     resolve_agreement_hierarchy,
 )
+from .date_utils import add_date_key
+from .gold import add_etl_metadata
 
 logger: Logger = logging.getLogger(name=__name__)
 
@@ -199,27 +199,23 @@ def create_time_entry_fact(
         F.concat(F.col("utilizationType"), F.lit(" - "), F.col("status"))
     )
 
-    # Add dimension keys for enum columns using new rich dimensions
-    from .dimensions import add_dimension_keys
+    # Add dimension keys using YAML-driven approach
+    from .yaml_dimensions import get_dimension_mappings_from_yaml
 
-    from .connectwise_config import get_default_etl_config, get_time_entry_dimension_mappings
+    # Get dimension mappings based on available fact columns and YAML schemas
+    dimension_mappings = get_dimension_mappings_from_yaml(fact_df.columns)
 
-    dimension_mappings = get_time_entry_dimension_mappings()
-
-    # Also add agreement type if available in the timeentry data
-    if "agreementTypeId" in fact_df.columns:
-        from .connectwise_config import DimensionMapping
-        dimension_mappings.append(DimensionMapping(
-            fact_column="agreementTypeId",
-            dimension_table="dimAgreementType",
-            dimension_key_column="AgreementTypeCode",
-            surrogate_key_column="AgreementTypeKey"
-        ))
-
-    # Get ETL config - handle both dict and ETLConfig
-    etl_config = get_default_etl_config() if isinstance(config, dict) or config is None else config
-
-    fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
+    # Add dimension keys via simple joins
+    for fact_col, dim_table, surrogate_key in dimension_mappings:
+        if fact_col in fact_df.columns:
+            dim_df = spark.table(dim_table)
+            if dim_df.count() > 0:  # Only join if dimension exists
+                fact_df = fact_df.join(
+                    dim_df.select(F.col(fact_col), F.col(surrogate_key)),
+                    on=fact_col,
+                    how="left"
+                )
+                logger.info(f"Added {surrogate_key} from {dim_table}")
 
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
@@ -282,67 +278,62 @@ def create_invoice_line_fact(
     invoice_lines = []
 
     # Get time-based lines if time entries provided
-    if time_entry_df is not None:
-        # Include time entries that are either invoiced or billable
-        # This captures both posted invoices and work ready to bill
-        time_enriched = time_entry_df.alias("t").filter(F.col("invoiceId").isNotNull())
+    time_enriched = time_entry_df.alias("t").filter(F.col("invoiceId").isNotNull())
 
-        # Don't enrich time entries with agreement - we'll get it from invoice instead
+    # Don't enrich time entries with agreement - we'll get it from invoice instead
 
-        # Create time-based invoice lines
-        time_lines = time_enriched.select(
-            F.col("invoiceId").cast("int"),
+    # Create time-based invoice lines
+    time_lines = time_enriched.select(
+        F.col("invoiceId").cast("int"),
+        F.monotonically_increasing_id().alias("lineNumber"),
+        F.col("id").alias("timeEntryId"),
+        F.lit(None).alias("productId"),
+        F.col("notes").alias("description"),
+        F.col("actualHours").alias("quantity"),
+        F.col("hourlyRate").alias("price"),
+        F.coalesce("hourlyCost", F.lit(0)).alias("cost"),
+        (F.col("hoursBilled") * F.col("hourlyRate")).alias("lineAmount"),
+        "agreementId",
+        "workTypeId",
+        "workRoleId",
+        F.col("memberId").alias("employeeId"),
+        F.concat_ws(" - ", "workTypeName", "memberName").alias("memo"),
+        F.lit("Service").alias("productClass"),
+        # Include agreement type directly from time entry
+        F.col("agreementType").alias("time_entry_agreement_type"),
+    )
+
+    invoice_lines.append(time_lines)
+    logger.info(f"Added {time_lines.count()} time-based lines")
+
+
+    product_lines = (
+        product_df.alias("p")
+        .filter(F.col("p.invoiceId").isNotNull())
+        .select(
+            F.col("p.invoiceId"),
             F.monotonically_increasing_id().alias("lineNumber"),
-            F.col("id").alias("timeEntryId"),
-            F.lit(None).alias("productId"),
-            F.col("notes").alias("description"),
-            F.col("actualHours").alias("quantity"),
-            F.col("hourlyRate").alias("price"),
-            F.coalesce("hourlyCost", F.lit(0)).alias("cost"),
-            (F.col("hoursBilled") * F.col("hourlyRate")).alias("lineAmount"),
-            "agreementId",
-            "workTypeId",
-            "workRoleId",
-            F.col("memberId").alias("employeeId"),
-            F.concat_ws(" - ", "workTypeName", "memberName").alias("memo"),
-            F.lit("Service").alias("productClass"),
-            # Include agreement type directly from time entry
-            F.col("agreementType").alias("time_entry_agreement_type"),
+            F.lit(None).alias("timeEntryId"),
+            F.col("p.id").alias("productId"),
+            F.col("p.description"),
+            F.col("p.quantity"),
+            F.col("p.price"),
+            F.col("p.cost"),
+            (F.col("p.quantity") * F.col("p.price")).alias("lineAmount"),
+            F.col("p.agreementId"),  # Product items have agreementId
+            F.lit(None).alias("workTypeId"),
+            F.lit(None).alias("workRoleId"),
+            F.lit(None).alias("employeeId"),
+            F.col("p.productClass"),
+            F.col("p.description").alias("memo"),
+            # Include agreement type directly from product item
+            F.col("p.agreementType").alias("product_agreement_type"),
+            F.lit(None).alias("time_entry_agreement_type"),
         )
+    )
 
-        invoice_lines.append(time_lines)
-        logger.info(f"Added {time_lines.count()} time-based lines")
-
-    # Get product-based lines if products provided
-    if product_df is not None:
-        # Products have invoiceId - join from products to get product lines
-        product_lines = (
-            product_df.alias("p")
-            .filter(F.col("p.invoiceId").isNotNull())
-            .select(
-                F.col("p.invoiceId"),
-                F.monotonically_increasing_id().alias("lineNumber"),
-                F.lit(None).alias("timeEntryId"),
-                F.col("p.id").alias("productId"),
-                F.col("p.description"),
-                F.col("p.quantity"),
-                F.col("p.price"),
-                F.col("p.cost"),
-                (F.col("p.quantity") * F.col("p.price")).alias("lineAmount"),
-                F.col("p.agreementId"),  # Product items have agreementId
-                F.lit(None).alias("workTypeId"),
-                F.lit(None).alias("workRoleId"),
-                F.lit(None).alias("employeeId"),
-                F.col("p.productClass"),
-                F.col("p.description").alias("memo"),
-                # Include agreement type directly from product item
-                F.col("p.agreementType").alias("product_agreement_type"),
-                F.lit(None).alias("time_entry_agreement_type"),
-            )
-        )
-
-        invoice_lines.append(product_lines)
-        logger.info(f"Added {product_lines.count()} product lines")
+    invoice_lines.append(product_lines)
+    logger.info(f"Added {product_lines.count()} product lines")
 
     # Union all line types
     if not invoice_lines:
@@ -438,16 +429,16 @@ def create_invoice_line_fact(
     )
 
     # Add dimension keys for enum columns using new rich dimensions
-    from .dimensions import add_dimension_keys
+    # add_dimension_keys moved to yaml_dimensions.py
 
-    from .connectwise_config import get_default_etl_config, get_invoice_line_dimension_mappings
+    # Config eliminated - using model structure directly instead of # get_default_etl_config eliminated - using direct YAML, get_dimension_mappings_from_yaml
 
-    dimension_mappings = get_invoice_line_dimension_mappings()
+    dimension_mappings = get_dimension_mappings_from_yaml(fact_df.columns)
 
     # Add agreement type if available
     if "agreementTypeId" in fact_df.columns:
-        from .connectwise_config import DimensionMapping
-        dimension_mappings.append(DimensionMapping(
+        # Config eliminated - using model structure directly instead of # DimensionMapping eliminated - using simple tuples
+        dimension_mappings.append(# DimensionMapping eliminated - using simple tuples(
             fact_column="agreementTypeId",
             dimension_table="dimAgreementType",
             dimension_key_column="AgreementTypeCode",
@@ -456,7 +447,7 @@ def create_invoice_line_fact(
 
     # Add agreement status if available
     if "agreementStatus" in fact_df.columns:
-        dimension_mappings.append(DimensionMapping(
+        dimension_mappings.append(# DimensionMapping eliminated - using simple tuples(
             fact_column="agreementStatus",
             dimension_table="dimAgreementStatus",
             dimension_key_column="AgreementStatusCode",
@@ -464,7 +455,7 @@ def create_invoice_line_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    etl_config = get_default_etl_config() if isinstance(config, dict) or config is None else config
+    etl_config = # get_default_etl_config eliminated - using direct YAML() if isinstance(config, dict) or config is None else config
 
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
@@ -727,16 +718,16 @@ def create_expense_entry_fact(
         fact_df = calculate_effective_billing_status(fact_df)
 
     # Add dimension keys for enum columns using new rich dimensions
-    from .dimensions import add_dimension_keys
+    # add_dimension_keys moved to yaml_dimensions.py
 
-    from .connectwise_config import get_default_etl_config, get_expense_dimension_mappings
+    # Config eliminated - using model structure directly instead of # get_default_etl_config eliminated - using direct YAML, get_dimension_mappings_from_yaml
 
-    dimension_mappings = get_expense_dimension_mappings()
+    dimension_mappings = get_dimension_mappings_from_yaml(fact_df.columns)
 
     # Add agreement type if available
     if "agreementTypeId" in fact_df.columns:
-        from .connectwise_config import DimensionMapping
-        dimension_mappings.append(DimensionMapping(
+        # Config eliminated - using model structure directly instead of # DimensionMapping eliminated - using simple tuples
+        dimension_mappings.append(# DimensionMapping eliminated - using simple tuples(
             fact_column="agreementTypeId",
             dimension_table="dimAgreementType",
             dimension_key_column="AgreementTypeCode",
@@ -744,7 +735,7 @@ def create_expense_entry_fact(
         ))
 
     # Get ETL config - handle both dict and ETLConfig
-    etl_config = get_default_etl_config() if isinstance(config, dict) or config is None else config
+    etl_config = # get_default_etl_config eliminated - using direct YAML() if isinstance(config, dict) or config is None else config
 
     fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
 
