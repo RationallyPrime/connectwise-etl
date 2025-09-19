@@ -1,6 +1,6 @@
-# Unified ETL Framework
+# ConnectWise ETL Framework
 
-A modern, package-based ETL framework implementing medallion architecture (Bronze → Silver → Gold) for Microsoft Fabric OneLake. Built with a fail-fast philosophy, generic patterns, and business-specific adapters.
+A modern, package-based ETL framework implementing medallion architecture (Bronze → Silver → Gold) for Microsoft Fabric OneLake. Specifically designed for ConnectWise PSA integration with fail-fast philosophy and business-specific logic.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Pydantic V2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://docs.pydantic.dev/latest/)
@@ -8,11 +8,11 @@ A modern, package-based ETL framework implementing medallion architecture (Bronz
 
 ## 🚀 Overview
 
-The framework provides a **configuration-driven, fail-fast ETL pipeline** that transforms raw API data into analytics-ready datasets. It follows the principle of "generic where possible, specialized where necessary" with clear separation between core functionality and source-specific logic.
+The framework provides a **configuration-driven, fail-fast ETL pipeline** that transforms ConnectWise PSA data into analytics-ready datasets. It handles complex Icelandic business logic while maintaining clean separation between core ETL patterns and ConnectWise-specific logic.
 
 ### Key Features
 
-- 🏗️ **Package-Based Architecture**: Clean separation between core and integrations
+- 🏗️ **Package-Based Architecture**: Clean separation between core ETL patterns and ConnectWise logic
 - ⚡ **Fail-Fast Philosophy**: All parameters required, explicit errors, no silent failures
 - 🔄 **SparkDantic Integration**: Seamless Pydantic→Spark schema conversion for distributed processing
 - 🏛️ **True Medallion Architecture**: Bronze (validated) → Silver (transformed) → Gold (enriched)
