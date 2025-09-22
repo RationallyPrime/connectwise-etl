@@ -19,7 +19,6 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 
 # ETLConfig, FactConfig eliminated - using simple configuration instead
-from .config.models import ETLConfig
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
 from .utils.exceptions import ETLConfigError, ETLProcessingError
@@ -98,7 +97,7 @@ def _generate_surrogate_key(
 
 @with_etl_error_handling(operation="create_generic_fact_table")
 def create_generic_fact_table(
-    config: ETLConfig,
+    config: dict,
     fact_config: dict,  # Simple dict instead of complex FactConfig class
     silver_df: DataFrame,
     spark: SparkSession,

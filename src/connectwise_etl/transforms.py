@@ -428,36 +428,20 @@ def create_invoice_line_fact(
         .otherwise(F.lit(None)),
     )
 
-    # Add dimension keys for enum columns using new rich dimensions
-    # add_dimension_keys moved to yaml_dimensions.py
+    # Add dimension keys using YAML schema - no more config monster
+    from .yaml_dimensions import get_dimension_mappings_from_yaml
 
-    # Config eliminated - using model structure directly instead of # get_default_etl_config eliminated - using direct YAML, get_dimension_mappings_from_yaml
-
+    # Get dimension mappings and add keys via joins
     dimension_mappings = get_dimension_mappings_from_yaml(fact_df.columns)
-
-    # Add agreement type if available
-    if "agreementTypeId" in fact_df.columns:
-        # Config eliminated - using model structure directly instead of # DimensionMapping eliminated - using simple tuples
-        dimension_mappings.append(# DimensionMapping eliminated - using simple tuples(
-            fact_column="agreementTypeId",
-            dimension_table="dimAgreementType",
-            dimension_key_column="AgreementTypeCode",
-            surrogate_key_column="AgreementTypeKey"
-        ))
-
-    # Add agreement status if available
-    if "agreementStatus" in fact_df.columns:
-        dimension_mappings.append(# DimensionMapping eliminated - using simple tuples(
-            fact_column="agreementStatus",
-            dimension_table="dimAgreementStatus",
-            dimension_key_column="AgreementStatusCode",
-            surrogate_key_column="AgreementStatusKey"
-        ))
-
-    # Get ETL config - handle both dict and ETLConfig
-    etl_config = # get_default_etl_config eliminated - using direct YAML() if isinstance(config, dict) or config is None else config
-
-    fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
+    for fact_col, dim_table, surrogate_key in dimension_mappings:
+        if fact_col in fact_df.columns:
+            dim_df = spark.table(dim_table)
+            if dim_df.count() > 0:  # Only join if dimension exists
+                fact_df = fact_df.join(
+                    dim_df.select(F.col(fact_col), F.col(surrogate_key)),
+                    on=fact_col,
+                    how="left"
+                )
 
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
@@ -718,26 +702,20 @@ def create_expense_entry_fact(
         fact_df = calculate_effective_billing_status(fact_df)
 
     # Add dimension keys for enum columns using new rich dimensions
-    # add_dimension_keys moved to yaml_dimensions.py
+    # Add dimension keys using YAML schema - no more config monster
+    from .yaml_dimensions import get_dimension_mappings_from_yaml
 
-    # Config eliminated - using model structure directly instead of # get_default_etl_config eliminated - using direct YAML, get_dimension_mappings_from_yaml
-
+    # Get dimension mappings and add keys via joins
     dimension_mappings = get_dimension_mappings_from_yaml(fact_df.columns)
-
-    # Add agreement type if available
-    if "agreementTypeId" in fact_df.columns:
-        # Config eliminated - using model structure directly instead of # DimensionMapping eliminated - using simple tuples
-        dimension_mappings.append(# DimensionMapping eliminated - using simple tuples(
-            fact_column="agreementTypeId",
-            dimension_table="dimAgreementType",
-            dimension_key_column="AgreementTypeCode",
-            surrogate_key_column="AgreementTypeKey"
-        ))
-
-    # Get ETL config - handle both dict and ETLConfig
-    etl_config = # get_default_etl_config eliminated - using direct YAML() if isinstance(config, dict) or config is None else config
-
-    fact_df = add_dimension_keys(etl_config, fact_df, dimension_mappings, spark)
+    for fact_col, dim_table, surrogate_key in dimension_mappings:
+        if fact_col in fact_df.columns:
+            dim_df = spark.table(dim_table)
+            if dim_df.count() > 0:  # Only join if dimension exists
+                fact_df = fact_df.join(
+                    dim_df.select(F.col(fact_col), F.col(surrogate_key)),
+                    on=fact_col,
+                    how="left"
+                )
 
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")

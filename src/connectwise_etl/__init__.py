@@ -3,13 +3,7 @@
 import logging
 
 from .client import ConnectWiseClient, ConnectWiseExtractor
-from .config.models import (
-    ETLConfig,
-    IntegrationConfig,
-    LayerConfig,
-    SparkConfig,
-    TableNamingConvention,
-)
+# Config models eliminated with config monster
 from .main import run_etl_pipeline
 from .models import models as models_module
 from .transforms import (
@@ -46,11 +40,6 @@ entity_configs = {}
 __all__ = [
     "ConnectWiseClient",
     "ConnectWiseExtractor",
-    "ETLConfig",
-    "IntegrationConfig",
-    "LayerConfig",
-    "SparkConfig",
-    "TableNamingConvention",
     "create_expense_entry_fact",
     "create_invoice_line_fact",
     "create_time_entry_fact",

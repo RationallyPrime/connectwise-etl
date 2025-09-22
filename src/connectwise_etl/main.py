@@ -7,7 +7,7 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from .config.models import ETLConfig
+# ETLConfig eliminated with config monster
 from .incremental import (
     IncrementalProcessor,
     build_incremental_conditions,
@@ -73,7 +73,7 @@ def _flatten_structs(df: DataFrame, max_depth: int = 3) -> DataFrame:
 
 @with_etl_error_handling(operation="extract_bronze_data")
 def extract_bronze_data(
-    config: ETLConfig,
+    config: dict,
     spark: SparkSession,
     mode: Literal["full", "incremental"],
     lookback_days: int,
@@ -124,7 +124,7 @@ def extract_bronze_data(
 
 @with_etl_error_handling(operation="transform_silver_data")
 def transform_silver_data(
-    config: ETLConfig,
+    config: dict,
     spark: SparkSession,
     mode: Literal["full", "incremental"],
 ) -> None:
@@ -141,7 +141,7 @@ def transform_silver_data(
         silver_table = config.get_table_name("silver", "connectwise", entity_name.lower())
 
         if mode == "incremental" and incremental_processor:
-            bronze_df = incremental_processor.get_changed_records(bronze_table, silver_table)
+            bronze_df = incremental_processor.get_changed_records(bronze_table, target_table=silver_table)
         else:
             bronze_df = spark.table(bronze_table)
 
@@ -179,7 +179,7 @@ def transform_silver_data(
 
 
 @with_etl_error_handling(operation="create_gold_tables_yaml")
-def create_gold_tables_yaml(config: ETLConfig, spark: SparkSession) -> None:
+def create_gold_tables_yaml(config: dict, spark: SparkSession) -> None:
     """Create fact tables and dimensions using YAML schemas."""
     from .yaml_dimensions import create_all_dimensions_yaml
     from . import transforms
@@ -250,7 +250,7 @@ def create_gold_tables_yaml(config: ETLConfig, spark: SparkSession) -> None:
 
 @with_etl_error_handling(operation="run_etl_pipeline")
 def run_etl_pipeline(
-    config: ETLConfig,
+    config: dict,
     spark: SparkSession,
     layers: list[Literal["bronze", "silver", "gold"]],
     mode: Literal["full", "incremental"],

@@ -7,7 +7,7 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.window import Window
 
-from .config.models import ETLConfig
+# ETLConfig eliminated with config monster
 from .facts import _add_etl_metadata
 from .schema_loader import SchemaLoader
 from .utils.base import ErrorCode
