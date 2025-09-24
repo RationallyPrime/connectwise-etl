@@ -13,10 +13,10 @@ from . import CustomFieldValue
 
 
 class Adjustment(SparkModel):
-    id: int | None
-    amount: float | None
-    description: Annotated[str | None, Field(description=' Max length: 1000;')]
-    effectiveDate: datetime | None
-    agreementId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    amount: float | None = None
+    description: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    effectiveDate: datetime | None = None
+    agreementId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None

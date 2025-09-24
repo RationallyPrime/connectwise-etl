@@ -34,9 +34,8 @@ def _add_etl_metadata(df: DataFrame, layer: str, source: str) -> DataFrame:
     if not source:
         raise ETLConfigError("Source is required", code=ErrorCode.CONFIG_MISSING)
 
-    metadata_df = (
-        df.withColumn(f"_etl_{layer}_processed_at", F.current_timestamp())
-        .withColumn("_etl_source", F.lit(source))
+    metadata_df = df.withColumn(f"_etl_{layer}_processed_at", F.current_timestamp()).withColumn(
+        "_etl_source", F.lit(source)
     )
 
     metadata_df = metadata_df.withColumn(
@@ -58,7 +57,9 @@ def _generate_surrogate_key(
     if not df:
         raise ETLConfigError("DataFrame is required", code=ErrorCode.CONFIG_MISSING)
     if not business_keys:
-        raise ETLConfigError("business_keys list is required and cannot be empty", code=ErrorCode.CONFIG_MISSING)
+        raise ETLConfigError(
+            "business_keys list is required and cannot be empty", code=ErrorCode.CONFIG_MISSING
+        )
     if not key_name:
         raise ETLConfigError("key_name is required", code=ErrorCode.CONFIG_MISSING)
 
@@ -68,7 +69,7 @@ def _generate_surrogate_key(
         raise ETLProcessingError(
             f"Business key columns not found in DataFrame: {missing_keys}",
             code=ErrorCode.GOLD_SURROGATE_KEY,
-            details={"missing_keys": missing_keys, "available_columns": df.columns}
+            details={"missing_keys": missing_keys, "available_columns": df.columns},
         )
 
     try:
@@ -91,13 +92,12 @@ def _generate_surrogate_key(
         raise ETLProcessingError(
             f"Surrogate key generation failed: {e}",
             code=ErrorCode.GOLD_SURROGATE_KEY,
-            details={"key_name": key_name, "business_keys": business_keys, "error": str(e)}
+            details={"key_name": key_name, "business_keys": business_keys, "error": str(e)},
         ) from e
 
 
 @with_etl_error_handling(operation="create_generic_fact_table")
 def create_generic_fact_table(
-    config: dict,
     fact_config: dict,  # Simple dict instead of complex FactConfig class
     silver_df: DataFrame,
     spark: SparkSession,
@@ -106,7 +106,6 @@ def create_generic_fact_table(
     Create fact table using simple dict config instead of complex classes.
 
     Args:
-        config: REQUIRED ETL configuration
         fact_config: REQUIRED dict with basic fact configuration
         silver_df: REQUIRED silver DataFrame
         spark: REQUIRED SparkSession

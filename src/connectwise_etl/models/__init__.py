@@ -15,26 +15,26 @@ from sparkdantic import SparkModel
 
 
 class AccountingBatch(SparkModel):
-    id: int | None
-    batchIdentifier: str | None
-    exportInvoicesFlag: bool | None
-    exportExpensesFlag: bool | None
-    exportProductsFlag: bool | None
-    closedFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    batchIdentifier: str | None = None
+    exportInvoicesFlag: bool | None = None
+    exportExpensesFlag: bool | None = None
+    exportProductsFlag: bool | None = None
+    closedFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AccountingPackage(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
 
 
 class AccountingPackageReference(SparkModel):
-    id: int | None
-    identifier: AccountingPackageReferenceIdentifier | None
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: AccountingPackageReferenceIdentifier | None = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AccountingPackageReferenceIdentifier(str, Enum):
@@ -47,27 +47,27 @@ class AccountingPackageReferenceIdentifier(str, Enum):
 
 
 class AccountingPackageSetup(SparkModel):
-    id: int | None
-    accountingPackage: AccountingPackageReference
-    directTransferFlag: bool | None
-    includeInvoicesFlag: bool | None
-    invoiceFormat: AccountingPackageSetupInvoiceFormat | None
-    includeExpensesFlag: bool | None
-    transferExpensesAsBillFlag: bool | None
-    expenseFormat: AccountingPackageSetupExpenseFormat | None
-    suppressMemoFlag: bool | None
-    syncPaymentInfoFlag: bool | None
-    syncWisePayPaymentInfoFlag: bool | None
-    includeSalesTaxFlag: bool | None
-    enableTaxGroupsFlag: bool | None
-    zeroDollarTaxAmountsFlag: bool | None
-    includeItemsFlag: bool | None
-    inventorySOHFlag: bool | None
-    sendComponentAmountFlag: bool | None
-    sendUomFlag: bool | None
-    includeCogsEntriesFlag: bool | None
-    includeCogsDropShipFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    accountingPackage: AccountingPackageReference | None = None
+    directTransferFlag: bool | None = None
+    includeInvoicesFlag: bool | None = None
+    invoiceFormat: AccountingPackageSetupInvoiceFormat | None = None
+    includeExpensesFlag: bool | None = None
+    transferExpensesAsBillFlag: bool | None = None
+    expenseFormat: AccountingPackageSetupExpenseFormat | None = None
+    suppressMemoFlag: bool | None = None
+    syncPaymentInfoFlag: bool | None = None
+    syncWisePayPaymentInfoFlag: bool | None = None
+    includeSalesTaxFlag: bool | None = None
+    enableTaxGroupsFlag: bool | None = None
+    zeroDollarTaxAmountsFlag: bool | None = None
+    includeItemsFlag: bool | None = None
+    inventorySOHFlag: bool | None = None
+    sendComponentAmountFlag: bool | None = None
+    sendUomFlag: bool | None = None
+    includeCogsEntriesFlag: bool | None = None
+    includeCogsDropShipFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AccountingPackageSetupExpenseFormat(str, Enum):
@@ -82,56 +82,56 @@ class AccountingPackageSetupInvoiceFormat(str, Enum):
 
 
 class Activity(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    type: ActivityTypeReference | None
-    company: CompanyReference | None
-    contact: ContactReference | None
-    phoneNumber: Annotated[str | None, Field(description=' Max length: 30;')]
-    email: Annotated[str | None, Field(description=' Max length: 250;')]
-    status: ActivityStatusReference | None
-    opportunity: OpportunityReference | None
-    ticket: TicketReference | None
-    agreement: AgreementReference | None
-    campaign: CampaignReference | None
-    notes: str | None
-    dateStart: datetime | None
-    dateEnd: datetime | None
-    assignedBy: MemberReference | None
-    assignTo: MemberReference
-    scheduleStatus: ScheduleStatusReference | None
-    reminder: ReminderReference | None
-    where: ServiceLocationReference | None
-    notifyFlag: bool | None
-    mobileGuid: UUID | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    type: ActivityTypeReference | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    phoneNumber: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    email: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    status: ActivityStatusReference | None = None
+    opportunity: OpportunityReference | None = None
+    ticket: TicketReference | None = None
+    agreement: AgreementReference | None = None
+    campaign: CampaignReference | None = None
+    notes: str | None = None
+    dateStart: datetime | None = None
+    dateEnd: datetime | None = None
+    assignedBy: MemberReference | None = None
+    assignTo: MemberReference | None = None
+    scheduleStatus: ScheduleStatusReference | None = None
+    reminder: ReminderReference | None = None
+    where: ServiceLocationReference | None = None
+    notifyFlag: bool | None = None
+    mobileGuid: UUID | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ActivityReference(SparkModel):
-    id: int | None
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ActivityStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    spawnFollowupFlag: bool | None
-    closedFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    spawnFollowupFlag: bool | None = None
+    closedFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ActivityStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    closedFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    closedFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ActivityStatusReference(ActivityReference):
@@ -139,25 +139,25 @@ class ActivityStatusReference(ActivityReference):
 
 
 class ActivityStopwatch(SparkModel):
-    activityId: int
-    activityMobileGuid: UUID | None
-    agreement: AgreementReference | None
-    billableOption: ActivityStopwatchBillableOption | None
-    businessUnitId: int | None
-    dateEntered: datetime | None
-    endTime: datetime | None
-    id: int | None
-    internalNotes: str | None
-    locationId: int | None
-    member: MemberReference
-    mobileGuid: UUID | None
-    notes: Annotated[str | None, Field(description=' Max length: 4000;')]
-    startTime: datetime | None
-    status: ActivityStopwatchStatus
-    totalPauseTime: int | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    activityId: int | None = None
+    activityMobileGuid: UUID | None = None
+    agreement: AgreementReference | None = None
+    billableOption: ActivityStopwatchBillableOption | None = None
+    businessUnitId: int | None = None
+    dateEntered: datetime | None = None
+    endTime: datetime | None = None
+    id: int | None = None
+    internalNotes: str | None = None
+    locationId: int | None = None
+    member: MemberReference | None = None
+    mobileGuid: UUID | None = None
+    notes: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    startTime: datetime | None = None
+    status: ActivityStopwatchStatus | None = None
+    totalPauseTime: int | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ActivityStopwatchBillableOption(str, Enum):
@@ -175,15 +175,15 @@ class ActivityStopwatchStatus(str, Enum):
 
 
 class ActivityType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    points: int | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    emailFlag: bool | None
-    memoFlag: bool | None
-    historyFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    points: int | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    emailFlag: bool | None = None
+    memoFlag: bool | None = None
+    historyFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ActivityTypeReference(ActivityReference):
@@ -191,38 +191,40 @@ class ActivityTypeReference(ActivityReference):
 
 
 class Addition(SparkModel):
-    id: int | None
-    product: IvItemReference
-    quantity: float | None
-    lessIncluded: float | None
-    unitPrice: float | None
-    unitCost: float | None
-    billCustomer: AdditionBillCustomer
-    effectiveDate: datetime | None
-    cancelledDate: datetime | None
-    taxableFlag: bool | None
-    serialNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    invoiceDescription: Annotated[str | None, Field(description=' Max length: 6000;')]
-    purchaseItemFlag: bool | None
-    specialOrderFlag: bool | None
-    agreementId: int | None
-    description: str | None
-    billedQuantity: float | None
-    uom: str | None
-    extPrice: float | None
-    extCost: float | None
-    sequenceNumber: float | None
-    margin: float | None
-    prorateCost: float | None
-    proratePrice: float | None
-    extendedProrateCost: float | None
-    extendedProratePrice: float | None
-    prorateCurrentPeriodFlag: bool | None
-    opportunity: OpportunityReference | None
-    agreementStatus: AdditionAgreementStatus | None
-    invoiceGrouping: InvoiceGroupingReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    product: IvItemReference | None = None
+    quantity: float | None = None
+    lessIncluded: float | None = None
+    unitPrice: float | None = None
+    unitCost: float | None = None
+    billCustomer: AdditionBillCustomer | None = None
+    effectiveDate: datetime | None = None
+    cancelledDate: datetime | None = None
+    taxableFlag: bool | None = None
+    serialNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    invoiceDescription: Annotated[
+        str | None, Field(description=' Max length: 6000;')
+    ] = None
+    purchaseItemFlag: bool | None = None
+    specialOrderFlag: bool | None = None
+    agreementId: int | None = None
+    description: str | None = None
+    billedQuantity: float | None = None
+    uom: str | None = None
+    extPrice: float | None = None
+    extCost: float | None = None
+    sequenceNumber: float | None = None
+    margin: float | None = None
+    prorateCost: float | None = None
+    proratePrice: float | None = None
+    extendedProrateCost: float | None = None
+    extendedProratePrice: float | None = None
+    prorateCurrentPeriodFlag: bool | None = None
+    opportunity: OpportunityReference | None = None
+    agreementStatus: AdditionAgreementStatus | None = None
+    invoiceGrouping: InvoiceGroupingReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class AdditionAgreementStatus(str, Enum):
@@ -239,21 +241,21 @@ class AdditionBillCustomer(str, Enum):
 
 
 class AddressFormat(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    format: Annotated[str, Field(description=' Max length: 250;')]
-    defaultFlag: bool | None
-    countryIds: list[int] | None
-    addAllCountries: bool | None
-    removeAllCountries: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    format: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    defaultFlag: bool | None = None
+    countryIds: list[int] | None = None
+    addAllCountries: bool | None = None
+    removeAllCountries: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AddressFormatInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AddressFormatReference(ActivityReference):
@@ -261,17 +263,17 @@ class AddressFormatReference(ActivityReference):
 
 
 class AdjustmentDetail(SparkModel):
-    id: int | None
-    catalogItem: CatalogItemReference
-    description: Annotated[str | None, Field(description=' Max length: 50;')]
-    quantityOnHand: float | None
-    unitCost: float | None
-    warehouse: WarehouseReference
-    warehouseBin: WarehouseBinReference
-    quantityAdjusted: int
-    serialNumber: Annotated[str | None, Field(description=' Max length: 1000;')]
-    adjustment: AdjustmentReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    catalogItem: CatalogItemReference | None = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    quantityOnHand: float | None = None
+    unitCost: float | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    quantityAdjusted: int | None = None
+    serialNumber: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    adjustment: AdjustmentReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AdjustmentDetailReference(ActivityReference):
@@ -283,13 +285,13 @@ class AdjustmentReference(ActivityReference):
 
 
 class AdjustmentType(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 50;')]
-    name: Annotated[str | None, Field(description=' Max length: 100;')]
-    auditTrailFlag: bool | None
-    dateCreated: datetime | None
-    createdBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    auditTrailFlag: bool | None = None
+    dateCreated: datetime | None = None
+    createdBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AdjustmentTypeInfo(ActivityReference):
@@ -297,113 +299,115 @@ class AdjustmentTypeInfo(ActivityReference):
 
 
 class AdjustmentTypeReference(SparkModel):
-    id: int | None
-    identifier: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Agreement(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    type: AgreementTypeReference
-    company: CompanyReference
-    contact: ContactReference
-    site: SiteReference | None
-    subContractCompany: CompanyReference | None
-    subContractContact: ContactReference | None
-    parentAgreement: AgreementReference | None
-    customerPO: Annotated[str | None, Field(description=' Max length: 50;')]
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    restrictLocationFlag: bool | None
-    restrictDepartmentFlag: bool | None
-    startDate: datetime | None
-    endDate: datetime | None
-    noEndingDateFlag: bool | None
-    opportunity: OpportunityReference | None
-    cancelledFlag: bool | None
-    dateCancelled: datetime | None
-    reasonCancelled: Annotated[str | None, Field(description=' Max length: 100;')]
-    sla: SLAReference | None
-    workOrder: Annotated[str | None, Field(description=' Max length: 20;')]
-    internalNotes: str | None
-    applicationUnits: AgreementApplicationUnits | None
-    applicationLimit: float | None
-    applicationCycle: AgreementApplicationCycle | None
-    applicationUnlimitedFlag: bool | None
-    oneTimeFlag: bool | None
-    coverAgreementTime: bool | None
-    coverAgreementProduct: bool | None
-    coverAgreementExpense: bool | None
-    coverSalesTax: bool | None
-    carryOverUnused: bool | None
-    allowOverruns: bool | None
-    expiredDays: int | None
-    limit: int | None
-    expireWhenZero: bool | None
-    chargeToFirm: bool | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    type: AgreementTypeReference | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    site: SiteReference | None = None
+    subContractCompany: CompanyReference | None = None
+    subContractContact: ContactReference | None = None
+    parentAgreement: AgreementReference | None = None
+    customerPO: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    restrictLocationFlag: bool | None = None
+    restrictDepartmentFlag: bool | None = None
+    startDate: datetime | None = None
+    endDate: datetime | None = None
+    noEndingDateFlag: bool | None = None
+    opportunity: OpportunityReference | None = None
+    cancelledFlag: bool | None = None
+    dateCancelled: datetime | None = None
+    reasonCancelled: Annotated[str | None, Field(description=' Max length: 100;')] = (
+        None
+    )
+    sla: SLAReference | None = None
+    workOrder: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    internalNotes: str | None = None
+    applicationUnits: AgreementApplicationUnits | None = None
+    applicationLimit: float | None = None
+    applicationCycle: AgreementApplicationCycle | None = None
+    applicationUnlimitedFlag: bool | None = None
+    oneTimeFlag: bool | None = None
+    coverAgreementTime: bool | None = None
+    coverAgreementProduct: bool | None = None
+    coverAgreementExpense: bool | None = None
+    coverSalesTax: bool | None = None
+    carryOverUnused: bool | None = None
+    allowOverruns: bool | None = None
+    expiredDays: int | None = None
+    limit: int | None = None
+    expireWhenZero: bool | None = None
+    chargeToFirm: bool | None = None
     employeeCompRate: Annotated[
         AgreementEmployeeCompRate | None, Field(description=' Required On Updates;')
-    ]
-    employeeCompNotExceed: AgreementEmployeeCompNotExceed | None
-    compHourlyRate: float | None
-    compLimitAmount: float | None
-    billingCycle: BillingCycleReference | None
-    billOneTimeFlag: bool | None
-    billingTerms: BillingTermsReference | None
+    ] = None
+    employeeCompNotExceed: AgreementEmployeeCompNotExceed | None = None
+    compHourlyRate: float | None = None
+    compLimitAmount: float | None = None
+    billingCycle: BillingCycleReference | None = None
+    billOneTimeFlag: bool | None = None
+    billingTerms: BillingTermsReference | None = None
     invoicingCycle: Annotated[
         AgreementInvoicingCycle | None, Field(description=' Required On Updates;')
-    ]
-    billToCompany: CompanyReference | None
-    billToContact: ContactReference | None
-    billToSite: SiteReference | None
-    billAmount: float | None
-    taxable: bool | None
-    prorateFirstBill: float | None
-    billStartDate: datetime | None
-    taxCode: TaxCodeReference | None
-    restrictDownPayment: bool | None
-    prorateFlag: bool | None
-    invoiceProratedAdditionsFlag: bool | None
-    invoiceDescription: str | None
-    topComment: bool | None
-    bottomComment: bool | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    projectType: ProjectTypeReference | None
-    invoiceTemplate: InvoiceTemplateReference | None
+    ] = None
+    billToCompany: CompanyReference | None = None
+    billToContact: ContactReference | None = None
+    billToSite: SiteReference | None = None
+    billAmount: float | None = None
+    taxable: bool | None = None
+    prorateFirstBill: float | None = None
+    billStartDate: datetime | None = None
+    taxCode: TaxCodeReference | None = None
+    restrictDownPayment: bool | None = None
+    prorateFlag: bool | None = None
+    invoiceProratedAdditionsFlag: bool | None = None
+    invoiceDescription: str | None = None
+    topComment: bool | None = None
+    bottomComment: bool | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    projectType: ProjectTypeReference | None = None
+    invoiceTemplate: InvoiceTemplateReference | None = None
     billTime: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
+    ] = None
     billExpenses: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
+    ] = None
     billProducts: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
-    billableTimeInvoice: bool | None
-    billableExpenseInvoice: bool | None
-    billableProductInvoice: bool | None
-    currency: CurrencyReference | None
-    periodType: AgreementPeriodType | None
-    autoInvoiceFlag: bool | None
-    nextInvoiceDate: str | None
-    companyLocation: SystemLocationReference | None
-    shipToCompany: CompanyReference | None
-    shipToContact: ContactReference | None
-    shipToSite: SiteReference | None
-    agreementStatus: AdditionAgreementStatus | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    billableTimeInvoice: bool | None = None
+    billableExpenseInvoice: bool | None = None
+    billableProductInvoice: bool | None = None
+    currency: CurrencyReference | None = None
+    periodType: AgreementPeriodType | None = None
+    autoInvoiceFlag: bool | None = None
+    nextInvoiceDate: str | None = None
+    companyLocation: SystemLocationReference | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToContact: ContactReference | None = None
+    shipToSite: SiteReference | None = None
+    agreementStatus: AdditionAgreementStatus | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class AgreementApplicationAviablePer(SparkModel):
-    id: int | None
-    tag: str | None
-    name: str | None
+    id: int | None = None
+    tag: str | None = None
+    name: str | None = None
 
 
 class AgreementApplicationBillingCycle(AgreementApplicationAviablePer):
@@ -426,23 +430,23 @@ class AgreementApplicationLimit(AgreementApplicationAviablePer):
 
 
 class AgreementApplicationParameters(SparkModel):
-    applicationUnit: AgreementApplicationUnit | None
-    applicationLimit: AgreementApplicationLimit | None
-    applicationLimitAmount: float | None
-    availablePer: AgreementApplicationAviablePer | None
-    coversTimeFlag: bool | None
-    coversExpensesFlag: bool | None
-    coversProductsFlag: bool | None
-    coversTaxFlag: bool | None
-    carryoverUnusedFlag: bool | None
-    carryOverDays: int | None
-    allowOverrunsFlag: bool | None
-    overrunLimit: int | None
-    agreementExpiresFlag: bool | None
-    chargeAdjustmentsFlag: bool | None
-    prepayFlag: bool | None
-    agrBillingCycle: AgreementApplicationBillingCycle | None
-    userDefinedFieldValues: list[UserDefinedFieldValueModel] | None
+    applicationUnit: AgreementApplicationUnit | None = None
+    applicationLimit: AgreementApplicationLimit | None = None
+    applicationLimitAmount: float | None = None
+    availablePer: AgreementApplicationAviablePer | None = None
+    coversTimeFlag: bool | None = None
+    coversExpensesFlag: bool | None = None
+    coversProductsFlag: bool | None = None
+    coversTaxFlag: bool | None = None
+    carryoverUnusedFlag: bool | None = None
+    carryOverDays: int | None = None
+    allowOverrunsFlag: bool | None = None
+    overrunLimit: int | None = None
+    agreementExpiresFlag: bool | None = None
+    chargeAdjustmentsFlag: bool | None = None
+    prepayFlag: bool | None = None
+    agrBillingCycle: AgreementApplicationBillingCycle | None = None
+    userDefinedFieldValues: list[UserDefinedFieldValueModel] | None = None
 
 
 class AgreementApplicationUnit(AgreementApplicationAviablePer):
@@ -456,18 +460,18 @@ class AgreementApplicationUnits(str, Enum):
 
 
 class AgreementBatchSetup(SparkModel):
-    id: int | None
-    nextRunDate: datetime
-    daysInAdvance: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    nextRunDate: datetime | None = None
+    daysInAdvance: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementBillingInfo(SparkModel):
-    agreementName: str | None
-    agreementType: str | None
-    agreementAmount: float | None
-    agreementRecId: int | None
-    parentRecId: int | None
+    agreementName: str | None = None
+    agreementType: str | None = None
+    agreementAmount: float | None = None
+    agreementRecId: int | None = None
+    parentRecId: int | None = None
 
 
 class AgreementEmployeeCompNotExceed(str, Enum):
@@ -494,70 +498,70 @@ class AgreementPeriodType(str, Enum):
 
 
 class AgreementRecap(SparkModel):
-    id: int | None
-    adjustmentAmount: float | None
-    agreementStatus: str | None
-    name: str | None
-    availableAmount: float | None
-    companyName: str | None
-    isUnlimited: str | None
-    lastInvoiceAmount: str | None
-    lastInvoiceDate: str | None
-    lastInvoiceNumber: str | None
-    nextInvoiceAmount: float | None
-    nextInvoiceDate: str | None
-    overrunAmount: float | None
-    remainingAmount: float | None
-    startingAmount: float | None
-    unbilledOverageAmount: float | None
-    unbilledPeriods: int | None
-    usedAmount: float | None
+    id: int | None = None
+    adjustmentAmount: float | None = None
+    agreementStatus: str | None = None
+    name: str | None = None
+    availableAmount: float | None = None
+    companyName: str | None = None
+    isUnlimited: str | None = None
+    lastInvoiceAmount: str | None = None
+    lastInvoiceDate: str | None = None
+    lastInvoiceNumber: str | None = None
+    nextInvoiceAmount: float | None = None
+    nextInvoiceDate: str | None = None
+    overrunAmount: float | None = None
+    remainingAmount: float | None = None
+    startingAmount: float | None = None
+    unbilledOverageAmount: float | None = None
+    unbilledPeriods: int | None = None
+    usedAmount: float | None = None
 
 
 class AgreementRecurringParameters(SparkModel):
-    billingCycle: GenericNameIdDTO | None
-    cycleBase: GenericNameIdDTO | None
-    aGRAmount: float | None
-    taxable: bool | None
-    childrenAmount: float | None
-    additionsAmount: float | None
-    totalAmount: float | None
-    aGRProrate: float | None
-    billStartDate: str | None
-    taxCode: GenericNameIdDTO | None
-    terms: GenericNameIdDTO | None
-    prorateFlag: bool | None
-    invoiceProratedAdditionsFlag: bool | None
-    restrictDownpayment: bool | None
-    currency: GenericNameIdDTO | None
-    autoInvoiceFlag: bool | None
-    userDefinedFieldValues: list[UserDefinedFieldValueModel] | None
+    billingCycle: GenericNameIdDTO | None = None
+    cycleBase: GenericNameIdDTO | None = None
+    aGRAmount: float | None = None
+    taxable: bool | None = None
+    childrenAmount: float | None = None
+    additionsAmount: float | None = None
+    totalAmount: float | None = None
+    aGRProrate: float | None = None
+    billStartDate: str | None = None
+    taxCode: GenericNameIdDTO | None = None
+    terms: GenericNameIdDTO | None = None
+    prorateFlag: bool | None = None
+    invoiceProratedAdditionsFlag: bool | None = None
+    restrictDownpayment: bool | None = None
+    currency: GenericNameIdDTO | None = None
+    autoInvoiceFlag: bool | None = None
+    userDefinedFieldValues: list[UserDefinedFieldValueModel] | None = None
 
 
 class AgreementReference(SparkModel):
-    id: int | None
-    name: str | None
-    type: str | None
-    chargeFirmFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    type: str | None = None
+    chargeFirmFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementRevenueReference(SparkModel):
-    id: int | None
-    revenue: float | None
-    cost: float | None
-    margin: float | None
-    percentage: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    revenue: float | None = None
+    cost: float | None = None
+    margin: float | None = None
+    percentage: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementSite(SparkModel):
-    id: int | None
-    company: CompanyReference
-    site: SiteReference | None
-    agreementId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    company: CompanyReference | None = None
+    site: SiteReference | None = None
+    agreementId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class AgreementTabsCount(SparkModel):
@@ -565,91 +569,93 @@ class AgreementTabsCount(SparkModel):
 
 
 class AgreementType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    prefixSuffixOption: AgreementTypePrefixSuffixOption | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    prePaymentFlag: bool | None
-    invoicePreSuffix: Annotated[str | None, Field(description=' Max length: 5;')]
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    restrictLocationFlag: bool | None
-    restrictDepartmentFlag: bool | None
-    sla: SLAReference | None
-    applicationUnits: AgreementApplicationUnits | None
-    applicationLimit: float | None
-    applicationCycle: AgreementApplicationCycle | None
-    applicationUnlimitedFlag: bool | None
-    oneTimeFlag: bool | None
-    coverAgreementTimeFlag: bool | None
-    coverAgreementProductFlag: bool | None
-    coverAgreementExpenseFlag: bool | None
-    coverSalesTaxFlag: bool | None
-    carryOverUnusedFlag: bool | None
-    allowOverrunsFlag: bool | None
-    expiredDays: int | None
-    limit: int | None
-    expireWhenZero: bool | None
-    chargeToFirmFlag: bool | None
-    employeeCompRate: AgreementEmployeeCompRate
-    employeeCompNotExceed: AgreementEmployeeCompNotExceed
-    compHourlyRate: float | None
-    compLimitAmount: float | None
-    billingCycle: BillingCycleReference | None
-    billOneTimeFlag: bool | None
-    billingTerms: BillingTermsReference | None
-    invoicingCycle: AgreementInvoicingCycle
-    billAmount: float | None
-    taxableFlag: bool | None
-    restrictDownPaymentFlag: bool | None
-    invoiceDescription: Annotated[str | None, Field(description=' Max length: 4000;')]
-    topCommentFlag: bool | None
-    bottomCommentFlag: bool | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    projectType: ProjectTypeReference | None
-    invoiceTemplate: InvoiceTemplateReference | None
-    billTime: ActivityStopwatchBillableOption
-    billExpenses: ActivityStopwatchBillableOption
-    billProducts: ActivityStopwatchBillableOption
-    billableTimeInvoiceFlag: bool | None
-    billableExpenseInvoiceFlag: bool | None
-    billableProductInvoiceFlag: bool | None
-    copyWorkRolesFlag: bool | None
-    copyWorkTypesFlag: bool | None
-    exclusionWorkRoleIds: list[int] | None
-    addAllWorkRoleExclusions: bool | None
-    removeAllWorkRoleExclusions: bool | None
-    exclusionWorkTypeIds: list[int] | None
-    addAllWorkTypeExclusions: bool | None
-    removeAllWorkTypeExclusions: bool | None
-    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')]
-    prorateFlag: bool | None
-    emailTemplate: EmailTemplateReference | None
-    autoInvoiceFlag: bool | None
-    invoiceProratedAdditionsFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    prefixSuffixOption: AgreementTypePrefixSuffixOption | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    prePaymentFlag: bool | None = None
+    invoicePreSuffix: Annotated[str | None, Field(description=' Max length: 5;')] = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    restrictLocationFlag: bool | None = None
+    restrictDepartmentFlag: bool | None = None
+    sla: SLAReference | None = None
+    applicationUnits: AgreementApplicationUnits | None = None
+    applicationLimit: float | None = None
+    applicationCycle: AgreementApplicationCycle | None = None
+    applicationUnlimitedFlag: bool | None = None
+    oneTimeFlag: bool | None = None
+    coverAgreementTimeFlag: bool | None = None
+    coverAgreementProductFlag: bool | None = None
+    coverAgreementExpenseFlag: bool | None = None
+    coverSalesTaxFlag: bool | None = None
+    carryOverUnusedFlag: bool | None = None
+    allowOverrunsFlag: bool | None = None
+    expiredDays: int | None = None
+    limit: int | None = None
+    expireWhenZero: bool | None = None
+    chargeToFirmFlag: bool | None = None
+    employeeCompRate: AgreementEmployeeCompRate | None = None
+    employeeCompNotExceed: AgreementEmployeeCompNotExceed | None = None
+    compHourlyRate: float | None = None
+    compLimitAmount: float | None = None
+    billingCycle: BillingCycleReference | None = None
+    billOneTimeFlag: bool | None = None
+    billingTerms: BillingTermsReference | None = None
+    invoicingCycle: AgreementInvoicingCycle | None = None
+    billAmount: float | None = None
+    taxableFlag: bool | None = None
+    restrictDownPaymentFlag: bool | None = None
+    invoiceDescription: Annotated[
+        str | None, Field(description=' Max length: 4000;')
+    ] = None
+    topCommentFlag: bool | None = None
+    bottomCommentFlag: bool | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    projectType: ProjectTypeReference | None = None
+    invoiceTemplate: InvoiceTemplateReference | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    billExpenses: ActivityStopwatchBillableOption | None = None
+    billProducts: ActivityStopwatchBillableOption | None = None
+    billableTimeInvoiceFlag: bool | None = None
+    billableExpenseInvoiceFlag: bool | None = None
+    billableProductInvoiceFlag: bool | None = None
+    copyWorkRolesFlag: bool | None = None
+    copyWorkTypesFlag: bool | None = None
+    exclusionWorkRoleIds: list[int] | None = None
+    addAllWorkRoleExclusions: bool | None = None
+    removeAllWorkRoleExclusions: bool | None = None
+    exclusionWorkTypeIds: list[int] | None = None
+    addAllWorkTypeExclusions: bool | None = None
+    removeAllWorkTypeExclusions: bool | None = None
+    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    prorateFlag: bool | None = None
+    emailTemplate: EmailTemplateReference | None = None
+    autoInvoiceFlag: bool | None = None
+    invoiceProratedAdditionsFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementTypeBoardDefault(SparkModel):
-    id: int | None
-    type: AgreementTypeReference | None
-    location: SystemLocationReference
-    department: SystemDepartmentReference | None
-    board: BoardReference | None
-    serviceType: ServiceTypeReference | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: AgreementTypeReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    board: BoardReference | None = None
+    serviceType: ServiceTypeReference | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    applicationUnits: AgreementApplicationUnits | None
-    billingTerms: BillingTermsReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    applicationUnits: AgreementApplicationUnits | None = None
+    billingTerms: BillingTermsReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementTypePrefixSuffixOption(str, Enum):
@@ -662,29 +668,26 @@ class AgreementTypeReference(ActivityReference):
 
 
 class AgreementTypeWorkRole(SparkModel):
-    id: int | None
-    type: AgreementTypeReference | None
-    workRole: WorkRoleReference | None
-    effectiveDate: datetime | None
-    endingDate: datetime | None
-    rate: float | None
-    rateType: AgreementTypeWorkRoleRateType
-    limitTo: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: AgreementTypeReference | None = None
+    workRole: WorkRoleReference | None = None
+    effectiveDate: datetime | None = None
+    endingDate: datetime | None = None
+    rate: float | None = None
+    rateType: AgreementTypeWorkRoleRateType | None = None
+    limitTo: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementTypeWorkRoleExclusion(SparkModel):
-    id: int | None
-    type: AgreementTypeReference | None
-    workRole: WorkRoleReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: AgreementTypeReference | None = None
+    workRole: WorkRoleReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
-class AgreementTypeWorkRoleInfo(SparkModel):
-    id: int | None
-    type: AgreementTypeReference | None
-    workRole: WorkRoleReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+class AgreementTypeWorkRoleInfo(AgreementTypeWorkRoleExclusion):
+    pass
 
 
 class AgreementTypeWorkRoleRateType(str, Enum):
@@ -694,157 +697,157 @@ class AgreementTypeWorkRoleRateType(str, Enum):
 
 
 class AgreementTypeWorkType(SparkModel):
-    id: int | None
-    type: AgreementTypeReference | None
-    workType: WorkTypeReference | None
-    effectiveDate: datetime | None
-    endingDate: datetime | None
-    rate: float | None
-    rateType: AgreementTypeWorkRoleRateType
-    billTime: ActivityStopwatchBillableOption
-    hoursMin: float | None
-    hoursMax: float | None
-    roundBillHours: float | None
-    overageRate: float | None
-    overageRateType: AgreementTypeWorkRoleRateType
-    limitTo: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: AgreementTypeReference | None = None
+    workType: WorkTypeReference | None = None
+    effectiveDate: datetime | None = None
+    endingDate: datetime | None = None
+    rate: float | None = None
+    rateType: AgreementTypeWorkRoleRateType | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    hoursMin: float | None = None
+    hoursMax: float | None = None
+    roundBillHours: float | None = None
+    overageRate: float | None = None
+    overageRateType: AgreementTypeWorkRoleRateType | None = None
+    limitTo: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementTypeWorkTypeExclusion(SparkModel):
-    id: int | None
-    type: AgreementTypeReference | None
-    workType: WorkTypeReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: AgreementTypeReference | None = None
+    workType: WorkTypeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementWorkRole(SparkModel):
-    id: int | None
-    workRole: WorkRoleReference | None
-    locationId: int | None
-    location: OwnerLevelReference | None
-    rateType: AgreementTypeWorkRoleRateType
-    rate: float | None
-    limitTo: float | None
-    effectiveDate: datetime | None
-    endingDate: datetime | None
-    agreementId: int | None
-    agreement: AgreementReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    workRole: WorkRoleReference | None = None
+    locationId: int | None = None
+    location: OwnerLevelReference | None = None
+    rateType: AgreementTypeWorkRoleRateType | None = None
+    rate: float | None = None
+    limitTo: float | None = None
+    effectiveDate: datetime | None = None
+    endingDate: datetime | None = None
+    agreementId: int | None = None
+    agreement: AgreementReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementWorkRoleExclusion(SparkModel):
-    id: int | None
-    workRole: WorkRoleReference
-    agreementId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    workRole: WorkRoleReference | None = None
+    agreementId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementWorkType(SparkModel):
-    id: int | None
-    workType: WorkTypeReference | None
-    location: OwnerLevelReference | None
-    locationId: int | None
-    rateType: AgreementTypeWorkRoleRateType
-    billTime: ActivityStopwatchBillableOption
-    rate: float | None
-    hoursMax: float | None
-    hoursMin: float | None
-    roundBillHours: float | None
-    overageRate: float | None
-    overageRateType: AgreementTypeWorkRoleRateType | None
-    agreementLimit: float | None
-    site: SiteReference | None
-    effectiveDate: datetime | None
-    endingDate: datetime | None
-    agreement: AgreementReference | None
-    agreementId: int | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    workType: WorkTypeReference | None = None
+    location: OwnerLevelReference | None = None
+    locationId: int | None = None
+    rateType: AgreementTypeWorkRoleRateType | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    rate: float | None = None
+    hoursMax: float | None = None
+    hoursMin: float | None = None
+    roundBillHours: float | None = None
+    overageRate: float | None = None
+    overageRateType: AgreementTypeWorkRoleRateType | None = None
+    agreementLimit: float | None = None
+    site: SiteReference | None = None
+    effectiveDate: datetime | None = None
+    endingDate: datetime | None = None
+    agreement: AgreementReference | None = None
+    agreementId: int | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AgreementWorkTypeExclusion(SparkModel):
-    id: int | None
-    workType: WorkTypeReference
-    agreementId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    workType: WorkTypeReference | None = None
+    agreementId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AllowedFileType(SparkModel):
-    id: int | None
-    fileType: str
-    sizeLimit: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    fileType: str | None = None
+    sizeLimit: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AllowedOrigin(SparkModel):
-    id: int | None
-    origin: Annotated[str, Field(description=' Max length: 2000;')]
-    description: Annotated[str, Field(description=' Max length: 2000;')]
-    lastUpdateUtc: datetime | None
-    updatedBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    origin: Annotated[str | None, Field(description=' Max length: 2000;')] = None
+    description: Annotated[str | None, Field(description=' Max length: 2000;')] = None
+    lastUpdateUtc: datetime | None = None
+    updatedBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ApiMember(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 15;')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 15;')] = None
     name: Annotated[
         str | None, Field(description=' Max length: 30; Required On Updates;')
-    ]
-    emailAddress: Annotated[str | None, Field(description=' Max length: 250;')]
-    inactiveFlag: bool | None
-    inactiveDate: datetime | None
-    timeZone: TimeZoneSetupReference | None
-    securityRole: SecurityRoleReference | None
-    structureLevel: StructureReference | None
-    securityLocation: SystemLocationReference | None
-    defaultLocation: SystemLocationReference | None
-    defaultDepartment: SystemDepartmentReference | None
-    salesDefaultLocation: SystemLocationReference | None
-    serviceDefaultBoard: BoardReference | None
-    notes: str | None
-    excludedServiceBoardIds: list[int] | None
-    blockPriceFlag: bool | None
-    blockCostFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    emailAddress: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    inactiveFlag: bool | None = None
+    inactiveDate: datetime | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    securityRole: SecurityRoleReference | None = None
+    structureLevel: StructureReference | None = None
+    securityLocation: SystemLocationReference | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    salesDefaultLocation: SystemLocationReference | None = None
+    serviceDefaultBoard: BoardReference | None = None
+    notes: str | None = None
+    excludedServiceBoardIds: list[int] | None = None
+    blockPriceFlag: bool | None = None
+    blockCostFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ApiRequest(SparkModel):
-    id: int | None
-    externalId: str | None
-    parentId: int | None
-    grandParentId: int | None
-    entity: IRestIdentifiedItem | None
-    filters: FilterValues | None
-    page: PageValues | None
-    fields: str | None
-    miscProperties: dict[str, dict[str, Any_aliased]] | None
-    memberContext: str | None
-    updateOnlyCesProperties: bool | None
+    id: int | None = None
+    externalId: str | None = None
+    parentId: int | None = None
+    grandParentId: int | None = None
+    entity: IRestIdentifiedItem | None = None
+    filters: FilterValues | None = None
+    page: PageValues | None = None
+    fields: str | None = None
+    miscProperties: dict[str, dict[str, Any_aliased]] | None = None
+    memberContext: str | None = None
+    updateOnlyCesProperties: bool | None = None
 
 
 class AuditTrailEntry(SparkModel):
-    text: str | None
-    enteredDate: str | None
-    enteredBy: str | None
-    auditType: str | None
-    auditSubType: str | None
-    auditSource: str | None
+    text: str | None = None
+    enteredDate: str | None = None
+    enteredBy: str | None = None
+    auditType: str | None = None
+    auditSubType: str | None = None
+    auditSource: str | None = None
 
 
 class AuthAnvil(SparkModel):
-    id: int | None
-    serverLocationUrl: str
-    siteId: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    serverLocationUrl: str | None = None
+    siteId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AutoSyncTime(SparkModel):
-    id: int | None
-    syncTime: str
-    timeZone: TimeZoneSetupReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    syncTime: str | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class AutomateScriptReference(ActivityReference):
@@ -852,23 +855,23 @@ class AutomateScriptReference(ActivityReference):
 
 
 class BatchEntry(SparkModel):
-    id: int | None
-    accountType: str | None
-    name: str | None
-    accountNumber: str | None
-    debit: float | None
-    credit: float | None
-    cost: float | None
-    item: str | None
-    salesCode: str | None
-    costOfGoodsSoldAccountNumber: str | None
-    invoice: InvoiceReference | None
-    purchaseOrder: PurchaseOrderReference | None
-    lineItem: PurchaseOrderLineItemReference | None
-    transfer: str | None
-    expense: ExpenseDetailReference | None
-    adjustmentDetail: AdjustmentDetailReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    accountType: str | None = None
+    name: str | None = None
+    accountNumber: str | None = None
+    debit: float | None = None
+    credit: float | None = None
+    cost: float | None = None
+    item: str | None = None
+    salesCode: str | None = None
+    costOfGoodsSoldAccountNumber: str | None = None
+    invoice: InvoiceReference | None = None
+    purchaseOrder: PurchaseOrderReference | None = None
+    lineItem: PurchaseOrderLineItemReference | None = None
+    transfer: str | None = None
+    expense: ExpenseDetailReference | None = None
+    adjustmentDetail: AdjustmentDetailReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BatchReference(ActivityReference):
@@ -876,26 +879,26 @@ class BatchReference(ActivityReference):
 
 
 class BillableOptionsInfo(SparkModel):
-    id: int | None
-    optionId: str | None
-    billableFlag: bool | None
-    invoiceFlag: bool | None
-    timeFlag: bool | None
-    expenseFlag: bool | None
-    productFlag: bool | None
-    defaultFlag: bool | None
-    includeNoDefaultFlag: bool | None
-    name: str | None
-    enumId: str | None
+    id: int | None = None
+    optionId: str | None = None
+    billableFlag: bool | None = None
+    invoiceFlag: bool | None = None
+    timeFlag: bool | None = None
+    expenseFlag: bool | None = None
+    productFlag: bool | None = None
+    defaultFlag: bool | None = None
+    includeNoDefaultFlag: bool | None = None
+    name: str | None = None
+    enumId: str | None = None
 
 
 class BillingCycle(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 5;')]
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    billingOptions: BillingCycleBillingOptions
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 5;')] = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    billingOptions: BillingCycleBillingOptions | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingCycleBillingOptions(str, Enum):
@@ -922,74 +925,74 @@ class BillingDeliveryReference(ActivityReference):
 
 
 class BillingSetup(SparkModel):
-    id: int | None
-    remitName: Annotated[str, Field(description=' Max length: 50;')]
-    location: SystemLocationReference
-    addressOne: Annotated[str | None, Field(description=' Max length: 50;')]
-    addressTwo: Annotated[str | None, Field(description=' Max length: 50;')]
-    city: Annotated[str | None, Field(description=' Max length: 50;')]
-    state: StateReference | None
-    zip: Annotated[str | None, Field(description=' Max length: 12;')]
-    country: CountryReference | None
-    phone: Annotated[str | None, Field(description=' Max length: 15;')]
-    invoiceTitle: Annotated[str, Field(description=' Max length: 50;')]
-    payableName: Annotated[str, Field(description=' Max length: 50;')]
-    topcomment: Annotated[str | None, Field(description=' Max length: 4000;')]
-    invoiceFooter: Annotated[str | None, Field(description=' Max length: 500;')]
-    quoteFooter: Annotated[str | None, Field(description=' Max length: 1000;')]
-    overallInvoiceDefault: InvoiceTemplateReference
-    standardInvoiceActual: InvoiceTemplateReference | None
-    standardInvoiceFixed: InvoiceTemplateReference | None
-    progressInvoice: InvoiceTemplateReference | None
-    agreementInvoice: InvoiceTemplateReference | None
-    creditMemoInvoice: InvoiceTemplateReference | None
-    downPaymentInvoice: InvoiceTemplateReference | None
-    miscInvoice: InvoiceTemplateReference | None
-    salesOrderInvoice: InvoiceTemplateReference | None
-    excludeDoNotBillTimeFlag: bool | None
-    excludeDoNotBillExpenseFlag: bool | None
-    excludeDoNotBillProductFlag: bool | None
-    prefixSuffixFlag: AgreementTypePrefixSuffixOption | None
-    prefixSuffixText: Annotated[str | None, Field(description=' Max length: 5;')]
-    chargeAdjToFirmFlag: bool | None
-    noWatermarkFlag: bool | None
-    displayTaxFlag: bool | None
-    allowRestrictedDeptOnRoutingFlag: bool | None
-    billTicketSeparatelyFlag: bool | None
-    billTicketCompleteFlag: bool | None
-    billTicketUnapprovedFlag: bool | None
-    billProjectCompleteFlag: bool | None
-    billProjectUnapprovedFlag: bool | None
-    progressTimeFlag: bool | None
-    restrictProjectDownpaymentFlag: bool | None
-    billSalesOrderCompleteFlag: bool | None
-    billProductAfterShipFlag: bool | None
-    restrictDownpaymentFlag: bool | None
-    copyNonServiceProductsFlag: bool | None
-    copyServiceProductsFlag: bool | None
-    copyAgreementProductsFlag: bool | None
-    printLogoFlag: bool | None
-    readReceiptFlag: bool | None
-    deliveryReceiptFlag: bool | None
-    attachXmlInvoiceFlag: bool | None
-    disableRoutingEmailFlag: bool | None
-    emailTemplate: EmailTemplateReference
-    localizedCountry: CountryReference | None
-    businessNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    currency: CurrencyReference | None
-    customLabel: Annotated[str | None, Field(description=' Max length: 50;')]
-    customText: Annotated[str | None, Field(description=' Max length: 500;')]
-    companyCode: Annotated[str | None, Field(description=' Max length: 250;')]
-    excludeAvalaraFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    remitName: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    location: SystemLocationReference | None = None
+    addressOne: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressTwo: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    city: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    state: StateReference | None = None
+    zip: Annotated[str | None, Field(description=' Max length: 12;')] = None
+    country: CountryReference | None = None
+    phone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    invoiceTitle: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    payableName: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    topcomment: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    invoiceFooter: Annotated[str | None, Field(description=' Max length: 500;')] = None
+    quoteFooter: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    overallInvoiceDefault: InvoiceTemplateReference | None = None
+    standardInvoiceActual: InvoiceTemplateReference | None = None
+    standardInvoiceFixed: InvoiceTemplateReference | None = None
+    progressInvoice: InvoiceTemplateReference | None = None
+    agreementInvoice: InvoiceTemplateReference | None = None
+    creditMemoInvoice: InvoiceTemplateReference | None = None
+    downPaymentInvoice: InvoiceTemplateReference | None = None
+    miscInvoice: InvoiceTemplateReference | None = None
+    salesOrderInvoice: InvoiceTemplateReference | None = None
+    excludeDoNotBillTimeFlag: bool | None = None
+    excludeDoNotBillExpenseFlag: bool | None = None
+    excludeDoNotBillProductFlag: bool | None = None
+    prefixSuffixFlag: AgreementTypePrefixSuffixOption | None = None
+    prefixSuffixText: Annotated[str | None, Field(description=' Max length: 5;')] = None
+    chargeAdjToFirmFlag: bool | None = None
+    noWatermarkFlag: bool | None = None
+    displayTaxFlag: bool | None = None
+    allowRestrictedDeptOnRoutingFlag: bool | None = None
+    billTicketSeparatelyFlag: bool | None = None
+    billTicketCompleteFlag: bool | None = None
+    billTicketUnapprovedFlag: bool | None = None
+    billProjectCompleteFlag: bool | None = None
+    billProjectUnapprovedFlag: bool | None = None
+    progressTimeFlag: bool | None = None
+    restrictProjectDownpaymentFlag: bool | None = None
+    billSalesOrderCompleteFlag: bool | None = None
+    billProductAfterShipFlag: bool | None = None
+    restrictDownpaymentFlag: bool | None = None
+    copyNonServiceProductsFlag: bool | None = None
+    copyServiceProductsFlag: bool | None = None
+    copyAgreementProductsFlag: bool | None = None
+    printLogoFlag: bool | None = None
+    readReceiptFlag: bool | None = None
+    deliveryReceiptFlag: bool | None = None
+    attachXmlInvoiceFlag: bool | None = None
+    disableRoutingEmailFlag: bool | None = None
+    emailTemplate: EmailTemplateReference | None = None
+    localizedCountry: CountryReference | None = None
+    businessNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    currency: CurrencyReference | None = None
+    customLabel: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    customText: Annotated[str | None, Field(description=' Max length: 500;')] = None
+    companyCode: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    excludeAvalaraFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingSetupInfo(SparkModel):
-    id: int | None
-    remitName: str | None
-    location: SystemLocationReference | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    remitName: str | None = None
+    location: SystemLocationReference | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingSetupReference(ActivityReference):
@@ -997,12 +1000,12 @@ class BillingSetupReference(ActivityReference):
 
 
 class BillingSetupRouting(SparkModel):
-    id: int | None
-    sequenceNumber: int
-    invoiceRule: BillingSetupRoutingInvoiceRule
-    routingRule: BillingSetupRoutingRoutingRule
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    sequenceNumber: int | None = None
+    invoiceRule: BillingSetupRoutingInvoiceRule | None = None
+    routingRule: BillingSetupRoutingRoutingRule | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingSetupRoutingInvoiceRule(str, Enum):
@@ -1024,38 +1027,38 @@ class BillingSetupRoutingRoutingRule(str, Enum):
 
 
 class BillingStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    sortOrder: int | None
-    defaultFlag: bool | None
-    closedFlag: bool | None
-    inactiveFlag: bool | None
-    sentFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    sortOrder: int | None = None
+    defaultFlag: bool | None = None
+    closedFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    sentFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    sortOrder: int | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    sortOrder: int | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingStatusReference(SparkModel):
-    id: int | None
-    name: str | None
-    isClosed: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    isClosed: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingTerm(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    dueDays: int
-    termsXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    dueDays: int | None = None
+    termsXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BillingTermInfo(AddressFormatInfo):
@@ -1071,139 +1074,141 @@ class BillingUnitReference(ActivityReference):
 
 
 class Board(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    location: SystemLocationReference
-    department: SystemDepartmentReference
-    inactiveFlag: bool | None
-    signOffTemplate: ServiceSignoffReference | None
-    sendToContactFlag: bool | None
-    contactTemplate: ServiceEmailTemplateReference | None
-    sendToResourceFlag: bool | None
-    resourceTemplate: ServiceEmailTemplateReference | None
-    projectFlag: bool | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    inactiveFlag: bool | None = None
+    signOffTemplate: ServiceSignoffReference | None = None
+    sendToContactFlag: bool | None = None
+    contactTemplate: ServiceEmailTemplateReference | None = None
+    sendToResourceFlag: bool | None = None
+    resourceTemplate: ServiceEmailTemplateReference | None = None
+    projectFlag: bool | None = None
     showDependenciesFlag: Annotated[
         bool | None, Field(description='This field only shows if it is Project Board.')
-    ]
+    ] = None
     showEstimatesFlag: Annotated[
         bool | None, Field(description='This field only shows if it is Project Board.')
-    ]
-    boardIcon: DocumentReference | None
-    billTicketsAfterClosedFlag: bool | None
-    billTicketSeparatelyFlag: bool | None
-    billUnapprovedTimeExpenseFlag: bool | None
-    overrideBillingSetupFlag: bool | None
-    dispatchMember: MemberReference | None
-    serviceManagerMember: MemberReference | None
-    dutyManagerMember: MemberReference | None
-    oncallMember: MemberReference | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    billTime: ActivityStopwatchBillableOption | None
-    billExpense: ActivityStopwatchBillableOption | None
-    billProduct: ActivityStopwatchBillableOption | None
-    autoCloseStatus: ServiceStatusReference | None
-    autoAssignNewTicketsFlag: bool | None
-    autoAssignNewECTicketsFlag: bool | None
-    autoAssignNewPortalTicketsFlag: bool | None
-    discussionsLockedFlag: bool | None
-    timeEntryLockedFlag: bool | None
-    notifyEmailFrom: Annotated[str | None, Field(description=' Max length: 50;')]
-    notifyEmailFromName: Annotated[str | None, Field(description=' Max length: 60;')]
-    closedLoopDiscussionsFlag: bool | None
-    closedLoopResolutionFlag: bool | None
-    closedLoopInternalAnalysisFlag: bool | None
-    timeEntryDiscussionFlag: bool | None
-    timeEntryResolutionFlag: bool | None
-    timeEntryInternalAnalysisFlag: bool | None
-    problemSort: BoardProblemSort | None
-    resolutionSort: BoardProblemSort | None
-    internalAnalysisSort: BoardProblemSort | None
-    emailConnectorAllowReopenClosedFlag: bool | None
-    emailConnectorReopenStatus: ServiceStatusReference | None
+    ] = None
+    boardIcon: DocumentReference | None = None
+    billTicketsAfterClosedFlag: bool | None = None
+    billTicketSeparatelyFlag: bool | None = None
+    billUnapprovedTimeExpenseFlag: bool | None = None
+    overrideBillingSetupFlag: bool | None = None
+    dispatchMember: MemberReference | None = None
+    serviceManagerMember: MemberReference | None = None
+    dutyManagerMember: MemberReference | None = None
+    oncallMember: MemberReference | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    billExpense: ActivityStopwatchBillableOption | None = None
+    billProduct: ActivityStopwatchBillableOption | None = None
+    autoCloseStatus: ServiceStatusReference | None = None
+    autoAssignNewTicketsFlag: bool | None = None
+    autoAssignNewECTicketsFlag: bool | None = None
+    autoAssignNewPortalTicketsFlag: bool | None = None
+    discussionsLockedFlag: bool | None = None
+    timeEntryLockedFlag: bool | None = None
+    notifyEmailFrom: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    notifyEmailFromName: Annotated[
+        str | None, Field(description=' Max length: 60;')
+    ] = None
+    closedLoopDiscussionsFlag: bool | None = None
+    closedLoopResolutionFlag: bool | None = None
+    closedLoopInternalAnalysisFlag: bool | None = None
+    timeEntryDiscussionFlag: bool | None = None
+    timeEntryResolutionFlag: bool | None = None
+    timeEntryInternalAnalysisFlag: bool | None = None
+    problemSort: BoardProblemSort | None = None
+    resolutionSort: BoardProblemSort | None = None
+    internalAnalysisSort: BoardProblemSort | None = None
+    emailConnectorAllowReopenClosedFlag: bool | None = None
+    emailConnectorReopenStatus: ServiceStatusReference | None = None
     emailConnectorReopenResourcesFlag: Annotated[
         bool | None,
         Field(
             description='This field can only be set when emailConnectorAllowReopenClosed is true.'
         ),
-    ]
+    ] = None
     emailConnectorNewTicketNoMatchFlag: Annotated[
         bool | None,
         Field(
             description='This field can only be set when emailConnectorAllowReopenClosed is true.'
         ),
-    ]
+    ] = None
     emailConnectorNeverReopenByDaysFlag: Annotated[
         bool | None,
         Field(
             description='This field can only be set when emailConnectorAllowReopenClosed is true.'
         ),
-    ]
+    ] = None
     emailConnectorReopenDaysLimit: Annotated[
         int | None,
         Field(
             description='This field can only be set when emailConnectorNeverReopenByDaysFlag and emailConnectorAllowReopenClosed are both true\n            This field is required when emailConnectorNeverReopenByDaysFlag is true.'
         ),
-    ]
+    ] = None
     emailConnectorNeverReopenByDaysClosedFlag: Annotated[
         bool | None,
         Field(
             description='This field can only be set when emailConnectorAllowReopenClosed is true.'
         ),
-    ]
+    ] = None
     emailConnectorReopenDaysClosedLimit: Annotated[
         int | None,
         Field(
             description='This field can only be set when emailConnectorNeverReopenByDaysClosedFlag and emailConnectorAllowReopenClosed are both true\n            This field is required when emailConnectorNeverReopenByDaysClosedFlag is true.'
         ),
-    ]
-    useMemberDisplayNameFlag: bool | None
-    sendToCCFlag: bool | None
-    autoAssignTicketOwnerFlag: bool | None
-    autoAssignLimitFlag: bool | None
+    ] = None
+    useMemberDisplayNameFlag: bool | None = None
+    sendToCCFlag: bool | None = None
+    autoAssignTicketOwnerFlag: bool | None = None
+    autoAssignLimitFlag: bool | None = None
     autoAssignLimitAmount: Annotated[
         int | None,
         Field(
             description='This field can only be set when autoAssignLimitFlag is true'
         ),
-    ]
-    closedLoopAllFlag: bool | None
-    percentageCalculation: BoardPercentageCalculation | None
-    allSort: BoardProblemSort | None
-    markFirstNoteIssueFlag: bool | None
-    restrictBoardByDefaultFlag: bool | None
-    sendToBundledFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    closedLoopAllFlag: bool | None = None
+    percentageCalculation: BoardPercentageCalculation | None = None
+    allSort: BoardProblemSort | None = None
+    markFirstNoteIssueFlag: bool | None = None
+    restrictBoardByDefaultFlag: bool | None = None
+    sendToBundledFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardAutoAssignResource(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardAutoTemplate(SparkModel):
-    id: int | None
-    type: ServiceTypeReference
-    subtype: ServiceSubTypeReference
-    item: ServiceItemReference
-    serviceTemplate: ServiceTemplateReference
-    board: BoardReference | None
-    summarySetting: BoardAutoTemplateSummarySetting | None
-    discussionSetting: BoardAutoTemplateSummarySetting | None
-    internalAnalysisSetting: BoardAutoTemplateSummarySetting | None
-    resolutionSetting: BoardAutoTemplateSummarySetting | None
-    tasksSetting: BoardAutoTemplateSummarySetting | None
-    documentsSetting: BoardAutoTemplateSummarySetting | None
-    resourcesSetting: BoardAutoTemplateSummarySetting | None
-    budgetHoursSetting: BoardAutoTemplateSummarySetting | None
-    financeInformationSetting: BoardAutoTemplateSummarySetting | None
-    sendNotesAsEmailSetting: BoardAutoTemplateSummarySetting | None
-    impactUrgencySetting: BoardAutoTemplateSummarySetting | None
-    templatePrioritySetting: BoardAutoTemplateSummarySetting | None
-    autoApplyFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: ServiceTypeReference | None = None
+    subtype: ServiceSubTypeReference | None = None
+    item: ServiceItemReference | None = None
+    serviceTemplate: ServiceTemplateReference | None = None
+    board: BoardReference | None = None
+    summarySetting: BoardAutoTemplateSummarySetting | None = None
+    discussionSetting: BoardAutoTemplateSummarySetting | None = None
+    internalAnalysisSetting: BoardAutoTemplateSummarySetting | None = None
+    resolutionSetting: BoardAutoTemplateSummarySetting | None = None
+    tasksSetting: BoardAutoTemplateSummarySetting | None = None
+    documentsSetting: BoardAutoTemplateSummarySetting | None = None
+    resourcesSetting: BoardAutoTemplateSummarySetting | None = None
+    budgetHoursSetting: BoardAutoTemplateSummarySetting | None = None
+    financeInformationSetting: BoardAutoTemplateSummarySetting | None = None
+    sendNotesAsEmailSetting: BoardAutoTemplateSummarySetting | None = None
+    impactUrgencySetting: BoardAutoTemplateSummarySetting | None = None
+    templatePrioritySetting: BoardAutoTemplateSummarySetting | None = None
+    autoApplyFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardAutoTemplateSummarySetting(str, Enum):
@@ -1213,79 +1218,79 @@ class BoardAutoTemplateSummarySetting(str, Enum):
 
 
 class BoardCopy(SparkModel):
-    id: int
-    name: Annotated[str, Field(description=' Max length: 50;')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
 
 
 class BoardDefault(SparkModel):
-    id: int | None
-    board: BoardReference
-    serviceType: ServiceTypeReference | None
-    defaultFlag: bool | None
-    agreementId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    board: BoardReference | None = None
+    serviceType: ServiceTypeReference | None = None
+    defaultFlag: bool | None = None
+    agreementId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardExcludedMember(SparkModel):
-    id: int | None
-    memberId: int | None
-    boardId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    memberId: int | None = None
+    boardId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardInfo(SparkModel):
-    id: int | None
-    name: str | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    projectFlag: bool | None
-    inactiveFlag: bool | None
-    closedLoopDiscussionsFlag: bool | None
-    closedLoopInternalAnalysisFlag: bool | None
-    closedLoopResolutionFlag: bool | None
-    closedLoopAllFlag: bool | None
-    overrideBillingSetupFlag: bool | None
-    billTicketsAfterClosedFlag: bool | None
-    billUnapprovedTimeExpenseFlag: bool | None
-    billTime: ActivityStopwatchBillableOption | None
-    billExpense: ActivityStopwatchBillableOption | None
-    billProduct: ActivityStopwatchBillableOption | None
-    problemSort: BoardProblemSort | None
-    internalAnalysisSort: BoardProblemSort | None
-    resolutionSort: BoardProblemSort | None
-    allSort: BoardProblemSort | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    projectFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    closedLoopDiscussionsFlag: bool | None = None
+    closedLoopInternalAnalysisFlag: bool | None = None
+    closedLoopResolutionFlag: bool | None = None
+    closedLoopAllFlag: bool | None = None
+    overrideBillingSetupFlag: bool | None = None
+    billTicketsAfterClosedFlag: bool | None = None
+    billUnapprovedTimeExpenseFlag: bool | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    billExpense: ActivityStopwatchBillableOption | None = None
+    billProduct: ActivityStopwatchBillableOption | None = None
+    problemSort: BoardProblemSort | None = None
+    internalAnalysisSort: BoardProblemSort | None = None
+    resolutionSort: BoardProblemSort | None = None
+    allSort: BoardProblemSort | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardItem(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardItemAssociation(SparkModel):
-    id: int
+    id: int | None = None
     subTypeAssociationIds: Annotated[
         list[int] | None,
         Field(
             description='If addAllSubTypesFlag and removeAllSubTypesFlag are both false, this field is required.'
         ),
-    ]
-    addAllSubTypesFlag: bool | None
-    removeAllSubTypesFlag: bool | None
-    item: ServiceItemReference | None
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    addAllSubTypesFlag: bool | None = None
+    removeAllSubTypesFlag: bool | None = None
+    item: ServiceItemReference | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardNotification(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    member: MemberReference | None
-    email: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    member: MemberReference | None = None
+    email: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardPercentageCalculation(str, Enum):
@@ -1305,39 +1310,39 @@ class BoardReference(ActivityReference):
 
 
 class BoardSkillMapping(SparkModel):
-    id: int | None
-    type: ServiceTypeReference
-    subType: ServiceSubTypeReference | None
-    item: ServiceItemReference | None
-    skillCategory: SkillCategoryReference
-    skill: SkillReference
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: ServiceTypeReference | None = None
+    subType: ServiceSubTypeReference | None = None
+    item: ServiceItemReference | None = None
+    skillCategory: SkillCategoryReference | None = None
+    skill: SkillReference | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    board: BoardReference | None
-    sortOrder: int | None
-    displayOnBoard: bool | None
-    inactive: bool | None
-    closedStatus: bool | None
-    timeEntryNotAllowed: bool | None
-    roundRobinCatchall: bool | None
-    defaultFlag: bool | None
-    escalationStatus: BoardStatusEscalationStatus | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    board: BoardReference | None = None
+    sortOrder: int | None = None
+    displayOnBoard: bool | None = None
+    inactive: bool | None = None
+    closedStatus: bool | None = None
+    timeEntryNotAllowed: bool | None = None
+    roundRobinCatchall: bool | None = None
+    defaultFlag: bool | None = None
+    escalationStatus: BoardStatusEscalationStatus | None = None
     customerPortalDescription: Annotated[
         str | None, Field(description=' Max length: 500;')
-    ]
-    customerPortalFlag: bool | None
-    emailTemplate: ServiceEmailTemplateReference | None
-    statusIndicator: StatusIndicatorReference | None
+    ] = None
+    customerPortalFlag: bool | None = None
+    emailTemplate: ServiceEmailTemplateReference | None = None
+    statusIndicator: StatusIndicatorReference | None = None
     customStatusIndicatorName: Annotated[
         str | None, Field(description=' Max length: 30;')
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    saveTimeAsNote: bool | None
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    saveTimeAsNote: bool | None = None
 
 
 class BoardStatusEscalationStatus(str, Enum):
@@ -1349,62 +1354,62 @@ class BoardStatusEscalationStatus(str, Enum):
 
 
 class BoardStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    sortOrder: int | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    closedFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    sortOrder: int | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    closedFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardStatusNotification(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    status: ServiceStatusReference | None
-    member: MemberReference | None
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    status: ServiceStatusReference | None = None
+    member: MemberReference | None = None
     email: Annotated[
         str | None,
         Field(
             description='Service Status Notification email must be entered if the notify type is "Email Address". Max length: 255;'
         ),
-    ]
-    workflowStep: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    workflowStep: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardSubType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    typeAssociationIds: list[int] | None
-    addAllTypesFlag: bool | None
-    removeAllTypesFlag: bool | None
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    typeAssociationIds: list[int] | None = None
+    addAllTypesFlag: bool | None = None
+    removeAllTypesFlag: bool | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardSubTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    typeAssociationIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    typeAssociationIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardTeam(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    teamLeader: MemberReference
-    members: list[int] | None
-    defaultFlag: bool | None
-    notifyOnTicketDelete: bool | None
-    defaultRoundRobinFlag: bool | None
-    roundRobinFlag: bool | None
-    boardId: int | None
-    locationId: int | None
-    businessUnitId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    teamLeader: MemberReference | None = None
+    members: list[int] | None = None
+    defaultFlag: bool | None = None
+    notifyOnTicketDelete: bool | None = None
+    defaultRoundRobinFlag: bool | None = None
+    roundRobinFlag: bool | None = None
+    boardId: int | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardTeamInfo(ActivityReference):
@@ -1412,19 +1417,19 @@ class BoardTeamInfo(ActivityReference):
 
 
 class BoardType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    category: BoardTypeCategory | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    requestForChangeFlag: bool | None
-    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    skillCategory: SkillCategoryReference | None
-    skill: SkillReference | None
-    board: BoardReference | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    category: BoardTypeCategory | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    requestForChangeFlag: bool | None = None
+    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    skillCategory: SkillCategoryReference | None = None
+    skill: SkillReference | None = None
+    board: BoardReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardTypeCategory(str, Enum):
@@ -1433,95 +1438,78 @@ class BoardTypeCategory(str, Enum):
 
 
 class BoardTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    board: BoardReference | None
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    board: BoardReference | None = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BoardTypeSubTypeItemAssociation(SparkModel):
-    id: int | None
-    type: ServiceTypeReference | None
-    subType: ServiceSubTypeReference | None
-    item: ServiceItemReference | None
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: ServiceTypeReference | None = None
+    subType: ServiceSubTypeReference | None = None
+    item: ServiceItemReference | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BulkResult(SparkModel):
-    payload: list[ResultInfo] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    payload: list[ResultInfo] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class BundleRequest(SparkModel):
-    sequenceNumber: int | None
-    resourceType: str | None
-    version: str | None
-    apiRequest: ApiRequest | None
+    sequenceNumber: int | None = None
+    resourceType: str | None = None
+    version: str | None = None
+    apiRequest: ApiRequest | None = None
 
 
 class BundleRequestsCollection(SparkModel):
-    requests: list[BundleRequest]
+    requests: list[BundleRequest] | None = None
 
 
 class BundleResult(SparkModel):
-    sequenceNumber: int | None
-    resourceType: str | None
-    entities: list[IRestIdentifiedItem] | None
-    count: int | None
-    version: str | None
-    success: bool | None
-    statusCode: int | None
-    error: ErrorResponseMessage | None
+    sequenceNumber: int | None = None
+    resourceType: str | None = None
+    entities: list[IRestIdentifiedItem] | None = None
+    count: int | None = None
+    version: str | None = None
+    success: bool | None = None
+    statusCode: int | None = None
+    error: ErrorResponseMessage | None = None
 
 
 class BundleResultsCollection(SparkModel):
-    results: list[BundleResult] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    results: list[BundleResult] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Calendar(SparkModel):
-    id: int | None
-    name: str
-    holidayList: HolidayListReference | None
-    mondayStartTime: str | None
-    mondayEndTime: str | None
-    tuesdayStartTime: str | None
-    tuesdayEndTime: str | None
-    wednesdayStartTime: str | None
-    wednesdayEndTime: str | None
-    thursdayStartTime: str | None
-    thursdayEndTime: str | None
-    fridayStartTime: str | None
-    fridayEndTime: str | None
-    saturdayStartTime: str | None
-    saturdayEndTime: str | None
-    sundayStartTime: str | None
-    sundayEndTime: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    holidayList: HolidayListReference | None = None
+    mondayStartTime: str | None = None
+    mondayEndTime: str | None = None
+    tuesdayStartTime: str | None = None
+    tuesdayEndTime: str | None = None
+    wednesdayStartTime: str | None = None
+    wednesdayEndTime: str | None = None
+    thursdayStartTime: str | None = None
+    thursdayEndTime: str | None = None
+    fridayStartTime: str | None = None
+    fridayEndTime: str | None = None
+    saturdayStartTime: str | None = None
+    saturdayEndTime: str | None = None
+    sundayStartTime: str | None = None
+    sundayEndTime: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
-class CalendarInfo(SparkModel):
-    id: int | None
-    name: str | None
-    holidayList: HolidayListReference | None
-    mondayStartTime: str | None
-    mondayEndTime: str | None
-    tuesdayStartTime: str | None
-    tuesdayEndTime: str | None
-    wednesdayStartTime: str | None
-    wednesdayEndTime: str | None
-    thursdayStartTime: str | None
-    thursdayEndTime: str | None
-    fridayStartTime: str | None
-    fridayEndTime: str | None
-    saturdayStartTime: str | None
-    saturdayEndTime: str | None
-    sundayStartTime: str | None
-    sundayEndTime: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+class CalendarInfo(Calendar):
+    pass
 
 
 class CalendarReference(ActivityReference):
@@ -1529,65 +1517,65 @@ class CalendarReference(ActivityReference):
 
 
 class CalendarSetupReference(SparkModel):
-    id: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CallbackEntry(SparkModel):
-    id: int | None
-    description: Annotated[str | None, Field(description=' Max length: 100;')]
-    url: Annotated[str, Field(description=' Required Reference')]
-    objectId: Annotated[int, Field(description=' Required Reference')]
-    type: Annotated[str, Field(description=' Required Reference')]
-    level: Annotated[str, Field(description=' Required Reference')]
-    memberId: int | None
-    payloadVersion: str | None
-    inactiveFlag: bool | None
-    isSoapCallbackFlag: bool | None
-    isSelfSuppressedFlag: bool | None
-    connectWiseID: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    url: Annotated[str | None, Field(description=' Required Reference')] = None
+    objectId: Annotated[int | None, Field(description=' Required Reference')] = None
+    type: Annotated[str | None, Field(description=' Required Reference')] = None
+    level: Annotated[str | None, Field(description=' Required Reference')] = None
+    memberId: int | None = None
+    payloadVersion: str | None = None
+    inactiveFlag: bool | None = None
+    isSoapCallbackFlag: bool | None = None
+    isSelfSuppressedFlag: bool | None = None
+    connectWiseID: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Campaign(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    type: CampaignTypeReference
-    subType: CampaignSubTypeReference
-    status: CampaignStatusReference | None
-    startDate: datetime
-    endDate: datetime | None
-    locationId: int | None
-    member: MemberReference | None
-    inactive: bool | None
-    inactiveDaysAfterEnd: int | None
-    notes: str | None
-    defaultGroup: GroupReference | None
-    marketingManagerDefaultTrackId: int | None
-    opportunityDefaultTrackId: int | None
-    impressions: int | None
-    budgetRevenue: float | None
-    budgetCost: float | None
-    actualCost: float | None
-    budgetGrossMargin: float | None
-    budgetROI: float | None
-    actualRevenue: float | None
-    actualGrossMargin: float | None
-    actualROI: float | None
-    emailsSent: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    type: CampaignTypeReference | None = None
+    subType: CampaignSubTypeReference | None = None
+    status: CampaignStatusReference | None = None
+    startDate: datetime | None = None
+    endDate: datetime | None = None
+    locationId: int | None = None
+    member: MemberReference | None = None
+    inactive: bool | None = None
+    inactiveDaysAfterEnd: int | None = None
+    notes: str | None = None
+    defaultGroup: GroupReference | None = None
+    marketingManagerDefaultTrackId: int | None = None
+    opportunityDefaultTrackId: int | None = None
+    impressions: int | None = None
+    budgetRevenue: float | None = None
+    budgetCost: float | None = None
+    actualCost: float | None = None
+    budgetGrossMargin: float | None = None
+    budgetROI: float | None = None
+    actualRevenue: float | None = None
+    actualGrossMargin: float | None = None
+    actualROI: float | None = None
+    emailsSent: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CampaignAudit(SparkModel):
-    id: int | None
-    emailsSent: int
-    emailsUnsent: int | None
-    documentsCreated: int | None
-    emailSubject: Annotated[str | None, Field(description=' Max length: 1000;')]
-    group: GroupReference | None
-    campaignId: int | None
-    createdBy: str | None
-    dateCreated: str | None
+    id: int | None = None
+    emailsSent: int | None = None
+    emailsUnsent: int | None = None
+    documentsCreated: int | None = None
+    emailSubject: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    group: GroupReference | None = None
+    campaignId: int | None = None
+    createdBy: str | None = None
+    dateCreated: str | None = None
 
 
 class CampaignReference(ActivityReference):
@@ -1595,11 +1583,11 @@ class CampaignReference(ActivityReference):
 
 
 class CampaignStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CampaignStatusReference(ActivityReference):
@@ -1611,10 +1599,10 @@ class CampaignSubTypeReference(ActivityReference):
 
 
 class CampaignType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CampaignTypeInfo(ActivityReference):
@@ -1626,100 +1614,104 @@ class CampaignTypeReference(ActivityReference):
 
 
 class CatalogComponent(SparkModel):
-    id: int | None
-    sequenceNumber: int | None
-    quantity: float
-    catalogItem: CatalogItemReference
-    hidePriceFlag: bool | None
-    hideItemIdentifierFlag: bool | None
-    hideDescriptionFlag: bool | None
-    hideQuantityFlag: bool | None
-    hideExtendedPriceFlag: bool | None
-    parentCatalogItem: CatalogItemReference | None
-    price: float | None
-    cost: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    sequenceNumber: int | None = None
+    quantity: float | None = None
+    catalogItem: CatalogItemReference | None = None
+    hidePriceFlag: bool | None = None
+    hideItemIdentifierFlag: bool | None = None
+    hideDescriptionFlag: bool | None = None
+    hideQuantityFlag: bool | None = None
+    hideExtendedPriceFlag: bool | None = None
+    parentCatalogItem: CatalogItemReference | None = None
+    price: float | None = None
+    cost: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CatalogInventory(SparkModel):
-    id: int | None
-    catalogItem: CatalogItemReference | None
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    onHand: int | None
-    serialNumbers: list[OnHandSerialNumberReference] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    catalogItem: CatalogItemReference | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    onHand: int | None = None
+    serialNumbers: list[OnHandSerialNumberReference] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CatalogItem(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 75;')]
-    description: Annotated[str, Field(description=' Max length: 60;')]
-    inactiveFlag: bool | None
-    subcategory: ProductSubCategoryReference
-    type: ProductTypeReference
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 75;')] = None
+    description: Annotated[str | None, Field(description=' Max length: 60;')] = None
+    inactiveFlag: bool | None = None
+    subcategory: ProductSubCategoryReference | None = None
+    type: ProductTypeReference | None = None
     productClass: Annotated[
         CatalogItemProductClass | None, Field(description='Defaults to Non-Inventory.')
-    ]
-    serializedFlag: bool | None
-    serializedCostFlag: bool | None
-    phaseProductFlag: bool | None
-    unitOfMeasure: UnitOfMeasureReference | None
-    minStockLevel: int | None
-    price: float | None
-    cost: float | None
-    priceAttribute: CatalogItemPriceAttribute | None
-    taxableFlag: bool | None
-    dropShipFlag: bool | None
-    specialOrderFlag: bool | None
-    customerDescription: Annotated[str, Field(description=' Max length: 6000;')]
-    manufacturer: ManufacturerReference | None
-    manufacturerPartNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    vendor: CompanyReference | None
-    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')]
-    notes: str | None
-    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')]
-    sla: SLAReference | None
-    entityType: EntityTypeReference | None
-    recurringFlag: bool | None
-    recurringRevenue: float | None
-    recurringCost: float | None
-    recurringOneTimeFlag: bool | None
-    recurringBillCycle: BillingCycleReference | None
-    recurringCycleType: AgreementInvoicingCycle | None
-    calculatedPriceFlag: bool | None
-    calculatedCostFlag: bool | None
-    category: ProductCategoryReference | None
-    calculatedPrice: float | None
-    calculatedCost: float | None
-    billableOption: ActivityStopwatchBillableOption | None
-    connectWiseID: str | None
-    agreementType: AgreementTypeReference | None
-    markupPercentage: float | None
-    markupFlag: bool | None
-    autoUpdateUnitCostFlag: bool | None
-    autoUpdateUnitPriceFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    serializedFlag: bool | None = None
+    serializedCostFlag: bool | None = None
+    phaseProductFlag: bool | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    minStockLevel: int | None = None
+    price: float | None = None
+    cost: float | None = None
+    priceAttribute: CatalogItemPriceAttribute | None = None
+    taxableFlag: bool | None = None
+    dropShipFlag: bool | None = None
+    specialOrderFlag: bool | None = None
+    customerDescription: Annotated[
+        str | None, Field(description=' Max length: 6000;')
+    ] = None
+    manufacturer: ManufacturerReference | None = None
+    manufacturerPartNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    vendor: CompanyReference | None = None
+    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    notes: str | None = None
+    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    sla: SLAReference | None = None
+    entityType: EntityTypeReference | None = None
+    recurringFlag: bool | None = None
+    recurringRevenue: float | None = None
+    recurringCost: float | None = None
+    recurringOneTimeFlag: bool | None = None
+    recurringBillCycle: BillingCycleReference | None = None
+    recurringCycleType: AgreementInvoicingCycle | None = None
+    calculatedPriceFlag: bool | None = None
+    calculatedCostFlag: bool | None = None
+    category: ProductCategoryReference | None = None
+    calculatedPrice: float | None = None
+    calculatedCost: float | None = None
+    billableOption: ActivityStopwatchBillableOption | None = None
+    connectWiseID: str | None = None
+    agreementType: AgreementTypeReference | None = None
+    markupPercentage: float | None = None
+    markupFlag: bool | None = None
+    autoUpdateUnitCostFlag: bool | None = None
+    autoUpdateUnitPriceFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class CatalogItemInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    description: str | None
-    inactiveFlag: bool | None
-    productClass: CatalogItemProductClass | None
-    serializedCostFlag: bool | None
-    price: float | None
-    cost: float | None
-    taxableFlag: bool | None
-    dropShipFlag: bool | None
-    specialOrderFlag: bool | None
-    customerDescription: str | None
-    manufacturerPartNumber: str | None
-    vendorSku: str | None
-    billableOption: ActivityStopwatchBillableOption | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    description: str | None = None
+    inactiveFlag: bool | None = None
+    productClass: CatalogItemProductClass | None = None
+    serializedCostFlag: bool | None = None
+    price: float | None = None
+    cost: float | None = None
+    taxableFlag: bool | None = None
+    dropShipFlag: bool | None = None
+    specialOrderFlag: bool | None = None
+    customerDescription: str | None = None
+    manufacturerPartNumber: str | None = None
+    vendorSku: str | None = None
+    billableOption: ActivityStopwatchBillableOption | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CatalogItemPriceAttribute(str, Enum):
@@ -1738,56 +1730,56 @@ class CatalogItemProductClass(str, Enum):
 
 
 class CatalogItemReference(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CatalogPricing(SparkModel):
-    catalogItem: CatalogItemReference | None
-    company: CompanyReference | None
-    location: SystemLocationReference | None
-    quantity: int | None
-    date: str | None
-    price: float | None
+    catalogItem: CatalogItemReference | None = None
+    company: CompanyReference | None = None
+    location: SystemLocationReference | None = None
+    quantity: int | None = None
+    date: str | None = None
+    price: float | None = None
 
 
 class CatalogVendors(SparkModel):
-    id: int | None
-    catalogItemId: int | None
-    vendorId: int | None
-    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')]
-    isPreferredVendor: bool | None
-    vendorName: str | None
+    id: int | None = None
+    catalogItemId: int | None = None
+    vendorId: int | None = None
+    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    isPreferredVendor: bool | None = None
+    vendorName: str | None = None
 
 
 class Category(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    priceLevelXref: Annotated[str | None, Field(description=' Max length: 10;')]
-    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    locationIds: list[int] | None
-    defaultFlag: bool | None
-    addAllLocations: bool | None
-    removeAllLocations: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    priceLevelXref: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    locationIds: list[int] | None = None
+    defaultFlag: bool | None = None
+    addAllLocations: bool | None = None
+    removeAllLocations: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CategoryInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Certification(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    company: CompanyReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CertificationReference(ActivityReference):
@@ -1795,47 +1787,47 @@ class CertificationReference(ActivityReference):
 
 
 class ChangeOrder(SparkModel):
-    id: int | None
-    purchaseHeaderRecId: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    purchaseHeaderRecId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ChargeCode(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    company: CompanyReference
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    billTime: ActivityStopwatchBillableOption | None
-    expenseEntryFlag: bool | None
-    allowAllExpenseTypeFlag: bool | None
-    timeEntryFlag: bool | None
-    workType: WorkTypeReference | None
-    workRole: WorkRoleReference | None
-    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    expenseTypeIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    company: CompanyReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    expenseEntryFlag: bool | None = None
+    allowAllExpenseTypeFlag: bool | None = None
+    timeEntryFlag: bool | None = None
+    workType: WorkTypeReference | None = None
+    workRole: WorkRoleReference | None = None
+    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    expenseTypeIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ChargeCodeExpenseType(SparkModel):
-    id: int | None
-    type: ExpenseTypeReference
-    chargeCode: ChargeCodeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: ExpenseTypeReference | None = None
+    chargeCode: ChargeCodeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ChargeCodeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    expenseEntryFlag: bool | None
-    allowAllExpenseTypeFlag: bool | None
-    timeEntryFlag: bool | None
-    workType: WorkTypeReference | None
-    workRole: WorkRoleReference | None
-    expenseTypeIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    expenseEntryFlag: bool | None = None
+    allowAllExpenseTypeFlag: bool | None = None
+    timeEntryFlag: bool | None = None
+    workType: WorkTypeReference | None = None
+    workRole: WorkRoleReference | None = None
+    expenseTypeIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ChargeCodeReference(ActivityReference):
@@ -1843,13 +1835,13 @@ class ChargeCodeReference(ActivityReference):
 
 
 class Classification(SparkModel):
-    id: int | None
-    name: str | None
-    multiplier: float | None
-    defaultFlag: bool | None
-    companyFlag: bool | None
-    employeeFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    multiplier: float | None = None
+    defaultFlag: bool | None = None
+    companyFlag: bool | None = None
+    employeeFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ClassificationReference(ActivityReference):
@@ -1857,8 +1849,8 @@ class ClassificationReference(ActivityReference):
 
 
 class ClearPickerRequest(SparkModel):
-    member: MemberReference | None
-    type: ClearPickerRequestType | None
+    member: MemberReference | None = None
+    type: ClearPickerRequestType | None = None
 
 
 class ClearPickerRequestType(str, Enum):
@@ -1867,53 +1859,53 @@ class ClearPickerRequestType(str, Enum):
 
 
 class ClosedInvoice(SparkModel):
-    id: int | None
-    status: BillingStatusReference | None
-    internalNotes: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    status: BillingStatusReference | None = None
+    internalNotes: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Code(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    description: str
-    boardId: int | None
-    locationId: int | None
-    businessUnitId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    description: str | None = None
+    boardId: int | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Commission(SparkModel):
-    id: int | None
-    member: MemberReference
-    commissionPercent: float | None
-    dateStart: datetime | None
-    dateEnd: datetime | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    company: CompanyReference | None
-    site: SiteReference | None
-    agreement: AgreementReference | None
-    project: ProjectReference | None
-    serviceBoard: BoardReference | None
-    ticket: TicketReference | None
-    territory: SystemLocationReference | None
-    billingMethod: CommissionBillingMethod | None
-    serviceType: ServiceTypeReference | None
-    projectBoard: ProjectBoardReference | None
-    projectType: ProjectTypeReference | None
-    agreementType: AgreementTypeReference | None
-    numberOfMonths: int | None
-    productCategory: ProductCategoryReference | None
-    productSubCategory: ProductSubCategoryReference | None
-    item: IvItemReference | None
-    commissionBasis: CommissionCommissionBasis | None
-    invoiceOption: CommissionInvoiceOption | None
-    servicesFlag: bool | None
-    agreementsFlag: bool | None
-    productsFlag: bool | None
-    myOpportunitiesFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    commissionPercent: float | None = None
+    dateStart: datetime | None = None
+    dateEnd: datetime | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    company: CompanyReference | None = None
+    site: SiteReference | None = None
+    agreement: AgreementReference | None = None
+    project: ProjectReference | None = None
+    serviceBoard: BoardReference | None = None
+    ticket: TicketReference | None = None
+    territory: SystemLocationReference | None = None
+    billingMethod: CommissionBillingMethod | None = None
+    serviceType: ServiceTypeReference | None = None
+    projectBoard: ProjectBoardReference | None = None
+    projectType: ProjectTypeReference | None = None
+    agreementType: AgreementTypeReference | None = None
+    numberOfMonths: int | None = None
+    productCategory: ProductCategoryReference | None = None
+    productSubCategory: ProductSubCategoryReference | None = None
+    item: IvItemReference | None = None
+    commissionBasis: CommissionCommissionBasis | None = None
+    invoiceOption: CommissionInvoiceOption | None = None
+    servicesFlag: bool | None = None
+    agreementsFlag: bool | None = None
+    productsFlag: bool | None = None
+    myOpportunitiesFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CommissionBillingMethod(str, Enum):
@@ -1936,42 +1928,42 @@ class CommissionInvoiceOption(str, Enum):
 
 
 class CommunicationType(SparkModel):
-    id: int | None
-    description: str
+    id: int | None = None
+    description: str | None = None
     phoneFlag: Annotated[
         bool | None,
         Field(
             description='Gets or sets at least one flag is required to be true -- phone, fax, or email.'
         ),
-    ]
+    ] = None
     faxFlag: Annotated[
         bool | None,
         Field(
             description='Gets or sets at least one flag is required to be true -- phone, fax, or email.'
         ),
-    ]
+    ] = None
     emailFlag: Annotated[
         bool | None,
         Field(
             description='Gets or sets at least one flag is required to be true -- phone, fax, or email.'
         ),
-    ]
-    defaultFlag: bool | None
-    exchangeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    iphoneXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    androidXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    googleXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    defaultFlag: bool | None = None
+    exchangeXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    iphoneXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    androidXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    googleXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CommunicationTypeInfo(SparkModel):
-    id: int | None
-    description: str | None
-    phoneFlag: bool | None
-    faxFlag: bool | None
-    emailFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: str | None = None
+    phoneFlag: bool | None = None
+    faxFlag: bool | None = None
+    emailFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CommunicationTypeReference(ActivityReference):
@@ -1979,218 +1971,240 @@ class CommunicationTypeReference(ActivityReference):
 
 
 class Company(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 30;')]
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    status: CompanyStatusReference | None
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    status: CompanyStatusReference | None = None
     addressLine1: Annotated[
         str | None,
         Field(
             description='Gets or sets at least one address field is required -- addressLine1, addressLine2, city, state, zip and/or country. Max length: 50;'
         ),
-    ]
+    ] = None
     addressLine2: Annotated[
         str | None,
         Field(
             description='Gets or sets at least one address field is required -- addressLine1, addressLine2, city, state, zip and/or country. Max length: 50;'
         ),
-    ]
+    ] = None
     city: Annotated[
         str | None,
         Field(
             description='Gets or sets at least one address field is required -- addressLine1, addressLine2, city, state, zip and/or country. Max length: 50;'
         ),
-    ]
+    ] = None
     state: Annotated[
         str | None,
         Field(
             description='Gets or sets at least one address field is required -- addressLine1, addressLine2, city, state, zip and/or country. Max length: 50;'
         ),
-    ]
+    ] = None
     zip: Annotated[
         str | None,
         Field(
             description='Gets or sets at least one address field is required -- addressLine1, addressLine2, city, state, zip and/or country. Max length: 12;'
         ),
-    ]
-    country: CountryReference | None
-    phoneNumber: Annotated[str | None, Field(description=' Max length: 30;')]
-    faxNumber: Annotated[str | None, Field(description=' Max length: 30;')]
-    website: Annotated[str | None, Field(description=' Max length: 255;')]
-    territory: SystemLocationReference | None
-    market: MarketDescriptionReference | None
-    accountNumber: str | None
-    defaultContact: ContactReference | None
-    dateAcquired: datetime | None
-    sicCode: SicCodeReference | None
-    parentCompany: CompanyReference | None
-    annualRevenue: float | None
-    numberOfEmployees: int | None
-    yearEstablished: int | None
-    revenueYear: int | None
-    ownershipType: OwnershipTypeReference | None
-    timeZoneSetup: TimeZoneSetupReference | None
-    leadSource: Annotated[str | None, Field(description=' Max length: 50;')]
-    leadFlag: bool | None
-    unsubscribeFlag: bool | None
-    calendar: CalendarReference | None
-    userDefinedField1: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField2: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField3: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField4: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField5: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField6: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField7: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField8: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField9: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField10: Annotated[str | None, Field(description=' Max length: 50;')]
-    vendorIdentifier: str | None
-    taxIdentifier: str | None
-    taxCode: TaxCodeReference | None
-    billingTerms: BillingTermsReference | None
-    invoiceTemplate: InvoiceTemplateReference | None
-    pricingSchedule: PricingScheduleReference | None
-    companyEntityType: EntityTypeReference | None
-    billToCompany: CompanyReference | None
-    billingSite: SiteReference | None
-    billingContact: ContactReference | None
-    invoiceDeliveryMethod: BillingDeliveryReference | None
-    invoiceToEmailAddress: str | None
-    invoiceCCEmailAddress: str | None
-    deletedFlag: bool | None
-    dateDeleted: datetime | None
-    deletedBy: str | None
-    mobileGuid: UUID | None
-    facebookUrl: str | None
-    twitterUrl: str | None
-    linkedInUrl: str | None
-    currency: CurrencyReference | None
-    territoryManager: MemberReference | None
-    resellerIdentifier: str | None
-    isVendorFlag: bool | None
+    ] = None
+    country: CountryReference | None = None
+    phoneNumber: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    faxNumber: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    website: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    territory: SystemLocationReference | None = None
+    market: MarketDescriptionReference | None = None
+    accountNumber: str | None = None
+    defaultContact: ContactReference | None = None
+    dateAcquired: datetime | None = None
+    sicCode: SicCodeReference | None = None
+    parentCompany: CompanyReference | None = None
+    annualRevenue: float | None = None
+    numberOfEmployees: int | None = None
+    yearEstablished: int | None = None
+    revenueYear: int | None = None
+    ownershipType: OwnershipTypeReference | None = None
+    timeZoneSetup: TimeZoneSetupReference | None = None
+    leadSource: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    leadFlag: bool | None = None
+    unsubscribeFlag: bool | None = None
+    calendar: CalendarReference | None = None
+    userDefinedField1: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField2: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField3: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField4: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField5: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField6: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField7: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField8: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField9: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField10: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    vendorIdentifier: str | None = None
+    taxIdentifier: str | None = None
+    taxCode: TaxCodeReference | None = None
+    billingTerms: BillingTermsReference | None = None
+    invoiceTemplate: InvoiceTemplateReference | None = None
+    pricingSchedule: PricingScheduleReference | None = None
+    companyEntityType: EntityTypeReference | None = None
+    billToCompany: CompanyReference | None = None
+    billingSite: SiteReference | None = None
+    billingContact: ContactReference | None = None
+    invoiceDeliveryMethod: BillingDeliveryReference | None = None
+    invoiceToEmailAddress: str | None = None
+    invoiceCCEmailAddress: str | None = None
+    deletedFlag: bool | None = None
+    dateDeleted: datetime | None = None
+    deletedBy: str | None = None
+    mobileGuid: UUID | None = None
+    facebookUrl: str | None = None
+    twitterUrl: str | None = None
+    linkedInUrl: str | None = None
+    currency: CurrencyReference | None = None
+    territoryManager: MemberReference | None = None
+    resellerIdentifier: str | None = None
+    isVendorFlag: bool | None = None
     types: Annotated[
         list[CompanyTypeReference] | None,
         Field(
             description='Gets or sets integrer array of Company_Type_Recids to be assigned to company that can be passed in only during new company creation (post)\n            To update existing companies type, use the /company/companyTypeAssociations or /company/companies/{ID}/typeAssociations endpoints.'
         ),
-    ]
-    site: SiteReference | None
-    integratorTags: list[str] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    site: SiteReference | None = None
+    integratorTags: list[str] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class CompanyCustomNote(SparkModel):
-    id: int | None
-    customNote: Annotated[str, Field(description=' Max length: 1500;')]
-    status: CompanyStatusReference
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    customNote: Annotated[str | None, Field(description=' Max length: 1500;')] = None
+    status: CompanyStatusReference | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyFinance(SparkModel):
-    id: int | None
-    billOverrideFlag: bool | None
-    billSrFlag: bool | None
-    billCompleteSrFlag: bool | None
-    billUnapprovedSrFlag: bool | None
-    billRestrictPmFlag: bool | None
-    billCompletePmFlag: bool | None
-    billUnapprovedPmFlag: bool | None
-    emailTemplate: EmailTemplateReference | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    billOverrideFlag: bool | None = None
+    billSrFlag: bool | None = None
+    billCompleteSrFlag: bool | None = None
+    billUnapprovedSrFlag: bool | None = None
+    billRestrictPmFlag: bool | None = None
+    billCompletePmFlag: bool | None = None
+    billUnapprovedPmFlag: bool | None = None
+    emailTemplate: EmailTemplateReference | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class CompanyGroup(SparkModel):
-    id: Annotated[int | None, Field(description=' Required On Updates;')]
-    group: GroupReference
-    company: CompanyReference | None
-    defaultContactFlag: bool | None
-    allContactsFlag: bool | None
-    removeAllContactsFlag: bool | None
-    unsubscribeFlag: bool | None
-    contactIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: Annotated[int | None, Field(description=' Required On Updates;')] = None
+    group: GroupReference | None = None
+    company: CompanyReference | None = None
+    defaultContactFlag: bool | None = None
+    allContactsFlag: bool | None = None
+    removeAllContactsFlag: bool | None = None
+    unsubscribeFlag: bool | None = None
+    contactIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    territory: SystemLocationReference | None
-    defaultContact: ContactReference | None
-    phoneNumber: str | None
-    city: str | None
-    site: SiteReference | None
-    isVendorFlag: bool | None
-    currency: CurrencyReference | None
-    billToCompany: CompanyReference | None
-    billingSite: SiteReference | None
-    billingContact: ContactReference | None
-    billingTerms: BillingTermsReference | None
-    taxCode: TaxCodeReference | None
-    deletedFlag: bool | None
-    types: list[CompanyTypeReference] | None
-    status: CompanyStatusReference | None
-    noServiceFlag: bool | None
-    addressLine1: str | None
-    addressLine2: str | None
-    state: str | None
-    country: CountryReference | None
-    zip: str | None
-    leadFlag: bool | None
-    faxNumber: str | None
-    vendorIdentifier: str | None
-    taxIdentifier: str | None
-    facebookUrl: str | None
-    twitterUrl: str | None
-    linkedInUrl: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    territory: SystemLocationReference | None = None
+    defaultContact: ContactReference | None = None
+    phoneNumber: str | None = None
+    city: str | None = None
+    site: SiteReference | None = None
+    isVendorFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    billToCompany: CompanyReference | None = None
+    billingSite: SiteReference | None = None
+    billingContact: ContactReference | None = None
+    billingTerms: BillingTermsReference | None = None
+    taxCode: TaxCodeReference | None = None
+    deletedFlag: bool | None = None
+    types: list[CompanyTypeReference] | None = None
+    status: CompanyStatusReference | None = None
+    noServiceFlag: bool | None = None
+    addressLine1: str | None = None
+    addressLine2: str | None = None
+    state: str | None = None
+    country: CountryReference | None = None
+    zip: str | None = None
+    leadFlag: bool | None = None
+    faxNumber: str | None = None
+    vendorIdentifier: str | None = None
+    taxIdentifier: str | None = None
+    facebookUrl: str | None = None
+    twitterUrl: str | None = None
+    linkedInUrl: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyManagementSummary(SparkModel):
-    id: int | None
-    managementSolution: ManagementSolutionReference | None
-    groupIdentifier: Annotated[str, Field(description=' Max length: 100;')]
+    id: int | None = None
+    managementSolution: ManagementSolutionReference | None = None
+    groupIdentifier: Annotated[str | None, Field(description=' Max length: 100;')] = (
+        None
+    )
     deviceType: Annotated[
         CompanyManagementSummaryDeviceType | None,
         Field(
             description='Gets or sets deviceType is required if the managementSolution is Legacy.'
         ),
-    ]
-    agreement: AgreementReference | None
-    snmpMachines: int | None
-    totalWorkstations: int | None
-    totalServers: int | None
-    totalWindowsServers: int | None
-    totalWindowsWorkstations: int | None
-    totalManagedMachines: int | None
-    serversOffline: int | None
-    serversDiskSpaceLow: int | None
-    failedBackupJobs: int | None
-    totalNotifications: int | None
-    successfulBackupJobs: int | None
-    serverAvailability: int | None
-    virusesRemoved: int | None
-    spywareItemsRemoved: int | None
-    windowsPatchesInstalled: int | None
-    diskCleanups: int | None
-    diskDefragmentations: int | None
-    fullyPatchedMachines: int | None
-    missingOneTwoPatchesMachines: int | None
-    missingThreeFivePatchesMachines: int | None
-    missingMoreFivePatchesMachines: int | None
-    missingUnscannedPatchesMachines: int | None
-    alertsGenerated: str | None
-    internetConnectivity: float | None
-    diskSpaceCleanedMb: int | None
-    missingSecurityPatches: str | None
-    cpuUtilization: float | None
-    memoryUtilization: float | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    agreement: AgreementReference | None = None
+    snmpMachines: int | None = None
+    totalWorkstations: int | None = None
+    totalServers: int | None = None
+    totalWindowsServers: int | None = None
+    totalWindowsWorkstations: int | None = None
+    totalManagedMachines: int | None = None
+    serversOffline: int | None = None
+    serversDiskSpaceLow: int | None = None
+    failedBackupJobs: int | None = None
+    totalNotifications: int | None = None
+    successfulBackupJobs: int | None = None
+    serverAvailability: int | None = None
+    virusesRemoved: int | None = None
+    spywareItemsRemoved: int | None = None
+    windowsPatchesInstalled: int | None = None
+    diskCleanups: int | None = None
+    diskDefragmentations: int | None = None
+    fullyPatchedMachines: int | None = None
+    missingOneTwoPatchesMachines: int | None = None
+    missingThreeFivePatchesMachines: int | None = None
+    missingMoreFivePatchesMachines: int | None = None
+    missingUnscannedPatchesMachines: int | None = None
+    alertsGenerated: str | None = None
+    internetConnectivity: float | None = None
+    diskSpaceCleanedMb: int | None = None
+    missingSecurityPatches: str | None = None
+    cpuUtilization: float | None = None
+    memoryUtilization: float | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyManagementSummaryDeviceType(str, Enum):
@@ -2201,48 +2215,48 @@ class CompanyManagementSummaryDeviceType(str, Enum):
 
 
 class CompanyMerge(SparkModel):
-    toCompanyId: int
-    name: CompanyMergeName | None
-    identifier: CompanyMergeName | None
-    status: CompanyMergeName | None
-    type: CompanyMergeName | None
-    primaryAddress: CompanyMergeName | None
-    primaryContact: CompanyMergeName | None
-    phone: CompanyMergeName | None
-    fax: CompanyMergeName | None
-    website: CompanyMergeName | None
-    market: CompanyMergeName | None
-    territory: CompanyMergeName | None
-    revenue: CompanyMergeName | None
-    revenueYear: CompanyMergeName | None
-    numberOfEmployees: CompanyMergeName | None
-    sicCode: CompanyMergeName | None
-    dateAcquired: CompanyMergeName | None
-    timeZone: CompanyMergeName | None
-    sourceList: CompanyMergeName | None
-    userDefinedField1: CompanyMergeName | None
-    userDefinedField2: CompanyMergeName | None
-    userDefinedField3: CompanyMergeName | None
-    userDefinedField4: CompanyMergeName | None
-    userDefinedField5: CompanyMergeName | None
-    userDefinedField6: CompanyMergeName | None
-    userDefinedField7: CompanyMergeName | None
-    userDefinedField8: CompanyMergeName | None
-    userDefinedField9: CompanyMergeName | None
-    userDefinedField10: CompanyMergeName | None
-    billingAddress: CompanyMergeName | None
-    billingContact: CompanyMergeName | None
-    taxCode: CompanyMergeName | None
-    accountNumber: CompanyMergeName | None
-    billingTerms: CompanyMergeName | None
-    notes: CompanyMergeNotes | None
-    sites: CompanyMergeNotes | None
-    activities: CompanyMergeNotes | None
-    opportunities: CompanyMergeNotes | None
-    services: CompanyMergeNotes | None
-    projects: CompanyMergeNotes | None
-    contacts: CompanyMergeNotes | None
-    documents: CompanyMergeNotes | None
+    toCompanyId: int | None = None
+    name: CompanyMergeName | None = None
+    identifier: CompanyMergeName | None = None
+    status: CompanyMergeName | None = None
+    type: CompanyMergeName | None = None
+    primaryAddress: CompanyMergeName | None = None
+    primaryContact: CompanyMergeName | None = None
+    phone: CompanyMergeName | None = None
+    fax: CompanyMergeName | None = None
+    website: CompanyMergeName | None = None
+    market: CompanyMergeName | None = None
+    territory: CompanyMergeName | None = None
+    revenue: CompanyMergeName | None = None
+    revenueYear: CompanyMergeName | None = None
+    numberOfEmployees: CompanyMergeName | None = None
+    sicCode: CompanyMergeName | None = None
+    dateAcquired: CompanyMergeName | None = None
+    timeZone: CompanyMergeName | None = None
+    sourceList: CompanyMergeName | None = None
+    userDefinedField1: CompanyMergeName | None = None
+    userDefinedField2: CompanyMergeName | None = None
+    userDefinedField3: CompanyMergeName | None = None
+    userDefinedField4: CompanyMergeName | None = None
+    userDefinedField5: CompanyMergeName | None = None
+    userDefinedField6: CompanyMergeName | None = None
+    userDefinedField7: CompanyMergeName | None = None
+    userDefinedField8: CompanyMergeName | None = None
+    userDefinedField9: CompanyMergeName | None = None
+    userDefinedField10: CompanyMergeName | None = None
+    billingAddress: CompanyMergeName | None = None
+    billingContact: CompanyMergeName | None = None
+    taxCode: CompanyMergeName | None = None
+    accountNumber: CompanyMergeName | None = None
+    billingTerms: CompanyMergeName | None = None
+    notes: CompanyMergeNotes | None = None
+    sites: CompanyMergeNotes | None = None
+    activities: CompanyMergeNotes | None = None
+    opportunities: CompanyMergeNotes | None = None
+    services: CompanyMergeNotes | None = None
+    projects: CompanyMergeNotes | None = None
+    contacts: CompanyMergeNotes | None = None
+    documents: CompanyMergeNotes | None = None
 
 
 class CompanyMergeName(str, Enum):
@@ -2256,48 +2270,48 @@ class CompanyMergeNotes(str, Enum):
 
 
 class CompanyNote(SparkModel):
-    id: int | None
-    text: str
-    type: NoteTypeReference | None
-    flagged: bool | None
-    enteredBy: str | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    text: str | None = None
+    type: NoteTypeReference | None = None
+    flagged: bool | None = None
+    enteredBy: str | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyNoteType(SparkModel):
-    id: int | None
-    identifier: Annotated[str | None, Field(description=' Max length: 15;')]
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    importFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    importFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyNoteTypeInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyPickerItem(SparkModel):
-    id: int | None
-    member: MemberReference | None
-    company: CompanyReference
-    companyStatus: CompanyStatusReference | None
-    companyType: CompanyTypeReference | None
-    companySite: SiteReference | None
-    companyLocation: SystemLocationReference | None
-    companyCountry: CountryReference | None
+    id: int | None = None
+    member: MemberReference | None = None
+    company: CompanyReference | None = None
+    companyStatus: CompanyStatusReference | None = None
+    companyType: CompanyTypeReference | None = None
+    companySite: SiteReference | None = None
+    companyLocation: SystemLocationReference | None = None
+    companyCountry: CountryReference | None = None
     vendorPickerFlag: Annotated[
         bool | None,
         Field(
             description='Gets or sets if true, this record was created by the vendor picker component. Otherwise, the record was created by the company picker component.'
         ),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyReference(CatalogItemReference):
@@ -2305,67 +2319,69 @@ class CompanyReference(CatalogItemReference):
 
 
 class CompanySite(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    addressLine1: Annotated[str | None, Field(description=' Max length: 50;')]
-    addressLine2: Annotated[str | None, Field(description=' Max length: 50;')]
-    city: Annotated[str | None, Field(description=' Max length: 50;')]
-    stateReference: StateReference | None
-    zip: Annotated[str | None, Field(description=' Max length: 12;')]
-    country: CountryReference | None
-    addressFormat: str | None
-    phoneNumber: Annotated[str | None, Field(description=' Max length: 30;')]
-    phoneNumberExt: Annotated[str | None, Field(description=' Max length: 30;')]
-    faxNumber: Annotated[str | None, Field(description=' Max length: 30;')]
-    taxCode: TaxCodeReference | None
-    entityType: EntityTypeReference | None
-    expenseReimbursement: float | None
-    primaryAddressFlag: bool | None
-    defaultShippingFlag: bool | None
-    defaultBillingFlag: bool | None
-    defaultMailingFlag: bool | None
-    inactiveFlag: bool | None
-    billSeparateFlag: bool | None
-    mobileGuid: UUID | None
-    calendar: CalendarReference | None
-    timeZone: TimeZoneSetupReference | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressLine1: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressLine2: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    city: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    stateReference: StateReference | None = None
+    zip: Annotated[str | None, Field(description=' Max length: 12;')] = None
+    country: CountryReference | None = None
+    addressFormat: str | None = None
+    phoneNumber: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    phoneNumberExt: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    faxNumber: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    taxCode: TaxCodeReference | None = None
+    entityType: EntityTypeReference | None = None
+    expenseReimbursement: float | None = None
+    primaryAddressFlag: bool | None = None
+    defaultShippingFlag: bool | None = None
+    defaultBillingFlag: bool | None = None
+    defaultMailingFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    billSeparateFlag: bool | None = None
+    mobileGuid: UUID | None = None
+    calendar: CalendarReference | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class CompanySiteInfo(SparkModel):
-    id: int | None
-    name: str | None
-    addressLine1: str | None
-    addressLine2: str | None
-    city: str | None
-    stateReference: StateReference | None
-    country: CountryReference | None
-    zip: str | None
-    addressFormat: str | None
-    phoneNumber: str | None
-    inactiveFlag: bool | None
-    defaultShippingFlag: bool | None
-    defaultBillingFlag: bool | None
-    primaryAddressFlag: bool | None
-    taxCode: TaxCodeReference | None
-    phoneNumberExt: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    addressLine1: str | None = None
+    addressLine2: str | None = None
+    city: str | None = None
+    stateReference: StateReference | None = None
+    country: CountryReference | None = None
+    zip: str | None = None
+    addressFormat: str | None = None
+    phoneNumber: str | None = None
+    inactiveFlag: bool | None = None
+    defaultShippingFlag: bool | None = None
+    defaultBillingFlag: bool | None = None
+    primaryAddressFlag: bool | None = None
+    taxCode: TaxCodeReference | None = None
+    phoneNumberExt: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    notifyFlag: bool | None
-    disallowSavingFlag: bool | None
-    notificationMessage: Annotated[str | None, Field(description=' Max length: 500;')]
-    customNoteFlag: bool | None
-    cancelOpenTracksFlag: bool | None
-    track: TrackReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    notifyFlag: bool | None = None
+    disallowSavingFlag: bool | None = None
+    notificationMessage: Annotated[
+        str | None, Field(description=' Max length: 500;')
+    ] = None
+    customNoteFlag: bool | None = None
+    cancelOpenTracksFlag: bool | None = None
+    track: TrackReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyStatusReference(ActivityReference):
@@ -2373,34 +2389,36 @@ class CompanyStatusReference(ActivityReference):
 
 
 class CompanyTeam(SparkModel):
-    id: int | None
-    company: CompanyReference | None
-    teamRole: TeamRoleReference
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    contact: ContactReference | None
-    member: MemberReference | None
-    accountManagerFlag: bool | None
-    techFlag: bool | None
-    salesFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    company: CompanyReference | None = None
+    teamRole: TeamRoleReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    contact: ContactReference | None = None
+    member: MemberReference | None = None
+    accountManagerFlag: bool | None = None
+    techFlag: bool | None = None
+    salesFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    vendorFlag: bool | None
-    serviceAlertFlag: bool | None
-    serviceAlertMessage: Annotated[str | None, Field(description=' Max length: 150;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    vendorFlag: bool | None = None
+    serviceAlertFlag: bool | None = None
+    serviceAlertMessage: Annotated[
+        str | None, Field(description=' Max length: 150;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    isVendor: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    isVendor: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CompanyTypeReference(ActivityReference):
@@ -2408,14 +2426,14 @@ class CompanyTypeReference(ActivityReference):
 
 
 class ConfigurationQuestion(SparkModel):
-    answerId: int | None
-    questionId: int | None
-    question: str | None
-    answer: dict[str, Any_aliased] | None
-    sequenceNumber: float | None
-    numberOfDecimals: int | None
-    fieldType: ConfigurationQuestionFieldType | None
-    requiredFlag: bool | None
+    answerId: int | None = None
+    questionId: int | None = None
+    question: str | None = None
+    answer: dict[str, Any_aliased] | None = None
+    sequenceNumber: float | None = None
+    numberOfDecimals: int | None = None
+    fieldType: ConfigurationQuestionFieldType | None = None
+    requiredFlag: bool | None = None
 
 
 class ConfigurationQuestionFieldType(str, Enum):
@@ -2432,25 +2450,25 @@ class ConfigurationQuestionFieldType(str, Enum):
 
 
 class ConfigurationReference(SparkModel):
-    id: int | None
-    deviceIdentifier: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    deviceIdentifier: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationStatus(SparkModel):
-    id: int | None
-    description: Annotated[str, Field(description=' Max length: 50;')]
-    closedFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    closedFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationStatusInfo(SparkModel):
-    id: int | None
-    description: str | None
-    closedFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: str | None = None
+    closedFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationStatusReference(ActivityReference):
@@ -2462,11 +2480,11 @@ class ConfigurationTabsCount(AgreementTabsCount):
 
 
 class ConfigurationType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    systemFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    systemFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeCopy(BoardCopy):
@@ -2474,24 +2492,24 @@ class ConfigurationTypeCopy(BoardCopy):
 
 
 class ConfigurationTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    systemFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    systemFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeQuestion(SparkModel):
-    id: int | None
-    configurationType: ConfigurationTypeReference | None
-    fieldType: ConfigurationQuestionFieldType
-    entryType: ConfigurationTypeQuestionEntryType
-    sequenceNumber: float
-    question: Annotated[str, Field(description=' Max length: 1000;')]
-    numberOfDecimals: int | None
-    requiredFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    configurationType: ConfigurationTypeReference | None = None
+    fieldType: ConfigurationQuestionFieldType | None = None
+    entryType: ConfigurationTypeQuestionEntryType | None = None
+    sequenceNumber: float | None = None
+    question: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    numberOfDecimals: int | None = None
+    requiredFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeQuestionEntryType(str, Enum):
@@ -2502,42 +2520,42 @@ class ConfigurationTypeQuestionEntryType(str, Enum):
 
 
 class ConfigurationTypeQuestionInfo(SparkModel):
-    id: int | None
-    configurationType: ConfigurationTypeReference | None
-    fieldType: ConfigurationQuestionFieldType | None
-    entryType: ConfigurationTypeQuestionEntryType | None
-    sequenceNumber: float | None
-    question: str | None
-    numberOfDecimals: int | None
-    requiredFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    configurationType: ConfigurationTypeReference | None = None
+    fieldType: ConfigurationQuestionFieldType | None = None
+    entryType: ConfigurationTypeQuestionEntryType | None = None
+    sequenceNumber: float | None = None
+    question: str | None = None
+    numberOfDecimals: int | None = None
+    requiredFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeQuestionReference(SparkModel):
-    id: int | None
-    question: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    question: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeQuestionValue(SparkModel):
-    id: int | None
-    configurationType: ConfigurationTypeReference | None
-    question: ConfigurationTypeQuestionReference | None
-    value: Annotated[str, Field(description=' Max length: 1000;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    configurationType: ConfigurationTypeReference | None = None
+    question: ConfigurationTypeQuestionReference | None = None
+    value: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeQuestionValueInfo(SparkModel):
-    id: int | None
-    configurationType: ConfigurationTypeReference | None
-    question: ConfigurationTypeQuestionReference | None
-    value: str | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    configurationType: ConfigurationTypeReference | None = None
+    question: ConfigurationTypeQuestionReference | None = None
+    value: str | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConfigurationTypeReference(ActivityReference):
@@ -2545,39 +2563,42 @@ class ConfigurationTypeReference(ActivityReference):
 
 
 class ConnectWiseHostedScreen(SparkModel):
-    id: int | None
-    screenId: str | None
-    name: str | None
+    id: int | None = None
+    screenId: str | None = None
+    name: str | None = None
 
 
 class ConnectWiseHostedSetup(SparkModel):
-    id: int | None
+    id: int | None = None
     screenId: Annotated[
-        int, Field(description='Can be obtained via ConnectWiseHostedApiScreen report.')
-    ]
-    description: Annotated[str, Field(description=' Max length: 50;')]
-    url: Annotated[str, Field(description=' Max length: 1024;')]
-    type: ConnectWiseHostedSetupType
+        int | None,
+        Field(description='Can be obtained via ConnectWiseHostedApiScreen report.'),
+    ] = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    url: Annotated[str | None, Field(description=' Max length: 1024;')] = None
+    type: ConnectWiseHostedSetupType | None = None
     clientId: Annotated[
         str | None,
         Field(description='Only required if not already set. Max length: 36;'),
-    ]
-    origin: Annotated[str | None, Field(description=' Max length: 100;')]
-    podHeight: int | None
-    toolbarButtonDialogHeight: int | None
-    toolbarButtonDialogWidth: int | None
+    ] = None
+    origin: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    podHeight: int | None = None
+    toolbarButtonDialogHeight: int | None = None
+    toolbarButtonDialogWidth: int | None = None
     toolbarButtonText: Annotated[
         str | None,
         Field(description='Only required for ToolbarButtons. Max length: 50;'),
-    ]
-    toolbarButtonToolTip: Annotated[str | None, Field(description=' Max length: 50;')]
-    toolbarButtonIconDocumentId: int | None
-    disabledFlag: bool | None
-    locationIds: list[int] | None
-    locationsEnabledFlag: bool | None
-    createdBy: str | None
-    dateCreated: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    toolbarButtonToolTip: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    toolbarButtonIconDocumentId: int | None = None
+    disabledFlag: bool | None = None
+    locationIds: list[int] | None = None
+    locationsEnabledFlag: bool | None = None
+    createdBy: str | None = None
+    dateCreated: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConnectWiseHostedSetupType(str, Enum):
@@ -2587,86 +2608,106 @@ class ConnectWiseHostedSetupType(str, Enum):
 
 
 class Contact(SparkModel):
-    id: int | None
-    firstName: str | None
-    lastName: str | None
-    company: CompanyReference | None
-    site: SiteReference | None
-    addressLine1: str | None
-    addressLine2: str | None
-    city: str | None
-    state: str | None
-    zip: str | None
-    country: CountryReference | None
-    relationship: RelationshipReference | None
-    relationshipOverride: str | None
-    department: ContactDepartmentReference | None
-    inactiveFlag: bool | None
-    defaultMergeContactId: int | None
-    securityIdentifier: str | None
-    managerContact: ContactReference | None
-    assistantContact: ContactReference | None
-    title: str | None
-    school: str | None
-    nickName: str | None
-    marriedFlag: bool | None
-    childrenFlag: bool | None
-    children: str | None
-    significantOther: str | None
-    portalPassword: str | None
-    portalSecurityLevel: int | None
-    disablePortalLoginFlag: bool | None
-    unsubscribeFlag: bool | None
-    gender: ContactGender | None
-    birthDay: str | None
-    anniversary: str | None
-    presence: ContactPresence | None
-    mobileGuid: UUID | None
-    facebookUrl: str | None
-    twitterUrl: str | None
-    linkedInUrl: str | None
-    defaultPhoneType: str | None
-    defaultPhoneNbr: str | None
-    defaultPhoneExtension: str | None
-    defaultBillingFlag: bool | None
-    defaultFlag: bool | None
-    userDefinedField1: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField2: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField3: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField4: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField5: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField6: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField7: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField8: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField9: Annotated[str | None, Field(description=' Max length: 50;')]
-    userDefinedField10: Annotated[str | None, Field(description=' Max length: 50;')]
-    companyLocation: SystemLocationReference | None
-    communicationItems: list[ContactCommunicationItem] | None
-    types: list[ContactTypeReference] | None
-    integratorTags: list[str] | None
-    customFields: list[CustomFieldValue] | None
-    photo: DocumentReference | None
-    ignoreDuplicates: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    firstName: str | None = None
+    lastName: str | None = None
+    company: CompanyReference | None = None
+    site: SiteReference | None = None
+    addressLine1: str | None = None
+    addressLine2: str | None = None
+    city: str | None = None
+    state: str | None = None
+    zip: str | None = None
+    country: CountryReference | None = None
+    relationship: RelationshipReference | None = None
+    relationshipOverride: str | None = None
+    department: ContactDepartmentReference | None = None
+    inactiveFlag: bool | None = None
+    defaultMergeContactId: int | None = None
+    securityIdentifier: str | None = None
+    managerContact: ContactReference | None = None
+    assistantContact: ContactReference | None = None
+    title: str | None = None
+    school: str | None = None
+    nickName: str | None = None
+    marriedFlag: bool | None = None
+    childrenFlag: bool | None = None
+    children: str | None = None
+    significantOther: str | None = None
+    portalPassword: str | None = None
+    portalSecurityLevel: int | None = None
+    disablePortalLoginFlag: bool | None = None
+    unsubscribeFlag: bool | None = None
+    gender: ContactGender | None = None
+    birthDay: str | None = None
+    anniversary: str | None = None
+    presence: ContactPresence | None = None
+    mobileGuid: UUID | None = None
+    facebookUrl: str | None = None
+    twitterUrl: str | None = None
+    linkedInUrl: str | None = None
+    defaultPhoneType: str | None = None
+    defaultPhoneNbr: str | None = None
+    defaultPhoneExtension: str | None = None
+    defaultBillingFlag: bool | None = None
+    defaultFlag: bool | None = None
+    userDefinedField1: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField2: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField3: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField4: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField5: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField6: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField7: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField8: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField9: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    userDefinedField10: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    companyLocation: SystemLocationReference | None = None
+    communicationItems: list[ContactCommunicationItem] | None = None
+    types: list[ContactTypeReference] | None = None
+    integratorTags: list[str] | None = None
+    customFields: list[CustomFieldValue] | None = None
+    photo: DocumentReference | None = None
+    ignoreDuplicates: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
     typeIds: Annotated[
         list[int] | None,
         Field(
             description='Gets or sets integrer array of Contact_Type_Recids to be assigned to contact that can be passed in only during new contact creation (post)\n            To update existing contacts type, use the /company/contactTypeAssociations or /company/contacts/{ID}/typeAssociations endpoints.'
         ),
-    ]
+    ] = None
 
 
 class ContactCommunication(SparkModel):
-    id: int | None
-    contactId: int | None
-    type: CommunicationTypeReference
-    value: Annotated[str, Field(description=' Max length: 250;')]
-    extension: Annotated[str | None, Field(description=' Max length: 15;')]
-    defaultFlag: bool | None
-    mobileGuid: UUID | None
-    communicationType: ContactCommunicationCommunicationType | None
-    domain: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    contactId: int | None = None
+    type: CommunicationTypeReference | None = None
+    value: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    extension: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    defaultFlag: bool | None = None
+    mobileGuid: UUID | None = None
+    communicationType: ContactCommunicationCommunicationType | None = None
+    domain: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactCommunicationCommunicationType(str, Enum):
@@ -2676,19 +2717,19 @@ class ContactCommunicationCommunicationType(str, Enum):
 
 
 class ContactCommunicationItem(SparkModel):
-    id: int | None
-    type: CommunicationTypeReference | None
-    value: str | None
-    extension: str | None
-    defaultFlag: bool | None
-    domain: str | None
-    communicationType: ContactCommunicationCommunicationType | None
+    id: int | None = None
+    type: CommunicationTypeReference | None = None
+    value: str | None = None
+    extension: str | None = None
+    defaultFlag: bool | None = None
+    domain: str | None = None
+    communicationType: ContactCommunicationCommunicationType | None = None
 
 
 class ContactDepartment(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactDepartmentInfo(ActivityReference):
@@ -2705,54 +2746,54 @@ class ContactGender(str, Enum):
 
 
 class ContactGroup(SparkModel):
-    id: int | None
-    group: GroupReference
-    contact: ContactReference | None
-    description: Annotated[str | None, Field(description=' Max length: 50;')]
-    unsubscribeFlag: bool | None
-    companyUnsubcribedEmailMessage: str | None
-    companyGroupUnsubscribedEmailMessage: str | None
-    contactUnsubscribedEmailMessage: str | None
-    contactGroupUnsubscribedEmailMessage: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    group: GroupReference | None = None
+    contact: ContactReference | None = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    unsubscribeFlag: bool | None = None
+    companyUnsubcribedEmailMessage: str | None = None
+    companyGroupUnsubscribedEmailMessage: str | None = None
+    contactUnsubscribedEmailMessage: str | None = None
+    contactGroupUnsubscribedEmailMessage: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactInfo(SparkModel):
-    id: int | None
-    firstName: str | None
-    lastName: str | None
-    communicationItems: list[ContactCommunicationItem] | None
-    defaultPhoneNbr: str | None
-    defaultPhoneType: str | None
-    defaultFlag: bool | None
-    company: CompanyReference | None
-    companyLocation: SystemLocationReference | None
-    site: SiteReference | None
-    inactiveFlag: bool | None
-    title: str | None
-    types: list[ContactTypeReference] | None
-    addressLine1: str | None
-    addressLine2: str | None
-    city: str | None
-    state: str | None
-    country: CountryReference | None
-    zip: str | None
-    department: ContactDepartmentReference | None
-    defaultBillingFlag: bool | None
-    facebookUrl: str | None
-    twitterUrl: str | None
-    linkedInUrl: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    firstName: str | None = None
+    lastName: str | None = None
+    communicationItems: list[ContactCommunicationItem] | None = None
+    defaultPhoneNbr: str | None = None
+    defaultPhoneType: str | None = None
+    defaultFlag: bool | None = None
+    company: CompanyReference | None = None
+    companyLocation: SystemLocationReference | None = None
+    site: SiteReference | None = None
+    inactiveFlag: bool | None = None
+    title: str | None = None
+    types: list[ContactTypeReference] | None = None
+    addressLine1: str | None = None
+    addressLine2: str | None = None
+    city: str | None = None
+    state: str | None = None
+    country: CountryReference | None = None
+    zip: str | None = None
+    department: ContactDepartmentReference | None = None
+    defaultBillingFlag: bool | None = None
+    facebookUrl: str | None = None
+    twitterUrl: str | None = None
+    linkedInUrl: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactNote(SparkModel):
-    id: int | None
-    contactId: int | None
-    text: str
-    type: NoteTypeReference | None
-    flagged: bool | None
-    enteredBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    contactId: int | None = None
+    text: str | None = None
+    type: NoteTypeReference | None = None
+    flagged: bool | None = None
+    enteredBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactPresence(str, Enum):
@@ -2768,41 +2809,43 @@ class ContactReference(ActivityReference):
 
 
 class ContactRelationship(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactTrack(SparkModel):
-    id: int | None
-    trackId: int | None
-    name: str | None
-    startDate: str | None
-    endDate: str | None
-    actionTaken: int | None
-    actionRemaining: int | None
-    startedBy: str | None
-    company: CompanyReference | None
-    contact: ContactReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    trackId: int | None = None
+    name: str | None = None
+    startDate: str | None = None
+    endDate: str | None = None
+    actionTaken: int | None = None
+    actionRemaining: int | None = None
+    startedBy: str | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactType(SparkModel):
-    id: int | None
-    description: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    serviceAlertFlag: bool | None
-    serviceAlertMessage: Annotated[str | None, Field(description=' Max length: 150;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    serviceAlertFlag: bool | None = None
+    serviceAlertMessage: Annotated[
+        str | None, Field(description=' Max length: 150;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactTypeInfo(SparkModel):
-    id: int | None
-    description: str | None
-    defaultFlag: bool | None
-    serviceAlertFlag: bool | None
-    serviceAlertMessage: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: str | None = None
+    defaultFlag: bool | None = None
+    serviceAlertFlag: bool | None = None
+    serviceAlertMessage: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ContactTypeReference(ActivityReference):
@@ -2810,11 +2853,11 @@ class ContactTypeReference(ActivityReference):
 
 
 class Conversion(SparkModel):
-    id: int | None
-    quantity: float | None
-    uomType: UnitOfMeasureReference
-    parentUOM: UnitOfMeasureReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    quantity: float | None = None
+    uomType: UnitOfMeasureReference | None = None
+    parentUOM: UnitOfMeasureReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ConversionTypeReference(ActivityReference):
@@ -2822,11 +2865,11 @@ class ConversionTypeReference(ActivityReference):
 
 
 class ConvertItem(SparkModel):
-    id: int | None
-    recordType: ConvertItemRecordType
-    project: ProjectReference | None
-    phase: ProjectPhaseReference | None
-    wbsCode: str | None
+    id: int | None = None
+    recordType: ConvertItemRecordType | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    wbsCode: str | None = None
 
 
 class ConvertItemRecordType(str, Enum):
@@ -2835,33 +2878,29 @@ class ConvertItemRecordType(str, Enum):
     ServiceTicket = 'ServiceTicket'
 
 
-class ConvertToProject(SparkModel):
-    id: int | None
-    recordType: ConvertItemRecordType | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference
-    wbsCode: str
+class ConvertToProject(ConvertItem):
+    pass
 
 
 class CorporateStructure(SparkModel):
-    id: int | None
-    levelCount: CorporateStructureLevelCount | None
-    level1Name: Annotated[str | None, Field(description=' Max length: 20;')]
-    level2Name: Annotated[str | None, Field(description=' Max length: 20;')]
-    level3Name: Annotated[str | None, Field(description=' Max length: 20;')]
-    level4Name: Annotated[str | None, Field(description=' Max length: 20;')]
-    level5Name: Annotated[str | None, Field(description=' Max length: 20;')]
-    fiscalYearStart: CorporateStructureFiscalYearStart
-    locationCaption: Annotated[str, Field(description=' Max length: 50;')]
-    groupCaption: Annotated[str, Field(description=' Max length: 50;')]
-    baseCurrency: CurrencyReference
-    president: MemberReference | None
-    chiefOperatingOfficer: MemberReference | None
-    controller: MemberReference | None
-    dispatcher: MemberReference | None
-    serviceManager: MemberReference | None
-    dutyManager: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    levelCount: CorporateStructureLevelCount | None = None
+    level1Name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    level2Name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    level3Name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    level4Name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    level5Name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    fiscalYearStart: CorporateStructureFiscalYearStart | None = None
+    locationCaption: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    groupCaption: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    baseCurrency: CurrencyReference | None = None
+    president: MemberReference | None = None
+    chiefOperatingOfficer: MemberReference | None = None
+    controller: MemberReference | None = None
+    dispatcher: MemberReference | None = None
+    serviceManager: MemberReference | None = None
+    dutyManager: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CorporateStructureFiscalYearStart(str, Enum):
@@ -2880,16 +2919,16 @@ class CorporateStructureFiscalYearStart(str, Enum):
 
 
 class CorporateStructureInfo(SparkModel):
-    id: int | None
-    locationCaption: str | None
-    groupCaption: str | None
-    baseCurrency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    locationCaption: str | None = None
+    groupCaption: str | None = None
+    baseCurrency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CorporateStructureLevel(SparkModel):
-    id: int | None
-    name: str | None
+    id: int | None = None
+    name: str | None = None
 
 
 class CorporateStructureLevelCount(str, Enum):
@@ -2905,25 +2944,29 @@ class CorporateStructureLevelReference(ActivityReference):
 
 
 class Count(SparkModel):
-    count: int | None
+    count: int | None = None
 
 
 class Country(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    currency: CurrencyReference
-    cityCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    stateCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    zipCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    zipMinimumLength: int | None
-    dialingPrefix: Annotated[str | None, Field(description=' Max length: 5;')]
-    addressFormat: AddressFormatReference | None
-    countryCode: Annotated[str | None, Field(description=' Max length: 2;')]
-    coreEntityCountryCode: CountryCoreEntityCountryCode | None
-    localizationCaptionOne: Annotated[str | None, Field(description=' Max length: 25;')]
-    localizationValueOne: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    cityCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    stateCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    zipCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    zipMinimumLength: int | None = None
+    dialingPrefix: Annotated[str | None, Field(description=' Max length: 5;')] = None
+    addressFormat: AddressFormatReference | None = None
+    countryCode: Annotated[str | None, Field(description=' Max length: 2;')] = None
+    coreEntityCountryCode: CountryCoreEntityCountryCode | None = None
+    localizationCaptionOne: Annotated[
+        str | None, Field(description=' Max length: 25;')
+    ] = None
+    localizationValueOne: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CountryCoreEntityCountryCode(str, Enum):
@@ -3182,16 +3225,16 @@ class CountryCoreEntityCountryCode(str, Enum):
 
 
 class CountryInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    cityCaption: str | None
-    stateCaption: str | None
-    zipCaption: str | None
-    dialingPrefix: str | None
-    localizationCaptionOne: str | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    cityCaption: str | None = None
+    stateCaption: str | None = None
+    zipCaption: str | None = None
+    dialingPrefix: str | None = None
+    localizationCaptionOne: str | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CountryReference(CatalogItemReference):
@@ -3199,70 +3242,76 @@ class CountryReference(CatalogItemReference):
 
 
 class CreateAccountingBatchRequest(SparkModel):
-    id: int | None
-    batchIdentifier: Annotated[str | None, Field(description=' Max length: 50;')]
-    glInterfaceIdentifier: str | None
+    id: int | None = None
+    batchIdentifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    glInterfaceIdentifier: str | None = None
     exportInvoicesFlag: Annotated[
         bool | None,
         Field(description='Batch must export Invoices, Expenses or Products.'),
-    ]
+    ] = None
     exportExpensesFlag: Annotated[
         bool | None,
         Field(description='Batch must export Invoices, Expenses or Products.'),
-    ]
+    ] = None
     exportProductsFlag: Annotated[
         bool | None,
         Field(description='Batch must export Invoices, Expenses or Products.'),
-    ]
-    processedRecordIds: Annotated[list[int], Field(description='GL Entry RecIDs.')]
-    summarizeExpenses: bool | None
+    ] = None
+    processedRecordIds: Annotated[
+        list[int] | None, Field(description='GL Entry RecIDs.')
+    ] = None
+    summarizeExpenses: bool | None = None
 
 
 class Crm(SparkModel):
-    id: int | None
-    companyListCount: int | None
-    lockProbabilityFlag: bool | None
-    accountManagerRole: TeamRoleReference
-    technicalContactRole: TeamRoleReference
-    salesRepRole: TeamRoleReference
-    companyIdGenerationFlag: bool | None
-    excludeSpacesFlag: bool | None
-    field1Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field2Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field3Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field4Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field5Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field6Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field7Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field8Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field9Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    field10Caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    primaryRepCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    secondaryRepCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    other1Caption: Annotated[str | None, Field(description=' Max length: 50;')]
-    other2Caption: Annotated[str | None, Field(description=' Max length: 50;')]
-    defaultYear: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    companyListCount: int | None = None
+    lockProbabilityFlag: bool | None = None
+    accountManagerRole: TeamRoleReference | None = None
+    technicalContactRole: TeamRoleReference | None = None
+    salesRepRole: TeamRoleReference | None = None
+    companyIdGenerationFlag: bool | None = None
+    excludeSpacesFlag: bool | None = None
+    field1Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field2Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field3Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field4Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field5Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field6Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field7Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field8Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field9Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    field10Caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    primaryRepCaption: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    secondaryRepCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    other1Caption: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    other2Caption: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultYear: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CrmInfo(SparkModel):
-    id: int | None
-    accountManagerRole: TeamRoleReference | None
-    technicalContactRole: TeamRoleReference | None
-    salesRepRole: TeamRoleReference | None
-    field1Caption: str | None
-    field2Caption: str | None
-    field3Caption: str | None
-    field4Caption: str | None
-    field5Caption: str | None
-    field6Caption: str | None
-    field7Caption: str | None
-    field8Caption: str | None
-    field9Caption: str | None
-    field10Caption: str | None
-    primaryRepCaption: str | None
-    secondaryRepCaption: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    accountManagerRole: TeamRoleReference | None = None
+    technicalContactRole: TeamRoleReference | None = None
+    salesRepRole: TeamRoleReference | None = None
+    field1Caption: str | None = None
+    field2Caption: str | None = None
+    field3Caption: str | None = None
+    field4Caption: str | None = None
+    field5Caption: str | None = None
+    field6Caption: str | None = None
+    field7Caption: str | None = None
+    field8Caption: str | None = None
+    field9Caption: str | None = None
+    field10Caption: str | None = None
+    primaryRepCaption: str | None = None
+    secondaryRepCaption: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CurrencyCode(ActivityReference):
@@ -3278,29 +3327,29 @@ class CurrencyInfo(ActivityReference):
 
 
 class CurrencyReference(SparkModel):
-    id: int | None
-    symbol: str | None
-    currencyCode: str | None
-    decimalSeparator: str | None
-    numberOfDecimals: int | None
-    thousandsSeparator: str | None
-    negativeParenthesesFlag: bool | None
-    displaySymbolFlag: bool | None
-    currencyIdentifier: str | None
-    displayIdFlag: bool | None
-    rightAlign: bool | None
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    symbol: str | None = None
+    currencyCode: str | None = None
+    decimalSeparator: str | None = None
+    numberOfDecimals: int | None = None
+    thousandsSeparator: str | None = None
+    negativeParenthesesFlag: bool | None = None
+    displaySymbolFlag: bool | None = None
+    currencyIdentifier: str | None = None
+    displayIdFlag: bool | None = None
+    rightAlign: bool | None = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CustomFieldValue(SparkModel):
-    id: int | None
-    caption: str | None
-    type: CustomFieldValueType | None
-    entryMethod: ConfigurationTypeQuestionEntryType | None
-    numberOfDecimals: int | None
-    value: dict[str, Any_aliased] | None
-    connectWiseId: str | None
+    id: int | None = None
+    caption: str | None = None
+    type: CustomFieldValueType | None = None
+    entryMethod: ConfigurationTypeQuestionEntryType | None = None
+    numberOfDecimals: int | None = None
+    value: dict[str, Any_aliased] | None = None
+    connectWiseId: str | None = None
 
 
 class CustomFieldValueType(str, Enum):
@@ -3319,181 +3368,187 @@ class CustomFieldValueType(str, Enum):
 
 
 class CustomReport(SparkModel):
-    id: int | None
-    reportLink: str
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    module: Annotated[CustomReportModule, Field(description='The Module Name.')]
-    description: Annotated[str, Field(description=' Max length: 150;')]
-    generatedFlag: bool | None
-    parameterPrefix: Annotated[str | None, Field(description=' Max length: 50;')]
-    parameterSeparator: Annotated[str | None, Field(description=' Max length: 50;')]
-    parameterNameSeparator: Annotated[str | None, Field(description=' Max length: 50;')]
-    parameterSuffix: Annotated[str | None, Field(description=' Max length: 50;')]
-    locationFlag: bool | None
+    id: int | None = None
+    reportLink: str | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    module: Annotated[
+        CustomReportModule | None, Field(description='The Module Name.')
+    ] = None
+    description: Annotated[str | None, Field(description=' Max length: 150;')] = None
+    generatedFlag: bool | None = None
+    parameterPrefix: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    parameterSeparator: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    parameterNameSeparator: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    parameterSuffix: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    locationFlag: bool | None = None
     locationParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Location parameter."
         ),
-    ]
-    locationDefaultFlag: bool | None
-    locationOverride: str | None
-    departmentFlag: bool | None
+    ] = None
+    locationDefaultFlag: bool | None = None
+    locationOverride: str | None = None
+    departmentFlag: bool | None = None
     departmentParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Department parameter."
         ),
-    ]
-    departmentDefaultFlag: bool | None
-    departmentOverride: str | None
-    territoryFlag: bool | None
+    ] = None
+    departmentDefaultFlag: bool | None = None
+    departmentOverride: str | None = None
+    territoryFlag: bool | None = None
     territoryParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Terriroty parameter."
         ),
-    ]
-    territoryDefaultFlag: bool | None
-    territoryOverride: str | None
-    companyFlag: bool | None
+    ] = None
+    territoryDefaultFlag: bool | None = None
+    territoryOverride: str | None = None
+    companyFlag: bool | None = None
     companyParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Company parameter."
         ),
-    ]
-    companyOverride: str | None
-    memberFlag: bool | None
+    ] = None
+    companyOverride: str | None = None
+    memberFlag: bool | None = None
     memberParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Member parameter."
         ),
-    ]
-    memberOverride: str | None
-    startDateFlag: bool | None
+    ] = None
+    memberOverride: str | None = None
+    startDateFlag: bool | None = None
     startDateParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Start Date parameter."
         ),
-    ]
-    startDateOverride: str | None
-    endDateFlag: bool | None
+    ] = None
+    startDateOverride: str | None = None
+    endDateFlag: bool | None = None
     endDateParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's End Date parameter."
         ),
-    ]
-    endDateOverride: str | None
-    oppTypeFlag: bool | None
+    ] = None
+    endDateOverride: str | None = None
+    oppTypeFlag: bool | None = None
     oppTypeParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Opportunity Type parameter."
         ),
-    ]
-    oppTypeOverride: str | None
-    opportunityFlag: bool | None
+    ] = None
+    oppTypeOverride: str | None = None
+    opportunityFlag: bool | None = None
     opportunityParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Opportunity parameter."
         ),
-    ]
-    opportunityOverride: str | None
-    marketingCampaignFlag: bool | None
+    ] = None
+    opportunityOverride: str | None = None
+    marketingCampaignFlag: bool | None = None
     marketingCampaignParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Marketing Campaign parameter."
         ),
-    ]
-    marketingCampaignOverride: str | None
-    serviceBoardFlag: bool | None
+    ] = None
+    marketingCampaignOverride: str | None = None
+    serviceBoardFlag: bool | None = None
     serviceBoardParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Service Board parameter."
         ),
-    ]
-    serviceBoardDefaultFlag: bool | None
-    serviceBoardOverride: str | None
-    serviceTypeFlag: bool | None
+    ] = None
+    serviceBoardDefaultFlag: bool | None = None
+    serviceBoardOverride: str | None = None
+    serviceTypeFlag: bool | None = None
     serviceTypeParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Service Type parameter."
         ),
-    ]
-    serviceTypeOverride: str | None
-    serviceStatusFlag: bool | None
+    ] = None
+    serviceTypeOverride: str | None = None
+    serviceStatusFlag: bool | None = None
     serviceStatusParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Service Status parameter."
         ),
-    ]
-    serviceStatusOverride: str | None
-    agreementTypeFlag: bool | None
+    ] = None
+    serviceStatusOverride: str | None = None
+    agreementTypeFlag: bool | None = None
     agreementTypeParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Agreement Type parameter."
         ),
-    ]
-    agreementTypeOverride: str | None
-    agreementFlag: bool | None
+    ] = None
+    agreementTypeOverride: str | None = None
+    agreementFlag: bool | None = None
     agreementParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Agreement parameter."
         ),
-    ]
-    agreementOverride: str | None
-    projectTypeFlag: bool | None
+    ] = None
+    agreementOverride: str | None = None
+    projectTypeFlag: bool | None = None
     projectTypeParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Project Type parameter."
         ),
-    ]
-    projectTypeOverride: str | None
-    projectFlag: bool | None
+    ] = None
+    projectTypeOverride: str | None = None
+    projectFlag: bool | None = None
     projectParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Project parameter."
         ),
-    ]
-    projectOverride: str | None
-    workRoleFlag: bool | None
+    ] = None
+    projectOverride: str | None = None
+    workRoleFlag: bool | None = None
     workRoleParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Work Role parameter."
         ),
-    ]
-    workRoleOverride: str | None
-    workTypeFlag: bool | None
+    ] = None
+    workRoleOverride: str | None = None
+    workTypeFlag: bool | None = None
     workTypeParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Work Type parameter."
         ),
-    ]
-    workTypeOverride: str | None
-    invoiceFlag: bool | None
+    ] = None
+    workTypeOverride: str | None = None
+    invoiceFlag: bool | None = None
     invoiceParamId: Annotated[
         int | None,
         Field(
             description="Parameter unique identifier for the Custom Report's Invoice Type parameter."
         ),
-    ]
-    invoiceOverride: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    invoiceOverride: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CustomReportModule(str, Enum):
@@ -3508,21 +3563,21 @@ class CustomReportModule(str, Enum):
 
 
 class CustomReportParameter(SparkModel):
-    id: int | None
+    id: int | None = None
     name: Annotated[
         str | None,
         Field(
             description='Either a caption name or parameter name is required. Max length: 50;'
         ),
-    ]
+    ] = None
     captionName: Annotated[
         str | None,
         Field(
             description='Either a caption name or parameter name is required. Max length: 50;'
         ),
-    ]
-    customReport: CustomReportReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    customReport: CustomReportReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class CustomReportReference(ActivityReference):
@@ -3530,36 +3585,36 @@ class CustomReportReference(ActivityReference):
 
 
 class CwTimeZone(SparkModel):
-    id: int | None
-    name: str | None
-    offset: Annotated[float | None, Field(description='The hours offset (+/-).')]
-    startDate: str | None
-    endDate: str | None
+    id: int | None = None
+    name: str | None = None
+    offset: Annotated[float | None, Field(description='The hours offset (+/-).')] = None
+    startDate: str | None = None
+    endDate: str | None = None
     daylightSavingsFlag: Annotated[
         bool | None,
         Field(
             description='Determined based on system library value for specified timeZone.\n            Not able to be used in query params at this time.'
         ),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DeliveryMethod(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    emailFlag: bool | None
-    integrationEmailFlag: bool | None
-    integrationPrintFlag: bool | None
-    integrationActiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    emailFlag: bool | None = None
+    integrationEmailFlag: bool | None = None
+    integrationPrintFlag: bool | None = None
+    integrationActiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Department(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 15;')]
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DepartmentInfo(ActivityReference):
@@ -3567,24 +3622,24 @@ class DepartmentInfo(ActivityReference):
 
 
 class DepartmentLocation(SparkModel):
-    id: int | None
-    location: SystemLocationReference
-    department: SystemDepartmentReference | None
-    departmentManager: MemberReference | None
-    dispatch: MemberReference | None
-    serviceManager: MemberReference | None
-    dutyManager: MemberReference | None
-    ldapConfig: LdapConfigurationReference | None
-    addAllLocations: bool | None
-    removeAllLocations: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    departmentManager: MemberReference | None = None
+    dispatch: MemberReference | None = None
+    serviceManager: MemberReference | None = None
+    dutyManager: MemberReference | None = None
+    ldapConfig: LdapConfigurationReference | None = None
+    addAllLocations: bool | None = None
+    removeAllLocations: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DepartmentLocationInfo(SparkModel):
-    id: int | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DirectionalSync(ContactRelationship):
@@ -3600,33 +3655,35 @@ class DirectionalSyncReference(ActivityReference):
 
 
 class DocumentFormData(SparkModel):
-    file: bytes | None
-    recordId: int | None
-    recordType: str | None
-    title: str | None
-    url: str | None
-    privateFlag: bool | None
-    readOnlyFlay: bool | None
-    isAvatar: bool | None
+    file: bytes | None = None
+    recordId: int | None = None
+    recordType: str | None = None
+    title: str | None = None
+    url: str | None = None
+    privateFlag: bool | None = None
+    readOnlyFlay: bool | None = None
+    isAvatar: bool | None = None
 
 
 class DocumentInfo(SparkModel):
-    id: int | None
-    title: str | None
-    fileName: str | None
-    serverFileName: str | None
-    owner: str | None
-    linkFlag: bool | None
-    imageFlag: bool | None
-    publicFlag: bool | None
-    htmlTemplateFlag: bool | None
-    readOnlyFlag: bool | None
-    size: int | None
-    urlFlag: bool | None
-    createdOnDate: str | None
-    documentType: DocumentTypeReference | None
-    guid: Annotated[UUID | None, Field(example='00000000-0000-0000-0000-000000000000')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    title: str | None = None
+    fileName: str | None = None
+    serverFileName: str | None = None
+    owner: str | None = None
+    linkFlag: bool | None = None
+    imageFlag: bool | None = None
+    publicFlag: bool | None = None
+    htmlTemplateFlag: bool | None = None
+    readOnlyFlag: bool | None = None
+    size: int | None = None
+    urlFlag: bool | None = None
+    createdOnDate: str | None = None
+    documentType: DocumentTypeReference | None = None
+    guid: Annotated[
+        UUID | None, Field(example='00000000-0000-0000-0000-000000000000')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DocumentReference(ActivityReference):
@@ -3634,22 +3691,24 @@ class DocumentReference(ActivityReference):
 
 
 class DocumentSetup(SparkModel):
-    id: int | None
-    uploadAsLinkFlag: bool | None
-    isPublicFlag: bool | None
-    docPath: Annotated[str | None, Field(description=' Max length: 100;')]
-    templatePath: Annotated[str | None, Field(description=' Max length: 200;')]
-    templateOutputPath: Annotated[str | None, Field(description=' Max length: 200;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    uploadAsLinkFlag: bool | None = None
+    isPublicFlag: bool | None = None
+    docPath: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    templatePath: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    templateOutputPath: Annotated[
+        str | None, Field(description=' Max length: 200;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DocumentType(SparkModel):
-    id: int | None
-    fileExtension: str | None
-    icon: str | None
-    mimeType: str | None
-    description: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    fileExtension: str | None = None
+    icon: str | None = None
+    mimeType: str | None = None
+    description: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class DocumentTypeReference(ActivityReference):
@@ -3657,49 +3716,53 @@ class DocumentTypeReference(ActivityReference):
 
 
 class EPayConfiguration(SparkModel):
-    id: int | None
-    location: SystemLocationReference
-    currency: CurrencyReference
-    url: Annotated[str, Field(description=' Max length: 400;')]
-    storeIdentifier: Annotated[str, Field(description=' Max length: 500;')]
-    encryptionKey: Annotated[str | None, Field(description=' Max length: 500;')]
-    initializationVector: Annotated[str | None, Field(description=' Max length: 500;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    currency: CurrencyReference | None = None
+    url: Annotated[str | None, Field(description=' Max length: 400;')] = None
+    storeIdentifier: Annotated[str | None, Field(description=' Max length: 500;')] = (
+        None
+    )
+    encryptionKey: Annotated[str | None, Field(description=' Max length: 500;')] = None
+    initializationVector: Annotated[
+        str | None, Field(description=' Max length: 500;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailConnector(SparkModel):
-    id: int | None
-    emailServerType: EmailConnectorEmailServerType | None
-    imapSetup: ImapSetupReference | None
-    office365EmailSetup: Office365EmailSetupReference | None
-    asio365EmailSetup: Office365EmailSetupReference | None
-    googleEmailSetup: GoogleEmailSetupReference | None
-    serviceBoard: BoardReference
-    defaultCompany: CompanyReference
-    defaultMember: MemberReference | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    emailNotifyFrom: Annotated[str | None, Field(description=' Max length: 50;')]
-    bccEmailTo: Annotated[str | None, Field(description=' Max length: 250;')]
-    emailErrorsTo: Annotated[str, Field(description=' Max length: 50;')]
-    setEmailToDefaultContactFlag: bool | None
-    noResponseFlag: bool | None
-    neverRespondFlag: bool | None
-    discardDuplicatesFlag: bool | None
-    postRepliesToTicketFlag: bool | None
-    createContactFlag: bool | None
-    responseEmailForNew: str | None
-    responseEmailForExisting: str | None
-    sourceOverride: ServiceSourceReference | None
-    priorityOverride: PriorityReference | None
-    typeOverride: ServiceTypeReference | None
-    subTypeOverride: ServiceSubTypeReference | None
-    itemOverride: ServiceItemReference | None
-    statusOverride: ServiceStatusReference | None
-    addCcFlag: bool | None
-    inboundTicketMailboxId: str | None
-    useEmailMessageIdFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    emailServerType: EmailConnectorEmailServerType | None = None
+    imapSetup: ImapSetupReference | None = None
+    office365EmailSetup: Office365EmailSetupReference | None = None
+    asio365EmailSetup: Office365EmailSetupReference | None = None
+    googleEmailSetup: GoogleEmailSetupReference | None = None
+    serviceBoard: BoardReference | None = None
+    defaultCompany: CompanyReference | None = None
+    defaultMember: MemberReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    emailNotifyFrom: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    bccEmailTo: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    emailErrorsTo: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    setEmailToDefaultContactFlag: bool | None = None
+    noResponseFlag: bool | None = None
+    neverRespondFlag: bool | None = None
+    discardDuplicatesFlag: bool | None = None
+    postRepliesToTicketFlag: bool | None = None
+    createContactFlag: bool | None = None
+    responseEmailForNew: str | None = None
+    responseEmailForExisting: str | None = None
+    sourceOverride: ServiceSourceReference | None = None
+    priorityOverride: PriorityReference | None = None
+    typeOverride: ServiceTypeReference | None = None
+    subTypeOverride: ServiceSubTypeReference | None = None
+    itemOverride: ServiceItemReference | None = None
+    statusOverride: ServiceStatusReference | None = None
+    addCcFlag: bool | None = None
+    inboundTicketMailboxId: str | None = None
+    useEmailMessageIdFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailConnectorEmailServerType(str, Enum):
@@ -3710,33 +3773,33 @@ class EmailConnectorEmailServerType(str, Enum):
 
 
 class EmailConnectorInfo(SparkModel):
-    id: int | None
-    defaultCompany: CompanyReference | None
-    imapSetup: ImapSetupReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    defaultCompany: CompanyReference | None = None
+    imapSetup: ImapSetupReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailConnectorParsingRule(SparkModel):
-    id: int | None
-    parsingStyle: EmailConnectorParsingStyleReference | None
-    priority: int
-    parsingVariable: EmailConnectorParsingVariableReference
-    searchTerm: Annotated[str, Field(description=' Max length: 250;')]
-    servicePriority: PriorityReference | None
-    serviceStatus: ServiceStatusReference | None
-    serviceType: ServiceTypeReference | None
-    serviceSubType: ServiceSubTypeReference | None
-    serviceItem: ServiceItemReference | None
-    serviceBoard: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    parsingStyle: EmailConnectorParsingStyleReference | None = None
+    priority: int | None = None
+    parsingVariable: EmailConnectorParsingVariableReference | None = None
+    searchTerm: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    servicePriority: PriorityReference | None = None
+    serviceStatus: ServiceStatusReference | None = None
+    serviceType: ServiceTypeReference | None = None
+    serviceSubType: ServiceSubTypeReference | None = None
+    serviceItem: ServiceItemReference | None = None
+    serviceBoard: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailConnectorParsingStyle(SparkModel):
-    id: int | None
-    parsingType: EmailConnectorParsingTypeReference
-    parseRule: Annotated[str, Field(description=' Max length: 500;')]
-    priority: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    parsingType: EmailConnectorParsingTypeReference | None = None
+    parseRule: Annotated[str | None, Field(description=' Max length: 500;')] = None
+    priority: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailConnectorParsingStyleReference(ActivityReference):
@@ -3748,10 +3811,10 @@ class EmailConnectorParsingTypeReference(ActivityReference):
 
 
 class EmailConnectorParsingVariableReference(SparkModel):
-    id: int | None
-    name: str | None
-    identifier: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    identifier: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailConnectorReference(ActivityReference):
@@ -3759,16 +3822,16 @@ class EmailConnectorReference(ActivityReference):
 
 
 class EmailExclusion(SparkModel):
-    id: int | None
-    description: Annotated[str, Field(description=' Max length: 100;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class EmailOpened(SparkModel):
-    id: int | None
-    campaignId: int | None
-    contactId: int
-    dateOpened: datetime | None
+    id: int | None = None
+    campaignId: int | None = None
+    contactId: int | None = None
+    dateOpened: datetime | None = None
 
 
 class EmailTemplateReference(ActivityReference):
@@ -3776,29 +3839,29 @@ class EmailTemplateReference(ActivityReference):
 
 
 class EmailToken(SparkModel):
-    id: int | None
-    token: str | None
-    description: str | None
-    addressFlag: bool | None
-    agreementFlag: bool | None
-    companyFlag: bool | None
-    configFlag: bool | None
-    contactFlag: bool | None
-    invoiceFlag: bool | None
-    purchaseOrderFlag: bool | None
-    purchaseOrderStatusFlag: bool | None
-    rmaFlag: bool | None
-    salesFlag: bool | None
-    serviceFlag: bool | None
-    tracksFlag: bool | None
-    workflowFlag: bool | None
-    portalPasswordFlag: bool | None
+    id: int | None = None
+    token: str | None = None
+    description: str | None = None
+    addressFlag: bool | None = None
+    agreementFlag: bool | None = None
+    companyFlag: bool | None = None
+    configFlag: bool | None = None
+    contactFlag: bool | None = None
+    invoiceFlag: bool | None = None
+    purchaseOrderFlag: bool | None = None
+    purchaseOrderStatusFlag: bool | None = None
+    rmaFlag: bool | None = None
+    salesFlag: bool | None = None
+    serviceFlag: bool | None = None
+    tracksFlag: bool | None = None
+    workflowFlag: bool | None = None
+    portalPasswordFlag: bool | None = None
 
 
 class EntityType(SparkModel):
-    id: int | None
-    name: str | None
-    code: str | None
+    id: int | None = None
+    name: str | None = None
+    code: str | None = None
 
 
 class EntityTypeInfo(CorporateStructureLevel):
@@ -3810,9 +3873,9 @@ class EntityTypeReference(ActivityReference):
 
 
 class ErrorResponseMessage(SparkModel):
-    code: str | None
-    message: str | None
-    errors: list[ValidationError] | None
+    code: str | None = None
+    message: str | None = None
+    errors: list[ValidationError] | None = None
 
 
 class ExistingTenantReference(ActivityReference):
@@ -3820,48 +3883,48 @@ class ExistingTenantReference(ActivityReference):
 
 
 class ExpenseDetailReference(SparkModel):
-    id: int | None
-    amount: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    amount: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseEntry(SparkModel):
-    id: int | None
-    expenseReport: ExpenseReportReference | None
-    company: CompanyReference | None
-    chargeToId: int | None
+    id: int | None = None
+    expenseReport: ExpenseReportReference | None = None
+    company: CompanyReference | None = None
+    chargeToId: int | None = None
     chargeToType: Annotated[
         ExpenseEntryChargeToType | None,
         Field(
             description='Gets or sets\n            company or chargeToType is required.'
         ),
-    ]
-    type: ExpenseTypeReference
-    member: MemberReference | None
-    paymentMethod: PaymentMethodReference | None
-    classification: ClassificationReference | None
-    amount: float
-    billableOption: ActivityStopwatchBillableOption | None
-    date: datetime
-    locationId: int | None
-    businessUnitId: int | None
-    notes: str | None
-    agreement: AgreementReference | None
-    invoiceAmount: float | None
-    mobileGuid: UUID | None
-    taxes: list[ExpenseTax] | None
-    invoice: InvoiceReference | None
-    currency: CurrencyReference | None
-    status: ExpenseEntryStatus | None
-    billAmount: float | None
-    agreementAmount: float | None
-    odometerStart: float | None
-    odometerEnd: float | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    type: ExpenseTypeReference | None = None
+    member: MemberReference | None = None
+    paymentMethod: PaymentMethodReference | None = None
+    classification: ClassificationReference | None = None
+    amount: float | None = None
+    billableOption: ActivityStopwatchBillableOption | None = None
+    date: datetime | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    notes: str | None = None
+    agreement: AgreementReference | None = None
+    invoiceAmount: float | None = None
+    mobileGuid: UUID | None = None
+    taxes: list[ExpenseTax] | None = None
+    invoice: InvoiceReference | None = None
+    currency: CurrencyReference | None = None
+    status: ExpenseEntryStatus | None = None
+    billAmount: float | None = None
+    agreementAmount: float | None = None
+    odometerStart: float | None = None
+    odometerEnd: float | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ExpenseEntryAuditSource(str, Enum):
@@ -4029,16 +4092,16 @@ class ExpenseEntryStatus(str, Enum):
 
 
 class ExpenseReport(SparkModel):
-    id: int | None
-    member: MemberReference | None
-    year: int | None
-    period: int | None
-    dateStart: str | None
-    dateEnd: str | None
-    status: ExpenseEntryStatus | None
-    total: float | None
-    dueDate: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    year: int | None = None
+    period: int | None = None
+    dateStart: str | None = None
+    dateEnd: str | None = None
+    status: ExpenseEntryStatus | None = None
+    total: float | None = None
+    dueDate: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseReportReference(ActivityReference):
@@ -4046,8 +4109,8 @@ class ExpenseReportReference(ActivityReference):
 
 
 class ExpenseReportTierUpdate(SparkModel):
-    id: int | None
-    approvalType: ExpenseReportTierUpdateApprovalType | None
+    id: int | None = None
+    approvalType: ExpenseReportTierUpdateApprovalType | None = None
 
 
 class ExpenseReportTierUpdateApprovalType(str, Enum):
@@ -4067,16 +4130,16 @@ class ExpenseRevenueReference(AgreementRevenueReference):
 
 
 class ExpenseTax(SparkModel):
-    id: int | None
-    amount: float | None
-    type: ExpenseTaxTypeReference | None
+    id: int | None = None
+    amount: float | None = None
+    type: ExpenseTaxTypeReference | None = None
 
 
 class ExpenseTaxTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactive: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactive: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseTaxTypeReference(ActivityReference):
@@ -4084,37 +4147,37 @@ class ExpenseTaxTypeReference(ActivityReference):
 
 
 class ExpenseType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    amountCaption: str
-    reimbursementRate: float | None
-    billExpenses: ActivityStopwatchBillableOption
-    invoiceMarkupOption: ExpenseTypeInvoiceMarkupOption
-    invoiceMarkupAmount: float | None
-    advancedAmountFlag: bool | None
-    mileageFlag: bool | None
-    quantityFlag: bool | None
-    inactiveFlag: bool | None
-    maxAmount: float | None
-    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    amountCaption: str | None = None
+    reimbursementRate: float | None = None
+    billExpenses: ActivityStopwatchBillableOption | None = None
+    invoiceMarkupOption: ExpenseTypeInvoiceMarkupOption | None = None
+    invoiceMarkupAmount: float | None = None
+    advancedAmountFlag: bool | None = None
+    mileageFlag: bool | None = None
+    quantityFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    maxAmount: float | None = None
+    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseTypeExemption(SparkModel):
-    id: int | None
-    expenseType: ExpenseTypeReference
-    taxableLevels: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    expenseType: ExpenseTypeReference | None = None
+    taxableLevels: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    amountCaption: str | None
-    mileageFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    amountCaption: str | None = None
+    mileageFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseTypeInvoiceMarkupOption(str, Enum):
@@ -4128,125 +4191,129 @@ class ExpenseTypeReference(ActivityReference):
 
 
 class Experiment(SparkModel):
-    id: int | None
-    experimentId: str | None
-    name: str | None
-    description: str | None
-    properties: str | None
-    inactiveFlag: bool | None
-    memberInactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    experimentId: str | None = None
+    name: str | None = None
+    description: str | None = None
+    properties: str | None = None
+    inactiveFlag: bool | None = None
+    memberInactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExportAccountingBatchRequest(SparkModel):
-    batchIdentifier: Annotated[str | None, Field(description=' Max length: 50;')]
-    glInterfaceIdentifier: str | None
-    thruDate: datetime | None
-    locationId: int | None
-    summarizeInvoices: AccountingPackageSetupInvoiceFormat | None
+    batchIdentifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    glInterfaceIdentifier: str | None = None
+    thruDate: datetime | None = None
+    locationId: int | None = None
+    summarizeInvoices: AccountingPackageSetupInvoiceFormat | None = None
     exportInvoicesFlag: Annotated[
         bool | None,
         Field(
             description='Batch export must include invoices, expenses, or products (procurement).'
         ),
-    ]
-    includedInvoiceIds: list[int] | None
-    excludedInvoiceIds: list[int] | None
+    ] = None
+    includedInvoiceIds: list[int] | None = None
+    excludedInvoiceIds: list[int] | None = None
     exportExpensesFlag: Annotated[
         bool | None,
         Field(
             description='Batch export must include invoices, expenses, or products (procurement).'
         ),
-    ]
-    includedExpenseIds: list[int] | None
-    excludedExpenseIds: list[int] | None
+    ] = None
+    includedExpenseIds: list[int] | None = None
+    excludedExpenseIds: list[int] | None = None
     exportPaymentsFlag: Annotated[
         bool | None,
         Field(
             description='Batch export must include invoices, expenses, or products (procurement).'
         ),
-    ]
-    includedPaymentIds: list[int] | None
+    ] = None
+    includedPaymentIds: list[int] | None = None
     exportProductsFlag: Annotated[
         bool | None,
         Field(
             description='Batch export must include invoices, expenses, or products (procurement).'
         ),
-    ]
-    includedProductIds: list[str] | None
-    excludedProductIds: list[str] | None
+    ] = None
+    includedProductIds: list[str] | None = None
+    excludedProductIds: list[str] | None = None
 
 
 class FileUploadSetting(SparkModel):
-    id: int | None
-    restrictFileTypesFlag: bool
-    globalFileSizeLimit: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    restrictFileTypesFlag: bool | None = None
+    globalFileSizeLimit: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class FilterValues(SparkModel):
-    conditions: str | None
-    orderBy: str | None
-    childconditions: str | None
-    customfieldconditions: str | None
+    conditions: str | None = None
+    orderBy: str | None = None
+    childconditions: str | None = None
+    customfieldconditions: str | None = None
 
 
 class Forecast(SparkModel):
-    id: int | None
-    forecastItems: list[ForecastItem] | None
-    productRevenue: ProductRevenueReference | None
-    serviceRevenue: ServiceRevenueReference | None
-    agreementRevenue: AgreementRevenueReference | None
-    timeRevenue: TimeRevenueReference | None
-    expenseRevenue: ExpenseRevenueReference | None
-    forecastRevenueTotals: ForecastRevenueReference | None
-    inclusiveRevenueTotals: InclusiveRevenueReference | None
-    recurringTotal: float | None
-    wonRevenue: WonRevenueReference | None
-    lostRevenue: LostRevenueReference | None
-    openRevenue: OpenRevenueReference | None
-    otherRevenue1: Other1RevenueReference | None
-    otherRevenue2: Other2RevenueReference | None
-    salesTaxRevenue: float | None
-    forecastTotalWithTaxes: float | None
-    expectedProbability: int | None
-    taxCode: TaxCodeReference | None
-    billingTerms: BillingTermsReference | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    forecastItems: list[ForecastItem] | None = None
+    productRevenue: ProductRevenueReference | None = None
+    serviceRevenue: ServiceRevenueReference | None = None
+    agreementRevenue: AgreementRevenueReference | None = None
+    timeRevenue: TimeRevenueReference | None = None
+    expenseRevenue: ExpenseRevenueReference | None = None
+    forecastRevenueTotals: ForecastRevenueReference | None = None
+    inclusiveRevenueTotals: InclusiveRevenueReference | None = None
+    recurringTotal: float | None = None
+    wonRevenue: WonRevenueReference | None = None
+    lostRevenue: LostRevenueReference | None = None
+    openRevenue: OpenRevenueReference | None = None
+    otherRevenue1: Other1RevenueReference | None = None
+    otherRevenue2: Other2RevenueReference | None = None
+    salesTaxRevenue: float | None = None
+    forecastTotalWithTaxes: float | None = None
+    expectedProbability: int | None = None
+    taxCode: TaxCodeReference | None = None
+    billingTerms: BillingTermsReference | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ForecastItem(SparkModel):
-    id: int | None
-    forecastDescription: Annotated[str | None, Field(description=' Max length: 50;')]
-    opportunity: OpportunityReference
-    quantity: float | None
-    status: OpportunityStatusReference
-    catalogItem: IvItemReference | None
-    productDescription: str | None
-    productClass: str | None
-    revenue: float | None
-    cost: float | None
-    margin: float | None
-    percentage: int | None
-    includeFlag: bool | None
-    quoteWerksDocNo: Annotated[str | None, Field(description=' Max length: 20;')]
-    quoteWerksDocName: Annotated[str | None, Field(description=' Max length: 255;')]
-    quoteWerksQuantity: int | None
-    forecastType: ForecastItemForecastType
-    linkFlag: bool | None
-    recurringRevenue: float | None
-    recurringCost: float | None
-    recurringDateStart: datetime | None
-    recurringDateEnd: datetime | None
-    billCycle: BillingCycleReference | None
-    cycleBasis: str | None
-    cycles: int | None
-    recurringFlag: bool | None
-    sequenceNumber: float | None
-    subNumber: int | None
-    taxableFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    forecastDescription: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    opportunity: OpportunityReference | None = None
+    quantity: float | None = None
+    status: OpportunityStatusReference | None = None
+    catalogItem: IvItemReference | None = None
+    productDescription: str | None = None
+    productClass: str | None = None
+    revenue: float | None = None
+    cost: float | None = None
+    margin: float | None = None
+    percentage: int | None = None
+    includeFlag: bool | None = None
+    quoteWerksDocNo: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    quoteWerksDocName: Annotated[str | None, Field(description=' Max length: 255;')] = (
+        None
+    )
+    quoteWerksQuantity: int | None = None
+    forecastType: ForecastItemForecastType | None = None
+    linkFlag: bool | None = None
+    recurringRevenue: float | None = None
+    recurringCost: float | None = None
+    recurringDateStart: datetime | None = None
+    recurringDateEnd: datetime | None = None
+    billCycle: BillingCycleReference | None = None
+    cycleBasis: str | None = None
+    cycles: int | None = None
+    recurringFlag: bool | None = None
+    sequenceNumber: float | None = None
+    subNumber: int | None = None
+    taxableFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ForecastItemForecastType(str, Enum):
@@ -4262,48 +4329,48 @@ class ForecastRevenueReference(AgreementRevenueReference):
 
 
 class FormSubmitted(SparkModel):
-    id: int | None
-    campaignId: int | None
-    contactId: int
-    dateSubmitted: datetime | None
-    url: Annotated[str, Field(description=' Max length: 2083;')]
-    queryString: str | None
-    pageType: str | None
-    pageSubType: str | None
-    topic: str | None
-    version: str | None
-    status: str | None
+    id: int | None = None
+    campaignId: int | None = None
+    contactId: int | None = None
+    dateSubmitted: datetime | None = None
+    url: Annotated[str | None, Field(description=' Max length: 2083;')] = None
+    queryString: str | None = None
+    pageType: str | None = None
+    pageSubType: str | None = None
+    topic: str | None = None
+    version: str | None = None
+    status: str | None = None
 
 
 class GLAccount(SparkModel):
-    id: int | None
-    glType: GLAccountGlType
-    mappedType: MappedTypeReference
-    mappedRecord: MappedRecordReference
-    segment1: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment2: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment3: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment4: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment5: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment6: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment7: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment8: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment9: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment10: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs1: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs2: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs3: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs4: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs5: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs6: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs7: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs8: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs9: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs10: Annotated[str | None, Field(description=' Max length: 255;')]
-    productId: Annotated[str | None, Field(description=' Max length: 255;')]
-    inventory: Annotated[str | None, Field(description=' Max length: 255;')]
-    salesCode: Annotated[str | None, Field(description=' Max length: 255;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    glType: GLAccountGlType | None = None
+    mappedType: MappedTypeReference | None = None
+    mappedRecord: MappedRecordReference | None = None
+    segment1: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment2: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment3: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment4: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment5: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment6: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment7: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment8: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment9: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment10: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs1: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs2: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs3: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs4: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs5: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs6: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs7: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs8: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs9: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs10: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    productId: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    inventory: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    salesCode: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GLAccountGlType(str, Enum):
@@ -4331,38 +4398,38 @@ class GLAccountGlType(str, Enum):
 
 
 class GLCaption(SparkModel):
-    id: int | None
-    segment1: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment2: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment3: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment4: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment5: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment6: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment7: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment8: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment9: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment10: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment1type: GLCaptionSegment1type | None
-    segment2type: GLCaptionSegment1type | None
-    segment3type: GLCaptionSegment1type | None
-    segment4type: GLCaptionSegment1type | None
-    segment5type: GLCaptionSegment1type | None
-    segment6type: GLCaptionSegment1type | None
-    segment7type: GLCaptionSegment1type | None
-    segment8type: GLCaptionSegment1type | None
-    segment9type: GLCaptionSegment1type | None
-    segment10type: GLCaptionSegment1type | None
-    cogs1: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs2: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs3: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs4: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs5: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs6: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs7: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs8: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs9: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs10: Annotated[str | None, Field(description=' Max length: 255;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    segment1: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment2: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment3: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment4: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment5: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment6: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment7: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment8: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment9: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment10: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment1type: GLCaptionSegment1type | None = None
+    segment2type: GLCaptionSegment1type | None = None
+    segment3type: GLCaptionSegment1type | None = None
+    segment4type: GLCaptionSegment1type | None = None
+    segment5type: GLCaptionSegment1type | None = None
+    segment6type: GLCaptionSegment1type | None = None
+    segment7type: GLCaptionSegment1type | None = None
+    segment8type: GLCaptionSegment1type | None = None
+    segment9type: GLCaptionSegment1type | None = None
+    segment10type: GLCaptionSegment1type | None = None
+    cogs1: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs2: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs3: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs4: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs5: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs6: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs7: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs8: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs9: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs10: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GLCaptionSegment1type(str, Enum):
@@ -4371,379 +4438,379 @@ class GLCaptionSegment1type(str, Enum):
 
 
 class GLEntry(SparkModel):
-    id: int | None
-    type: str | None
-    amount: float | None
-    description: Annotated[str | None, Field(description=' Max length: 100;')]
-    segment1: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment2: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment3: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment4: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment5: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment6: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment7: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment8: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment9: Annotated[str | None, Field(description=' Max length: 255;')]
-    segment10: Annotated[str | None, Field(description=' Max length: 255;')]
-    productId: Annotated[str | None, Field(description=' Max length: 255;')]
-    cost: float | None
-    salesCode: Annotated[str | None, Field(description=' Max length: 255;')]
-    inventory: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs1: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs2: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs3: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs4: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs5: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs6: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs7: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs8: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs9: Annotated[str | None, Field(description=' Max length: 255;')]
-    cogs10: Annotated[str | None, Field(description=' Max length: 255;')]
-    isBatched: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: str | None = None
+    amount: float | None = None
+    description: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    segment1: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment2: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment3: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment4: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment5: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment6: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment7: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment8: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment9: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    segment10: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    productId: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cost: float | None = None
+    salesCode: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    inventory: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs1: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs2: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs3: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs4: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs5: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs6: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs7: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs8: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs9: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    cogs10: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    isBatched: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GLExport(SparkModel):
-    exportSettings: GLExportSettings | None
-    vendors: list[GLExportVendor] | None
-    customers: list[GLExportCustomer] | None
-    transactions: list[GLExportTransaction] | None
-    expenses: list[GLExportExpense] | None
-    expenseBills: list[GLExportExpenseBill] | None
-    purchaseTransactions: list[GLExportPurchaseTransaction] | None
-    adjustmentTransactions: list[GLExportAdjustmentTransaction] | None
-    inventoryTransfers: list[GLExportInventoryTransfer] | None
+    exportSettings: GLExportSettings | None = None
+    vendors: list[GLExportVendor] | None = None
+    customers: list[GLExportCustomer] | None = None
+    transactions: list[GLExportTransaction] | None = None
+    expenses: list[GLExportExpense] | None = None
+    expenseBills: list[GLExportExpenseBill] | None = None
+    purchaseTransactions: list[GLExportPurchaseTransaction] | None = None
+    adjustmentTransactions: list[GLExportAdjustmentTransaction] | None = None
+    inventoryTransfers: list[GLExportInventoryTransfer] | None = None
 
 
 class GLExportAdjustmentTransaction(SparkModel):
-    id: str | None
-    documentType: str | None
-    documentDate: str | None
-    glTypeID: str | None
-    accountNumber: str | None
-    memo: str | None
-    glClass: str | None
-    adjustmentDescription: str | None
-    adjustmentDetail: list[GLExportAdjustmentTransactionDetail] | None
+    id: str | None = None
+    documentType: str | None = None
+    documentDate: str | None = None
+    glTypeID: str | None = None
+    accountNumber: str | None = None
+    memo: str | None = None
+    glClass: str | None = None
+    adjustmentDescription: str | None = None
+    adjustmentDetail: list[GLExportAdjustmentTransactionDetail] | None = None
 
 
 class GLExportAdjustmentTransactionDetail(SparkModel):
-    glClass: str | None
-    description: str | None
-    memo: str | None
-    item: IvItemReference | None
-    quantity: int | None
-    total: float | None
-    cost: float | None
-    costAccountNumber: str | None
-    inventoryAccountNumber: str | None
-    accountNumber: str | None
-    productAccountNumber: str | None
+    glClass: str | None = None
+    description: str | None = None
+    memo: str | None = None
+    item: IvItemReference | None = None
+    quantity: int | None = None
+    total: float | None = None
+    cost: float | None = None
+    costAccountNumber: str | None = None
+    inventoryAccountNumber: str | None = None
+    accountNumber: str | None = None
+    productAccountNumber: str | None = None
 
 
 class GLExportCustomer(SparkModel):
-    company: CompanyReference | None
-    companyType: CompanyTypeReference | None
-    contact: ContactReference | None
-    site: SiteReference | None
-    accountNumber: str | None
-    billingTerms: BillingTermsReference | None
-    billingTermsXref: str | None
-    dueDays: int | None
-    taxable: bool | None
-    taxCode: TaxCodeReference | None
-    currency: CurrencyReference | None
-    stateTaxXref: str | None
-    countyTaxXref: str | None
-    cityTaxXref: str | None
-    countryTaxXref: str | None
-    compositeTaxXref: str | None
-    stateTaxRate: float | None
-    countyTaxRate: float | None
-    cityTaxRate: float | None
-    countryTaxRate: float | None
-    compositeTaxRate: float | None
-    taxGroupRate: float | None
-    taxAgencyXref: str | None
-    stateTaxAgencyXref: str | None
-    countyTaxAgencyXref: str | None
-    cityTaxAgencyXref: str | None
-    countryTaxAgencyXref: str | None
-    compositeTaxAgencyXref: str | None
-    taxLevels: list[GLExportCustomerTaxLevel] | None
+    company: CompanyReference | None = None
+    companyType: CompanyTypeReference | None = None
+    contact: ContactReference | None = None
+    site: SiteReference | None = None
+    accountNumber: str | None = None
+    billingTerms: BillingTermsReference | None = None
+    billingTermsXref: str | None = None
+    dueDays: int | None = None
+    taxable: bool | None = None
+    taxCode: TaxCodeReference | None = None
+    currency: CurrencyReference | None = None
+    stateTaxXref: str | None = None
+    countyTaxXref: str | None = None
+    cityTaxXref: str | None = None
+    countryTaxXref: str | None = None
+    compositeTaxXref: str | None = None
+    stateTaxRate: float | None = None
+    countyTaxRate: float | None = None
+    cityTaxRate: float | None = None
+    countryTaxRate: float | None = None
+    compositeTaxRate: float | None = None
+    taxGroupRate: float | None = None
+    taxAgencyXref: str | None = None
+    stateTaxAgencyXref: str | None = None
+    countyTaxAgencyXref: str | None = None
+    cityTaxAgencyXref: str | None = None
+    countryTaxAgencyXref: str | None = None
+    compositeTaxAgencyXref: str | None = None
+    taxLevels: list[GLExportCustomerTaxLevel] | None = None
 
 
 class GLExportCustomerTaxLevel(SparkModel):
-    taxRate: float | None
-    taxCodeXref: str | None
-    agencyXref: str | None
-    taxLevel: int | None
+    taxRate: float | None = None
+    taxCodeXref: str | None = None
+    agencyXref: str | None = None
+    taxLevel: int | None = None
 
 
 class GLExportExpense(SparkModel):
-    id: int | None
-    documentDate: str | None
-    documentType: str | None
-    apAccountNumber: str | None
-    apClass: str | None
-    accountNumber: str | None
-    glClass: str | None
-    glTypeId: str | None
-    memo: str | None
-    description: str | None
-    periodStartDate: str | None
-    periodEndDate: str | None
-    member: MemberReference | None
-    vendorNumber: str | None
-    company: CompanyReference | None
-    companyAccountNumber: str | None
-    project: ProjectReference | None
-    currency: CurrencyReference | None
-    total: float | None
-    offset: GLExportExpenseOffset | None
+    id: int | None = None
+    documentDate: str | None = None
+    documentType: str | None = None
+    apAccountNumber: str | None = None
+    apClass: str | None = None
+    accountNumber: str | None = None
+    glClass: str | None = None
+    glTypeId: str | None = None
+    memo: str | None = None
+    description: str | None = None
+    periodStartDate: str | None = None
+    periodEndDate: str | None = None
+    member: MemberReference | None = None
+    vendorNumber: str | None = None
+    company: CompanyReference | None = None
+    companyAccountNumber: str | None = None
+    project: ProjectReference | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    offset: GLExportExpenseOffset | None = None
 
 
 class GLExportExpenseBill(SparkModel):
-    id: int | None
-    documentDate: str | None
-    documentType: str | None
-    documentNumber: str | None
-    memo: str | None
-    glClass: str | None
-    apAccountNumber: str | None
-    member: MemberReference | None
-    vendorNumber: str | None
-    currency: CurrencyReference | None
-    total: float | None
-    detail: list[GLExportExpenseBillDetail] | None
+    id: int | None = None
+    documentDate: str | None = None
+    documentType: str | None = None
+    documentNumber: str | None = None
+    memo: str | None = None
+    glClass: str | None = None
+    apAccountNumber: str | None = None
+    member: MemberReference | None = None
+    vendorNumber: str | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    detail: list[GLExportExpenseBillDetail] | None = None
 
 
 class GLExportExpenseBillDetail(SparkModel):
-    id: list[int] | None
-    documentDate: str | None
-    glTypeId: str | None
-    memo: str | None
-    company: CompanyReference | None
-    accountNumber: str | None
-    expenseClass: ClassificationReference | None
-    currency: CurrencyReference | None
-    total: float | None
-    billable: bool | None
-    reimbursable: bool | None
-    companyAdvance: bool | None
+    id: list[int] | None = None
+    documentDate: str | None = None
+    glTypeId: str | None = None
+    memo: str | None = None
+    company: CompanyReference | None = None
+    accountNumber: str | None = None
+    expenseClass: ClassificationReference | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    billable: bool | None = None
+    reimbursable: bool | None = None
+    companyAdvance: bool | None = None
 
 
 class GLExportExpenseOffset(SparkModel):
-    id: int | None
-    documentDate: str | None
-    documentType: str | None
-    accountNumber: str | None
-    glTypeId: str | None
-    glClass: str | None
-    member: MemberReference | None
-    memo: str | None
-    description: str | None
-    total: float | None
+    id: int | None = None
+    documentDate: str | None = None
+    documentType: str | None = None
+    accountNumber: str | None = None
+    glTypeId: str | None = None
+    glClass: str | None = None
+    member: MemberReference | None = None
+    memo: str | None = None
+    description: str | None = None
+    total: float | None = None
 
 
 class GLExportInventoryTransfer(SparkModel):
-    id: str | None
-    documentType: str | None
-    documentDate: str | None
-    accountNumber: str | None
-    glClass: str | None
-    glTypeId: str | None
-    description: str | None
-    salesCode: str | None
-    memo: str | None
-    costAccountNumber: str | None
-    inventoryAccountNumber: str | None
-    transferId: int | None
-    item: IvItemReference | None
-    glItemId: str | None
-    salesDescription: str | None
-    itemDescription: str | None
-    currency: CurrencyReference | None
-    itemPrice: float | None
-    taxable: bool | None
-    unitOfMeasure: UnitOfMeasureReference | None
-    quantity: float | None
-    cost: float | None
-    total: float | None
-    subCategory: ProductSubCategoryReference | None
-    serializedFlag: bool | None
-    serialNumbers: str | None
-    bin: WarehouseBinReference | None
-    warehouse: WarehouseReference | None
-    transferFromBin: WarehouseBinReference | None
-    transferFromLocationXref: str | None
-    transferToBin: WarehouseBinReference | None
-    transferToLocationXref: str | None
-    locationXref: str | None
-    priceLevelXref: str | None
-    uomScheduleXref: str | None
-    itemTypeXref: str | None
-    inventoryXref: str | None
-    cogsXref: str | None
-    taxNote: str | None
-    offset: GLExportInventoryTransferOffset | None
+    id: str | None = None
+    documentType: str | None = None
+    documentDate: str | None = None
+    accountNumber: str | None = None
+    glClass: str | None = None
+    glTypeId: str | None = None
+    description: str | None = None
+    salesCode: str | None = None
+    memo: str | None = None
+    costAccountNumber: str | None = None
+    inventoryAccountNumber: str | None = None
+    transferId: int | None = None
+    item: IvItemReference | None = None
+    glItemId: str | None = None
+    salesDescription: str | None = None
+    itemDescription: str | None = None
+    currency: CurrencyReference | None = None
+    itemPrice: float | None = None
+    taxable: bool | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    quantity: float | None = None
+    cost: float | None = None
+    total: float | None = None
+    subCategory: ProductSubCategoryReference | None = None
+    serializedFlag: bool | None = None
+    serialNumbers: str | None = None
+    bin: WarehouseBinReference | None = None
+    warehouse: WarehouseReference | None = None
+    transferFromBin: WarehouseBinReference | None = None
+    transferFromLocationXref: str | None = None
+    transferToBin: WarehouseBinReference | None = None
+    transferToLocationXref: str | None = None
+    locationXref: str | None = None
+    priceLevelXref: str | None = None
+    uomScheduleXref: str | None = None
+    itemTypeXref: str | None = None
+    inventoryXref: str | None = None
+    cogsXref: str | None = None
+    taxNote: str | None = None
+    offset: GLExportInventoryTransferOffset | None = None
 
 
 class GLExportInventoryTransferOffset(SparkModel):
-    id: int | None
-    documentType: str | None
-    documentDate: str | None
-    accountNumber: str | None
-    glClass: str | None
-    total: float | None
-    memo: str | None
-    description: str | None
-    glTypeId: str | None
+    id: int | None = None
+    documentType: str | None = None
+    documentDate: str | None = None
+    accountNumber: str | None = None
+    glClass: str | None = None
+    total: float | None = None
+    memo: str | None = None
+    description: str | None = None
+    glTypeId: str | None = None
 
 
 class GLExportPurchaseTransaction(SparkModel):
-    id: str | None
-    documentDate: str | None
-    documentNumber: str | None
-    description: str | None
-    memo: str | None
-    apAccountNumber: str | None
-    purchaseDate: str | None
-    company: CompanyReference | None
-    companyType: CompanyTypeReference | None
-    contact: ContactReference | None
-    site: SiteReference | None
-    purchaseClass: str | None
-    freightAmount: float | None
-    freightPackingSlip: str | None
-    packingSlip: str | None
-    dropshipFlag: bool | None
-    currency: CurrencyReference | None
-    total: float | None
-    billingTerms: BillingTermsReference | None
-    billingTermsXref: str | None
-    dueDays: int | None
-    vendorNumber: str | None
-    vendorAccountNumber: str | None
-    vendorInvoiceDate: str | None
-    vendorInvoiceNumber: str | None
-    taxAgencyXref: str | None
-    stateTaxXref: str | None
-    countyTaxXref: str | None
-    cityTaxXref: str | None
-    shipToCompany: CompanyReference | None
-    shipToCompanyAccountNumber: str | None
-    shipToCompanyType: CompanyTypeReference | None
-    shipToContact: ContactReference | None
-    shipToSite: SiteReference | None
-    shipToTaxGroup: str | None
-    taxCode: TaxCodeReference | None
-    taxGroupRate: float | None
-    useAvalaraTaxFlag: bool | None
-    purchaseHeaderTaxGroup: str | None
-    purchaseHeaderTaxableFlag: bool | None
-    purchaseHeaderFreightTaxableFlag: bool | None
-    taxLevels: list[GLExportPurchaseTransactionTaxLevel] | None
-    purchaseDetail: list[GLExportPurchaseTransactionDetail] | None
-    purchaseDetailTax: list[GLExportPurchaseTransactionDetailTax] | None
+    id: str | None = None
+    documentDate: str | None = None
+    documentNumber: str | None = None
+    description: str | None = None
+    memo: str | None = None
+    apAccountNumber: str | None = None
+    purchaseDate: str | None = None
+    company: CompanyReference | None = None
+    companyType: CompanyTypeReference | None = None
+    contact: ContactReference | None = None
+    site: SiteReference | None = None
+    purchaseClass: str | None = None
+    freightAmount: float | None = None
+    freightPackingSlip: str | None = None
+    packingSlip: str | None = None
+    dropshipFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    billingTerms: BillingTermsReference | None = None
+    billingTermsXref: str | None = None
+    dueDays: int | None = None
+    vendorNumber: str | None = None
+    vendorAccountNumber: str | None = None
+    vendorInvoiceDate: str | None = None
+    vendorInvoiceNumber: str | None = None
+    taxAgencyXref: str | None = None
+    stateTaxXref: str | None = None
+    countyTaxXref: str | None = None
+    cityTaxXref: str | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToCompanyAccountNumber: str | None = None
+    shipToCompanyType: CompanyTypeReference | None = None
+    shipToContact: ContactReference | None = None
+    shipToSite: SiteReference | None = None
+    shipToTaxGroup: str | None = None
+    taxCode: TaxCodeReference | None = None
+    taxGroupRate: float | None = None
+    useAvalaraTaxFlag: bool | None = None
+    purchaseHeaderTaxGroup: str | None = None
+    purchaseHeaderTaxableFlag: bool | None = None
+    purchaseHeaderFreightTaxableFlag: bool | None = None
+    taxLevels: list[GLExportPurchaseTransactionTaxLevel] | None = None
+    purchaseDetail: list[GLExportPurchaseTransactionDetail] | None = None
+    purchaseDetailTax: list[GLExportPurchaseTransactionDetailTax] | None = None
 
 
 class GLExportPurchaseTransactionDetail(SparkModel):
-    id: int | None
-    documentDate: str | None
-    glClass: str | None
-    glTypeId: str | None
-    glItemId: str | None
-    salesCode: str | None
-    description: str | None
-    cost: float | None
-    memo: str | None
-    taxNote: str | None
-    vendorNumber: str | None
-    accountNumber: str | None
-    costAccountNumber: str | None
-    inventoryAccountNumber: str | None
-    vendorAccountNumber: str | None
-    item: IvItemReference | None
-    itemDescription: str | None
-    salesDescription: str | None
-    taxable: bool | None
-    itemPrice: float | None
-    itemCost: float | None
-    unitOfMeasure: UnitOfMeasureReference | None
-    quantity: float | None
-    total: float | None
-    currency: CurrencyReference | None
-    serializedFlag: bool | None
-    serialNumbers: str | None
-    dropShippedFlag: bool | None
-    lineNumber: int | None
-    warehouseBin: WarehouseBinReference | None
-    warehouseSite: SiteReference | None
-    subCategory: ProductSubCategoryReference | None
-    shipmentMethod: ShipmentMethodReference | None
-    itemTypeXref: str | None
-    inventoryXref: str | None
-    cogsXref: str | None
-    uomScheduleXref: str | None
-    priceLevelXref: str | None
-    locationXref: str | None
-    taxCode: TaxCodeReference | None
-    purchaseHeaderTaxGroup: str | None
-    taxCodeXref: str | None
-    taxRate: float | None
-    taxAgencyXref: str | None
+    id: int | None = None
+    documentDate: str | None = None
+    glClass: str | None = None
+    glTypeId: str | None = None
+    glItemId: str | None = None
+    salesCode: str | None = None
+    description: str | None = None
+    cost: float | None = None
+    memo: str | None = None
+    taxNote: str | None = None
+    vendorNumber: str | None = None
+    accountNumber: str | None = None
+    costAccountNumber: str | None = None
+    inventoryAccountNumber: str | None = None
+    vendorAccountNumber: str | None = None
+    item: IvItemReference | None = None
+    itemDescription: str | None = None
+    salesDescription: str | None = None
+    taxable: bool | None = None
+    itemPrice: float | None = None
+    itemCost: float | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    quantity: float | None = None
+    total: float | None = None
+    currency: CurrencyReference | None = None
+    serializedFlag: bool | None = None
+    serialNumbers: str | None = None
+    dropShippedFlag: bool | None = None
+    lineNumber: int | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    warehouseSite: SiteReference | None = None
+    subCategory: ProductSubCategoryReference | None = None
+    shipmentMethod: ShipmentMethodReference | None = None
+    itemTypeXref: str | None = None
+    inventoryXref: str | None = None
+    cogsXref: str | None = None
+    uomScheduleXref: str | None = None
+    priceLevelXref: str | None = None
+    locationXref: str | None = None
+    taxCode: TaxCodeReference | None = None
+    purchaseHeaderTaxGroup: str | None = None
+    taxCodeXref: str | None = None
+    taxRate: float | None = None
+    taxAgencyXref: str | None = None
 
 
 class GLExportPurchaseTransactionDetailTax(SparkModel):
-    id: int | None
-    documentDate: str | None
-    accountNumber: str | None
-    glClass: str | None
-    cost: float | None
-    salesCode: str | None
-    glTypeId: str | None
-    glItemId: str | None
-    memo: str | None
-    vendorNumber: str | None
-    vendorAccountNumber: str | None
-    costAccountNumber: str | None
-    inventoryAccountNumber: str | None
-    itemTypeXref: str | None
-    inventoryXref: str | None
-    cogsXref: str | None
-    uomScheduleXref: str | None
-    priceLevelXref: str | None
-    locationXref: str | None
-    item: IvItemReference | None
-    taxableFlag: bool | None
-    salesDescription: str | None
-    itemDescription: str | None
-    itemPrice: float | None
-    itemCost: float | None
-    unitOfMeasure: UnitOfMeasureReference | None
-    quantity: float | None
-    total: float | None
-    currency: CurrencyReference | None
-    serializedFlag: bool | None
-    serialNumbers: str | None
-    dropShippedFlag: bool | None
-    lineNumber: int | None
-    warehouseSite: SiteReference | None
-    warehouseBin: WarehouseBinReference | None
-    shipmentMethod: ShipmentMethodReference | None
-    subCategory: ProductSubCategoryReference | None
-    taxCode: TaxCodeReference | None
-    taxRate: float | None
-    taxRatePercent: float | None
-    taxAgencyXref: str | None
-    taxNote: str | None
-    purchaseHeaderTaxGroup: str | None
+    id: int | None = None
+    documentDate: str | None = None
+    accountNumber: str | None = None
+    glClass: str | None = None
+    cost: float | None = None
+    salesCode: str | None = None
+    glTypeId: str | None = None
+    glItemId: str | None = None
+    memo: str | None = None
+    vendorNumber: str | None = None
+    vendorAccountNumber: str | None = None
+    costAccountNumber: str | None = None
+    inventoryAccountNumber: str | None = None
+    itemTypeXref: str | None = None
+    inventoryXref: str | None = None
+    cogsXref: str | None = None
+    uomScheduleXref: str | None = None
+    priceLevelXref: str | None = None
+    locationXref: str | None = None
+    item: IvItemReference | None = None
+    taxableFlag: bool | None = None
+    salesDescription: str | None = None
+    itemDescription: str | None = None
+    itemPrice: float | None = None
+    itemCost: float | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    quantity: float | None = None
+    total: float | None = None
+    currency: CurrencyReference | None = None
+    serializedFlag: bool | None = None
+    serialNumbers: str | None = None
+    dropShippedFlag: bool | None = None
+    lineNumber: int | None = None
+    warehouseSite: SiteReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    shipmentMethod: ShipmentMethodReference | None = None
+    subCategory: ProductSubCategoryReference | None = None
+    taxCode: TaxCodeReference | None = None
+    taxRate: float | None = None
+    taxRatePercent: float | None = None
+    taxAgencyXref: str | None = None
+    taxNote: str | None = None
+    purchaseHeaderTaxGroup: str | None = None
 
 
 class GLExportPurchaseTransactionTaxLevel(SparkModel):
-    taxCodeXref: str | None
-    taxLevel: int | None
+    taxCodeXref: str | None = None
+    taxLevel: int | None = None
 
 
 class GLExportSettings(AgreementTabsCount):
@@ -4751,164 +4818,164 @@ class GLExportSettings(AgreementTabsCount):
 
 
 class GLExportTransaction(SparkModel):
-    id: int | None
-    glClass: str | None
-    glTypeId: str | None
-    documentDate: str | None
-    documentNumber: str | None
-    documentType: str | None
-    memo: str | None
-    description: str | None
-    attention: str | None
-    salesTerritory: str | None
-    company: CompanyReference | None
-    companyType: CompanyTypeReference | None
-    companyAccountNumber: str | None
-    site: SiteReference | None
-    billingTerms: BillingTermsReference | None
-    billingTermsXref: str | None
-    dueDays: int | None
-    dueDate: str | None
-    emailDeliveryFlag: bool | None
-    printDeliveryFlag: bool | None
-    agreementPrePaymentFlag: bool | None
-    accountNumber: str | None
-    billingType: str | None
-    glEntryIds: str | None
-    purchaseOrder: PurchaseOrderReference | None
-    project: ProjectReference | None
-    currency: CurrencyReference | None
-    total: float | None
-    salesRepId: str | None
-    salesRepName: str | None
-    taxable: bool | None
-    taxableTotal: float | None
-    taxCode: TaxCodeReference | None
-    taxGroupRate: float | None
-    piggyBackFlag: bool | None
-    taxAccountNumber: str | None
-    salesTax: float | None
-    stateTax: float | None
-    countyTax: float | None
-    cityTax: float | None
-    taxableAmount1: float | None
-    taxableAmount2: float | None
-    taxableAmount3: float | None
-    taxableAmount4: float | None
-    taxableAmount5: float | None
-    taxAgencyXref: str | None
-    stateTaxXref: str | None
-    countyTaxXref: str | None
-    taxId: str | None
-    taxDpAppliedFlag: bool | None
-    useAvalaraFlag: bool | None
-    sendAvalaraTaxFlag: bool | None
-    shipToCompany: CompanyReference | None
-    shipToCompanyAccountNumber: str | None
-    shipToCompanyType: CompanyTypeReference | None
-    shipToTaxId: str | None
-    shipSite: SiteReference | None
-    shipContact: str | None
-    detail: list[GLExportTransactionDetail] | None
-    taxLevels: list[GLExportTransactionTaxLevel] | None
+    id: int | None = None
+    glClass: str | None = None
+    glTypeId: str | None = None
+    documentDate: str | None = None
+    documentNumber: str | None = None
+    documentType: str | None = None
+    memo: str | None = None
+    description: str | None = None
+    attention: str | None = None
+    salesTerritory: str | None = None
+    company: CompanyReference | None = None
+    companyType: CompanyTypeReference | None = None
+    companyAccountNumber: str | None = None
+    site: SiteReference | None = None
+    billingTerms: BillingTermsReference | None = None
+    billingTermsXref: str | None = None
+    dueDays: int | None = None
+    dueDate: str | None = None
+    emailDeliveryFlag: bool | None = None
+    printDeliveryFlag: bool | None = None
+    agreementPrePaymentFlag: bool | None = None
+    accountNumber: str | None = None
+    billingType: str | None = None
+    glEntryIds: str | None = None
+    purchaseOrder: PurchaseOrderReference | None = None
+    project: ProjectReference | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    salesRepId: str | None = None
+    salesRepName: str | None = None
+    taxable: bool | None = None
+    taxableTotal: float | None = None
+    taxCode: TaxCodeReference | None = None
+    taxGroupRate: float | None = None
+    piggyBackFlag: bool | None = None
+    taxAccountNumber: str | None = None
+    salesTax: float | None = None
+    stateTax: float | None = None
+    countyTax: float | None = None
+    cityTax: float | None = None
+    taxableAmount1: float | None = None
+    taxableAmount2: float | None = None
+    taxableAmount3: float | None = None
+    taxableAmount4: float | None = None
+    taxableAmount5: float | None = None
+    taxAgencyXref: str | None = None
+    stateTaxXref: str | None = None
+    countyTaxXref: str | None = None
+    taxId: str | None = None
+    taxDpAppliedFlag: bool | None = None
+    useAvalaraFlag: bool | None = None
+    sendAvalaraTaxFlag: bool | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToCompanyAccountNumber: str | None = None
+    shipToCompanyType: CompanyTypeReference | None = None
+    shipToTaxId: str | None = None
+    shipSite: SiteReference | None = None
+    shipContact: str | None = None
+    detail: list[GLExportTransactionDetail] | None = None
+    taxLevels: list[GLExportTransactionTaxLevel] | None = None
 
 
 class GLExportTransactionDetail(SparkModel):
-    id: int | None
-    documentDate: str | None
-    documentType: str | None
-    accountNumber: str | None
-    glClass: str | None
-    glTypeId: str | None
-    glItemId: str | None
-    invoiceSummaryOption: str | None
-    cost: float | None
-    salesCode: str | None
-    memo: str | None
-    description: str | None
-    quantity: float | None
-    total: float | None
-    currency: CurrencyReference | None
-    timeEntry: TimeEntryReference | None
-    costAccountNumber: str | None
-    inventoryAccountNumber: str | None
-    productAccountNumber: str | None
-    taxCode: TaxCodeReference | None
-    taxCodeXref: str | None
-    taxAgencyXref: str | None
-    taxNote: str | None
-    taxRate: float | None
-    taxRatePercent: float | None
-    taxableFlag: bool | None
-    taxable2Flag: bool | None
-    taxable3Flag: bool | None
-    taxable4Flag: bool | None
-    taxable5Flag: bool | None
-    item: IvItemReference | None
-    product: ProductReference | None
-    itemTaxableFlag: bool | None
-    itemPrice: float | None
-    itemCost: float | None
-    itemDescription: str | None
-    salesDescription: str | None
-    unitOfMeasure: UnitOfMeasureReference | None
-    subCategory: ProductSubCategoryReference | None
-    serializedFlag: bool | None
-    serialNumbers: str | None
-    warehouseSite: SiteReference | None
-    warehouseBin: WarehouseBinReference | None
-    shipmentMethod: ShipmentMethodReference | None
-    dropShippedFlag: bool | None
-    itemTypeXref: str | None
-    inventoryXref: str | None
-    cogsXref: str | None
-    uomScheduleXref: str | None
-    priceLevelXref: str | None
-    locationXref: str | None
-    taxLevels: list[GLExportTransactionDetailTaxLevel] | None
+    id: int | None = None
+    documentDate: str | None = None
+    documentType: str | None = None
+    accountNumber: str | None = None
+    glClass: str | None = None
+    glTypeId: str | None = None
+    glItemId: str | None = None
+    invoiceSummaryOption: str | None = None
+    cost: float | None = None
+    salesCode: str | None = None
+    memo: str | None = None
+    description: str | None = None
+    quantity: float | None = None
+    total: float | None = None
+    currency: CurrencyReference | None = None
+    timeEntry: TimeEntryReference | None = None
+    costAccountNumber: str | None = None
+    inventoryAccountNumber: str | None = None
+    productAccountNumber: str | None = None
+    taxCode: TaxCodeReference | None = None
+    taxCodeXref: str | None = None
+    taxAgencyXref: str | None = None
+    taxNote: str | None = None
+    taxRate: float | None = None
+    taxRatePercent: float | None = None
+    taxableFlag: bool | None = None
+    taxable2Flag: bool | None = None
+    taxable3Flag: bool | None = None
+    taxable4Flag: bool | None = None
+    taxable5Flag: bool | None = None
+    item: IvItemReference | None = None
+    product: ProductReference | None = None
+    itemTaxableFlag: bool | None = None
+    itemPrice: float | None = None
+    itemCost: float | None = None
+    itemDescription: str | None = None
+    salesDescription: str | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    subCategory: ProductSubCategoryReference | None = None
+    serializedFlag: bool | None = None
+    serialNumbers: str | None = None
+    warehouseSite: SiteReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    shipmentMethod: ShipmentMethodReference | None = None
+    dropShippedFlag: bool | None = None
+    itemTypeXref: str | None = None
+    inventoryXref: str | None = None
+    cogsXref: str | None = None
+    uomScheduleXref: str | None = None
+    priceLevelXref: str | None = None
+    locationXref: str | None = None
+    taxLevels: list[GLExportTransactionDetailTaxLevel] | None = None
 
 
 class GLExportTransactionDetailTaxLevel(SparkModel):
-    taxableFlag: bool | None
-    taxLevel: int | None
+    taxableFlag: bool | None = None
+    taxLevel: int | None = None
 
 
 class GLExportTransactionTaxLevel(SparkModel):
-    taxAmount: float | None
-    taxableAmount: float | None
-    taxCodeXref: str | None
-    taxLevel: int | None
+    taxAmount: float | None = None
+    taxableAmount: float | None = None
+    taxCodeXref: str | None = None
+    taxLevel: int | None = None
 
 
 class GLExportVendor(SparkModel):
-    member: MemberReference | None
-    vendor: CompanyReference | None
-    vendorNumber: str | None
-    company: CompanyReference | None
-    contact: ContactReference | None
-    accountNumber: str | None
-    billingTerms: BillingTermsReference | None
-    dueDays: int | None
-    site: SiteReference | None
-    taxCode: TaxCodeReference | None
+    member: MemberReference | None = None
+    vendor: CompanyReference | None = None
+    vendorNumber: str | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    accountNumber: str | None = None
+    billingTerms: BillingTermsReference | None = None
+    dueDays: int | None = None
+    site: SiteReference | None = None
+    taxCode: TaxCodeReference | None = None
 
 
 class GLPath(SparkModel):
-    id: int | None
-    location: SystemLocationReference | None
-    path: Annotated[str | None, Field(description=' Max length: 255;')]
-    sqlServerName: Annotated[str | None, Field(description=' Max length: 255;')]
-    databaseName: Annotated[str | None, Field(description=' Max length: 100;')]
-    lastPaymentSync: datetime | None
-    lastPaymentSyncBy: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    path: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    sqlServerName: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    databaseName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    lastPaymentSync: datetime | None = None
+    lastPaymentSyncBy: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GenericBoardTeamReference(SparkModel):
-    id: int | None
-    name: str | None
-    isProjectTeamFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    isProjectTeamFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GenericIdIdentifierReference(AccountingPackage):
@@ -4920,17 +4987,17 @@ class GenericNameIdDTO(AgreementApplicationAviablePer):
 
 
 class GoogleEmailSetup(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 200;')]
-    username: Annotated[str, Field(description=' Max length: 100;')]
-    inboxFolder: Annotated[str, Field(description=' Max length: 40;')]
-    processedFolder: Annotated[str, Field(description=' Max length: 40;')]
-    failedFolder: Annotated[str, Field(description=' Max length: 40;')]
-    clientId: Annotated[str | None, Field(description=' Max length: 200;')]
-    privateKey: Annotated[str | None, Field(description=' Max length: 4000;')]
-    inactiveFlag: bool | None
-    emailConnector: EmailConnectorReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    username: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    inboxFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    processedFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    failedFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    clientId: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    privateKey: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    inactiveFlag: bool | None = None
+    emailConnector: EmailConnectorReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GoogleEmailSetupReference(ActivityReference):
@@ -4938,12 +5005,14 @@ class GoogleEmailSetupReference(ActivityReference):
 
 
 class Group(SparkModel):
-    id: int | None
-    name: str
-    publicDescription: Annotated[str | None, Field(description=' Max length: 255;')]
-    publicFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    publicDescription: Annotated[str | None, Field(description=' Max length: 255;')] = (
+        None
+    )
+    publicFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class GroupInfo(ActivityReference):
@@ -4955,35 +5024,35 @@ class GroupReference(ActivityReference):
 
 
 class Holiday(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
     allDayFlag: Annotated[
         bool | None,
         Field(
             description='Can be set to false to set a holiday for specific hours (Defaults to True).'
         ),
-    ]
-    date: date_aliased
-    timeStart: str | None
-    timeEnd: str | None
-    holidayList: HolidayListReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    date: date_aliased | None = None
+    timeStart: str | None = None
+    timeEnd: str | None = None
+    holidayList: HolidayListReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class HolidayInfo(SparkModel):
-    id: int | None
-    name: str | None
+    id: int | None = None
+    name: str | None = None
     allDayFlag: Annotated[
         bool | None,
         Field(
             description='Can be set to false to set a holiday for specific hours (Defaults to True).'
         ),
-    ]
-    date: str | None
-    timeStart: str | None
-    timeEnd: str | None
-    holidayList: HolidayListReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    date: str | None = None
+    timeStart: str | None = None
+    timeEnd: str | None = None
+    holidayList: HolidayListReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class HolidayList(ContactRelationship):
@@ -4999,37 +5068,37 @@ class HolidayListReference(ActivityReference):
 
 
 class HttpContent(SparkModel):
-    headers: list | None
+    headers: list | None = None
 
 
 class HttpMethod(SparkModel):
-    get: HttpMethod | None
-    put: HttpMethod | None
-    post: HttpMethod | None
-    delete: HttpMethod | None
-    head: HttpMethod | None
-    options: HttpMethod | None
-    trace: HttpMethod | None
-    method: str | None
+    get: HttpMethod | None = None
+    put: HttpMethod | None = None
+    post: HttpMethod | None = None
+    delete: HttpMethod | None = None
+    head: HttpMethod | None = None
+    options: HttpMethod | None = None
+    trace: HttpMethod | None = None
+    method: str | None = None
 
 
 class HttpRequestMessage(SparkModel):
-    version: Version | None
-    content: HttpContent | None
-    method: HttpMethod | None
-    requestUri: str | None
-    headers: list | None
-    properties: dict[str, dict[str, Any_aliased]] | None
+    version: Version | None = None
+    content: HttpContent | None = None
+    method: HttpMethod | None = None
+    requestUri: str | None = None
+    headers: list | None = None
+    properties: dict[str, dict[str, Any_aliased]] | None = None
 
 
 class HttpResponseMessage(SparkModel):
-    version: Version | None
-    content: HttpContent | None
-    statusCode: HttpResponseMessageStatusCode | None
-    reasonPhrase: str | None
-    headers: list | None
-    requestMessage: HttpRequestMessage | None
-    isSuccessStatusCode: bool | None
+    version: Version | None = None
+    content: HttpContent | None = None
+    statusCode: HttpResponseMessageStatusCode | None = None
+    reasonPhrase: str | None = None
+    headers: list | None = None
+    requestMessage: HttpRequestMessage | None = None
+    isSuccessStatusCode: bool | None = None
 
 
 class HttpResponseMessageStatusCode(str, Enum):
@@ -5083,33 +5152,33 @@ class HttpResponseMessageStatusCode(str, Enum):
 
 
 class IRestIdentifiedItem(SparkModel):
-    id: int | None
+    id: int | None = None
 
 
 class IdCollection(SparkModel):
-    ids: list[int] | None
+    ids: list[int] | None = None
 
 
 class Imap(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 200;')]
-    imapName: Annotated[str, Field(description=' Max length: 40;')]
-    processedName: Annotated[str, Field(description=' Max length: 40;')]
-    failedFolder: Annotated[str, Field(description=' Max length: 40;')]
-    server: Annotated[str, Field(description=' Max length: 200;')]
-    userName: Annotated[str, Field(description=' Max length: 80;')]
-    password: Annotated[str | None, Field(description=' Max length: 80;')]
-    port: int
-    sslFlag: bool | None
-    emailConnector: EmailConnectorReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    imapName: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    processedName: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    failedFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    server: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    userName: Annotated[str | None, Field(description=' Max length: 80;')] = None
+    password: Annotated[str | None, Field(description=' Max length: 80;')] = None
+    port: int | None = None
+    sslFlag: bool | None = None
+    emailConnector: EmailConnectorReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ImapInfo(SparkModel):
-    id: int | None
-    name: str | None
-    emailConnector: EmailConnectorReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    emailConnector: EmailConnectorReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ImapSetupReference(ActivityReference):
@@ -5117,39 +5186,39 @@ class ImapSetupReference(ActivityReference):
 
 
 class Impact(SparkModel):
-    id: int | None
-    name: str | None
-    description: Annotated[str, Field(description=' Max length: 200;')]
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    description: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ImportMassMaintenance(SparkModel):
-    deletedContactCount: int | None
-    deletedCompanyCount: int | None
-    message: str | None
-    success: bool | None
+    deletedContactCount: int | None = None
+    deletedCompanyCount: int | None = None
+    message: str | None = None
+    success: bool | None = None
 
 
 class InOutBoard(SparkModel):
-    id: int | None
-    member: MemberReference
-    inOutType: InOutTypeReference
-    additionalInfo: Annotated[str | None, Field(description=' Max length: 100;')]
-    dateBack: datetime
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    inOutType: InOutTypeReference | None = None
+    additionalInfo: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    dateBack: datetime | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InOutType(SparkModel):
-    id: int | None
-    description: Annotated[str, Field(description=' Max length: 30;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InOutTypeInfo(SparkModel):
-    id: int | None
-    description: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InOutTypeReference(ActivityReference):
@@ -5161,108 +5230,124 @@ class InclusiveRevenueReference(AgreementRevenueReference):
 
 
 class Info(SparkModel):
-    version: str | None
-    isCloud: bool | None
-    serverTimeZone: str | None
-    licenseBits: list[LicenseBit] | None
-    cloudRegion: str | None
-    maxWorkFlowRecordsAllowed: int | None
+    version: str | None = None
+    isCloud: bool | None = None
+    serverTimeZone: str | None = None
+    licenseBits: list[LicenseBit] | None = None
+    cloudRegion: str | None = None
+    maxWorkFlowRecordsAllowed: int | None = None
 
 
 class IntegratorLogin(SparkModel):
-    id: int | None
-    username: Annotated[str, Field(description=' Max length: 50;')]
+    id: int | None = None
+    username: Annotated[str | None, Field(description=' Max length: 50;')] = None
     password: Annotated[
         str | None,
         Field(
             description='The password will never be returned in response. Max length: 50;'
         ),
-    ]
+    ] = None
     canAccessAllRecordsFlag: Annotated[
         bool | None,
         Field(
             description='This flag controls whether the integrator can access only the db records it created, or all system records.'
         ),
-    ]
+    ] = None
     canAccessAllApisFlag: Annotated[
         bool | None,
         Field(
             description='Setting this flag to true will create an integrator that can access all of the available apis in the system.\n            If this field is set to true, both the member and board fields are required.'
         ),
-    ]
-    inactiveFlag: bool | None
-    dateInactivated: datetime | None
-    inactivatedBy: MemberReference | None
-    serviceTicketApiFlag: bool | None
-    board: BoardReference | None
+    ] = None
+    inactiveFlag: bool | None = None
+    dateInactivated: datetime | None = None
+    inactivatedBy: MemberReference | None = None
+    serviceTicketApiFlag: bool | None = None
+    board: BoardReference | None = None
     serviceBoardCallbackUrl: Annotated[
         str | None, Field(description=' Max length: 1000;')
-    ]
-    serviceBoardLegacyCallbackFlag: bool | None
-    timeEntryApiFlag: bool | None
-    member: MemberReference | None
-    timeEntryCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    timeEntryLegacyCallbackFlag: bool | None
-    managedServicesApiFlag: bool | None
-    managedServicesAutoChildFlag: bool | None
+    ] = None
+    serviceBoardLegacyCallbackFlag: bool | None = None
+    timeEntryApiFlag: bool | None = None
+    member: MemberReference | None = None
+    timeEntryCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    timeEntryLegacyCallbackFlag: bool | None = None
+    managedServicesApiFlag: bool | None = None
+    managedServicesAutoChildFlag: bool | None = None
     managedServicesChildingFlag: Annotated[
         bool | None,
         Field(description='True if integrator is allowed to child configurations.'),
-    ]
-    contactApiFlag: bool | None
-    contactCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    contactLegacyCallbackFlag: bool | None
-    companyApiFlag: bool | None
-    companyCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    companyLegacyCallbackFlag: bool | None
-    activityApiFlag: bool | None
-    activityCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    activityLegacyCallbackFlag: bool | None
-    invoiceApiFlag: bool | None
-    productApiFlag: bool | None
-    productCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    productLegacyCallbackFlag: bool | None
-    opportunityApiFlag: bool | None
+    ] = None
+    contactApiFlag: bool | None = None
+    contactCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    contactLegacyCallbackFlag: bool | None = None
+    companyApiFlag: bool | None = None
+    companyCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    companyLegacyCallbackFlag: bool | None = None
+    activityApiFlag: bool | None = None
+    activityCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    activityLegacyCallbackFlag: bool | None = None
+    invoiceApiFlag: bool | None = None
+    productApiFlag: bool | None = None
+    productCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    productLegacyCallbackFlag: bool | None = None
+    opportunityApiFlag: bool | None = None
     opportunityCallbackUrl: Annotated[
         str | None, Field(description=' Max length: 1000;')
-    ]
-    opportunityLegacyCallbackFlag: bool | None
+    ] = None
+    opportunityLegacyCallbackFlag: bool | None = None
     opportunityConversionApiFlag: Annotated[
         bool | None,
         Field(
             description='True if the member has access to the Opportunity Conversion Api.'
         ),
-    ]
-    memberApiFlag: bool | None
-    marketingApiFlag: bool | None
-    purchasingApiFlag: bool | None
+    ] = None
+    memberApiFlag: bool | None = None
+    marketingApiFlag: bool | None = None
+    purchasingApiFlag: bool | None = None
     purchasingCallbackUrl: Annotated[
         str | None, Field(description=' Max length: 1000;')
-    ]
-    purchasingLegacyCallbackFlag: bool | None
-    reportingApiFlag: bool | None
-    systemApiFlag: bool | None
-    projectApiFlag: bool | None
-    projectCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    projectLegacyCallbackFlag: bool | None
-    configurationApiFlag: bool | None
-    configurationAutoChildFlag: bool | None
+    ] = None
+    purchasingLegacyCallbackFlag: bool | None = None
+    reportingApiFlag: bool | None = None
+    systemApiFlag: bool | None = None
+    projectApiFlag: bool | None = None
+    projectCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    projectLegacyCallbackFlag: bool | None = None
+    configurationApiFlag: bool | None = None
+    configurationAutoChildFlag: bool | None = None
     configurationChildlingFlag: Annotated[
         bool | None,
         Field(description='True if integrator is allowed to child configurations.'),
-    ]
+    ] = None
     configurationCallbackUrl: Annotated[
         str | None, Field(description=' Max length: 1000;')
-    ]
-    configurationLegacyCallbackFlag: bool | None
-    scheduleApiFlag: bool | None
-    scheduleCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    scheduleLegacyCallbackFlag: bool | None
-    agreementApiFlag: bool | None
-    agreementCallbackUrl: Annotated[str | None, Field(description=' Max length: 1000;')]
-    agreementCallbackLegacyFlag: bool | None
-    documentApiFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    configurationLegacyCallbackFlag: bool | None = None
+    scheduleApiFlag: bool | None = None
+    scheduleCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    scheduleLegacyCallbackFlag: bool | None = None
+    agreementApiFlag: bool | None = None
+    agreementCallbackUrl: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    agreementCallbackLegacyFlag: bool | None = None
+    documentApiFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class IntegratorLoginReference(ActivityReference):
@@ -5270,13 +5355,13 @@ class IntegratorLoginReference(ActivityReference):
 
 
 class IntegratorTag(SparkModel):
-    id: int | None
-    text: Annotated[str, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    text: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class IntegratorTagCollection(SparkModel):
-    tags: list[str] | None
+    tags: list[str] | None = None
 
 
 class InventoryOnHand(CatalogInventory):
@@ -5284,94 +5369,94 @@ class InventoryOnHand(CatalogInventory):
 
 
 class Invoice(SparkModel):
-    id: int | None
+    id: int | None = None
     invoiceNumber: Annotated[
         str | None, Field(description=' Max length: 15; Required On Updates;')
-    ]
-    type: CommissionBillingMethod
-    status: BillingStatusReference | None
-    company: CompanyReference
-    billToCompany: CompanyReference | None
-    shipToCompany: CompanyReference | None
-    accountNumber: str | None
-    applyToType: InvoiceApplyToType | None
-    applyToId: int | None
-    attention: Annotated[str | None, Field(description=' Max length: 60;')]
-    shipToAttention: Annotated[str | None, Field(description=' Max length: 60;')]
-    billingSite: SiteReference | None
-    billingSiteAddressLine1: str | None
-    billingSiteAddressLine2: str | None
-    billingSiteCity: str | None
-    billingSiteState: str | None
-    billingSiteZip: str | None
-    billingSiteCountry: str | None
-    shippingSite: SiteReference | None
-    shippingSiteAddressLine1: str | None
-    shippingSiteAddressLine2: str | None
-    shippingSiteCity: str | None
-    shippingSiteState: str | None
-    shippingSiteZip: str | None
-    shippingSiteCountry: str | None
-    billingTerms: BillingTermsReference | None
-    reference: Annotated[str | None, Field(description=' Max length: 50;')]
-    customerPO: Annotated[str | None, Field(description=' Max length: 50;')]
+    ] = None
+    type: CommissionBillingMethod | None = None
+    status: BillingStatusReference | None = None
+    company: CompanyReference | None = None
+    billToCompany: CompanyReference | None = None
+    shipToCompany: CompanyReference | None = None
+    accountNumber: str | None = None
+    applyToType: InvoiceApplyToType | None = None
+    applyToId: int | None = None
+    attention: Annotated[str | None, Field(description=' Max length: 60;')] = None
+    shipToAttention: Annotated[str | None, Field(description=' Max length: 60;')] = None
+    billingSite: SiteReference | None = None
+    billingSiteAddressLine1: str | None = None
+    billingSiteAddressLine2: str | None = None
+    billingSiteCity: str | None = None
+    billingSiteState: str | None = None
+    billingSiteZip: str | None = None
+    billingSiteCountry: str | None = None
+    shippingSite: SiteReference | None = None
+    shippingSiteAddressLine1: str | None = None
+    shippingSiteAddressLine2: str | None = None
+    shippingSiteCity: str | None = None
+    shippingSiteState: str | None = None
+    shippingSiteZip: str | None = None
+    shippingSiteCountry: str | None = None
+    billingTerms: BillingTermsReference | None = None
+    reference: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    customerPO: Annotated[str | None, Field(description=' Max length: 50;')] = None
     templateSetupId: Annotated[
         int | None, Field(description='Can be obtained via InvoiceTemplate report.')
-    ]
-    invoiceTemplate: InvoiceTemplateDetailReference | None
+    ] = None
+    invoiceTemplate: InvoiceTemplateDetailReference | None = None
     emailTemplateId: Annotated[
         int | None,
         Field(description='Can be obtained via InvoiceEmailTemplate report.'),
-    ]
-    addToBatchEmailList: bool | None
-    date: datetime | None
-    restrictDownpaymentFlag: bool | None
-    locationId: Annotated[int | None, Field(description=' Required On Updates;')]
-    location: SystemLocationReference | None
+    ] = None
+    addToBatchEmailList: bool | None = None
+    date: datetime | None = None
+    restrictDownpaymentFlag: bool | None = None
+    locationId: Annotated[int | None, Field(description=' Required On Updates;')] = None
+    location: SystemLocationReference | None = None
     departmentId: Annotated[
         int | None,
         Field(description='departmentId is only required for special invoices.'),
-    ]
-    department: BillingUnitReference | None
-    territoryId: int | None
-    territory: SystemLocationReference | None
-    topComment: str | None
-    bottomComment: str | None
-    taxableFlag: bool | None
-    taxCode: TaxCodeReference | None
-    internalNotes: str | None
-    downpaymentPreviouslyTaxedFlag: bool | None
-    serviceTotal: float | None
-    overrideDownPaymentAmountFlag: bool | None
-    currency: CurrencyReference | None
-    dueDate: datetime | None
-    expenseTotal: float | None
-    productTotal: float | None
-    previousProgressApplied: float | None
-    serviceAdjustmentAmount: float | None
-    agreementAmount: float | None
-    downpaymentApplied: float | None
-    subtotal: float | None
-    total: float | None
-    remainingDownpayment: float | None
-    salesTax: float | None
-    adjustmentReason: str | None
-    adjustedBy: str | None
-    closedBy: str | None
-    payments: float | None
-    credits: float | None
-    balance: float | None
-    specialInvoiceFlag: bool | None
-    billingSetupReference: BillingSetupReference | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference | None
-    salesOrder: SalesOrderReference | None
-    agreement: AgreementReference | None
-    glBatch: BatchReference | None
-    unbatchedBatch: BatchReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    department: BillingUnitReference | None = None
+    territoryId: int | None = None
+    territory: SystemLocationReference | None = None
+    topComment: str | None = None
+    bottomComment: str | None = None
+    taxableFlag: bool | None = None
+    taxCode: TaxCodeReference | None = None
+    internalNotes: str | None = None
+    downpaymentPreviouslyTaxedFlag: bool | None = None
+    serviceTotal: float | None = None
+    overrideDownPaymentAmountFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    dueDate: datetime | None = None
+    expenseTotal: float | None = None
+    productTotal: float | None = None
+    previousProgressApplied: float | None = None
+    serviceAdjustmentAmount: float | None = None
+    agreementAmount: float | None = None
+    downpaymentApplied: float | None = None
+    subtotal: float | None = None
+    total: float | None = None
+    remainingDownpayment: float | None = None
+    salesTax: float | None = None
+    adjustmentReason: str | None = None
+    adjustedBy: str | None = None
+    closedBy: str | None = None
+    payments: float | None = None
+    credits: float | None = None
+    balance: float | None = None
+    specialInvoiceFlag: bool | None = None
+    billingSetupReference: BillingSetupReference | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    salesOrder: SalesOrderReference | None = None
+    agreement: AgreementReference | None = None
+    glBatch: BatchReference | None = None
+    unbatchedBatch: BatchReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class InvoiceApplyToType(str, Enum):
@@ -5384,55 +5469,55 @@ class InvoiceApplyToType(str, Enum):
 
 
 class InvoiceCommission(SparkModel):
-    id: int | None
-    member: MemberReference | None
-    percent: float | None
-    splitPercent: float | None
-    adjustment: float | None
-    netAmount: float | None
-    amount: float | None
-    invoice: InvoiceReference | None
-    opportunity: OpportunityReference | None
-    agreement: AgreementReference | None
-    activity: ActivityReference | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    salesOrder: SalesOrderReference | None
-    adjustedBy: str | None
-    adjustedDate: str | None
-    adjustmentReason: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    percent: float | None = None
+    splitPercent: float | None = None
+    adjustment: float | None = None
+    netAmount: float | None = None
+    amount: float | None = None
+    invoice: InvoiceReference | None = None
+    opportunity: OpportunityReference | None = None
+    agreement: AgreementReference | None = None
+    activity: ActivityReference | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    salesOrder: SalesOrderReference | None = None
+    adjustedBy: str | None = None
+    adjustedDate: str | None = None
+    adjustmentReason: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceEmailTemplate(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    serviceSurvey: ServiceSurveyReference | None
-    useSenderFlag: bool | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    serviceSurvey: ServiceSurveyReference | None = None
+    useSenderFlag: bool | None = None
     firstName: Annotated[
         str | None,
         Field(
             description='From fields (first name, last name, email address) are required if useSenderFlag is false. Max length: 100;'
         ),
-    ]
+    ] = None
     lastName: Annotated[
         str | None,
         Field(
             description='From fields (first name, last name, email address) are required if useSenderFlag is false. Max length: 100;'
         ),
-    ]
+    ] = None
     emailAddress: Annotated[
         str | None,
         Field(
             description='From fields (first name, last name, email address) are required if useSenderFlag is false. Max length: 100;'
         ),
-    ]
-    subject: Annotated[str, Field(description=' Max length: 200;')]
-    body: str | None
-    copySenderFlag: bool | None
-    invoiceStatus: BillingStatusReference | None
-    attachInvoiceFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    subject: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    body: str | None = None
+    copySenderFlag: bool | None = None
+    invoiceStatus: BillingStatusReference | None = None
+    attachInvoiceFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceEmailTemplateInfo(ActivityReference):
@@ -5440,59 +5525,59 @@ class InvoiceEmailTemplateInfo(ActivityReference):
 
 
 class InvoiceGrouping(SparkModel):
-    id: int | None
-    name: str
-    customerDescription: str
-    inactiveFlag: bool | None
-    showPriceFlag: bool | None
-    showSubItemsFlag: bool | None
-    groupParentChildAdditionsFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    customerDescription: str | None = None
+    inactiveFlag: bool | None = None
+    showPriceFlag: bool | None = None
+    showSubItemsFlag: bool | None = None
+    groupParentChildAdditionsFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceGroupingReference(SparkModel):
-    id: int | None
-    name: str | None
-    description: str | None
-    showPriceFlag: bool | None
-    showSubItemsFlag: bool | None
-    groupParentChildAdditionsFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+    showPriceFlag: bool | None = None
+    showSubItemsFlag: bool | None = None
+    groupParentChildAdditionsFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceInfo(SparkModel):
-    id: int | None
-    invoice: Invoice | None
-    invoiceTemplate: InvoiceTemplate | None
-    products: list[ProductItem] | None
-    bundledComponentsInfo: list[ProductComponent] | None
-    expenses: list[ExpenseEntry] | None
-    timeEntries: list[TimeEntry] | None
-    logo: DocumentInfo | None
-    billingSetup: BillingSetup | None
-    agreementBillingInfo: list[AgreementBillingInfo] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    invoice: Invoice | None = None
+    invoiceTemplate: InvoiceTemplate | None = None
+    products: list[ProductItem] | None = None
+    bundledComponentsInfo: list[ProductComponent] | None = None
+    expenses: list[ExpenseEntry] | None = None
+    timeEntries: list[TimeEntry] | None = None
+    logo: DocumentInfo | None = None
+    billingSetup: BillingSetup | None = None
+    agreementBillingInfo: list[AgreementBillingInfo] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoicePayment(SparkModel):
-    id: int | None
-    type: str | None
-    source: InvoicePaymentSource | None
-    invoice: InvoiceReference | None
-    credit: InvoiceReference | None
-    amount: float | None
-    balance: float | None
-    invoiceBalance: float | None
-    invoiceTotal: float | None
-    paymentDate: datetime | None
-    appliedBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    wisePayPayment: WisePayPayment | None
-    paymentSyncStatus: InvoicePaymentPaymentSyncStatus | None
-    glBatchID: Annotated[str | None, Field(description=' Max length: 50;')]
-    paymentSyncDate: datetime | None
-    paymentAccount: str | None
-    aRPaymentAccount: str | None
+    id: int | None = None
+    type: str | None = None
+    source: InvoicePaymentSource | None = None
+    invoice: InvoiceReference | None = None
+    credit: InvoiceReference | None = None
+    amount: float | None = None
+    balance: float | None = None
+    invoiceBalance: float | None = None
+    invoiceTotal: float | None = None
+    paymentDate: datetime | None = None
+    appliedBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    wisePayPayment: WisePayPayment | None = None
+    paymentSyncStatus: InvoicePaymentPaymentSyncStatus | None = None
+    glBatchID: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    paymentSyncDate: datetime | None = None
+    paymentAccount: str | None = None
+    aRPaymentAccount: str | None = None
 
 
 class InvoicePaymentPaymentSyncStatus(str, Enum):
@@ -5507,264 +5592,298 @@ class InvoicePaymentSource(str, Enum):
 
 
 class InvoiceReference(SparkModel):
-    id: int | None
-    identifier: str | None
-    billingType: str | None
-    applyToType: str | None
-    invoiceDate: str | None
-    chargeFirmFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    billingType: str | None = None
+    applyToType: str | None = None
+    invoiceDate: str | None = None
+    chargeFirmFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceRouting(SparkModel):
-    id: int | None
-    invoice: InvoiceReference | None
-    sequenceNumber: int | None
-    member: MemberReference | None
-    reviewedFlag: bool | None
-    dateReviewedUTC: datetime | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    invoice: InvoiceReference | None = None
+    sequenceNumber: int | None = None
+    member: MemberReference | None = None
+    reviewedFlag: bool | None = None
+    dateReviewedUTC: datetime | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceTemplate(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    marginLeft: float | None
-    marginRight: float | None
-    marginTop: float | None
-    marginBottom: float | None
-    logoVisibleFlag: bool | None
-    headerLogoPosition: InvoiceTemplateHeaderLogoPosition | None
-    remitToVisibleFlag: bool | None
-    headerAddressPosition: InvoiceTemplateHeaderLogoPosition | None
-    headerTitleVisibleFlag: bool | None
-    headerTitleCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerTitlePosition: InvoiceTemplateHeaderLogoPosition | None
-    headerTitleFont: InvoiceTemplateHeaderTitleFont | None
-    headerTermsVisibleFlag: bool | None
-    headerTermsCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerDueDateVisibleFlag: bool | None
-    headerDueDateCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerPoNumberVisibleFlag: bool | None
-    headerPoNumberCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerReferenceVisibleFlag: bool | None
-    headerReferenceCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerAccountVisibleFlag: bool | None
-    headerAccountCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerTaxIdVisibleFlag: bool | None
-    headerTaxIdCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerShipToVisibleFlag: bool | None
-    headerShipToCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    headerHoursBasedExtendedAmountVisibleFlag: bool | None
-    payableCaption: Annotated[str | None, Field(description=' Max length: 1000;')]
-    serviceHeaderTicketNumberVisibleFlag: bool | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    marginLeft: float | None = None
+    marginRight: float | None = None
+    marginTop: float | None = None
+    marginBottom: float | None = None
+    logoVisibleFlag: bool | None = None
+    headerLogoPosition: InvoiceTemplateHeaderLogoPosition | None = None
+    remitToVisibleFlag: bool | None = None
+    headerAddressPosition: InvoiceTemplateHeaderLogoPosition | None = None
+    headerTitleVisibleFlag: bool | None = None
+    headerTitleCaption: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    headerTitlePosition: InvoiceTemplateHeaderLogoPosition | None = None
+    headerTitleFont: InvoiceTemplateHeaderTitleFont | None = None
+    headerTermsVisibleFlag: bool | None = None
+    headerTermsCaption: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    headerDueDateVisibleFlag: bool | None = None
+    headerDueDateCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    headerPoNumberVisibleFlag: bool | None = None
+    headerPoNumberCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    headerReferenceVisibleFlag: bool | None = None
+    headerReferenceCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    headerAccountVisibleFlag: bool | None = None
+    headerAccountCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    headerTaxIdVisibleFlag: bool | None = None
+    headerTaxIdCaption: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    headerShipToVisibleFlag: bool | None = None
+    headerShipToCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    headerHoursBasedExtendedAmountVisibleFlag: bool | None = None
+    payableCaption: Annotated[str | None, Field(description=' Max length: 1000;')] = (
+        None
+    )
+    serviceHeaderTicketNumberVisibleFlag: bool | None = None
     serviceHeaderTicketNumberCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderCompanyNameVisibleFlag: bool | None
+    ] = None
+    serviceHeaderCompanyNameVisibleFlag: bool | None = None
     serviceHeaderCompanyNameCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderSummaryVisibleFlag: bool | None
+    ] = None
+    serviceHeaderSummaryVisibleFlag: bool | None = None
     serviceHeaderSummaryCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderContactNameVisibleFlag: bool | None
+    ] = None
+    serviceHeaderContactNameVisibleFlag: bool | None = None
     serviceHeaderContactNameCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderDetailDescriptionVisibleFlag: bool | None
+    ] = None
+    serviceHeaderDetailDescriptionVisibleFlag: bool | None = None
     serviceHeaderDetailDescriptionCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderResolutionVisibleFlag: bool | None
+    ] = None
+    serviceHeaderResolutionVisibleFlag: bool | None = None
     serviceHeaderResolutionCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderAmountVisibleFlag: bool | None
+    ] = None
+    serviceHeaderAmountVisibleFlag: bool | None = None
     serviceHeaderAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderBillingMethodVisibleFlag: bool | None
+    ] = None
+    serviceHeaderBillingMethodVisibleFlag: bool | None = None
     serviceHeaderBillingMethodCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    serviceHeaderClosedTasksVisibleFlag: bool | None
-    serviceHeaderOpenTasksVisibleFlag: bool | None
-    serviceHeaderBundledTicketsVisibleFlag: bool | None
-    projectHeaderProjectNameVisibleFlag: bool | None
+    ] = None
+    serviceHeaderClosedTasksVisibleFlag: bool | None = None
+    serviceHeaderOpenTasksVisibleFlag: bool | None = None
+    serviceHeaderBundledTicketsVisibleFlag: bool | None = None
+    projectHeaderProjectNameVisibleFlag: bool | None = None
     projectHeaderProjectNameCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    projectHeaderCompanyNameVisibleFlag: bool | None
+    ] = None
+    projectHeaderCompanyNameVisibleFlag: bool | None = None
     projectHeaderCompanyNameCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    projectHeaderOriginalDownpaymentVisibleFlag: bool | None
+    ] = None
+    projectHeaderOriginalDownpaymentVisibleFlag: bool | None = None
     projectHeaderOriginalDownpaymentCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    projectHeaderContactNameVisibleFlag: bool | None
+    ] = None
+    projectHeaderContactNameVisibleFlag: bool | None = None
     projectHeaderContactNameCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    projectHeaderAmountVisibleFlag: bool | None
+    ] = None
+    projectHeaderAmountVisibleFlag: bool | None = None
     projectHeaderAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    projectHeaderBillingMethodVisibleFlag: bool | None
+    ] = None
+    projectHeaderBillingMethodVisibleFlag: bool | None = None
     projectHeaderBillingMethodCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    projectHeaderBillingTypeVisibleFlag: bool | None
+    ] = None
+    projectHeaderBillingTypeVisibleFlag: bool | None = None
     projectHeaderBillingTypeCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    invoicePaymentAmountVisibleFlag: bool | None
+    ] = None
+    invoicePaymentAmountVisibleFlag: bool | None = None
     invoicePaymentAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    invoiceCreditAmountVisibleFlag: bool | None
+    ] = None
+    invoiceCreditAmountVisibleFlag: bool | None = None
     invoiceCreditAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    invoiceBalanceDueVisibleFlag: bool | None
+    ] = None
+    invoiceBalanceDueVisibleFlag: bool | None = None
     invoiceBalanceDueCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    creditCreditAmountVisibleFlag: bool | None
+    ] = None
+    creditCreditAmountVisibleFlag: bool | None = None
     creditCreditAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    creditRemainingAmountVisibleFlag: bool | None
+    ] = None
+    creditRemainingAmountVisibleFlag: bool | None = None
     creditRemainingAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    timeDetailVisibleFlag: bool | None
-    timeDetailPrimarySortField: str | None
-    timeDetailPrimarySortDirection: str | None
-    timeDetailSecondarySortField: str | None
-    timeDetailSecondarySortDirection: str | None
-    timeDetailSubtotalVisibleFlag: bool | None
-    timeDetailStartEndTimeVisibleFlag: bool | None
-    timeDetailHoursVisibleFlag: bool | None
-    timeDetailMembersVisibleFlag: bool | None
-    timeDetailBillableVisibleFlag: bool | None
-    timeDetailExtendedAmountVisibleFlag: bool | None
-    timeDetailDollarAmountsOnHourseBasedVisibleFlag: bool | None
-    timeDetailHourlyRateVisibleFlag: bool | None
-    timeDetailContactsVisibleFlag: bool | None
-    timeDetailNotesVisibleFlag: bool | None
+    ] = None
+    timeDetailVisibleFlag: bool | None = None
+    timeDetailPrimarySortField: str | None = None
+    timeDetailPrimarySortDirection: str | None = None
+    timeDetailSecondarySortField: str | None = None
+    timeDetailSecondarySortDirection: str | None = None
+    timeDetailSubtotalVisibleFlag: bool | None = None
+    timeDetailStartEndTimeVisibleFlag: bool | None = None
+    timeDetailHoursVisibleFlag: bool | None = None
+    timeDetailMembersVisibleFlag: bool | None = None
+    timeDetailBillableVisibleFlag: bool | None = None
+    timeDetailExtendedAmountVisibleFlag: bool | None = None
+    timeDetailDollarAmountsOnHourseBasedVisibleFlag: bool | None = None
+    timeDetailHourlyRateVisibleFlag: bool | None = None
+    timeDetailContactsVisibleFlag: bool | None = None
+    timeDetailNotesVisibleFlag: bool | None = None
     timeDetailNonBillableCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    timeDetailAgreementVisibleFlag: bool | None
-    timeDetailHoursBasedHoursVisibleFlag: bool | None
-    timeDetailHoursBasedExtAmountVisibleFlag: bool | None
-    timeDetailHoursbasedHourlyRateVisibleFlag: bool | None
-    timeDetailAmountBasedHoursVisibleFlag: bool | None
-    timeDetailAmountBasedExtAmountVisibleFlag: bool | None
-    timeDetailAmountBasedHourlyRateVisibleFlag: bool | None
-    timeDetailSRTicketSummaryVisibleFlag: bool | None
-    timeDetailSRContactVisibleFlag: bool | None
-    timeDetailSRAddressVisibleFlag: bool | None
-    timeDetailPmPhaseVisibleFlag: bool | None
-    timeDetailPmSummaryVisibleFlag: bool | None
-    timeDetailTicketNumberVisibleFlag: bool | None
-    timeDetailDatesVisibleFlag: bool | None
-    servicesStaffCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    servicesStaffVisibleFlag: bool | None
-    servicesAmountCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    servicesAmountVisibleFlag: bool | None
-    servicesHoursCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    servicesHoursVisibleFlag: bool | None
-    servicesRateCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    servicesRateVisibleFlag: bool | None
+    ] = None
+    timeDetailAgreementVisibleFlag: bool | None = None
+    timeDetailHoursBasedHoursVisibleFlag: bool | None = None
+    timeDetailHoursBasedExtAmountVisibleFlag: bool | None = None
+    timeDetailHoursbasedHourlyRateVisibleFlag: bool | None = None
+    timeDetailAmountBasedHoursVisibleFlag: bool | None = None
+    timeDetailAmountBasedExtAmountVisibleFlag: bool | None = None
+    timeDetailAmountBasedHourlyRateVisibleFlag: bool | None = None
+    timeDetailSRTicketSummaryVisibleFlag: bool | None = None
+    timeDetailSRContactVisibleFlag: bool | None = None
+    timeDetailSRAddressVisibleFlag: bool | None = None
+    timeDetailPmPhaseVisibleFlag: bool | None = None
+    timeDetailPmSummaryVisibleFlag: bool | None = None
+    timeDetailTicketNumberVisibleFlag: bool | None = None
+    timeDetailDatesVisibleFlag: bool | None = None
+    servicesStaffCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    servicesStaffVisibleFlag: bool | None = None
+    servicesAmountCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    servicesAmountVisibleFlag: bool | None = None
+    servicesHoursCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    servicesHoursVisibleFlag: bool | None = None
+    servicesRateCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    servicesRateVisibleFlag: bool | None = None
     servicesWorkRoleCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    servicesWorkRoleVisibleFlag: bool | None
+    ] = None
+    servicesWorkRoleVisibleFlag: bool | None = None
     servicesWorkTypeCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    servicesWorkTypeVisibleFlag: bool | None
-    servicesTotalVisibleFlag: bool | None
-    servicesMemberNameVisibleFlag: bool | None
+    ] = None
+    servicesWorkTypeVisibleFlag: bool | None = None
+    servicesTotalVisibleFlag: bool | None = None
+    servicesMemberNameVisibleFlag: bool | None = None
     servicesMemberNameCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    currencyIdVisibleFlag: bool | None
-    currencySymbolVisibleFlag: bool | None
-    portalFlag: bool | None
-    servicesCollapsedFlag: bool | None
-    expensesCollapsedFlag: bool | None
-    otherChargesCollapsedFlag: bool | None
-    expensesTypeCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    expensesStaffCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    expensesAmountCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    expensesTypeVisibleFlag: bool | None
-    expensesStaffVisibleFlag: bool | None
-    expensesAmountVisibleFlag: bool | None
-    expensesTotalVisibleFlag: bool | None
-    expenseDetailSubtotalVisibleFlag: bool | None
-    expenseDetailMembersVisibleFlag: bool | None
-    expenseDetailContactsVisibleFlag: bool | None
-    expenseDetailBillableVisibleFlag: bool | None
-    expenseDetailExtAmountVisibleFlag: bool | None
-    expenseDetailNotesVisibleFlag: bool | None
-    expenseDetailPrimarySortField: str | None
-    expenseDetailPrimarySortDirection: str | None
-    expenseDetailSecondarySortField: str | None
-    expenseDetailSecondarySortDirection: str | None
+    ] = None
+    currencyIdVisibleFlag: bool | None = None
+    currencySymbolVisibleFlag: bool | None = None
+    portalFlag: bool | None = None
+    servicesCollapsedFlag: bool | None = None
+    expensesCollapsedFlag: bool | None = None
+    otherChargesCollapsedFlag: bool | None = None
+    expensesTypeCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    expensesStaffCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    expensesAmountCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    expensesTypeVisibleFlag: bool | None = None
+    expensesStaffVisibleFlag: bool | None = None
+    expensesAmountVisibleFlag: bool | None = None
+    expensesTotalVisibleFlag: bool | None = None
+    expenseDetailSubtotalVisibleFlag: bool | None = None
+    expenseDetailMembersVisibleFlag: bool | None = None
+    expenseDetailContactsVisibleFlag: bool | None = None
+    expenseDetailBillableVisibleFlag: bool | None = None
+    expenseDetailExtAmountVisibleFlag: bool | None = None
+    expenseDetailNotesVisibleFlag: bool | None = None
+    expenseDetailPrimarySortField: str | None = None
+    expenseDetailPrimarySortDirection: str | None = None
+    expenseDetailSecondarySortField: str | None = None
+    expenseDetailSecondarySortDirection: str | None = None
     expenseDetailNonbillableCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    expenseDetailVisibleFlag: bool | None
-    expenseDetailAgreementVisibleFlag: bool | None
-    expenseDetailAgreementExtAmountVisibleFlag: bool | None
-    expenseDetailTicketNumberVisibleFlag: bool | None
-    expenseDetailSrTicketSummaryVisibleFlag: bool | None
-    expenseDetailSrContactVisibleFlag: bool | None
-    expenseDetailSrAddressVisibleFlag: bool | None
-    expenseDetailPmPhaseVisibleFlag: bool | None
-    expenseDetailPmSummaryVisibleFlag: bool | None
+    ] = None
+    expenseDetailVisibleFlag: bool | None = None
+    expenseDetailAgreementVisibleFlag: bool | None = None
+    expenseDetailAgreementExtAmountVisibleFlag: bool | None = None
+    expenseDetailTicketNumberVisibleFlag: bool | None = None
+    expenseDetailSrTicketSummaryVisibleFlag: bool | None = None
+    expenseDetailSrContactVisibleFlag: bool | None = None
+    expenseDetailSrAddressVisibleFlag: bool | None = None
+    expenseDetailPmPhaseVisibleFlag: bool | None = None
+    expenseDetailPmSummaryVisibleFlag: bool | None = None
     otherChargesAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    otherChargesAmountVisibleFlag: bool | None
+    ] = None
+    otherChargesAmountVisibleFlag: bool | None = None
     otherChargesDescriptionCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    otherChargesDescriptionVisibleFlag: bool | None
-    otherChargesDisplaySixDecimals: bool | None
-    otherChargesItemIdVisibleFlag: bool | None
+    ] = None
+    otherChargesDescriptionVisibleFlag: bool | None = None
+    otherChargesDisplaySixDecimals: bool | None = None
+    otherChargesItemIdVisibleFlag: bool | None = None
     otherChargesPriceCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    otherChargesPriceVisibleFlag: bool | None
+    ] = None
+    otherChargesPriceVisibleFlag: bool | None = None
     otherChargesQuantityCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    otherChargesQuantityVisibleFlag: bool | None
-    otherChargesSerialNumberVisibleFlag: bool | None
-    otherChargesTotalVisibleFlag: bool | None
-    adjustmentDescriptionVisibleFlag: bool | None
+    ] = None
+    otherChargesQuantityVisibleFlag: bool | None = None
+    otherChargesSerialNumberVisibleFlag: bool | None = None
+    otherChargesTotalVisibleFlag: bool | None = None
+    adjustmentDescriptionVisibleFlag: bool | None = None
     adjustmentDescriptionCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    adjustmentQuantityVisibleFlag: bool | None
+    ] = None
+    adjustmentQuantityVisibleFlag: bool | None = None
     adjustmentQuantityCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    adjustmentAmountVisibleFlag: bool | None
+    ] = None
+    adjustmentAmountVisibleFlag: bool | None = None
     adjustmentAmountCaption: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    adjustmentAgrTypeVisibleFlag: bool | None
-    adjustmentTotalVisibleFlag: bool | None
-    adjustmentPriceVisibleFlag: bool | None
-    adjustmentPriceCaption: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    adjustmentAgrTypeVisibleFlag: bool | None = None
+    adjustmentTotalVisibleFlag: bool | None = None
+    adjustmentPriceVisibleFlag: bool | None = None
+    adjustmentPriceCaption: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceTemplateDetailReference(ActivityReference):
@@ -5789,23 +5908,23 @@ class InvoiceTemplateHeaderTitleFont(str, Enum):
 class InvoiceTemplateReference(SparkModel):
     id: Annotated[
         int | None, Field(description='Gets or sets invoice Template Setup Id.')
-    ]
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class InvoiceTemplateSetup(SparkModel):
-    id: int | None
-    name: str | None
-    customFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    customFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class IvItemReference(SparkModel):
-    id: int | None
-    identifier: str | None
-    serializedFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    serializedFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class KBCategoryReference(ActivityReference):
@@ -5813,18 +5932,18 @@ class KBCategoryReference(ActivityReference):
 
 
 class KPI(SparkModel):
-    id: int | None
-    name: str | None
-    category: KPICategoryReference | None
-    dateFilter: str | None
-    sortOrder: int | None
-    inactiveFlag: bool | None
+    id: int | None = None
+    name: str | None = None
+    category: KPICategoryReference | None = None
+    dateFilter: str | None = None
+    sortOrder: int | None = None
+    inactiveFlag: bool | None = None
 
 
 class KPICategory(SparkModel):
-    id: int | None
-    name: str | None
-    sortOrder: int | None
+    id: int | None = None
+    name: str | None = None
+    sortOrder: int | None = None
 
 
 class KPICategoryReference(ActivityReference):
@@ -5836,53 +5955,55 @@ class KPIReference(ActivityReference):
 
 
 class KnowledgeBaseArticle(SparkModel):
-    id: int | None
-    title: str
-    issue: str
-    resolution: str
-    locationId: int | None
-    businessUnitId: int | None
-    board: BoardReference | None
-    categoryId: int | None
-    subCategoryId: int | None
-    dateCreated: str | None
-    createdBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    title: str | None = None
+    issue: str | None = None
+    resolution: str | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    board: BoardReference | None = None
+    categoryId: int | None = None
+    subCategoryId: int | None = None
+    dateCreated: str | None = None
+    createdBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class KnowledgeBaseCategory(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    approver: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    approver: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class KnowledgeBaseSettings(SparkModel):
-    id: int | None
-    requireApproval: bool
-    defaultApprover: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    requireApproval: bool | None = None
+    defaultApprover: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class KnowledgeBaseSubCategory(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    category: KBCategoryReference
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    category: KBCategoryReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LdapConfiguration(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    server: Annotated[str, Field(description='FQDN of the Server. Max length: 200;')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    server: Annotated[
+        str | None, Field(description='FQDN of the Server. Max length: 200;')
+    ] = None
     domain: Annotated[
-        str, Field(description='Domain Name of the server. Max length: 50;')
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+        str | None, Field(description='Domain Name of the server. Max length: 50;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LdapConfigurationInfo(ActivityReference):
@@ -5890,63 +6011,63 @@ class LdapConfigurationInfo(ActivityReference):
 
 
 class LdapConfigurationReference(SparkModel):
-    id: int | None
-    name: str | None
-    server: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    server: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LdapConfigurationTestLink(SparkModel):
-    server: Annotated[str | None, Field(description=' Max length: 200;')]
+    server: Annotated[str | None, Field(description=' Max length: 200;')] = None
 
 
 class LegacySubCategory(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LegacySubCategoryInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LicenseBit(SparkModel):
-    name: str | None
-    activeFlag: bool | None
+    name: str | None = None
+    activeFlag: bool | None = None
 
 
 class Link(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    tableReferenceId: int | None
-    url: Annotated[str | None, Field(description=' Max length: 1000;')]
-    screenLink: LinkScreenLink | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    tableReferenceId: int | None = None
+    url: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    screenLink: LinkScreenLink | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LinkClicked(SparkModel):
-    id: int | None
-    campaignId: int | None
-    contactId: int
-    dateClicked: datetime | None
-    url: Annotated[str, Field(description=' Max length: 2083;')]
-    queryString: str | None
+    id: int | None = None
+    campaignId: int | None = None
+    contactId: int | None = None
+    dateClicked: datetime | None = None
+    url: Annotated[str | None, Field(description=' Max length: 2083;')] = None
+    queryString: str | None = None
 
 
 class LinkInfo(SparkModel):
-    id: int | None
-    name: str | None
-    screenLink: LinkScreenLink | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    screenLink: LinkScreenLink | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LinkResolveUrlInfo(SparkModel):
-    referenceId: int
-    url: str | None
+    referenceId: int | None = None
+    url: str | None = None
 
 
 class LinkScreenLink(str, Enum):
@@ -5959,9 +6080,9 @@ class LinkScreenLink(str, Enum):
 
 
 class LocaleInfo(SparkModel):
-    id: int | None
-    name: str | None
-    localeCode: str | None
+    id: int | None = None
+    name: str | None = None
+    localeCode: str | None = None
 
 
 class LocaleReference(ActivityReference):
@@ -5969,30 +6090,38 @@ class LocaleReference(ActivityReference):
 
 
 class Location(SparkModel):
-    id: int | None
-    ownerLevelId: int | None
-    structureLevel: CorporateStructureLevelReference
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    manager: MemberReference | None
-    reportsTo: SystemLocationReference | None
-    salesRep: Annotated[str | None, Field(description=' Max length: 50;')]
-    timeZoneSetup: TimeZoneSetupReference | None
-    calendar: CalendarReference | None
-    overrideAddressLine1: Annotated[str | None, Field(description=' Max length: 50;')]
-    overrideAddressLine2: Annotated[str | None, Field(description=' Max length: 50;')]
-    overrideCity: Annotated[str | None, Field(description=' Max length: 50;')]
-    overrideState: Annotated[str | None, Field(description=' Max length: 50;')]
-    overrideZip: Annotated[str | None, Field(description=' Max length: 12;')]
-    overrideCountry: CountryReference | None
-    overridePhoneNumber: Annotated[str | None, Field(description=' Max length: 15;')]
-    overrideFaxNumber: Annotated[str | None, Field(description=' Max length: 15;')]
-    owaUrl: Annotated[str | None, Field(description=' Max length: 100;')]
-    payrollXref: Annotated[str | None, Field(description=' Max length: 10;')]
-    locationFlag: bool | None
-    clientFlag: bool | None
-    workRoleIds: list[int] | None
-    departmentIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ownerLevelId: int | None = None
+    structureLevel: CorporateStructureLevelReference | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    manager: MemberReference | None = None
+    reportsTo: SystemLocationReference | None = None
+    salesRep: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    timeZoneSetup: TimeZoneSetupReference | None = None
+    calendar: CalendarReference | None = None
+    overrideAddressLine1: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    overrideAddressLine2: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    overrideCity: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    overrideState: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    overrideZip: Annotated[str | None, Field(description=' Max length: 12;')] = None
+    overrideCountry: CountryReference | None = None
+    overridePhoneNumber: Annotated[
+        str | None, Field(description=' Max length: 15;')
+    ] = None
+    overrideFaxNumber: Annotated[str | None, Field(description=' Max length: 15;')] = (
+        None
+    )
+    owaUrl: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    payrollXref: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    locationFlag: bool | None = None
+    clientFlag: bool | None = None
+    workRoleIds: list[int] | None = None
+    departmentIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LocationDepartment(DepartmentLocationInfo):
@@ -6000,19 +6129,19 @@ class LocationDepartment(DepartmentLocationInfo):
 
 
 class LocationInfo(SparkModel):
-    id: int | None
-    name: str | None
-    location_flag: bool | None
-    structureLevel: CorporateStructureLevelReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    location_flag: bool | None = None
+    structureLevel: CorporateStructureLevelReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LocationWorkRole(SparkModel):
-    id: int | None
-    location: SystemLocationReference | None
-    workRole: WorkRoleReference | None
-    workRoleInactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    workRole: WorkRoleReference | None = None
+    workRoleInactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class LostRevenueReference(AgreementRevenueReference):
@@ -6020,21 +6149,21 @@ class LostRevenueReference(AgreementRevenueReference):
 
 
 class M365Contact(SparkModel):
-    id: int | None
-    userPrincipalName: str | None
-    displayName: str | None
-    contactRecId: int | None
-    tenantId: str | None
-    m365ContactId: str | None
-    department: str | None
-    employeeType: str | None
-    managerId: str | None
-    proxyAddresses: str | None
-    proxyAddressesPlain: str | None
-    groups: str | None
-    directoryRoles: str | None
-    assignedLicenses: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    userPrincipalName: str | None = None
+    displayName: str | None = None
+    contactRecId: int | None = None
+    tenantId: str | None = None
+    m365ContactId: str | None = None
+    department: str | None = None
+    employeeType: str | None = None
+    managerId: str | None = None
+    proxyAddresses: str | None = None
+    proxyAddressesPlain: str | None = None
+    groups: str | None = None
+    directoryRoles: str | None = None
+    assignedLicenses: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class M365ContactSyncInfo(ActivityReference):
@@ -6042,22 +6171,22 @@ class M365ContactSyncInfo(ActivityReference):
 
 
 class M365ContactSyncMonitoring(SparkModel):
-    id: int | None
-    monitoringTypeId: int | None
-    emailAddress: str | None
-    serviceBoardId: int | None
-    serviceBoardStatusId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    monitoringTypeId: int | None = None
+    emailAddress: str | None = None
+    serviceBoardId: int | None = None
+    serviceBoardStatusId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class M365ContactSyncProperty(SparkModel):
-    id: int | None
-    includeExcludeType: M365ContactSyncPropertyIncludeExcludeType | None
-    propertyType: M365ContactSyncPropertyPropertyType | None
-    excludeIncludeFlag: bool | None
-    wildCard: str | None
-    companyRecID: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    includeExcludeType: M365ContactSyncPropertyIncludeExcludeType | None = None
+    propertyType: M365ContactSyncPropertyPropertyType | None = None
+    excludeIncludeFlag: bool | None = None
+    wildCard: str | None = None
+    companyRecID: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class M365ContactSyncPropertyIncludeExcludeType(str, Enum):
@@ -6082,52 +6211,52 @@ class M365ContactSyncPropertyPropertyType(str, Enum):
 
 
 class ManagedDeviceAccount(SparkModel):
-    id: int | None
-    username: str | None
-    password: str | None
-    managedDevicesIntegration: ManagedDevicesIntegrationReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    username: str | None = None
+    password: str | None = None
+    managedDevicesIntegration: ManagedDevicesIntegrationReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagedDevicesIntegration(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    solution: Annotated[str, Field(description=' Max length: 30;')]
-    portalUrl: Annotated[str | None, Field(description=' Max length: 200;')]
-    loginBy: ManagedDevicesIntegrationLoginBy
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    solution: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    portalUrl: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    loginBy: ManagedDevicesIntegrationLoginBy | None = None
     globalLoginUsername: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required when globalLoginFlag = true. Max length: 50;'
         ),
-    ]
+    ] = None
     globalLoginPassword: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required when globalLoginFlag = true. Max length: 50;'
         ),
-    ]
-    defaultBillingLevel: ManagedDevicesIntegrationDefaultBillingLevel
-    managementItSetupType: str | None
-    defaultLocation: SystemLocationReference | None
-    defaultDepartment: SystemDepartmentReference | None
-    integratorLogin: IntegratorLoginReference | None
-    matchOnSerialNumberFlag: bool | None
-    disableNewCrossReferencesFlag: bool | None
-    configBillCustomerFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    defaultBillingLevel: ManagedDevicesIntegrationDefaultBillingLevel | None = None
+    managementItSetupType: str | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    integratorLogin: IntegratorLoginReference | None = None
+    matchOnSerialNumberFlag: bool | None = None
+    disableNewCrossReferencesFlag: bool | None = None
+    configBillCustomerFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagedDevicesIntegrationCrossReference(SparkModel):
-    id: int | None
-    managedDevicesIntegration: ManagedDevicesIntegrationReference | None
-    vendorType: Annotated[str | None, Field(description=' Max length: 255;')]
-    vendorLevel: Annotated[str | None, Field(description=' Max length: 255;')]
-    agreementType: AgreementTypeReference | None
-    product: IvItemReference | None
-    configurationType: ConfigurationTypeReference | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    managedDevicesIntegration: ManagedDevicesIntegrationReference | None = None
+    vendorType: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    vendorLevel: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    agreementType: AgreementTypeReference | None = None
+    product: IvItemReference | None = None
+    configurationType: ConfigurationTypeReference | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagedDevicesIntegrationDefaultBillingLevel(str, Enum):
@@ -6136,20 +6265,20 @@ class ManagedDevicesIntegrationDefaultBillingLevel(str, Enum):
 
 
 class ManagedDevicesIntegrationInfo(SparkModel):
-    id: int | None
-    name: str | None
-    solution: str | None
-    managementItSetupType: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    solution: str | None = None
+    managementItSetupType: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagedDevicesIntegrationLogin(SparkModel):
-    id: int | None
-    managedDevicesIntegration: ManagedDevicesIntegrationReference | None
-    username: Annotated[str, Field(description=' Max length: 50;')]
-    password: Annotated[str | None, Field(description=' Max length: 50;')]
-    member: MemberReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    managedDevicesIntegration: ManagedDevicesIntegrationReference | None = None
+    username: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    password: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagedDevicesIntegrationLoginBy(str, Enum):
@@ -6158,12 +6287,12 @@ class ManagedDevicesIntegrationLoginBy(str, Enum):
 
 
 class ManagedDevicesIntegrationNotification(SparkModel):
-    id: int | None
-    managedDevicesIntegration: ManagedDevicesIntegrationReference | None
-    notifyWho: NotificationRecipientReference
-    member: MemberReference | None
-    logType: ManagedDevicesIntegrationNotificationLogType
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    managedDevicesIntegration: ManagedDevicesIntegrationReference | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    member: MemberReference | None = None
+    logType: ManagedDevicesIntegrationNotificationLogType | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagedDevicesIntegrationNotificationLogType(str, Enum):
@@ -6181,149 +6310,149 @@ class ManagedDevicesIntegrationReference(ActivityReference):
 
 
 class ManagedInformation(SparkModel):
-    managementSolutionName: str | None
-    managedIdentifier: str | None
-    type: str | None
-    level: str | None
-    childConfigurationsMatchingOn: str | None
-    inactivateConfigurationsMatchingOn: str | None
-    inactiveConfigurationStatusId: int | None
+    managementSolutionName: str | None = None
+    managedIdentifier: str | None = None
+    type: str | None = None
+    level: str | None = None
+    childConfigurationsMatchingOn: str | None = None
+    inactivateConfigurationsMatchingOn: str | None = None
+    inactiveConfigurationStatusId: int | None = None
 
 
 class Management(SparkModel):
-    id: int | None
-    runTime: datetime | None
-    addedConfigurationStatus: ConfigurationStatusReference
-    deletedConfigurationStatus: ConfigurationStatusReference
-    integratorLogin: IntegratorLoginReference
-    scheduleExecutiveSummaryReportFlag: bool
+    id: int | None = None
+    runTime: datetime | None = None
+    addedConfigurationStatus: ConfigurationStatusReference | None = None
+    deletedConfigurationStatus: ConfigurationStatusReference | None = None
+    integratorLogin: IntegratorLoginReference | None = None
+    scheduleExecutiveSummaryReportFlag: bool | None = None
     executiveSummaryReportScheduleDay: Annotated[
         int | None,
         Field(
             description='Gets or sets\n            this is only required when scheduleExecutiveSummaryReportFlag = true.'
         ),
-    ]
+    ] = None
     executiveSummaryReportScheduleHour: Annotated[
         int | None,
         Field(
             description='Gets or sets\n            this is only required when scheduleExecutiveSummaryReportFlag = true. Input should be in 24 hour format, ie 2pm is 14.'
         ),
-    ]
+    ] = None
     executiveSummaryReportScheduleMinute: Annotated[
         int | None,
         Field(
             description='Gets or sets\n            this is only required when scheduleExecutiveSummaryReportFlag = true.'
         ),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementBackup(SparkModel):
-    id: int | None
-    type: AgreementTypeReference
-    item: CatalogItemReference
-    billingLevel: ManagedDevicesIntegrationDefaultBillingLevel
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: AgreementTypeReference | None = None
+    item: CatalogItemReference | None = None
+    billingLevel: ManagedDevicesIntegrationDefaultBillingLevel | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementItSolution(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    managementItSolutionType: ManagementItSolutionManagementItSolutionType
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    managementItSolutionType: ManagementItSolutionManagementItSolutionType | None = None
     managementSolutionName: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required when managementItSolutionType is Custom. Max length: 30;'
         ),
-    ]
+    ] = None
     managementServerUrl: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Level Platforms. Max length: 200;'
         ),
-    ]
+    ] = None
     webserviceOverrideUrl: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Level Platforms when overrideWebServiceLocationFlag is true. Max length: 200;'
         ),
-    ]
+    ] = None
     portalOverrideLoginUrl: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Level Platforms when overrideLoginLocationFlag is true. Max length: 200;'
         ),
-    ]
-    globalLoginFlag: bool | None
+    ] = None
+    globalLoginFlag: bool | None = None
     globalLoginUsername: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required when globalLoginFlag = true. Max length: 50;'
         ),
-    ]
+    ] = None
     globalLoginPassword: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required when globalLoginFlag = true. Max length: 50;'
         ),
-    ]
-    usingSslFlag: bool | None
+    ] = None
+    usingSslFlag: bool | None = None
     nAbleUsername: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for N-Able solution. Max length: 50;'
         ),
-    ]
+    ] = None
     nAblePassword: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for N-Able solution. Max length: 50;'
         ),
-    ]
-    overrideWebServiceLocationFlag: bool | None
-    overrideLoginLocationFlag: bool | None
+    ] = None
+    overrideWebServiceLocationFlag: bool | None = None
+    overrideLoginLocationFlag: bool | None = None
     continuumApiUsername: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Continuum solution. Max length: 100;'
         ),
-    ]
+    ] = None
     continuumApiPassword: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Continuum solution. Max length: 100;'
         ),
-    ]
+    ] = None
     levelApiUsername: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Level Platforms solution. Max length: 100;'
         ),
-    ]
+    ] = None
     levelApiPassword: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Level Platforms solution. Max length: 100;'
         ),
-    ]
+    ] = None
     levelVarDomain: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            this is only required for Level Platforms solution. Max length: 100;'
         ),
-    ]
-    noDisplayFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    noDisplayFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementItSolutionAgreementInterfaceParameter(SparkModel):
-    id: int | None
-    managedDevicesIntegration: ManagedDevicesIntegrationReference | None
-    agreementType: AgreementTypeReference
-    serverProduct: IvItemReference | None
-    workstationProduct: IvItemReference | None
-    spamStatsProduct: IvItemReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    managedDevicesIntegration: ManagedDevicesIntegrationReference | None = None
+    agreementType: AgreementTypeReference | None = None
+    serverProduct: IvItemReference | None = None
+    workstationProduct: IvItemReference | None = None
+    spamStatsProduct: IvItemReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementItSolutionManagementItSolutionType(str, Enum):
@@ -6334,40 +6463,40 @@ class ManagementItSolutionManagementItSolutionType(str, Enum):
 
 
 class ManagementLogDocumentInfo(SparkModel):
-    fullPathFileName: str | None
-    fileSize: str | None
+    fullPathFileName: str | None = None
+    fileSize: str | None = None
 
 
 class ManagementNetworkSecurity(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    username: Annotated[str | None, Field(description=' Max length: 50;')]
-    password: Annotated[str | None, Field(description=' Max length: 50;')]
-    site: Annotated[str, Field(description=' Max length: 100;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    username: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    password: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    site: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementReportNotification(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    member: MemberReference | None
-    email: Annotated[str | None, Field(description=' Max length: 50;')]
-    globalFlag: bool | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    member: MemberReference | None = None
+    email: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    globalFlag: bool | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementReportSetup(SparkModel):
-    id: int | None
-    scheduledReportDisabledFlag: bool
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    scheduledReportDisabledFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ManagementSolutionReference(SparkModel):
-    id: int | None
-    name: str | None
-    setupName: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    setupName: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Manufacturer(LegacySubCategory):
@@ -6387,12 +6516,12 @@ class MappedRecordReference(CorporateStructureLevel):
 
 
 class MappedType(SparkModel):
-    id: int | None
-    name: str | None
-    table: str | None
-    recIdField: str | None
-    glType: GLAccountGlType | None
-    sortOrder: int | None
+    id: int | None = None
+    name: str | None = None
+    table: str | None = None
+    recIdField: str | None = None
+    glType: GLAccountGlType | None = None
+    sortOrder: int | None = None
 
 
 class MappedTypeReference(ActivityReference):
@@ -6412,27 +6541,27 @@ class MarketDescriptionReference(ActivityReference):
 
 
 class MarketingCompany(SparkModel):
-    id: int | None
-    groupId: int | None
-    defaultContactFlag: bool | None
-    allContactsFlag: bool | None
-    unsubscribeFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    groupId: int | None = None
+    defaultContactFlag: bool | None = None
+    allContactsFlag: bool | None = None
+    unsubscribeFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MarketingContact(SparkModel):
-    id: int | None
-    groupId: int | None
-    note: Annotated[str | None, Field(description=' Max length: 50;')]
-    unsubscribeFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    groupId: int | None = None
+    note: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    unsubscribeFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MarketplaceImport(SparkModel):
-    id: int | None
-    marketplaceImportType: MarketplaceImportMarketplaceImportType | None
-    marketplaceObject: list | None
-    requiredFields: list[str] | None
+    id: int | None = None
+    marketplaceImportType: MarketplaceImportMarketplaceImportType | None = None
+    marketplaceObject: list | None = None
+    requiredFields: list[str] | None = None
 
 
 class MarketplaceImportMarketplaceImportType(str, Enum):
@@ -6452,152 +6581,154 @@ class MarketplaceImportMarketplaceImportType(str, Enum):
 
 
 class Member(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 15;')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 15;')] = None
     password: Annotated[
         str | None,
         Field(
             description='ConditionallyRequired. API Member will get random password generated Max length: 60;'
         ),
-    ]
-    disableOnlineFlag: bool | None
+    ] = None
+    disableOnlineFlag: bool | None = None
     licenseClass: Annotated[
-        MemberLicenseClass,
+        MemberLicenseClass | None,
         Field(
             description='F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member'
         ),
-    ]
-    notes: str | None
-    employeeIdentifer: Annotated[str | None, Field(description=' Max length: 10;')]
-    vendorNumber: str | None
-    enableMobileGpsFlag: bool | None
-    inactiveDate: datetime | None
-    inactiveFlag: bool | None
-    lastLogin: str | None
-    clientId: str | None
-    token: str | None
-    firstName: Annotated[str, Field(description=' Max length: 30;')]
-    middleInitial: Annotated[str | None, Field(description=' Max length: 1;')]
-    lastName: Annotated[str, Field(description=' Max length: 30;')]
-    hireDate: datetime
-    country: CountryReference | None
-    photo: DocumentReference | None
-    officeEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    mobileEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    homeEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    defaultEmail: MemberDefaultEmail
-    primaryEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    officePhone: Annotated[str | None, Field(description=' Max length: 15;')]
-    officeExtension: Annotated[str | None, Field(description=' Max length: 10;')]
-    mobilePhone: Annotated[str | None, Field(description=' Max length: 15;')]
-    mobileExtension: Annotated[str | None, Field(description=' Max length: 10;')]
-    homePhone: Annotated[str | None, Field(description=' Max length: 15;')]
-    homeExtension: Annotated[str | None, Field(description=' Max length: 10;')]
-    defaultPhone: MemberDefaultEmail
-    securityRole: SecurityRoleReference
-    office365: MemberOffice365 | None
-    mapiName: str | None
-    calendarSyncIntegrationFlag: bool | None
-    authenticationServiceType: MemberAuthenticationServiceType | None
-    timebasedOneTimePasswordActivated: bool | None
-    enableLdapAuthenticationFlag: bool | None
-    ldapConfiguration: LdapConfigurationReference | None
-    ldapUserName: Annotated[str | None, Field(description=' Max length: 50;')]
-    directionalSync: DirectionalSyncReference | None
-    ssoSettings: MemberSsoSettingsReference | None
-    signature: str | None
-    phoneIntegrationType: MemberPhoneIntegrationType | None
-    useBrowserLanguageFlag: bool | None
-    title: str | None
-    reportCard: ReportCardReference | None
-    enableMobileFlag: bool | None
-    type: MemberTypeReference | None
-    timeZone: TimeZoneSetupReference | None
-    partnerPortalFlag: bool | None
-    stsUserAdminUrl: str | None
-    toastNotificationFlag: bool | None
-    memberPersonas: list[int] | None
-    adminFlag: bool | None
-    structureLevel: StructureReference | None
-    securityLocation: SystemLocationReference | None
-    defaultLocation: SystemLocationReference | None
-    defaultDepartment: SystemDepartmentReference | None
-    reportsTo: MemberReference | None
-    restrictLocationFlag: bool | None
-    restrictDepartmentFlag: bool | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    timeApprover: MemberReference | None
-    expenseApprover: MemberReference | None
-    billableForecast: float | None
-    dailyCapacity: float | None
-    hourlyCost: float | None
-    hourlyRate: float | None
-    includeInUtilizationReportingFlag: bool | None
-    requireExpenseEntryFlag: bool | None
-    requireTimeSheetEntryFlag: bool | None
-    requireStartAndEndTimeOnTimeEntryFlag: bool | None
-    allowInCellEntryOnTimeSheet: bool | None
-    enterTimeAgainstCompanyFlag: bool | None
-    allowExpensesEnteredAgainstCompaniesFlag: bool | None
-    timeReminderEmailFlag: bool | None
-    daysTolerance: int | None
-    minimumHours: float | None
-    timeSheetStartDate: str | None
-    serviceDefaultLocation: SystemLocationReference | None
-    serviceDefaultDepartment: SystemDepartmentReference | None
-    serviceDefaultBoard: BoardReference | None
-    restrictServiceDefaultLocationFlag: bool | None
-    restrictServiceDefaultDepartmentFlag: bool | None
-    excludedServiceBoardIds: list[int] | None
-    teams: list[int] | None
-    serviceBoardTeamIds: list[int] | None
-    projectDefaultLocation: SystemLocationReference | None
-    projectDefaultDepartment: SystemDepartmentReference | None
-    projectDefaultBoard: ProjectBoardReference | None
-    restrictProjectDefaultLocationFlag: bool | None
-    restrictProjectDefaultDepartmentFlag: bool | None
-    excludedProjectBoardIds: list[int] | None
-    scheduleDefaultLocation: SystemLocationReference | None
-    scheduleDefaultDepartment: SystemDepartmentReference | None
-    scheduleCapacity: float | None
-    serviceLocation: ServiceLocationReference | None
-    restrictScheduleFlag: bool | None
-    hideMemberInDispatchPortalFlag: bool | None
-    calendar: CalendarReference | None
-    salesDefaultLocation: SystemLocationReference | None
-    restrictDefaultSalesTerritoryFlag: bool | None
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    restrictDefaultWarehouseFlag: bool | None
-    restrictDefaultWarehouseBinFlag: bool | None
-    companyActivityTabFormat: MemberCompanyActivityTabFormat | None
-    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None
-    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None
-    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None
-    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None
-    autoStartStopwatch: bool | None
-    autoPopupQuickNotesWithStopwatch: bool | None
-    globalSearchDefaultTicketFilter: MemberGlobalSearchDefaultTicketFilter | None
-    globalSearchDefaultSort: MemberGlobalSearchDefaultSort | None
-    phoneSource: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    copyPodLayouts: bool | None
-    copySharedDefaultViews: bool | None
-    copyColumnLayoutsAndFilters: bool | None
-    fromMemberRecId: int | None
-    fromMemberTemplateRecId: int | None
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    notes: str | None = None
+    employeeIdentifer: Annotated[str | None, Field(description=' Max length: 10;')] = (
+        None
+    )
+    vendorNumber: str | None = None
+    enableMobileGpsFlag: bool | None = None
+    inactiveDate: datetime | None = None
+    inactiveFlag: bool | None = None
+    lastLogin: str | None = None
+    clientId: str | None = None
+    token: str | None = None
+    firstName: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    middleInitial: Annotated[str | None, Field(description=' Max length: 1;')] = None
+    lastName: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    hireDate: datetime | None = None
+    country: CountryReference | None = None
+    photo: DocumentReference | None = None
+    officeEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    mobileEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    homeEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    defaultEmail: MemberDefaultEmail | None = None
+    primaryEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    officePhone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    officeExtension: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    mobilePhone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    mobileExtension: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    homePhone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    homeExtension: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    defaultPhone: MemberDefaultEmail | None = None
+    securityRole: SecurityRoleReference | None = None
+    office365: MemberOffice365 | None = None
+    mapiName: str | None = None
+    calendarSyncIntegrationFlag: bool | None = None
+    authenticationServiceType: MemberAuthenticationServiceType | None = None
+    timebasedOneTimePasswordActivated: bool | None = None
+    enableLdapAuthenticationFlag: bool | None = None
+    ldapConfiguration: LdapConfigurationReference | None = None
+    ldapUserName: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    directionalSync: DirectionalSyncReference | None = None
+    ssoSettings: MemberSsoSettingsReference | None = None
+    signature: str | None = None
+    phoneIntegrationType: MemberPhoneIntegrationType | None = None
+    useBrowserLanguageFlag: bool | None = None
+    title: str | None = None
+    reportCard: ReportCardReference | None = None
+    enableMobileFlag: bool | None = None
+    type: MemberTypeReference | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    partnerPortalFlag: bool | None = None
+    stsUserAdminUrl: str | None = None
+    toastNotificationFlag: bool | None = None
+    memberPersonas: list[int] | None = None
+    adminFlag: bool | None = None
+    structureLevel: StructureReference | None = None
+    securityLocation: SystemLocationReference | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    reportsTo: MemberReference | None = None
+    restrictLocationFlag: bool | None = None
+    restrictDepartmentFlag: bool | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    timeApprover: MemberReference | None = None
+    expenseApprover: MemberReference | None = None
+    billableForecast: float | None = None
+    dailyCapacity: float | None = None
+    hourlyCost: float | None = None
+    hourlyRate: float | None = None
+    includeInUtilizationReportingFlag: bool | None = None
+    requireExpenseEntryFlag: bool | None = None
+    requireTimeSheetEntryFlag: bool | None = None
+    requireStartAndEndTimeOnTimeEntryFlag: bool | None = None
+    allowInCellEntryOnTimeSheet: bool | None = None
+    enterTimeAgainstCompanyFlag: bool | None = None
+    allowExpensesEnteredAgainstCompaniesFlag: bool | None = None
+    timeReminderEmailFlag: bool | None = None
+    daysTolerance: int | None = None
+    minimumHours: float | None = None
+    timeSheetStartDate: str | None = None
+    serviceDefaultLocation: SystemLocationReference | None = None
+    serviceDefaultDepartment: SystemDepartmentReference | None = None
+    serviceDefaultBoard: BoardReference | None = None
+    restrictServiceDefaultLocationFlag: bool | None = None
+    restrictServiceDefaultDepartmentFlag: bool | None = None
+    excludedServiceBoardIds: list[int] | None = None
+    teams: list[int] | None = None
+    serviceBoardTeamIds: list[int] | None = None
+    projectDefaultLocation: SystemLocationReference | None = None
+    projectDefaultDepartment: SystemDepartmentReference | None = None
+    projectDefaultBoard: ProjectBoardReference | None = None
+    restrictProjectDefaultLocationFlag: bool | None = None
+    restrictProjectDefaultDepartmentFlag: bool | None = None
+    excludedProjectBoardIds: list[int] | None = None
+    scheduleDefaultLocation: SystemLocationReference | None = None
+    scheduleDefaultDepartment: SystemDepartmentReference | None = None
+    scheduleCapacity: float | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    restrictScheduleFlag: bool | None = None
+    hideMemberInDispatchPortalFlag: bool | None = None
+    calendar: CalendarReference | None = None
+    salesDefaultLocation: SystemLocationReference | None = None
+    restrictDefaultSalesTerritoryFlag: bool | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    restrictDefaultWarehouseFlag: bool | None = None
+    restrictDefaultWarehouseBinFlag: bool | None = None
+    companyActivityTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None = None
+    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    autoStartStopwatch: bool | None = None
+    autoPopupQuickNotesWithStopwatch: bool | None = None
+    globalSearchDefaultTicketFilter: MemberGlobalSearchDefaultTicketFilter | None = None
+    globalSearchDefaultSort: MemberGlobalSearchDefaultSort | None = None
+    phoneSource: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    copyPodLayouts: bool | None = None
+    copySharedDefaultViews: bool | None = None
+    copyColumnLayoutsAndFilters: bool | None = None
+    fromMemberRecId: int | None = None
+    fromMemberTemplateRecId: int | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class MemberAccrual(SparkModel):
-    id: int | None
-    accrualType: MemberAccrualAccrualType
-    year: int
-    hours: float
-    reason: str
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    accrualType: MemberAccrualAccrualType | None = None
+    year: int | None = None
+    hours: float | None = None
+    reason: str | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberAccrualAccrualType(str, Enum):
@@ -6614,16 +6745,18 @@ class MemberAuthenticationServiceType(str, Enum):
 
 
 class MemberCertification(SparkModel):
-    id: int | None
-    certification: CertificationReference
-    percentComplete: int | None
-    dateReceived: datetime | None
-    dateExpires: datetime | None
-    certificationNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    notes: str | None
-    member: MemberReference | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    certification: CertificationReference | None = None
+    percentComplete: int | None = None
+    dateReceived: datetime | None = None
+    dateExpires: datetime | None = None
+    certificationNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    notes: str | None = None
+    member: MemberReference | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberCompanyActivityTabFormat(str, Enum):
@@ -6632,58 +6765,58 @@ class MemberCompanyActivityTabFormat(str, Enum):
 
 
 class MemberDeactivation(SparkModel):
-    activity: MemberDeactivationItem | None
-    serviceTeam: MemberDeactivationItem | None
+    activity: MemberDeactivationItem | None = None
+    serviceTeam: MemberDeactivationItem | None = None
     companyTeam: Annotated[
         list[MemberDeactivationCompanyTeam] | None,
         Field(description='A list of customers for which the member holds a team role'),
-    ]
-    workflowEmail: MemberDeactivationItem | None
-    serviceStatusWorkflow: list[MemberDeactivationStatusWorkflow] | None
-    ticketTemplate: MemberDeactivationItem | None
-    opportunity: MemberDeactivationItem | None
-    salesTeam: MemberDeactivationItem | None
-    projectManager: MemberDeactivationItem | None
-    projectTimeApprover: MemberDeactivationItem | None
-    projectExpenseApprover: MemberDeactivationItem | None
-    knowledgeBaseArticle: MemberDeactivationItem | None
-    myCompanyPresident: MemberDeactivationItem | None
-    myCompanyCOO: MemberDeactivationItem | None
-    myCompanyController: MemberDeactivationItem | None
-    myCompanyDispatch: MemberDeactivationItem | None
-    myCompanyServiceManager: MemberDeactivationItem | None
-    myCompanyDutyManagerRole: MemberDeactivationItem | None
-    departmentManager: MemberDeactivationItem | None
-    dispatchMember: MemberDeactivationItem | None
-    serviceManager: MemberDeactivationItem | None
-    dutyManager: MemberDeactivationItem | None
-    sendFromEmailNotify: MemberDeactivationItem | None
+    ] = None
+    workflowEmail: MemberDeactivationItem | None = None
+    serviceStatusWorkflow: list[MemberDeactivationStatusWorkflow] | None = None
+    ticketTemplate: MemberDeactivationItem | None = None
+    opportunity: MemberDeactivationItem | None = None
+    salesTeam: MemberDeactivationItem | None = None
+    projectManager: MemberDeactivationItem | None = None
+    projectTimeApprover: MemberDeactivationItem | None = None
+    projectExpenseApprover: MemberDeactivationItem | None = None
+    knowledgeBaseArticle: MemberDeactivationItem | None = None
+    myCompanyPresident: MemberDeactivationItem | None = None
+    myCompanyCOO: MemberDeactivationItem | None = None
+    myCompanyController: MemberDeactivationItem | None = None
+    myCompanyDispatch: MemberDeactivationItem | None = None
+    myCompanyServiceManager: MemberDeactivationItem | None = None
+    myCompanyDutyManagerRole: MemberDeactivationItem | None = None
+    departmentManager: MemberDeactivationItem | None = None
+    dispatchMember: MemberDeactivationItem | None = None
+    serviceManager: MemberDeactivationItem | None = None
+    dutyManager: MemberDeactivationItem | None = None
+    sendFromEmailNotify: MemberDeactivationItem | None = None
     deleteOpenTimeSheetsFlag: Annotated[
         bool | None,
         Field(
             description='By default, this is set to false\n            If there is any open timesheets, system will return error message\n            that there is open timesheets still attached to this member\n            If user would like to delete member with open timesheets, they can set this boolean to TRUE\n            System will delete member and any associated open timesheets'
         ),
-    ]
+    ] = None
 
 
 class MemberDeactivationCompanyTeam(SparkModel):
-    id: int | None
-    name: str | None
-    reAssignToContact: ContactReference | None
-    count: int | None
-    reAssignToMember: MemberReference | None
+    id: int | None = None
+    name: str | None = None
+    reAssignToContact: ContactReference | None = None
+    count: int | None = None
+    reAssignToMember: MemberReference | None = None
 
 
 class MemberDeactivationItem(SparkModel):
-    count: int | None
-    reAssignToMember: MemberReference | None
+    count: int | None = None
+    reAssignToMember: MemberReference | None = None
 
 
 class MemberDeactivationStatusWorkflow(SparkModel):
-    id: int | None
-    name: str | None
-    count: int | None
-    reAssignToMember: MemberReference | None
+    id: int | None = None
+    name: str | None = None
+    count: int | None = None
+    reAssignToMember: MemberReference | None = None
 
 
 class MemberDefaultEmail(str, Enum):
@@ -6693,13 +6826,13 @@ class MemberDefaultEmail(str, Enum):
 
 
 class MemberDelegation(SparkModel):
-    id: int | None
-    delegationType: MemberDelegationDelegationType
-    delegatedTo: MemberReference
-    dateStart: datetime
-    dateEnd: datetime
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    delegationType: MemberDelegationDelegationType | None = None
+    delegatedTo: MemberReference | None = None
+    dateStart: datetime | None = None
+    dateEnd: datetime | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberDelegationDelegationType(str, Enum):
@@ -6708,11 +6841,11 @@ class MemberDelegationDelegationType(str, Enum):
 
 
 class MemberForCalSync(SparkModel):
-    id: int | None
-    memberId: str | None
-    office365Id: str | None
-    mapiName: str | None
-    calendarSyncIntegrationFlag: bool | None
+    id: int | None = None
+    memberId: str | None = None
+    office365Id: str | None = None
+    mapiName: str | None = None
+    calendarSyncIntegrationFlag: bool | None = None
 
 
 class MemberGlobalSearchDefaultSort(str, Enum):
@@ -6730,22 +6863,22 @@ class MemberGlobalSearchDefaultTicketFilter(str, Enum):
 
 
 class MemberInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    firstName: str | None
-    middleInitial: str | None
-    lastName: str | None
-    fullName: str | None
-    defaultEmail: str | None
-    photo: DocumentReference | None
+    id: int | None = None
+    identifier: str | None = None
+    firstName: str | None = None
+    middleInitial: str | None = None
+    lastName: str | None = None
+    fullName: str | None = None
+    defaultEmail: str | None = None
+    photo: DocumentReference | None = None
     licenseClass: Annotated[
         MemberLicenseClass | None,
         Field(
             description='F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member'
         ),
-    ]
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberInvoiceScreenDefaultTabFormat(str, Enum):
@@ -6766,14 +6899,14 @@ class MemberLicenseClass(str, Enum):
 
 
 class MemberLinkSsoUser(SparkModel):
-    ssoUserId: Annotated[str | None, Field(description=' Max length: 100;')]
+    ssoUserId: Annotated[str | None, Field(description=' Max length: 100;')] = None
 
 
 class MemberNotificationSetting(SparkModel):
-    id: int | None
-    notificationType: MemberNotificationSettingNotificationType
-    notificationTrigger: MemberNotificationSettingNotificationTrigger
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    notificationType: MemberNotificationSettingNotificationType | None = None
+    notificationTrigger: MemberNotificationSettingNotificationTrigger | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberNotificationSettingNotificationTrigger(str, Enum):
@@ -6794,17 +6927,17 @@ class MemberNotificationSettingNotificationType(str, Enum):
 
 
 class MemberOffice365(SparkModel):
-    id: str | None
-    name: str | None
+    id: str | None = None
+    name: str | None = None
 
 
 class MemberPersona(SparkModel):
-    id: int | None
-    jobRolePercentage: int | None
-    name: Annotated[str, Field(description=' Max length: 20;')]
-    personaId: int
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    jobRolePercentage: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    personaId: int | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberPhoneIntegrationType(str, Enum):
@@ -6816,22 +6949,22 @@ class MemberPhoneIntegrationType(str, Enum):
 
 
 class MemberReference(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    dailyCapacity: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    dailyCapacity: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberSkill(SparkModel):
-    id: int | None
-    skill: SkillReference
-    skillLevel: MemberSkillSkillLevel
-    certifiedFlag: bool | None
-    yearsExperience: int | None
-    notes: str | None
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    skill: SkillReference | None = None
+    skillLevel: MemberSkillSkillLevel | None = None
+    certifiedFlag: bool | None = None
+    yearsExperience: int | None = None
+    notes: str | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberSkillSkillLevel(str, Enum):
@@ -6842,108 +6975,110 @@ class MemberSkillSkillLevel(str, Enum):
 
 
 class MemberSsoSettingsReference(SparkModel):
-    id: int | None
-    ssoUserId: str | None
-    userName: str | None
-    email: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ssoUserId: str | None = None
+    userName: str | None = None
+    email: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberSsoToken(SparkModel):
-    token: str | None
+    token: str | None = None
 
 
 class MemberTemplate(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 50;')]
-    templateDescription: Annotated[str | None, Field(description=' Max length: 1024;')]
-    title: str | None
-    reportCard: ReportCardReference | None
-    enableMobileFlag: bool | None
-    type: MemberTypeReference | None
-    timeZone: TimeZoneSetupReference | None
-    partnerPortalFlag: bool | None
-    stsUserAdminUrl: str | None
-    toastNotificationFlag: bool | None
-    memberPersonas: list[int] | None
-    adminFlag: bool | None
-    structureLevel: StructureReference | None
-    securityLocation: SystemLocationReference | None
-    defaultLocation: SystemLocationReference | None
-    defaultDepartment: SystemDepartmentReference | None
-    reportsTo: MemberReference | None
-    restrictLocationFlag: bool | None
-    restrictDepartmentFlag: bool | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    timeApprover: MemberReference | None
-    expenseApprover: MemberReference | None
-    billableForecast: float | None
-    dailyCapacity: float | None
-    hourlyCost: float | None
-    hourlyRate: float | None
-    includeInUtilizationReportingFlag: bool | None
-    requireExpenseEntryFlag: bool | None
-    requireTimeSheetEntryFlag: bool | None
-    requireStartAndEndTimeOnTimeEntryFlag: bool | None
-    allowInCellEntryOnTimeSheet: bool | None
-    enterTimeAgainstCompanyFlag: bool | None
-    allowExpensesEnteredAgainstCompaniesFlag: bool | None
-    timeReminderEmailFlag: bool | None
-    daysTolerance: int | None
-    minimumHours: float | None
-    timeSheetStartDate: str | None
-    serviceDefaultLocation: SystemLocationReference | None
-    serviceDefaultDepartment: SystemDepartmentReference | None
-    serviceDefaultBoard: BoardReference | None
-    restrictServiceDefaultLocationFlag: bool | None
-    restrictServiceDefaultDepartmentFlag: bool | None
-    excludedServiceBoardIds: list[int] | None
-    teams: list[int] | None
-    serviceBoardTeamIds: list[int] | None
-    projectDefaultLocation: SystemLocationReference | None
-    projectDefaultDepartment: SystemDepartmentReference | None
-    projectDefaultBoard: ProjectBoardReference | None
-    restrictProjectDefaultLocationFlag: bool | None
-    restrictProjectDefaultDepartmentFlag: bool | None
-    excludedProjectBoardIds: list[int] | None
-    scheduleDefaultLocation: SystemLocationReference | None
-    scheduleDefaultDepartment: SystemDepartmentReference | None
-    scheduleCapacity: float | None
-    serviceLocation: ServiceLocationReference | None
-    restrictScheduleFlag: bool | None
-    hideMemberInDispatchPortalFlag: bool | None
-    calendar: CalendarReference | None
-    salesDefaultLocation: SystemLocationReference | None
-    restrictDefaultSalesTerritoryFlag: bool | None
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    restrictDefaultWarehouseFlag: bool | None
-    restrictDefaultWarehouseBinFlag: bool | None
-    companyActivityTabFormat: MemberCompanyActivityTabFormat | None
-    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None
-    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None
-    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None
-    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None
-    autoStartStopwatch: bool | None
-    autoPopupQuickNotesWithStopwatch: bool | None
-    globalSearchDefaultTicketFilter: MemberGlobalSearchDefaultTicketFilter | None
-    globalSearchDefaultSort: MemberGlobalSearchDefaultSort | None
-    phoneSource: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    copyPodLayouts: bool | None
-    copySharedDefaultViews: bool | None
-    copyColumnLayoutsAndFilters: bool | None
-    fromMemberRecId: int | None
-    fromMemberTemplateRecId: int | None
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    templateDescription: Annotated[
+        str | None, Field(description=' Max length: 1024;')
+    ] = None
+    title: str | None = None
+    reportCard: ReportCardReference | None = None
+    enableMobileFlag: bool | None = None
+    type: MemberTypeReference | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    partnerPortalFlag: bool | None = None
+    stsUserAdminUrl: str | None = None
+    toastNotificationFlag: bool | None = None
+    memberPersonas: list[int] | None = None
+    adminFlag: bool | None = None
+    structureLevel: StructureReference | None = None
+    securityLocation: SystemLocationReference | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    reportsTo: MemberReference | None = None
+    restrictLocationFlag: bool | None = None
+    restrictDepartmentFlag: bool | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    timeApprover: MemberReference | None = None
+    expenseApprover: MemberReference | None = None
+    billableForecast: float | None = None
+    dailyCapacity: float | None = None
+    hourlyCost: float | None = None
+    hourlyRate: float | None = None
+    includeInUtilizationReportingFlag: bool | None = None
+    requireExpenseEntryFlag: bool | None = None
+    requireTimeSheetEntryFlag: bool | None = None
+    requireStartAndEndTimeOnTimeEntryFlag: bool | None = None
+    allowInCellEntryOnTimeSheet: bool | None = None
+    enterTimeAgainstCompanyFlag: bool | None = None
+    allowExpensesEnteredAgainstCompaniesFlag: bool | None = None
+    timeReminderEmailFlag: bool | None = None
+    daysTolerance: int | None = None
+    minimumHours: float | None = None
+    timeSheetStartDate: str | None = None
+    serviceDefaultLocation: SystemLocationReference | None = None
+    serviceDefaultDepartment: SystemDepartmentReference | None = None
+    serviceDefaultBoard: BoardReference | None = None
+    restrictServiceDefaultLocationFlag: bool | None = None
+    restrictServiceDefaultDepartmentFlag: bool | None = None
+    excludedServiceBoardIds: list[int] | None = None
+    teams: list[int] | None = None
+    serviceBoardTeamIds: list[int] | None = None
+    projectDefaultLocation: SystemLocationReference | None = None
+    projectDefaultDepartment: SystemDepartmentReference | None = None
+    projectDefaultBoard: ProjectBoardReference | None = None
+    restrictProjectDefaultLocationFlag: bool | None = None
+    restrictProjectDefaultDepartmentFlag: bool | None = None
+    excludedProjectBoardIds: list[int] | None = None
+    scheduleDefaultLocation: SystemLocationReference | None = None
+    scheduleDefaultDepartment: SystemDepartmentReference | None = None
+    scheduleCapacity: float | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    restrictScheduleFlag: bool | None = None
+    hideMemberInDispatchPortalFlag: bool | None = None
+    calendar: CalendarReference | None = None
+    salesDefaultLocation: SystemLocationReference | None = None
+    restrictDefaultSalesTerritoryFlag: bool | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    restrictDefaultWarehouseFlag: bool | None = None
+    restrictDefaultWarehouseBinFlag: bool | None = None
+    companyActivityTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None = None
+    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    autoStartStopwatch: bool | None = None
+    autoPopupQuickNotesWithStopwatch: bool | None = None
+    globalSearchDefaultTicketFilter: MemberGlobalSearchDefaultTicketFilter | None = None
+    globalSearchDefaultSort: MemberGlobalSearchDefaultSort | None = None
+    phoneSource: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    copyPodLayouts: bool | None = None
+    copySharedDefaultViews: bool | None = None
+    copyColumnLayoutsAndFilters: bool | None = None
+    fromMemberRecId: int | None = None
+    fromMemberTemplateRecId: int | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class MemberType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MemberTypeInfo(LegacySubCategoryInfo):
@@ -6955,29 +7090,29 @@ class MemberTypeReference(ActivityReference):
 
 
 class MenuEntry(SparkModel):
-    id: int | None
-    menuLocation: MenuLocationReference
-    caption: Annotated[str, Field(description=' Max length: 50;')]
-    link: Annotated[str, Field(description=' Max length: 2000;')]
-    newWindowFlag: bool
-    locationIds: list[int] | None
-    origin: Annotated[str | None, Field(description=' Max length: 2000;')]
+    id: int | None = None
+    menuLocation: MenuLocationReference | None = None
+    caption: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    link: Annotated[str | None, Field(description=' Max length: 2000;')] = None
+    newWindowFlag: bool | None = None
+    locationIds: list[int] | None = None
+    origin: Annotated[str | None, Field(description=' Max length: 2000;')] = None
     clientId: Annotated[
         str | None,
         Field(description='Only required if not already set Max length: 36;'),
-    ]
-    addAllLocations: bool | None
-    removeAllLocations: bool | None
-    smallMenuIconId: int | None
-    largeMenuIconId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    addAllLocations: bool | None = None
+    removeAllLocations: bool | None = None
+    smallMenuIconId: int | None = None
+    largeMenuIconId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MenuEntryLocation(SparkModel):
-    id: int | None
-    location: SystemLocationReference
-    menuEntry: SystemMenuEntryReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    menuEntry: SystemMenuEntryReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MenuLocationReference(ActivityReference):
@@ -6985,320 +7120,322 @@ class MenuLocationReference(ActivityReference):
 
 
 class MinimumStockByWarehouse(SparkModel):
-    id: int | None
-    warehouse: WarehouseReference
-    minimumStock: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    warehouse: WarehouseReference | None = None
+    minimumStock: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MyAccount(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 15;')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 15;')] = None
     password: Annotated[
         str | None,
         Field(
             description='ConditionallyRequired. API Member will get random password generated Max length: 60;'
         ),
-    ]
-    firstName: Annotated[str, Field(description=' Max length: 30;')]
-    middleInitial: Annotated[str | None, Field(description=' Max length: 1;')]
-    lastName: Annotated[str, Field(description=' Max length: 30;')]
-    title: Annotated[str | None, Field(description=' Max length: 50;')]
-    reportCard: ReportCardReference | None
+    ] = None
+    firstName: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    middleInitial: Annotated[str | None, Field(description=' Max length: 1;')] = None
+    lastName: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    title: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    reportCard: ReportCardReference | None = None
     licenseClass: Annotated[
-        MemberLicenseClass,
+        MemberLicenseClass | None,
         Field(
             description='F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member'
         ),
-    ]
-    disableOnlineFlag: bool | None
-    enableMobileFlag: bool | None
-    type: MemberTypeReference | None
-    employeeIdentifer: Annotated[str | None, Field(description=' Max length: 10;')]
-    vendorNumber: str | None
-    notes: str | None
-    timeZone: TimeZoneSetupReference
-    country: CountryReference | None
-    serviceBoardTeamIds: list[int] | None
-    enableMobileGpsFlag: bool | None
-    inactiveDate: datetime | None
-    inactiveFlag: bool | None
-    lastLogin: str | None
-    photo: DocumentReference | None
-    partnerPortalFlag: bool | None
-    clientId: str | None
-    stsUserAdminUrl: str | None
-    token: str | None
-    toastNotificationFlag: bool | None
-    memberPersonas: list[int] | None
-    office365: MemberOffice365 | None
-    officeEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    officePhone: Annotated[str | None, Field(description=' Max length: 15;')]
-    officeExtension: Annotated[str | None, Field(description=' Max length: 10;')]
-    mobileEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    mobilePhone: Annotated[str | None, Field(description=' Max length: 15;')]
-    mobileExtension: Annotated[str | None, Field(description=' Max length: 10;')]
-    homeEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    homePhone: Annotated[str | None, Field(description=' Max length: 15;')]
-    homeExtension: Annotated[str | None, Field(description=' Max length: 10;')]
-    defaultEmail: MemberDefaultEmail
-    primaryEmail: Annotated[str | None, Field(description=' Max length: 250;')]
-    defaultPhone: MemberDefaultEmail
-    defaultLocation: SystemLocationReference
-    defaultDepartment: SystemDepartmentReference
-    reportsTo: MemberReference | None
-    workRole: WorkRoleReference
-    workType: WorkTypeReference | None
-    timeApprover: MemberReference
-    expenseApprover: MemberReference
-    billableForecast: float | None
-    dailyCapacity: float | None
-    includeInUtilizationReportingFlag: bool | None
-    requireExpenseEntryFlag: bool | None
-    requireTimeSheetEntryFlag: bool | None
-    requireStartAndEndTimeOnTimeEntryFlag: bool | None
-    allowInCellEntryOnTimeSheet: bool | None
-    enterTimeAgainstCompanyFlag: bool | None
-    allowExpensesEnteredAgainstCompaniesFlag: bool | None
-    timeReminderEmailFlag: bool | None
-    daysTolerance: int | None
-    minimumHours: float | None
-    timeSheetStartDate: datetime | None
-    hireDate: datetime
-    serviceDefaultLocation: SystemLocationReference | None
-    serviceDefaultDepartment: SystemDepartmentReference | None
-    serviceDefaultBoard: BoardReference | None
-    projectDefaultLocation: SystemLocationReference | None
-    projectDefaultDepartment: SystemDepartmentReference | None
-    projectDefaultBoard: ProjectBoardReference | None
-    scheduleDefaultLocation: SystemLocationReference | None
-    scheduleDefaultDepartment: SystemDepartmentReference | None
-    scheduleCapacity: float | None
-    serviceLocation: ServiceLocationReference | None
-    hideMemberInDispatchPortalFlag: bool | None
-    calendar: CalendarReference | None
-    salesDefaultLocation: SystemLocationReference
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    mapiName: str | None
-    calendarSyncIntegrationFlag: bool | None
-    companyActivityTabFormat: MemberCompanyActivityTabFormat
-    invoiceTimeTabFormat: MemberCompanyActivityTabFormat
-    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat
-    invoicingDisplayOptions: MemberInvoicingDisplayOptions
-    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions
-    authenticationServiceType: MemberAuthenticationServiceType | None
-    timebasedOneTimePasswordActivated: bool | None
-    directionalSync: DirectionalSyncReference | None
-    autoStartStopwatch: bool | None
-    autoPopupQuickNotesWithStopwatch: bool | None
-    signature: str | None
-    globalSearchDefaultTicketFilter: MemberGlobalSearchDefaultTicketFilter | None
-    globalSearchDefaultSort: MemberGlobalSearchDefaultSort | None
-    phoneSource: str | None
-    phoneIntegrationType: MemberPhoneIntegrationType | None
-    useBrowserLanguageFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    copyPodLayouts: bool | None
-    copySharedDefaultViews: bool | None
-    copyColumnLayoutsAndFilters: bool | None
-    fromMemberRecId: int | None
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    disableOnlineFlag: bool | None = None
+    enableMobileFlag: bool | None = None
+    type: MemberTypeReference | None = None
+    employeeIdentifer: Annotated[str | None, Field(description=' Max length: 10;')] = (
+        None
+    )
+    vendorNumber: str | None = None
+    notes: str | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    country: CountryReference | None = None
+    serviceBoardTeamIds: list[int] | None = None
+    enableMobileGpsFlag: bool | None = None
+    inactiveDate: datetime | None = None
+    inactiveFlag: bool | None = None
+    lastLogin: str | None = None
+    photo: DocumentReference | None = None
+    partnerPortalFlag: bool | None = None
+    clientId: str | None = None
+    stsUserAdminUrl: str | None = None
+    token: str | None = None
+    toastNotificationFlag: bool | None = None
+    memberPersonas: list[int] | None = None
+    office365: MemberOffice365 | None = None
+    officeEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    officePhone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    officeExtension: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    mobileEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    mobilePhone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    mobileExtension: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    homeEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    homePhone: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    homeExtension: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    defaultEmail: MemberDefaultEmail | None = None
+    primaryEmail: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    defaultPhone: MemberDefaultEmail | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    reportsTo: MemberReference | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    timeApprover: MemberReference | None = None
+    expenseApprover: MemberReference | None = None
+    billableForecast: float | None = None
+    dailyCapacity: float | None = None
+    includeInUtilizationReportingFlag: bool | None = None
+    requireExpenseEntryFlag: bool | None = None
+    requireTimeSheetEntryFlag: bool | None = None
+    requireStartAndEndTimeOnTimeEntryFlag: bool | None = None
+    allowInCellEntryOnTimeSheet: bool | None = None
+    enterTimeAgainstCompanyFlag: bool | None = None
+    allowExpensesEnteredAgainstCompaniesFlag: bool | None = None
+    timeReminderEmailFlag: bool | None = None
+    daysTolerance: int | None = None
+    minimumHours: float | None = None
+    timeSheetStartDate: datetime | None = None
+    hireDate: datetime | None = None
+    serviceDefaultLocation: SystemLocationReference | None = None
+    serviceDefaultDepartment: SystemDepartmentReference | None = None
+    serviceDefaultBoard: BoardReference | None = None
+    projectDefaultLocation: SystemLocationReference | None = None
+    projectDefaultDepartment: SystemDepartmentReference | None = None
+    projectDefaultBoard: ProjectBoardReference | None = None
+    scheduleDefaultLocation: SystemLocationReference | None = None
+    scheduleDefaultDepartment: SystemDepartmentReference | None = None
+    scheduleCapacity: float | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    hideMemberInDispatchPortalFlag: bool | None = None
+    calendar: CalendarReference | None = None
+    salesDefaultLocation: SystemLocationReference | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    mapiName: str | None = None
+    calendarSyncIntegrationFlag: bool | None = None
+    companyActivityTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None = None
+    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    authenticationServiceType: MemberAuthenticationServiceType | None = None
+    timebasedOneTimePasswordActivated: bool | None = None
+    directionalSync: DirectionalSyncReference | None = None
+    autoStartStopwatch: bool | None = None
+    autoPopupQuickNotesWithStopwatch: bool | None = None
+    signature: str | None = None
+    globalSearchDefaultTicketFilter: MemberGlobalSearchDefaultTicketFilter | None = None
+    globalSearchDefaultSort: MemberGlobalSearchDefaultSort | None = None
+    phoneSource: str | None = None
+    phoneIntegrationType: MemberPhoneIntegrationType | None = None
+    useBrowserLanguageFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    copyPodLayouts: bool | None = None
+    copySharedDefaultViews: bool | None = None
+    copyColumnLayoutsAndFilters: bool | None = None
+    fromMemberRecId: int | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class MyMember(SparkModel):
-    id: int | None
-    identifier: str | None
+    id: int | None = None
+    identifier: str | None = None
     password: Annotated[
         str | None,
         Field(
             description='ConditionallyRequired. API Member will get random password generated'
         ),
-    ]
-    firstName: str | None
-    middleInitial: str | None
-    lastName: str | None
-    title: str | None
-    reportCard: ReportCardReference | None
+    ] = None
+    firstName: str | None = None
+    middleInitial: str | None = None
+    lastName: str | None = None
+    title: str | None = None
+    reportCard: ReportCardReference | None = None
     licenseClass: Annotated[
         MemberLicenseClass | None,
         Field(
             description='F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member'
         ),
-    ]
-    disableOnlineFlag: bool | None
-    enableMobileFlag: bool | None
-    type: MemberTypeReference | None
-    employeeIdentifer: str | None
-    vendorNumber: str | None
-    notes: str | None
-    timeZone: TimeZoneSetupReference | None
-    country: CountryReference | None
-    serviceBoardTeamIds: list[int] | None
-    enableMobileGpsFlag: bool | None
-    inactiveDate: str | None
-    inactiveFlag: bool | None
-    lastLogin: str | None
-    photo: DocumentReference | None
-    toastNotificationFlag: bool | None
-    officeEmail: str | None
-    officePhone: str | None
-    officeExtension: str | None
-    mobileEmail: str | None
-    mobilePhone: str | None
-    mobileExtension: str | None
-    homeEmail: str | None
-    homePhone: str | None
-    homeExtension: str | None
-    defaultEmail: MemberDefaultEmail | None
-    defaultPhone: MemberDefaultEmail | None
-    securityRole: SecurityRoleReference | None
-    adminFlag: bool | None
-    structureLevel: StructureReference | None
-    securityLocation: SystemLocationReference | None
-    defaultLocation: SystemLocationReference | None
-    defaultDepartment: SystemDepartmentReference | None
-    reportsTo: MemberReference | None
-    restrictLocationFlag: bool | None
-    restrictDepartmentFlag: bool | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    timeApprover: MemberReference | None
-    expenseApprover: MemberReference | None
-    billableForecast: float | None
-    dailyCapacity: float | None
-    hourlyCost: float | None
-    hourlyRate: float | None
-    includeInUtilizationReportingFlag: bool | None
-    requireExpenseEntryFlag: bool | None
-    requireTimeSheetEntryFlag: bool | None
-    requireStartAndEndTimeOnTimeEntryFlag: bool | None
-    allowInCellEntryOnTimeSheet: bool | None
-    enterTimeAgainstCompanyFlag: bool | None
-    allowExpensesEnteredAgainstCompaniesFlag: bool | None
-    timeReminderEmailFlag: bool | None
-    daysTolerance: int | None
-    minimumHours: float | None
-    timeSheetStartDate: str | None
-    hireDate: str | None
-    serviceDefaultLocation: SystemLocationReference | None
-    serviceDefaultDepartment: SystemDepartmentReference | None
-    serviceDefaultBoard: BoardReference | None
-    restrictServiceDefaultLocationFlag: bool | None
-    restrictServiceDefaultDepartmentFlag: bool | None
-    excludedServiceBoardIds: list[int] | None
-    projectDefaultLocation: SystemLocationReference | None
-    projectDefaultDepartment: SystemDepartmentReference | None
-    projectDefaultBoard: ProjectBoardReference | None
-    restrictProjectDefaultLocationFlag: bool | None
-    restrictProjectDefaultDepartmentFlag: bool | None
-    excludedProjectBoardIds: list[int] | None
-    scheduleDefaultLocation: SystemLocationReference | None
-    scheduleDefaultDepartment: SystemDepartmentReference | None
-    scheduleCapacity: float | None
-    serviceLocation: ServiceLocationReference | None
-    restrictScheduleFlag: bool | None
-    hideMemberInDispatchPortalFlag: bool | None
-    calendar: CalendarReference | None
-    salesDefaultLocation: SystemLocationReference | None
-    restrictDefaultSalesTerritoryFlag: bool | None
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    restrictDefaultWarehouseFlag: bool | None
-    restrictDefaultWarehouseBinFlag: bool | None
-    mapiName: str | None
-    calendarSyncIntegrationFlag: bool | None
-    enableLdapAuthenticationFlag: bool | None
-    ldapConfiguration: LdapConfigurationReference | None
-    ldapUserName: str | None
-    companyActivityTabFormat: MemberCompanyActivityTabFormat | None
-    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None
-    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None
-    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None
-    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None
-    corelyticsUsername: str | None
-    corelyticsPassword: str | None
-    authenticationServiceType: MemberAuthenticationServiceType | None
-    timebasedOneTimePasswordActivated: bool | None
-    directionalSync: DirectionalSyncReference | None
-    ssoSessionFlag: bool | None
-    ssoClientId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    disableOnlineFlag: bool | None = None
+    enableMobileFlag: bool | None = None
+    type: MemberTypeReference | None = None
+    employeeIdentifer: str | None = None
+    vendorNumber: str | None = None
+    notes: str | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    country: CountryReference | None = None
+    serviceBoardTeamIds: list[int] | None = None
+    enableMobileGpsFlag: bool | None = None
+    inactiveDate: str | None = None
+    inactiveFlag: bool | None = None
+    lastLogin: str | None = None
+    photo: DocumentReference | None = None
+    toastNotificationFlag: bool | None = None
+    officeEmail: str | None = None
+    officePhone: str | None = None
+    officeExtension: str | None = None
+    mobileEmail: str | None = None
+    mobilePhone: str | None = None
+    mobileExtension: str | None = None
+    homeEmail: str | None = None
+    homePhone: str | None = None
+    homeExtension: str | None = None
+    defaultEmail: MemberDefaultEmail | None = None
+    defaultPhone: MemberDefaultEmail | None = None
+    securityRole: SecurityRoleReference | None = None
+    adminFlag: bool | None = None
+    structureLevel: StructureReference | None = None
+    securityLocation: SystemLocationReference | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    reportsTo: MemberReference | None = None
+    restrictLocationFlag: bool | None = None
+    restrictDepartmentFlag: bool | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    timeApprover: MemberReference | None = None
+    expenseApprover: MemberReference | None = None
+    billableForecast: float | None = None
+    dailyCapacity: float | None = None
+    hourlyCost: float | None = None
+    hourlyRate: float | None = None
+    includeInUtilizationReportingFlag: bool | None = None
+    requireExpenseEntryFlag: bool | None = None
+    requireTimeSheetEntryFlag: bool | None = None
+    requireStartAndEndTimeOnTimeEntryFlag: bool | None = None
+    allowInCellEntryOnTimeSheet: bool | None = None
+    enterTimeAgainstCompanyFlag: bool | None = None
+    allowExpensesEnteredAgainstCompaniesFlag: bool | None = None
+    timeReminderEmailFlag: bool | None = None
+    daysTolerance: int | None = None
+    minimumHours: float | None = None
+    timeSheetStartDate: str | None = None
+    hireDate: str | None = None
+    serviceDefaultLocation: SystemLocationReference | None = None
+    serviceDefaultDepartment: SystemDepartmentReference | None = None
+    serviceDefaultBoard: BoardReference | None = None
+    restrictServiceDefaultLocationFlag: bool | None = None
+    restrictServiceDefaultDepartmentFlag: bool | None = None
+    excludedServiceBoardIds: list[int] | None = None
+    projectDefaultLocation: SystemLocationReference | None = None
+    projectDefaultDepartment: SystemDepartmentReference | None = None
+    projectDefaultBoard: ProjectBoardReference | None = None
+    restrictProjectDefaultLocationFlag: bool | None = None
+    restrictProjectDefaultDepartmentFlag: bool | None = None
+    excludedProjectBoardIds: list[int] | None = None
+    scheduleDefaultLocation: SystemLocationReference | None = None
+    scheduleDefaultDepartment: SystemDepartmentReference | None = None
+    scheduleCapacity: float | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    restrictScheduleFlag: bool | None = None
+    hideMemberInDispatchPortalFlag: bool | None = None
+    calendar: CalendarReference | None = None
+    salesDefaultLocation: SystemLocationReference | None = None
+    restrictDefaultSalesTerritoryFlag: bool | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    restrictDefaultWarehouseFlag: bool | None = None
+    restrictDefaultWarehouseBinFlag: bool | None = None
+    mapiName: str | None = None
+    calendarSyncIntegrationFlag: bool | None = None
+    enableLdapAuthenticationFlag: bool | None = None
+    ldapConfiguration: LdapConfigurationReference | None = None
+    ldapUserName: str | None = None
+    companyActivityTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceTimeTabFormat: MemberCompanyActivityTabFormat | None = None
+    invoiceScreenDefaultTabFormat: MemberInvoiceScreenDefaultTabFormat | None = None
+    invoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    agreementInvoicingDisplayOptions: MemberInvoicingDisplayOptions | None = None
+    corelyticsUsername: str | None = None
+    corelyticsPassword: str | None = None
+    authenticationServiceType: MemberAuthenticationServiceType | None = None
+    timebasedOneTimePasswordActivated: bool | None = None
+    directionalSync: DirectionalSyncReference | None = None
+    ssoSessionFlag: bool | None = None
+    ssoClientId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MyMemberInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    firstName: str | None
-    middleInitial: str | None
-    lastName: str | None
-    fullName: str | None
-    defaultEmail: str | None
-    photo: DocumentReference | None
+    id: int | None = None
+    identifier: str | None = None
+    firstName: str | None = None
+    middleInitial: str | None = None
+    lastName: str | None = None
+    fullName: str | None = None
+    defaultEmail: str | None = None
+    photo: DocumentReference | None = None
     licenseClass: Annotated[
         MemberLicenseClass | None,
         Field(
             description='F = Full Member, A = API Member, C = StreamlineIT Member, X = Subcontractor Member'
         ),
-    ]
-    inactiveFlag: bool | None
-    timeZone: TimeZoneSetupReference | None
-    useBrowserLanguageFlag: bool | None
-    defaultLocation: SystemLocationReference | None
-    defaultDepartment: SystemDepartmentReference | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    dailyCapacity: float | None
-    requireExpenseEntryFlag: bool | None
-    requireTimeSheetEntryFlag: bool | None
-    requireStartAndEndTimeOnTimeEntryFlag: bool | None
-    enterTimeAgainstCompanyFlag: bool | None
-    allowExpensesEnteredAgainstCompaniesFlag: bool | None
-    serviceDefaultBoard: BoardReference | None
-    serviceDefaultLocation: SystemLocationReference | None
-    serviceDefaultDepartment: SystemDepartmentReference | None
-    restrictServiceDefaultLocationFlag: bool | None
-    restrictServiceDefaultDepartmentFlag: bool | None
-    excludedServiceBoardIds: list[int] | None
-    projectDefaultLocation: SystemLocationReference | None
-    projectDefaultDepartment: SystemDepartmentReference | None
-    projectDefaultBoard: ProjectBoardReference | None
-    restrictProjectDefaultLocationFlag: bool | None
-    restrictProjectDefaultDepartmentFlag: bool | None
-    excludedProjectBoardIds: list[int] | None
-    scheduleDefaultLocation: SystemLocationReference | None
-    scheduleDefaultDepartment: SystemDepartmentReference | None
-    scheduleCapacity: float | None
-    serviceLocation: ServiceLocationReference | None
-    salesDefaultLocation: SystemLocationReference | None
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    restrictDefaultWarehouseFlag: bool | None
-    restrictDefaultWarehouseBinFlag: bool | None
-    ssoSessionFlag: bool | None
-    ssoClientId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    inactiveFlag: bool | None = None
+    timeZone: TimeZoneSetupReference | None = None
+    useBrowserLanguageFlag: bool | None = None
+    defaultLocation: SystemLocationReference | None = None
+    defaultDepartment: SystemDepartmentReference | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    dailyCapacity: float | None = None
+    requireExpenseEntryFlag: bool | None = None
+    requireTimeSheetEntryFlag: bool | None = None
+    requireStartAndEndTimeOnTimeEntryFlag: bool | None = None
+    enterTimeAgainstCompanyFlag: bool | None = None
+    allowExpensesEnteredAgainstCompaniesFlag: bool | None = None
+    serviceDefaultBoard: BoardReference | None = None
+    serviceDefaultLocation: SystemLocationReference | None = None
+    serviceDefaultDepartment: SystemDepartmentReference | None = None
+    restrictServiceDefaultLocationFlag: bool | None = None
+    restrictServiceDefaultDepartmentFlag: bool | None = None
+    excludedServiceBoardIds: list[int] | None = None
+    projectDefaultLocation: SystemLocationReference | None = None
+    projectDefaultDepartment: SystemDepartmentReference | None = None
+    projectDefaultBoard: ProjectBoardReference | None = None
+    restrictProjectDefaultLocationFlag: bool | None = None
+    restrictProjectDefaultDepartmentFlag: bool | None = None
+    excludedProjectBoardIds: list[int] | None = None
+    scheduleDefaultLocation: SystemLocationReference | None = None
+    scheduleDefaultDepartment: SystemDepartmentReference | None = None
+    scheduleCapacity: float | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    salesDefaultLocation: SystemLocationReference | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    restrictDefaultWarehouseFlag: bool | None = None
+    restrictDefaultWarehouseBinFlag: bool | None = None
+    ssoSessionFlag: bool | None = None
+    ssoClientId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MySecurity(SparkModel):
-    id: int | None
-    addLevel: MySecurityAddLevel | None
-    editLevel: MySecurityAddLevel | None
-    deleteLevel: MySecurityAddLevel | None
-    inquireLevel: MySecurityAddLevel | None
-    moduleFunctionName: str | None
-    moduleFunctionDescription: str | None
-    myAllFlag: bool | None
-    moduleFunctionIdentifier: str | None
-    reportFlag: bool | None
-    restrictFlag: bool | None
-    customFlag: bool | None
-    moduleDescription: str | None
-    moduleIdentifier: str | None
-    moduleName: str | None
-    sortOrder: int | None
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    addLevel: MySecurityAddLevel | None = None
+    editLevel: MySecurityAddLevel | None = None
+    deleteLevel: MySecurityAddLevel | None = None
+    inquireLevel: MySecurityAddLevel | None = None
+    moduleFunctionName: str | None = None
+    moduleFunctionDescription: str | None = None
+    myAllFlag: bool | None = None
+    moduleFunctionIdentifier: str | None = None
+    reportFlag: bool | None = None
+    restrictFlag: bool | None = None
+    customFlag: bool | None = None
+    moduleDescription: str | None = None
+    moduleIdentifier: str | None = None
+    moduleName: str | None = None
+    sortOrder: int | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class MySecurityAddLevel(str, Enum):
@@ -7308,9 +7445,9 @@ class MySecurityAddLevel(str, Enum):
 
 
 class MySecurityCustomizeItem(SparkModel):
-    id: int | None
-    customizeIdentifier: MySecurityCustomizeItemCustomizeIdentifier | None
-    itemIdentifier: str | None
+    id: int | None = None
+    customizeIdentifier: MySecurityCustomizeItemCustomizeIdentifier | None = None
+    itemIdentifier: str | None = None
 
 
 class MySecurityCustomizeItemCustomizeIdentifier(str, Enum):
@@ -7339,22 +7476,22 @@ class NoteTypeReference(ActivityReference):
 
 
 class NotificationRecipient(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    externalFlag: bool | None
-    serviceFlag: bool | None
-    salesFlag: bool | None
-    invoiceFlag: bool | None
-    agreementFlag: bool | None
-    memberFlag: bool | None
-    configFlag: bool | None
-    mspFlag: bool | None
-    trackFlag: bool | None
-    projectFlag: bool | None
-    procurementFlag: bool | None
-    knowledgeBaseFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    externalFlag: bool | None = None
+    serviceFlag: bool | None = None
+    salesFlag: bool | None = None
+    invoiceFlag: bool | None = None
+    agreementFlag: bool | None = None
+    memberFlag: bool | None = None
+    configFlag: bool | None = None
+    mspFlag: bool | None = None
+    trackFlag: bool | None = None
+    projectFlag: bool | None = None
+    procurementFlag: bool | None = None
+    knowledgeBaseFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class NotificationRecipientReference(CatalogItemReference):
@@ -7370,22 +7507,22 @@ class Office365EmailApplicationInfo(ActivityReference):
 
 
 class Office365EmailSetup(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 200;')]
-    username: Annotated[str | None, Field(description=' Max length: 100;')]
-    inboxFolder: Annotated[str, Field(description=' Max length: 40;')]
-    processedFolder: Annotated[str, Field(description=' Max length: 40;')]
-    failedFolder: Annotated[str, Field(description=' Max length: 40;')]
-    tenantId: Annotated[str | None, Field(description=' Max length: 36;')]
-    clientId: Annotated[str | None, Field(description=' Max length: 36;')]
-    clientSecret: Annotated[str | None, Field(description=' Max length: 4000;')]
-    authorizedFlag: bool | None
-    inactiveFlag: bool | None
-    source: int | None
-    useExistingTenantFlag: bool | None
-    existingTenant: ExistingTenantReference | None
-    emailConnector: EmailConnectorReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    username: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    inboxFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    processedFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    failedFolder: Annotated[str | None, Field(description=' Max length: 40;')] = None
+    tenantId: Annotated[str | None, Field(description=' Max length: 36;')] = None
+    clientId: Annotated[str | None, Field(description=' Max length: 36;')] = None
+    clientSecret: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    authorizedFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    source: int | None = None
+    useExistingTenantFlag: bool | None = None
+    existingTenant: ExistingTenantReference | None = None
+    emailConnector: EmailConnectorReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Office365EmailSetupReference(ActivityReference):
@@ -7393,24 +7530,24 @@ class Office365EmailSetupReference(ActivityReference):
 
 
 class OnHandSerialNumber(SparkModel):
-    id: int | None
-    serial: str | None
-    catalogItem: CatalogItemReference | None
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    serial: str | None = None
+    catalogItem: CatalogItemReference | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OnHandSerialNumberReference(SparkModel):
-    id: int | None
-    serialNumber: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    serialNumber: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OnPremiseSearchSetting(SparkModel):
-    id: int | None
-    password: str
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    password: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpenRevenueReference(AgreementRevenueReference):
@@ -7418,70 +7555,72 @@ class OpenRevenueReference(AgreementRevenueReference):
 
 
 class Opportunity(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
     expectedCloseDate: Annotated[
         datetime | None, Field(description=' Required On Updates;')
-    ]
-    type: OpportunityTypeReference | None
-    stage: OpportunityStageReference | None
-    status: OpportunityStatusReference | None
-    priority: OpportunityPriorityReference | None
-    notes: str | None
-    probability: OpportunityProbabilityReference | None
-    source: Annotated[str | None, Field(description=' Max length: 50;')]
-    rating: OpportunityRatingReference | None
-    campaign: CampaignReference | None
-    primarySalesRep: MemberReference
-    secondarySalesRep: MemberReference | None
-    locationId: Annotated[int | None, Field(description=' Required On Updates;')]
-    businessUnitId: Annotated[int | None, Field(description=' Required On Updates;')]
-    company: CompanyReference
-    contact: ContactReference
-    site: SiteReference | None
-    customerPO: Annotated[str | None, Field(description=' Max length: 25;')]
-    pipelineChangeDate: datetime | None
-    dateBecameLead: datetime | None
-    closedDate: datetime | None
-    closedBy: MemberReference | None
-    totalSalesTax: float | None
-    shipToCompany: CompanyReference | None
-    shipToContact: ContactReference | None
-    shipToSite: SiteReference | None
-    billToCompany: CompanyReference | None
-    billToContact: ContactReference | None
-    billToSite: SiteReference | None
-    billingTerms: BillingTermsReference | None
-    taxCode: TaxCodeReference | None
-    currency: CurrencyReference | None
-    companyLocationId: int | None
-    technicalContact: ContactReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    type: OpportunityTypeReference | None = None
+    stage: OpportunityStageReference | None = None
+    status: OpportunityStatusReference | None = None
+    priority: OpportunityPriorityReference | None = None
+    notes: str | None = None
+    probability: OpportunityProbabilityReference | None = None
+    source: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    rating: OpportunityRatingReference | None = None
+    campaign: CampaignReference | None = None
+    primarySalesRep: MemberReference | None = None
+    secondarySalesRep: MemberReference | None = None
+    locationId: Annotated[int | None, Field(description=' Required On Updates;')] = None
+    businessUnitId: Annotated[
+        int | None, Field(description=' Required On Updates;')
+    ] = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    site: SiteReference | None = None
+    customerPO: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    pipelineChangeDate: datetime | None = None
+    dateBecameLead: datetime | None = None
+    closedDate: datetime | None = None
+    closedBy: MemberReference | None = None
+    totalSalesTax: float | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToContact: ContactReference | None = None
+    shipToSite: SiteReference | None = None
+    billToCompany: CompanyReference | None = None
+    billToContact: ContactReference | None = None
+    billToSite: SiteReference | None = None
+    billingTerms: BillingTermsReference | None = None
+    taxCode: TaxCodeReference | None = None
+    currency: CurrencyReference | None = None
+    companyLocationId: int | None = None
+    technicalContact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class OpportunityContact(SparkModel):
-    id: int | None
-    contact: ContactReference
-    company: CompanyReference | None
-    role: OpportunitySalesRoleReference | None
-    notes: str | None
-    referralFlag: bool | None
-    opportunityId: int | None
-    phoneNumber: str | None
-    emailAddress: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    contact: ContactReference | None = None
+    company: CompanyReference | None = None
+    role: OpportunitySalesRoleReference | None = None
+    notes: str | None = None
+    referralFlag: bool | None = None
+    opportunityId: int | None = None
+    phoneNumber: str | None = None
+    emailAddress: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityNote(SparkModel):
-    id: int | None
-    opportunityId: int | None
-    type: NoteTypeReference | None
-    text: str
-    flagged: bool | None
-    enteredBy: str | None
-    mobileGuid: UUID | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    opportunityId: int | None = None
+    type: NoteTypeReference | None = None
+    text: str | None = None
+    flagged: bool | None = None
+    enteredBy: str | None = None
+    mobileGuid: UUID | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityPriorityReference(ActivityReference):
@@ -7493,17 +7632,17 @@ class OpportunityProbabilityReference(ActivityReference):
 
 
 class OpportunityRating(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    sortOrder: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    sortOrder: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityRatingInfo(SparkModel):
-    id: int | None
-    name: str | None
-    sortOrder: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    sortOrder: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityRatingReference(ActivityReference):
@@ -7519,21 +7658,21 @@ class OpportunitySalesRoleReference(ActivityReference):
 
 
 class OpportunityStage(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    probability: OpportunityProbabilityReference | None
-    color: Annotated[str | None, Field(description=' Max length: 25;')]
-    sequenceNumber: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    probability: OpportunityProbabilityReference | None = None
+    color: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    sequenceNumber: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityStageInfo(SparkModel):
-    id: int | None
-    name: str | None
-    probability: OpportunityProbabilityReference | None
-    color: str | None
-    sequenceNumber: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    probability: OpportunityProbabilityReference | None = None
+    color: str | None = None
+    sequenceNumber: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityStageReference(ActivityReference):
@@ -7541,24 +7680,24 @@ class OpportunityStageReference(ActivityReference):
 
 
 class OpportunityStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    wonFlag: bool | None
-    lostFlag: bool | None
-    closedFlag: bool | None
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    enteredBy: str | None
-    dateEntered: datetime | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    wonFlag: bool | None = None
+    lostFlag: bool | None = None
+    closedFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    enteredBy: str | None = None
+    dateEntered: datetime | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityStatusInfo(SparkModel):
-    id: int | None
-    closedFlag: bool | None
-    inactiveFlag: bool | None
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    closedFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityStatusReference(ActivityReference):
@@ -7566,76 +7705,76 @@ class OpportunityStatusReference(ActivityReference):
 
 
 class OpportunityToAgreementConversion(SparkModel):
-    agreementId: int | None
-    name: str | None
-    type: AgreementTypeReference | None
-    startDate: str | None
-    endDate: str | None
-    noEndingDateFlag: bool | None
-    billCycleId: int | None
-    billOneTimeFlag: bool | None
-    locationId: int | None
-    businessUnitId: int | None
-    includeAllNotesFlag: bool | None
-    includeAllDocumentsFlag: bool | None
-    includeAllProductsFlag: bool | None
-    includeNoteIds: list[int] | None
-    includeDocumentIds: list[int] | None
-    includeProductIds: list[int] | None
+    agreementId: int | None = None
+    name: str | None = None
+    type: AgreementTypeReference | None = None
+    startDate: str | None = None
+    endDate: str | None = None
+    noEndingDateFlag: bool | None = None
+    billCycleId: int | None = None
+    billOneTimeFlag: bool | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    includeAllNotesFlag: bool | None = None
+    includeAllDocumentsFlag: bool | None = None
+    includeAllProductsFlag: bool | None = None
+    includeNoteIds: list[int] | None = None
+    includeDocumentIds: list[int] | None = None
+    includeProductIds: list[int] | None = None
 
 
 class OpportunityToProjectConversion(SparkModel):
-    projectId: int | None
-    name: str | None
-    status: ProjectStatusReference | None
-    locationId: int | None
-    businessUnitId: int | None
-    board: ProjectBoardReference | None
-    manager: MemberReference | None
-    estimatedStart: str | None
-    estimatedEnd: str | None
-    includeAllNotesFlag: bool | None
-    includeAllDocumentsFlag: bool | None
-    includeAllProductsFlag: bool | None
-    includeNoteIds: list[int] | None
-    includeDocumentIds: list[int] | None
-    includeProductIds: list[int] | None
+    projectId: int | None = None
+    name: str | None = None
+    status: ProjectStatusReference | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    board: ProjectBoardReference | None = None
+    manager: MemberReference | None = None
+    estimatedStart: str | None = None
+    estimatedEnd: str | None = None
+    includeAllNotesFlag: bool | None = None
+    includeAllDocumentsFlag: bool | None = None
+    includeAllProductsFlag: bool | None = None
+    includeNoteIds: list[int] | None = None
+    includeDocumentIds: list[int] | None = None
+    includeProductIds: list[int] | None = None
 
 
 class OpportunityToSalesOrderConversion(SparkModel):
-    salesOrderId: int | None
-    name: str | None
-    includeAllNotesFlag: bool | None
-    includeAllDocumentsFlag: bool | None
-    includeAllProductsFlag: bool | None
-    includeNoteIds: list[int] | None
-    includeDocumentIds: list[int] | None
-    includeProductIds: list[int] | None
+    salesOrderId: int | None = None
+    name: str | None = None
+    includeAllNotesFlag: bool | None = None
+    includeAllDocumentsFlag: bool | None = None
+    includeAllProductsFlag: bool | None = None
+    includeNoteIds: list[int] | None = None
+    includeDocumentIds: list[int] | None = None
+    includeProductIds: list[int] | None = None
 
 
 class OpportunityToServiceTicketConversion(SparkModel):
-    ticketId: int | None
-    summary: str | None
-    includeAllNotesFlag: bool | None
-    includeAllDocumentsFlag: bool | None
-    includeAllProductsFlag: bool | None
-    includeNoteIds: list[int] | None
-    includeDocumentIds: list[int] | None
-    includeProductIds: list[int] | None
+    ticketId: int | None = None
+    summary: str | None = None
+    includeAllNotesFlag: bool | None = None
+    includeAllDocumentsFlag: bool | None = None
+    includeAllProductsFlag: bool | None = None
+    includeNoteIds: list[int] | None = None
+    includeDocumentIds: list[int] | None = None
+    includeProductIds: list[int] | None = None
 
 
 class OpportunityType(SparkModel):
-    id: int | None
-    description: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityTypeInfo(SparkModel):
-    id: int | None
-    description: str | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: str | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OpportunityTypeReference(ActivityReference):
@@ -7643,71 +7782,71 @@ class OpportunityTypeReference(ActivityReference):
 
 
 class Order(SparkModel):
-    id: int | None
-    company: CompanyReference
-    contact: ContactReference | None
-    phone: str | None
-    phoneExt: str | None
-    email: str | None
-    site: SiteReference | None
-    status: OrderStatusReference
-    opportunity: OpportunityReference | None
-    orderDate: datetime | None
-    dueDate: datetime | None
-    billingTerms: BillingTermsReference | None
-    taxCode: TaxCodeReference | None
-    poNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    salesRep: MemberReference
-    notes: str | None
-    billClosedFlag: bool | None
-    billShippedFlag: bool | None
-    restrictDownpaymentFlag: bool | None
-    description: str | None
-    topCommentFlag: bool | None
-    bottomCommentFlag: bool | None
-    shipToCompany: CompanyReference | None
-    shipToContact: ContactReference | None
-    shipToSite: SiteReference | None
-    billToCompany: CompanyReference | None
-    billToContact: ContactReference | None
-    billToSite: SiteReference | None
-    productIds: list[int] | None
-    documentIds: list[int] | None
-    invoiceIds: list[int] | None
-    configIds: list[int] | None
-    total: float | None
-    taxTotal: float | None
-    currency: CurrencyReference | None
-    companyLocation: SystemLocationReference | None
-    subTotal: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    phone: str | None = None
+    phoneExt: str | None = None
+    email: str | None = None
+    site: SiteReference | None = None
+    status: OrderStatusReference | None = None
+    opportunity: OpportunityReference | None = None
+    orderDate: datetime | None = None
+    dueDate: datetime | None = None
+    billingTerms: BillingTermsReference | None = None
+    taxCode: TaxCodeReference | None = None
+    poNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    salesRep: MemberReference | None = None
+    notes: str | None = None
+    billClosedFlag: bool | None = None
+    billShippedFlag: bool | None = None
+    restrictDownpaymentFlag: bool | None = None
+    description: str | None = None
+    topCommentFlag: bool | None = None
+    bottomCommentFlag: bool | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToContact: ContactReference | None = None
+    shipToSite: SiteReference | None = None
+    billToCompany: CompanyReference | None = None
+    billToContact: ContactReference | None = None
+    billToSite: SiteReference | None = None
+    productIds: list[int] | None = None
+    documentIds: list[int] | None = None
+    invoiceIds: list[int] | None = None
+    configIds: list[int] | None = None
+    total: float | None = None
+    taxTotal: float | None = None
+    currency: CurrencyReference | None = None
+    companyLocation: SystemLocationReference | None = None
+    subTotal: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class OrderStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    sortOrder: int | None
-    closedFlag: bool | None
-    emailTemplate: OrderStatusEmailTemplateReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    sortOrder: int | None = None
+    closedFlag: bool | None = None
+    emailTemplate: OrderStatusEmailTemplateReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OrderStatusEmailTemplate(SparkModel):
-    id: int | None
-    status: OrderStatusReference | None
-    useSenderFlag: bool | None
-    firstName: Annotated[str | None, Field(description=' Max length: 100;')]
-    lastName: Annotated[str | None, Field(description=' Max length: 100;')]
-    emailAddress: Annotated[str | None, Field(description=' Max length: 100;')]
-    subject: Annotated[str, Field(description=' Max length: 200;')]
-    body: str
-    copySenderFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    status: OrderStatusReference | None = None
+    useSenderFlag: bool | None = None
+    firstName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    lastName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    emailAddress: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    subject: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    body: str | None = None
+    copySenderFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OrderStatusEmailTemplateReference(ActivityReference):
@@ -7719,18 +7858,18 @@ class OrderStatusInfo(LegacySubCategoryInfo):
 
 
 class OrderStatusNotification(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    status: OrderStatusReference | None
-    member: MemberReference | None
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    status: OrderStatusReference | None = None
+    member: MemberReference | None = None
     email: Annotated[
         str | None,
         Field(
             description='Order Status Notification sendEmail must be entered if the notify type is "Email Address". Max length: 50;'
         ),
-    ]
-    workflowStep: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    workflowStep: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OrderStatusReference(ActivityReference):
@@ -7738,37 +7877,41 @@ class OrderStatusReference(ActivityReference):
 
 
 class OsGradeWeight(SparkModel):
-    id: int | None
-    osGradeWeight: float | None
-    osName: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    osGradeWeight: float | None = None
+    osName: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Other(SparkModel):
-    id: int | None
-    defaultLdap: LdapConfigurationReference | None
-    defaultFromAddress: Annotated[str, Field(description=' Max length: 50;')]
-    portalUrlOverride: Annotated[str, Field(description=' Max length: 100;')]
-    siteUrl: Annotated[str, Field(description=' Max length: 100;')]
-    logoPath: Annotated[str | None, Field(description=' Max length: 200;')]
-    contactSync: OtherContactSync | None
-    serverTimeZone: TimeZoneSetupReference
-    defaultCalendar: CalendarReference
-    defaultAddressFormat: AddressFormatReference
-    useSslFlag: bool | None
-    syncLeadsFlag: bool | None
-    includePortalLinkFlag: bool | None
-    useExpandedFormatTimeFlag: bool | None
-    useExpandedFormatActivityFlag: bool | None
-    disableZAdminLoginFlag: bool | None
-    locale: LocaleReference
+    id: int | None = None
+    defaultLdap: LdapConfigurationReference | None = None
+    defaultFromAddress: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    portalUrlOverride: Annotated[str | None, Field(description=' Max length: 100;')] = (
+        None
+    )
+    siteUrl: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    logoPath: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    contactSync: OtherContactSync | None = None
+    serverTimeZone: TimeZoneSetupReference | None = None
+    defaultCalendar: CalendarReference | None = None
+    defaultAddressFormat: AddressFormatReference | None = None
+    useSslFlag: bool | None = None
+    syncLeadsFlag: bool | None = None
+    includePortalLinkFlag: bool | None = None
+    useExpandedFormatTimeFlag: bool | None = None
+    useExpandedFormatActivityFlag: bool | None = None
+    disableZAdminLoginFlag: bool | None = None
+    locale: LocaleReference | None = None
     updateMemberTimeZonesFlag: Annotated[
         bool | None,
         Field(
             description='If true, all Members time zone will also be set to serverTimeZone. Otherwise, only My Company time zone will be updated.'
         ),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Other1RevenueReference(AgreementRevenueReference):
@@ -7791,9 +7934,9 @@ class OwnerLevelReference(ActivityReference):
 
 
 class OwnershipType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 200;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class OwnershipTypeInfo(ActivityReference):
@@ -7805,30 +7948,30 @@ class OwnershipTypeReference(ActivityReference):
 
 
 class PageValues(SparkModel):
-    page: int | None
-    pageSize: int | None
-    pageId: int | None
+    page: int | None = None
+    pageSize: int | None = None
+    pageId: int | None = None
 
 
 class ParsingType(SparkModel):
-    id: int | None
-    name: str | None
-    parseRule: str | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    parseRule: str | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ParsingVariable(SparkModel):
-    id: int | None
-    name: str | None
-    code: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    code: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PatchOperation(SparkModel):
-    op: str | None
-    path: str | None
-    value: dict[str, Any_aliased] | None
+    op: str | None = None
+    path: str | None = None
+    value: dict[str, Any_aliased] | None = None
 
 
 class PaymentMethodReference(ActivityReference):
@@ -7836,12 +7979,12 @@ class PaymentMethodReference(ActivityReference):
 
 
 class PaymentType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    classification: ClassificationReference
-    defaultFlag: bool | None
-    companyFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    classification: ClassificationReference | None = None
+    defaultFlag: bool | None = None
+    companyFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PaymentTypeInfo(AddressFormatInfo):
@@ -7853,30 +7996,30 @@ class PersonasInfo(CorporateStructureLevel):
 
 
 class PhaseStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    collapsedFlag: bool | None
-    closedFlag: bool | None
-    boardAssociationIds: list[int] | None
-    statusIndicator: StatusIndicatorReference | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    collapsedFlag: bool | None = None
+    closedFlag: bool | None = None
+    boardAssociationIds: list[int] | None = None
+    statusIndicator: StatusIndicatorReference | None = None
     customStatusIndicatorName: Annotated[
         str | None,
         Field(description='Required when statusIndicator is Custom. Max length: 30;'),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PhaseStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    collapsedFlag: bool | None
-    closedFlag: bool | None
-    boardAssociationIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    collapsedFlag: bool | None = None
+    closedFlag: bool | None = None
+    boardAssociationIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PhaseStatusReference(ActivityReference):
@@ -7884,18 +8027,18 @@ class PhaseStatusReference(ActivityReference):
 
 
 class PortalCalendar(SparkModel):
-    id: int | None
-    weekStart: PortalCalendarWeekStart
-    adjust1Start: str | None
-    adjust1End: str | None
-    adjust1Hours: float | None
-    adjust2Start: str | None
-    adjust2End: str | None
-    adjust2Hours: float | None
-    adjust3Start: str | None
-    adjust3End: str | None
-    adjust3Hours: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    weekStart: PortalCalendarWeekStart | None = None
+    adjust1Start: str | None = None
+    adjust1End: str | None = None
+    adjust1Hours: float | None = None
+    adjust2Start: str | None = None
+    adjust2End: str | None = None
+    adjust2Hours: float | None = None
+    adjust3Start: str | None = None
+    adjust3End: str | None = None
+    adjust3Hours: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalCalendarWeekStart(str, Enum):
@@ -7914,41 +8057,45 @@ class PortalConfiguration(SparkModel):
         Field(
             description='Gets or sets and Sets\n            An existing Portal Configuration id is required when copying a Portal Configuration.'
         ),
-    ]
-    name: Annotated[str, Field(description=' Max length: 150;')]
-    defaultFlag: bool | None
-    company: CompanyReference | None
-    loginBackgroundColor: Annotated[str | None, Field(description=' Max length: 7;')]
-    portalBackgroundColor: Annotated[str | None, Field(description=' Max length: 7;')]
-    menuColor: Annotated[str | None, Field(description=' Max length: 7;')]
-    buttonColor: Annotated[str | None, Field(description=' Max length: 7;')]
-    headerColor: Annotated[str | None, Field(description=' Max length: 7;')]
-    url: Annotated[str | None, Field(description=' Max length: 1000;')]
-    language: PortalConfigurationLanguage | None
-    welcomeText: Annotated[str | None, Field(description=' Max length: 4000;')]
-    boardIds: list[int] | None
-    agreementTypeIds: list[int] | None
-    configTypeIds: list[int] | None
-    locationIds: list[int] | None
-    portalImageCopySuccessFlag: bool | None
-    displayVendorFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    name: Annotated[str | None, Field(description=' Max length: 150;')] = None
+    defaultFlag: bool | None = None
+    company: CompanyReference | None = None
+    loginBackgroundColor: Annotated[
+        str | None, Field(description=' Max length: 7;')
+    ] = None
+    portalBackgroundColor: Annotated[
+        str | None, Field(description=' Max length: 7;')
+    ] = None
+    menuColor: Annotated[str | None, Field(description=' Max length: 7;')] = None
+    buttonColor: Annotated[str | None, Field(description=' Max length: 7;')] = None
+    headerColor: Annotated[str | None, Field(description=' Max length: 7;')] = None
+    url: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    language: PortalConfigurationLanguage | None = None
+    welcomeText: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    boardIds: list[int] | None = None
+    agreementTypeIds: list[int] | None = None
+    configTypeIds: list[int] | None = None
+    locationIds: list[int] | None = None
+    portalImageCopySuccessFlag: bool | None = None
+    displayVendorFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalConfigurationInvoiceSetup(SparkModel):
-    id: int | None
-    portalConfiguration: PortalConfigurationReference | None
-    displayInvPmtFlag: bool | None
-    allowInvPmtFlag: bool | None
-    location: SystemLocationReference | None
-    paymentProcessor: PortalConfigurationPaymentProcessorReference | None
-    login: str | None
-    password: str | None
-    urlOverride: str | None
-    billingStatusIds: list[int] | None
-    addAllStatuses: bool | None
-    removeAllStatuses: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    portalConfiguration: PortalConfigurationReference | None = None
+    displayInvPmtFlag: bool | None = None
+    allowInvPmtFlag: bool | None = None
+    location: SystemLocationReference | None = None
+    paymentProcessor: PortalConfigurationPaymentProcessorReference | None = None
+    login: str | None = None
+    password: str | None = None
+    urlOverride: str | None = None
+    billingStatusIds: list[int] | None = None
+    addAllStatuses: bool | None = None
+    removeAllStatuses: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalConfigurationLanguage(str, Enum):
@@ -7965,93 +8112,93 @@ class PortalConfigurationLanguage(str, Enum):
 
 
 class PortalConfigurationOpportunitySetup(SparkModel):
-    id: int | None
-    opportunityStatusRecIDs: list[int] | None
-    addAllOpportunityStatuses: bool | None
-    removeAllOpportunityStatuses: bool | None
-    opportunityTypeRecIDs: list[int] | None
-    addAllOpportunityTypes: bool | None
-    removeAllOpportunityTypes: bool | None
-    restrictViewByOpportunityStatusFlag: bool | None
-    restrictViewByOpportunityTypeFlag: bool | None
-    acceptanceChangeStatusFlag: bool | None
-    acceptanceCreateActivityFlag: bool | None
-    acceptanceOpportunityStatus: OpportunityStatusReference | None
-    acceptanceSendEmailFlag: bool | None
-    acceptanceEmailFromFirstName: str | None
-    acceptanceEmailFromLastName: str | None
-    acceptanceEmailSubject: str | None
-    acceptanceEmailBody: str | None
+    id: int | None = None
+    opportunityStatusRecIDs: list[int] | None = None
+    addAllOpportunityStatuses: bool | None = None
+    removeAllOpportunityStatuses: bool | None = None
+    opportunityTypeRecIDs: list[int] | None = None
+    addAllOpportunityTypes: bool | None = None
+    removeAllOpportunityTypes: bool | None = None
+    restrictViewByOpportunityStatusFlag: bool | None = None
+    restrictViewByOpportunityTypeFlag: bool | None = None
+    acceptanceChangeStatusFlag: bool | None = None
+    acceptanceCreateActivityFlag: bool | None = None
+    acceptanceOpportunityStatus: OpportunityStatusReference | None = None
+    acceptanceSendEmailFlag: bool | None = None
+    acceptanceEmailFromFirstName: str | None = None
+    acceptanceEmailFromLastName: str | None = None
+    acceptanceEmailSubject: str | None = None
+    acceptanceEmailBody: str | None = None
     acceptanceFromEmail: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            required when acceptanceSendEmailFlag is true.'
         ),
-    ]
-    acceptanceEmailActivityType: ActivityTypeReference | None
-    acceptanceEmailAssignedByMember: MemberReference | None
-    rejectionChangeStatusFlag: bool | None
-    rejectionCreateActivityFlag: bool | None
-    rejectionOpportunityStatus: OpportunityStatusReference | None
-    rejectionSendEmailFlag: bool | None
-    rejectionEmailFromFirstName: str | None
-    rejectionEmailFromLastName: str | None
+    ] = None
+    acceptanceEmailActivityType: ActivityTypeReference | None = None
+    acceptanceEmailAssignedByMember: MemberReference | None = None
+    rejectionChangeStatusFlag: bool | None = None
+    rejectionCreateActivityFlag: bool | None = None
+    rejectionOpportunityStatus: OpportunityStatusReference | None = None
+    rejectionSendEmailFlag: bool | None = None
+    rejectionEmailFromFirstName: str | None = None
+    rejectionEmailFromLastName: str | None = None
     rejectionFromEmail: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            required when rejectionSendEmailFlag is true.'
         ),
-    ]
-    rejectionEmailSubject: str | None
-    rejectionEmailBody: str | None
-    rejectionEmailActivityType: ActivityTypeReference | None
-    rejectionEmailAssignedByMember: MemberReference | None
-    confirmationSendEmailFlag: bool | None
-    confirmationEmailUseDefaultCompanyEmailAddressFlag: bool | None
-    confirmationEmailFromFirstName: str | None
-    confirmationEmailFromLastName: str | None
+    ] = None
+    rejectionEmailSubject: str | None = None
+    rejectionEmailBody: str | None = None
+    rejectionEmailActivityType: ActivityTypeReference | None = None
+    rejectionEmailAssignedByMember: MemberReference | None = None
+    confirmationSendEmailFlag: bool | None = None
+    confirmationEmailUseDefaultCompanyEmailAddressFlag: bool | None = None
+    confirmationEmailFromFirstName: str | None = None
+    confirmationEmailFromLastName: str | None = None
     confirmationFromEmail: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            required when confirmationSendEmailFlag is true.'
         ),
-    ]
-    confirmationEmailSubject: str | None
-    confirmationEmailBody: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    confirmationEmailSubject: str | None = None
+    confirmationEmailBody: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalConfigurationPasswordEmailSetup(SparkModel):
-    id: int | None
-    validPasswordEmailUseCustomEmailFlag: bool | None
-    validPasswordEmailFromFirstName: str | None
-    validPasswordEmailFromLastName: str | None
+    id: int | None = None
+    validPasswordEmailUseCustomEmailFlag: bool | None = None
+    validPasswordEmailFromFirstName: str | None = None
+    validPasswordEmailFromLastName: str | None = None
     validPasswordEmailFromEmail: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            required when validPasswordEmailUseCustomEmailFlag is true.'
         ),
-    ]
-    validPasswordEmailSubject: str | None
-    validPasswordEmailBody: str | None
-    invalidPasswordEmailUseCustomEmailFlag: bool | None
-    invalidPasswordEmailFromFirstName: str | None
-    invalidPasswordEmailFromLastName: str | None
+    ] = None
+    validPasswordEmailSubject: str | None = None
+    validPasswordEmailBody: str | None = None
+    invalidPasswordEmailUseCustomEmailFlag: bool | None = None
+    invalidPasswordEmailFromFirstName: str | None = None
+    invalidPasswordEmailFromLastName: str | None = None
     invalidPasswordEmailFromEmail: Annotated[
         str | None,
         Field(
             description='Gets or sets\n            required when invalidPasswordEmailUseCustomEmailFlag is true.'
         ),
-    ]
-    invalidPasswordEmailSubject: str | None
-    invalidPasswordEmailBody: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    invalidPasswordEmailSubject: str | None = None
+    invalidPasswordEmailBody: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalConfigurationPaymentProcessor(SparkModel):
-    id: int | None
-    name: str | None
-    testURL: str | None
+    id: int | None = None
+    name: str | None = None
+    testURL: str | None = None
 
 
 class PortalConfigurationPaymentProcessorReference(ActivityReference):
@@ -8059,51 +8206,51 @@ class PortalConfigurationPaymentProcessorReference(ActivityReference):
 
 
 class PortalConfigurationProjectSetup(SparkModel):
-    id: int | None
-    portalConfig: PortalConfigurationReference | None
-    projectNameFlag: bool | None
-    projectTypeFlag: bool | None
-    statusFlag: bool | None
-    projectManagerFlag: bool | None
-    billingMethodFlag: bool | None
-    contactFlag: bool | None
-    estimatedStartFlag: bool | None
-    estimatedEndFlag: bool | None
-    descriptionFlag: bool | None
-    lastUpdatedFlag: bool | None
-    onlyDisplay: PortalConfigurationProjectSetupOnlyDisplay
-    timeMaterialBudgetHrsFlag: bool | None
-    timeMaterialScheduledStartFlag: bool | None
-    timeMaterialScheduledFinishFlag: bool | None
-    timeMaterialScheduledHrsFlag: bool | None
-    timeMaterialActualStartFlag: bool | None
-    timeMaterialActualFinishFlag: bool | None
-    timeMaterialActualHrsFlag: bool | None
-    timeMaterialBillFlag: bool | None
-    timeMaterialStatusFlag: bool | None
-    timeMaterialAssignedFlag: bool | None
-    fixedFeeBudgetHrsFlag: bool | None
-    fixedFeeScheduledStartFlag: bool | None
-    fixedFeeScheduledFinishFlag: bool | None
-    fixedFeeScheduledHrsFlag: bool | None
-    fixedFeeActualStartFlag: bool | None
-    fixedFeeActualFinishFlag: bool | None
-    fixedFeeActualHrsFlag: bool | None
-    fixedFeeBillFlag: bool | None
-    fixedFeeStatusFlag: bool | None
-    fixedFeeAssignedFlag: bool | None
-    projectIssueBudgetHrsFlag: bool | None
-    projectIssueScheduledStartFlag: bool | None
-    projectIssueScheduledFinishFlag: bool | None
-    projectIssueScheduledHrsFlag: bool | None
-    projectIssueActualStartFlag: bool | None
-    projectIssueActualFinishFlag: bool | None
-    projectIssueActualHrsFlag: bool | None
-    projectIssueBillFlag: bool | None
-    projectIssueStatusFlag: bool | None
-    projectIssueAssignedFlag: bool | None
-    projectDetailTotalHoursFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    portalConfig: PortalConfigurationReference | None = None
+    projectNameFlag: bool | None = None
+    projectTypeFlag: bool | None = None
+    statusFlag: bool | None = None
+    projectManagerFlag: bool | None = None
+    billingMethodFlag: bool | None = None
+    contactFlag: bool | None = None
+    estimatedStartFlag: bool | None = None
+    estimatedEndFlag: bool | None = None
+    descriptionFlag: bool | None = None
+    lastUpdatedFlag: bool | None = None
+    onlyDisplay: PortalConfigurationProjectSetupOnlyDisplay | None = None
+    timeMaterialBudgetHrsFlag: bool | None = None
+    timeMaterialScheduledStartFlag: bool | None = None
+    timeMaterialScheduledFinishFlag: bool | None = None
+    timeMaterialScheduledHrsFlag: bool | None = None
+    timeMaterialActualStartFlag: bool | None = None
+    timeMaterialActualFinishFlag: bool | None = None
+    timeMaterialActualHrsFlag: bool | None = None
+    timeMaterialBillFlag: bool | None = None
+    timeMaterialStatusFlag: bool | None = None
+    timeMaterialAssignedFlag: bool | None = None
+    fixedFeeBudgetHrsFlag: bool | None = None
+    fixedFeeScheduledStartFlag: bool | None = None
+    fixedFeeScheduledFinishFlag: bool | None = None
+    fixedFeeScheduledHrsFlag: bool | None = None
+    fixedFeeActualStartFlag: bool | None = None
+    fixedFeeActualFinishFlag: bool | None = None
+    fixedFeeActualHrsFlag: bool | None = None
+    fixedFeeBillFlag: bool | None = None
+    fixedFeeStatusFlag: bool | None = None
+    fixedFeeAssignedFlag: bool | None = None
+    projectIssueBudgetHrsFlag: bool | None = None
+    projectIssueScheduledStartFlag: bool | None = None
+    projectIssueScheduledFinishFlag: bool | None = None
+    projectIssueScheduledHrsFlag: bool | None = None
+    projectIssueActualStartFlag: bool | None = None
+    projectIssueActualFinishFlag: bool | None = None
+    projectIssueActualHrsFlag: bool | None = None
+    projectIssueBillFlag: bool | None = None
+    projectIssueStatusFlag: bool | None = None
+    projectIssueAssignedFlag: bool | None = None
+    projectDetailTotalHoursFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalConfigurationProjectSetupOnlyDisplay(str, Enum):
@@ -8120,77 +8267,77 @@ class PortalConfigurationReference(ActivityReference):
 
 
 class PortalConfigurationServiceSetup(SparkModel):
-    id: int | None
-    serviceTypeFlag: bool | None
-    serviceSubTypeFlag: bool | None
-    serviceSubTypeItemFlag: bool | None
-    statusFlag: bool | None
-    siteNameFlag: bool | None
-    enteredDateFlag: bool | None
-    lastUpdateFlag: bool | None
-    requiredDateFlag: bool | None
-    contactFlag: bool | None
-    assignedResourcesFlag: bool | None
-    slaInfoFlag: bool | None
-    serviceBoardFlag: bool | None
-    budgetHoursFlag: bool | None
-    actualHoursFlag: bool | None
-    approvalStatusFlag: bool | None
-    openTasksFlag: bool | None
-    closedTasksFlag: bool | None
-    enableChatAssistFlag: bool | None
-    displayClosedTicketsOption: PortalConfigurationProjectSetupOnlyDisplay
-    timeMaterialsTicketTemplate: ServiceSignoffReference
-    fixedFeeTicketTemplate: ServiceSignoffReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    serviceTypeFlag: bool | None = None
+    serviceSubTypeFlag: bool | None = None
+    serviceSubTypeItemFlag: bool | None = None
+    statusFlag: bool | None = None
+    siteNameFlag: bool | None = None
+    enteredDateFlag: bool | None = None
+    lastUpdateFlag: bool | None = None
+    requiredDateFlag: bool | None = None
+    contactFlag: bool | None = None
+    assignedResourcesFlag: bool | None = None
+    slaInfoFlag: bool | None = None
+    serviceBoardFlag: bool | None = None
+    budgetHoursFlag: bool | None = None
+    actualHoursFlag: bool | None = None
+    approvalStatusFlag: bool | None = None
+    openTasksFlag: bool | None = None
+    closedTasksFlag: bool | None = None
+    enableChatAssistFlag: bool | None = None
+    displayClosedTicketsOption: PortalConfigurationProjectSetupOnlyDisplay | None = None
+    timeMaterialsTicketTemplate: ServiceSignoffReference | None = None
+    fixedFeeTicketTemplate: ServiceSignoffReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalReport(SparkModel):
-    id: int | None
-    portalConfiguration: PortalConfigurationReference | None
-    name: Annotated[str, Field(description=' Max length: 255;')]
-    url: Annotated[str, Field(description=' Max length: 255;')]
-    openSameWindowFlag: bool | None
-    customFlag: bool | None
-    displayFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    portalConfiguration: PortalConfigurationReference | None = None
+    name: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    url: Annotated[str | None, Field(description=' Max length: 255;')] = None
+    openSameWindowFlag: bool | None = None
+    customFlag: bool | None = None
+    displayFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalSecurity(SparkModel):
-    identifier: str | None
-    enabled: bool | None
+    identifier: str | None = None
+    enabled: bool | None = None
 
 
 class PortalSecurityLevel(SparkModel):
-    id: int | None
-    captionIdentifier: str | None
-    isDefaultFlag: bool | None
-    caption: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    captionIdentifier: str | None = None
+    isDefaultFlag: bool | None = None
+    caption: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PortalSecuritySetting(SparkModel):
-    id: int | None
-    functionIdentifier: str | None
-    functionDescription: str | None
-    levelOne: bool | None
-    levelTwo: bool | None
-    levelThree: bool | None
-    levelFour: bool | None
-    levelFive: bool | None
-    levelSix: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    functionIdentifier: str | None = None
+    functionDescription: str | None = None
+    levelOne: bool | None = None
+    levelTwo: bool | None = None
+    levelThree: bool | None = None
+    levelFour: bool | None = None
+    levelFive: bool | None = None
+    levelSix: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PricingBreak(SparkModel):
-    id: int | None
-    detailId: int | None
-    amount: float | None
-    quantityStart: float
-    quantityEnd: float | None
-    unlimited: bool | None
-    priceMethod: PricingBreakPriceMethod
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    detailId: int | None = None
+    amount: float | None = None
+    quantityStart: float | None = None
+    quantityEnd: float | None = None
+    unlimited: bool | None = None
+    priceMethod: PricingBreakPriceMethod | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PricingBreakPriceMethod(str, Enum):
@@ -8201,26 +8348,26 @@ class PricingBreakPriceMethod(str, Enum):
 
 
 class PricingDetail(SparkModel):
-    id: int | None
-    product: CatalogItemReference | None
-    category: ProductCategoryReference | None
-    subCategory: ProductSubCategoryReference | None
-    startDate: datetime
-    endDate: datetime | None
-    noEndDate: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    product: CatalogItemReference | None = None
+    category: ProductCategoryReference | None = None
+    subCategory: ProductSubCategoryReference | None = None
+    startDate: datetime | None = None
+    endDate: datetime | None = None
+    noEndDate: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PricingSchedule(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    currency: CurrencyReference | None
-    companies: list[int] | None
-    setAllCompaniesFlag: bool | None
-    removeAllCompaniesFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    companies: list[int] | None = None
+    setAllCompaniesFlag: bool | None = None
+    removeAllCompaniesFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PricingScheduleReference(ActivityReference):
@@ -8228,15 +8375,15 @@ class PricingScheduleReference(ActivityReference):
 
 
 class Priority(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    color: PriorityColor
-    sortOrder: int | None
-    defaultFlag: bool | None
-    imageLink: str | None
-    urgencySortOrder: str | None
-    level: PriorityLevel | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    color: PriorityColor | None = None
+    sortOrder: int | None = None
+    defaultFlag: bool | None = None
+    imageLink: str | None = None
+    urgencySortOrder: str | None = None
+    level: PriorityLevel | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PriorityColor(str, Enum):
@@ -8256,15 +8403,15 @@ class PriorityColor(str, Enum):
 
 
 class PriorityInfo(SparkModel):
-    id: int | None
-    name: str | None
-    color: PriorityColor | None
-    sortOrder: int | None
-    defaultFlag: bool | None
-    imageLink: str | None
-    urgencySortOrder: str | None
-    level: PriorityLevel | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    color: PriorityColor | None = None
+    sortOrder: int | None = None
+    defaultFlag: bool | None = None
+    imageLink: str | None = None
+    urgencySortOrder: str | None = None
+    level: PriorityLevel | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PriorityLevel(str, Enum):
@@ -8275,50 +8422,54 @@ class PriorityLevel(str, Enum):
 
 
 class PriorityReference(SparkModel):
-    id: int | None
-    name: str | None
-    sort: int | None
-    level: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    sort: int | None = None
+    level: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProcurementAdjustment(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 50;')]
-    type: AdjustmentTypeReference
-    reason: Annotated[str | None, Field(description=' Max length: 100;')]
-    notes: str | None
-    closedFlag: bool | None
-    closedBy: str | None
-    closedDate: datetime | None
-    adjustmentDetails: list[AdjustmentDetail] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    type: AdjustmentTypeReference | None = None
+    reason: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    notes: str | None = None
+    closedFlag: bool | None = None
+    closedBy: str | None = None
+    closedDate: datetime | None = None
+    adjustmentDetails: list[AdjustmentDetail] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProcurementSetting(SparkModel):
-    id: int | None
-    startingPurchaseOrderNum: int
-    purchaseOrderPrefix: Annotated[str | None, Field(description=' Max length: 5;')]
-    purchaseOrderSuffix: Annotated[str | None, Field(description=' Max length: 5;')]
-    prefixSuffixType: AgreementTypePrefixSuffixOption | None
-    disableCostUpdatesFlag: bool | None
-    disableNegativeInventoryFlag: bool | None
-    costingMethod: ProcurementSettingCostingMethod
-    autoClosePurchaseOrderFlag: bool | None
-    autoClosePurchaseOrderItemFlag: bool | None
-    autoApprovePurchaseOrderFlag: bool | None
-    taxPurchaseOrderFlag: bool | None
-    taxFreightFlag: bool | None
-    useVendorTaxCodeFlag: bool | None
-    numDecimalPlaces: int | None
-    disableAutoPickFlag: bool | None
-    defaultProductTaxableFlag: bool | None
-    eoriNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    notificationForChangesInShippingInfoFlag: bool | None
+    id: int | None = None
+    startingPurchaseOrderNum: int | None = None
+    purchaseOrderPrefix: Annotated[str | None, Field(description=' Max length: 5;')] = (
+        None
+    )
+    purchaseOrderSuffix: Annotated[str | None, Field(description=' Max length: 5;')] = (
+        None
+    )
+    prefixSuffixType: AgreementTypePrefixSuffixOption | None = None
+    disableCostUpdatesFlag: bool | None = None
+    disableNegativeInventoryFlag: bool | None = None
+    costingMethod: ProcurementSettingCostingMethod | None = None
+    autoClosePurchaseOrderFlag: bool | None = None
+    autoClosePurchaseOrderItemFlag: bool | None = None
+    autoApprovePurchaseOrderFlag: bool | None = None
+    taxPurchaseOrderFlag: bool | None = None
+    taxFreightFlag: bool | None = None
+    useVendorTaxCodeFlag: bool | None = None
+    numDecimalPlaces: int | None = None
+    disableAutoPickFlag: bool | None = None
+    defaultProductTaxableFlag: bool | None = None
+    eoriNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    notificationForChangesInShippingInfoFlag: bool | None = None
     shippingInfoNotificationEmail: Annotated[
         str | None, Field(description=' Max length: 250;')
-    ]
+    ] = None
 
 
 class ProcurementSettingCostingMethod(str, Enum):
@@ -8332,118 +8483,124 @@ class ProductCategoryReference(ActivityReference):
 
 
 class ProductComponent(SparkModel):
-    id: int | None
-    sequenceNumber: Annotated[int | None, Field(description=' Required On Updates;')]
-    quantity: float
-    catalogItem: CatalogItemReference
-    hidePriceFlag: bool | None
-    hideItemIdentifierFlag: bool | None
-    hideDescriptionFlag: bool | None
-    hideQuantityFlag: bool | None
-    hideExtendedPriceFlag: bool | None
-    vendor: CompanyReference | None
-    parentProductItem: ProductItemReference | None
-    productItem: ProductItemReference | None
-    price: float | None
-    cost: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    sequenceNumber: Annotated[
+        int | None, Field(description=' Required On Updates;')
+    ] = None
+    quantity: float | None = None
+    catalogItem: CatalogItemReference | None = None
+    hidePriceFlag: bool | None = None
+    hideItemIdentifierFlag: bool | None = None
+    hideDescriptionFlag: bool | None = None
+    hideQuantityFlag: bool | None = None
+    hideExtendedPriceFlag: bool | None = None
+    vendor: CompanyReference | None = None
+    parentProductItem: ProductItemReference | None = None
+    productItem: ProductItemReference | None = None
+    price: float | None = None
+    cost: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProductDemand(SparkModel):
-    productRecId: int | None
-    quantity: int | None
-    cost: float | None
+    productRecId: int | None = None
+    quantity: int | None = None
+    cost: float | None = None
 
 
 class ProductDetach(SparkModel):
-    removeFromTicket: bool | None
-    removeFromInvoice: bool | None
-    removeFromOpportunity: bool | None
-    removeFromSalesOrder: bool | None
-    removeFromProject: bool | None
+    removeFromTicket: bool | None = None
+    removeFromInvoice: bool | None = None
+    removeFromOpportunity: bool | None = None
+    removeFromSalesOrder: bool | None = None
+    removeFromProject: bool | None = None
 
 
 class ProductItem(SparkModel):
-    id: int | None
-    catalogItem: CatalogItemReference
-    description: Annotated[str | None, Field(description=' Max length: 2000;')]
-    sequenceNumber: float | None
-    quantity: float | None
-    unitOfMeasure: UnitOfMeasureReference | None
-    price: float | None
-    cost: float | None
-    extPrice: float | None
-    extCost: float | None
-    discount: float | None
-    margin: float | None
-    agreementAmount: float | None
-    priceMethod: PricingBreakPriceMethod | None
-    billableOption: AdditionBillCustomer
-    agreement: AgreementReference | None
-    locationId: Annotated[int | None, Field(description=' Required On Updates;')]
-    location: SystemLocationReference | None
-    businessUnitId: Annotated[int | None, Field(description=' Required On Updates;')]
-    businessUnit: BillingUnitReference | None
-    vendor: CompanyReference | None
-    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')]
-    taxableFlag: bool | None
-    dropshipFlag: bool | None
-    specialOrderFlag: bool | None
-    phaseProductFlag: bool | None
-    cancelledFlag: bool | None
-    quantityCancelled: float | None
-    cancelledReason: Annotated[str | None, Field(description=' Max length: 100;')]
+    id: int | None = None
+    catalogItem: CatalogItemReference | None = None
+    description: Annotated[str | None, Field(description=' Max length: 2000;')] = None
+    sequenceNumber: float | None = None
+    quantity: float | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    price: float | None = None
+    cost: float | None = None
+    extPrice: float | None = None
+    extCost: float | None = None
+    discount: float | None = None
+    margin: float | None = None
+    agreementAmount: float | None = None
+    priceMethod: PricingBreakPriceMethod | None = None
+    billableOption: AdditionBillCustomer | None = None
+    agreement: AgreementReference | None = None
+    locationId: Annotated[int | None, Field(description=' Required On Updates;')] = None
+    location: SystemLocationReference | None = None
+    businessUnitId: Annotated[
+        int | None, Field(description=' Required On Updates;')
+    ] = None
+    businessUnit: BillingUnitReference | None = None
+    vendor: CompanyReference | None = None
+    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    taxableFlag: bool | None = None
+    dropshipFlag: bool | None = None
+    specialOrderFlag: bool | None = None
+    phaseProductFlag: bool | None = None
+    cancelledFlag: bool | None = None
+    quantityCancelled: float | None = None
+    cancelledReason: Annotated[str | None, Field(description=' Max length: 100;')] = (
+        None
+    )
     customerDescription: Annotated[
         str | None, Field(description=' Max length: 6000; Required On Updates;')
-    ]
-    internalNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    productSuppliedFlag: bool | None
-    subContractorShipToId: int | None
-    subContractorAmountLimit: float | None
-    recurring: ProductRecurring | None
-    sla: SLAReference | None
-    entityType: EntityTypeReference | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference | None
-    salesOrder: SalesOrderReference | None
-    opportunity: OpportunityReference | None
-    invoice: InvoiceReference | None
-    warehouseId: int | None
-    warehouseIdObject: WarehouseReference | None
-    warehouseBinId: int | None
-    warehouseBinIdObject: WarehouseBinReference | None
-    calculatedPriceFlag: bool | None
-    calculatedCostFlag: bool | None
-    forecastDetailId: int | None
-    cancelledBy: int | None
-    cancelledDate: datetime | None
-    warehouse: str | None
-    warehouseBin: str | None
-    purchaseDate: datetime | None
-    taxCode: TaxCodeReference | None
-    integrationXRef: str | None
-    listPrice: float | None
-    serialNumberIds: list[int] | None
-    serialNumbers: list[str] | None
-    company: CompanyReference | None
-    forecastStatus: OpportunityStatusReference | None
-    productClass: CatalogItemProductClass | None
-    needToPurchaseFlag: bool | None
-    needToOrderQuantity: int | None
-    minimumStockFlag: bool | None
-    shipSet: Annotated[str | None, Field(description=' Max length: 10;')]
-    calculatedPrice: float | None
-    calculatedCost: float | None
-    invoiceGrouping: InvoiceGroupingReference | None
-    poApprovedFlag: bool | None
-    uom: str | None
-    addComponentsFlag: bool | None
-    ignorePricingSchedulesFlag: bool | None
-    asioSubscriptionsID: UUID | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    bypassForecastUpdate: bool | None
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    internalNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    productSuppliedFlag: bool | None = None
+    subContractorShipToId: int | None = None
+    subContractorAmountLimit: float | None = None
+    recurring: ProductRecurring | None = None
+    sla: SLAReference | None = None
+    entityType: EntityTypeReference | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    salesOrder: SalesOrderReference | None = None
+    opportunity: OpportunityReference | None = None
+    invoice: InvoiceReference | None = None
+    warehouseId: int | None = None
+    warehouseIdObject: WarehouseReference | None = None
+    warehouseBinId: int | None = None
+    warehouseBinIdObject: WarehouseBinReference | None = None
+    calculatedPriceFlag: bool | None = None
+    calculatedCostFlag: bool | None = None
+    forecastDetailId: int | None = None
+    cancelledBy: int | None = None
+    cancelledDate: datetime | None = None
+    warehouse: str | None = None
+    warehouseBin: str | None = None
+    purchaseDate: datetime | None = None
+    taxCode: TaxCodeReference | None = None
+    integrationXRef: str | None = None
+    listPrice: float | None = None
+    serialNumberIds: list[int] | None = None
+    serialNumbers: list[str] | None = None
+    company: CompanyReference | None = None
+    forecastStatus: OpportunityStatusReference | None = None
+    productClass: CatalogItemProductClass | None = None
+    needToPurchaseFlag: bool | None = None
+    needToOrderQuantity: int | None = None
+    minimumStockFlag: bool | None = None
+    shipSet: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    calculatedPrice: float | None = None
+    calculatedCost: float | None = None
+    invoiceGrouping: InvoiceGroupingReference | None = None
+    poApprovedFlag: bool | None = None
+    uom: str | None = None
+    addComponentsFlag: bool | None = None
+    ignorePricingSchedulesFlag: bool | None = None
+    asioSubscriptionsID: UUID | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    bypassForecastUpdate: bool | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ProductItemReference(ActivityReference):
@@ -8451,38 +8608,38 @@ class ProductItemReference(ActivityReference):
 
 
 class ProductPickingShippingDetail(SparkModel):
-    id: int | None
-    pickedQuantity: int | None
-    shippedQuantity: int | None
-    warehouse: WarehouseReference
-    warehouseBin: WarehouseBinReference
-    shipmentMethod: ShipmentMethodReference | None
-    serialNumber: str | None
-    serialNumberIds: list[int] | None
-    trackingNumber: str | None
-    productItem: ProductItemReference | None
-    lineNumber: int | None
-    quantity: int | None
-    expectedArrivalDate: datetime | None
-    shipmentDate: datetime | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    pickedQuantity: int | None = None
+    shippedQuantity: int | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    shipmentMethod: ShipmentMethodReference | None = None
+    serialNumber: str | None = None
+    serialNumberIds: list[int] | None = None
+    trackingNumber: str | None = None
+    productItem: ProductItemReference | None = None
+    lineNumber: int | None = None
+    quantity: int | None = None
+    expectedArrivalDate: datetime | None = None
+    shipmentDate: datetime | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProductRecurring(SparkModel):
-    recurringRevenue: float | None
-    recurringCost: float | None
-    startDate: str | None
+    recurringRevenue: float | None = None
+    recurringCost: float | None = None
+    startDate: str | None = None
     endDate: Annotated[
         str | None,
         Field(
             description='The Recurring End Date is calculated based on the\n            start date, number of cycles, and cycle type.'
         ),
-    ]
-    billCycleId: int | None
-    billCycle: BillingCycleReference | None
-    cycles: int | None
-    cycleType: AgreementInvoicingCycle | None
-    agreementType: AgreementTypeReference | None
+    ] = None
+    billCycleId: int | None = None
+    billCycle: BillingCycleReference | None = None
+    cycles: int | None = None
+    cycleType: AgreementInvoicingCycle | None = None
+    agreementType: AgreementTypeReference | None = None
 
 
 class ProductReference(InOutTypeInfo):
@@ -8498,19 +8655,19 @@ class ProductSubCategoryReference(ActivityReference):
 
 
 class ProductType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    typeXref: ProductTypeTypeXref | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    typeXref: ProductTypeTypeXref | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProductTypeExemption(SparkModel):
-    id: int | None
-    productType: ProductTypeReference
-    taxableLevels: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    productType: ProductTypeReference | None = None
+    taxableLevels: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProductTypeInfo(CategoryInfo):
@@ -8529,85 +8686,87 @@ class ProductTypeTypeXref(str, Enum):
 
 
 class Project(SparkModel):
-    id: int | None
-    actualEnd: datetime | None
-    actualHours: float | None
-    actualStart: datetime | None
-    agreement: AgreementReference | None
+    id: int | None = None
+    actualEnd: datetime | None = None
+    actualHours: float | None = None
+    actualStart: datetime | None = None
+    agreement: AgreementReference | None = None
     billExpenses: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
-    billingAmount: float | None
-    billingAttention: Annotated[str | None, Field(description=' Max length: 50;')]
-    billingMethod: ProjectBillingMethod
+    ] = None
+    billingAmount: float | None = None
+    billingAttention: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    billingMethod: ProjectBillingMethod | None = None
     billingRateType: Annotated[
         ProjectBillingRateType | None, Field(description=' Required On Updates;')
-    ]
-    billingTerms: BillingTermsReference | None
+    ] = None
+    billingTerms: BillingTermsReference | None = None
     billProducts: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
-    billProjectAfterClosedFlag: bool | None
+    ] = None
+    billProjectAfterClosedFlag: bool | None = None
     billTime: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
-    billToCompany: CompanyReference | None
-    billToContact: ContactReference | None
-    billToSite: SiteReference | None
-    billUnapprovedTimeAndExpense: bool | None
-    board: ProjectBoardReference
+    ] = None
+    billToCompany: CompanyReference | None = None
+    billToContact: ContactReference | None = None
+    billToSite: SiteReference | None = None
+    billUnapprovedTimeAndExpense: bool | None = None
+    board: ProjectBoardReference | None = None
     budgetAnalysis: Annotated[
         ProjectBudgetAnalysis | None, Field(description=' Required On Updates;')
-    ]
-    budgetFlag: bool | None
-    budgetHours: float | None
-    company: CompanyReference
-    contact: ContactReference | None
-    customerPO: Annotated[str | None, Field(description=' Max length: 50;')]
-    description: str | None
-    currency: CurrencyReference | None
-    downpayment: float | None
-    estimatedEnd: datetime
-    percentComplete: float | None
-    estimatedExpenseRevenue: float | None
-    estimatedHours: float | None
-    estimatedProductRevenue: float | None
-    estimatedStart: datetime
-    estimatedTimeRevenue: float | None
-    expenseApprover: MemberReference | None
-    includeDependenciesFlag: bool | None
-    includeEstimatesFlag: bool | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    manager: MemberReference | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    opportunity: OpportunityReference | None
-    projectTemplateId: int | None
-    restrictDownPaymentFlag: bool | None
-    scheduledEnd: datetime | None
-    scheduledHours: float | None
-    scheduledStart: datetime | None
-    shipToCompany: CompanyReference | None
-    shipToContact: ContactReference | None
-    shipToSite: SiteReference | None
-    site: SiteReference | None
-    status: ProjectStatusReference | None
-    closedFlag: bool | None
-    timeApprover: MemberReference | None
-    type: ProjectTypeReference | None
-    doNotDisplayInPortalFlag: bool | None
-    billingStartDate: datetime | None
-    poAmount: float | None
-    estimatedTimeCost: float | None
-    estimatedExpenseCost: float | None
-    estimatedProductCost: float | None
-    taxCode: TaxCodeReference | None
-    companyLocation: SystemLocationReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    budgetFlag: bool | None = None
+    budgetHours: float | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    customerPO: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    description: str | None = None
+    currency: CurrencyReference | None = None
+    downpayment: float | None = None
+    estimatedEnd: datetime | None = None
+    percentComplete: float | None = None
+    estimatedExpenseRevenue: float | None = None
+    estimatedHours: float | None = None
+    estimatedProductRevenue: float | None = None
+    estimatedStart: datetime | None = None
+    estimatedTimeRevenue: float | None = None
+    expenseApprover: MemberReference | None = None
+    includeDependenciesFlag: bool | None = None
+    includeEstimatesFlag: bool | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    manager: MemberReference | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    opportunity: OpportunityReference | None = None
+    projectTemplateId: int | None = None
+    restrictDownPaymentFlag: bool | None = None
+    scheduledEnd: datetime | None = None
+    scheduledHours: float | None = None
+    scheduledStart: datetime | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToContact: ContactReference | None = None
+    shipToSite: SiteReference | None = None
+    site: SiteReference | None = None
+    status: ProjectStatusReference | None = None
+    closedFlag: bool | None = None
+    timeApprover: MemberReference | None = None
+    type: ProjectTypeReference | None = None
+    doNotDisplayInPortalFlag: bool | None = None
+    billingStartDate: datetime | None = None
+    poAmount: float | None = None
+    estimatedTimeCost: float | None = None
+    estimatedExpenseCost: float | None = None
+    estimatedProductCost: float | None = None
+    taxCode: TaxCodeReference | None = None
+    companyLocation: SystemLocationReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ProjectBillingMethod(str, Enum):
@@ -8618,14 +8777,14 @@ class ProjectBillingMethod(str, Enum):
 
 
 class ProjectBillingRate(SparkModel):
-    id: int | None
-    projectRecId: int | None
-    hourlyRate: float | None
-    workRole: WorkRoleReference | None
-    activityClassRecId: int | None
-    member: MemberReference | None
-    memberRecId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    projectRecId: int | None = None
+    hourlyRate: float | None = None
+    workRole: WorkRoleReference | None = None
+    activityClassRecId: int | None = None
+    member: MemberReference | None = None
+    memberRecId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectBillingRateType(str, Enum):
@@ -8634,20 +8793,20 @@ class ProjectBillingRateType(str, Enum):
 
 
 class ProjectBoardKanbanSetting(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    color: Annotated[str | None, Field(description=' Max length: 4;')]
-    order: int | None
-    statuses: list[ProjectBoardKanbanStatus] | None
-    updatedBy: Annotated[str | None, Field(description=' Max length: 15;')]
-    lastUpdated: str | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    color: Annotated[str | None, Field(description=' Max length: 4;')] = None
+    order: int | None = None
+    statuses: list[ProjectBoardKanbanStatus] | None = None
+    updatedBy: Annotated[str | None, Field(description=' Max length: 15;')] = None
+    lastUpdated: str | None = None
 
 
 class ProjectBoardKanbanStatus(SparkModel):
-    id: int | None
-    srStatusId: int | None
-    order: int | None
-    name: str | None
+    id: int | None = None
+    srStatusId: int | None = None
+    order: int | None = None
+    name: str | None = None
 
 
 class ProjectBoardReference(ActivityReference):
@@ -8655,12 +8814,12 @@ class ProjectBoardReference(ActivityReference):
 
 
 class ProjectBoardTeam(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectBoardTeamInfo(ActivityReference):
@@ -8668,11 +8827,11 @@ class ProjectBoardTeamInfo(ActivityReference):
 
 
 class ProjectBoardTeamMember(SparkModel):
-    id: int | None
-    member: MemberReference
-    projectRole: ProjectRoleReference
-    workRole: WorkRoleReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    projectRole: ProjectRoleReference | None = None
+    workRole: WorkRoleReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectBudgetAnalysis(str, Enum):
@@ -8681,97 +8840,97 @@ class ProjectBudgetAnalysis(str, Enum):
 
 
 class ProjectContact(SparkModel):
-    id: int | None
-    projectId: int | None
-    contact: ContactReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    projectId: int | None = None
+    contact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectNote(SparkModel):
-    id: int | None
-    projectId: int | None
-    text: str
-    type: NoteTypeReference | None
-    flagged: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    projectId: int | None = None
+    text: str | None = None
+    type: NoteTypeReference | None = None
+    flagged: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectPhase(SparkModel):
-    id: int | None
-    projectId: int | None
-    description: Annotated[str, Field(description=' Max length: 100;')]
-    board: ProjectBoardReference | None
-    status: PhaseStatusReference | None
-    agreement: AgreementReference | None
-    opportunity: OpportunityReference | None
-    department: BillingUnitReference | None
-    parentPhase: ProjectPhaseReference | None
-    wbsCode: Annotated[str | None, Field(description=' Max length: 50;')]
+    id: int | None = None
+    projectId: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    board: ProjectBoardReference | None = None
+    status: PhaseStatusReference | None = None
+    agreement: AgreementReference | None = None
+    opportunity: OpportunityReference | None = None
+    department: BillingUnitReference | None = None
+    parentPhase: ProjectPhaseReference | None = None
+    wbsCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
     billTime: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
+    ] = None
     billExpenses: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
+    ] = None
     billProducts: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
-    markAsMilestoneFlag: bool | None
-    notes: str | None
-    deadlineDate: datetime | None
-    billSeparatelyFlag: bool | None
+    ] = None
+    markAsMilestoneFlag: bool | None = None
+    notes: str | None = None
+    deadlineDate: datetime | None = None
+    billSeparatelyFlag: bool | None = None
     billingMethod: Annotated[
         ProjectBillingMethod | None,
         Field(
             description='billingMethod is required if the phase billSeparatelyFlag is true.'
         ),
-    ]
-    scheduledHours: float | None
-    scheduledStart: str | None
-    scheduledEnd: str | None
-    actualHours: float | None
-    actualStart: str | None
-    actualEnd: str | None
-    budgetHours: float | None
-    startDate: str | None
-    endDate: str | None
-    locationId: int | None
-    businessUnitId: int | None
-    hourlyRate: float | None
-    billingStartDate: datetime | None
+    ] = None
+    scheduledHours: float | None = None
+    scheduledStart: str | None = None
+    scheduledEnd: str | None = None
+    actualHours: float | None = None
+    actualStart: str | None = None
+    actualEnd: str | None = None
+    budgetHours: float | None = None
+    startDate: str | None = None
+    endDate: str | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    hourlyRate: float | None = None
+    billingStartDate: datetime | None = None
     billPhaseClosedFlag: Annotated[
         bool | None,
         Field(description='This phase can only be billed after it has been closed.'),
-    ]
+    ] = None
     billProjectClosedFlag: Annotated[
         bool | None,
         Field(
             description='This phase can only be billed after the project has been closed.'
         ),
-    ]
-    downpayment: float | None
-    poNumber: Annotated[str | None, Field(description=' Max length: 25;')]
-    poAmount: float | None
-    estimatedTimeCost: float | None
-    estimatedExpenseCost: float | None
-    estimatedProductCost: float | None
-    estimatedTimeRevenue: float | None
-    estimatedExpenseRevenue: float | None
-    estimatedProductRevenue: float | None
-    currency: CurrencyReference | None
-    billToCompany: CompanyReference | None
-    billToContact: ContactReference | None
-    billToSite: SiteReference | None
-    shipToCompany: CompanyReference | None
-    shipToContact: ContactReference | None
-    shipToSite: SiteReference | None
-    billingTerms: BillingTermsReference | None
-    taxCode: TaxCodeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    downpayment: float | None = None
+    poNumber: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    poAmount: float | None = None
+    estimatedTimeCost: float | None = None
+    estimatedExpenseCost: float | None = None
+    estimatedProductCost: float | None = None
+    estimatedTimeRevenue: float | None = None
+    estimatedExpenseRevenue: float | None = None
+    estimatedProductRevenue: float | None = None
+    currency: CurrencyReference | None = None
+    billToCompany: CompanyReference | None = None
+    billToContact: ContactReference | None = None
+    billToSite: SiteReference | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToContact: ContactReference | None = None
+    shipToSite: SiteReference | None = None
+    billingTerms: BillingTermsReference | None = None
+    taxCode: TaxCodeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ProjectPhaseReference(ActivityReference):
@@ -8787,55 +8946,57 @@ class ProjectRoleReference(AdjustmentTypeReference):
 
 
 class ProjectSecurityRole(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    managerRoleFlag: bool | None
-    defaultContactFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    managerRoleFlag: bool | None = None
+    defaultContactFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectSecurityRoleInfo(SparkModel):
-    id: int | None
-    name: str | None
-    managerRoleFlag: bool | None
-    defaultContactFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    managerRoleFlag: bool | None = None
+    defaultContactFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectSecurityRoleSetting(SparkModel):
-    id: int | None
-    addLevel: MySecurityAddLevel | None
-    editLevel: MySecurityAddLevel | None
-    deleteLevel: MySecurityAddLevel | None
-    inquireLevel: MySecurityAddLevel | None
-    moduleIdentifier: Annotated[str | None, Field(description=' Max length: 50;')]
-    myFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    addLevel: MySecurityAddLevel | None = None
+    editLevel: MySecurityAddLevel | None = None
+    deleteLevel: MySecurityAddLevel | None = None
+    inquireLevel: MySecurityAddLevel | None = None
+    moduleIdentifier: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    myFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    noTimeFlag: bool | None
-    closedFlag: bool | None
-    statusIndicator: StatusIndicatorReference | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    noTimeFlag: bool | None = None
+    closedFlag: bool | None = None
+    statusIndicator: StatusIndicatorReference | None = None
     customStatusIndicatorName: Annotated[
         str | None,
         Field(description='Required when statusIndicator is Custom. Max length: 30;'),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    noTimeFlag: bool | None
-    closedFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    noTimeFlag: bool | None = None
+    closedFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectStatusReference(ActivityReference):
@@ -8843,40 +9004,40 @@ class ProjectStatusReference(ActivityReference):
 
 
 class ProjectTeamMember(SparkModel):
-    id: int | None
-    projectId: int | None
-    hours: float | None
-    member: MemberReference
-    projectRole: ProjectRoleReference
-    workRole: WorkRoleReference | None
-    startDate: datetime | None
-    endDate: datetime | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    projectId: int | None = None
+    hours: float | None = None
+    member: MemberReference | None = None
+    projectRole: ProjectRoleReference | None = None
+    workRole: WorkRoleReference | None = None
+    startDate: datetime | None = None
+    endDate: datetime | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTemplate(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 200;')]
-    description: str | None
-    connectWiseId: str | None
-    type: ProjectTypeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    description: str | None = None
+    connectWiseId: str | None = None
+    type: ProjectTypeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTemplatePhase(SparkModel):
-    id: int | None
-    templateRecId: int | None
-    parentPhase: int | None
-    description: str | None
-    budgetHours: float | None
-    notes: str | None
-    markAsMilestone: bool | None
-    phaseBilledSeparately: bool | None
-    wbsCode: str | None
-    connectWiseId: str | None
-    parentId: int | None
-    parentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    templateRecId: int | None = None
+    parentPhase: int | None = None
+    description: str | None = None
+    budgetHours: float | None = None
+    notes: str | None = None
+    markAsMilestone: bool | None = None
+    phaseBilledSeparately: bool | None = None
+    wbsCode: str | None = None
+    connectWiseId: str | None = None
+    parentId: int | None = None
+    parentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTemplatePhaseReference(ActivityReference):
@@ -8884,50 +9045,50 @@ class ProjectTemplatePhaseReference(ActivityReference):
 
 
 class ProjectTemplateTask(SparkModel):
-    id: int | None
-    ticketId: int | None
-    sequence: int | None
-    description: str | None
-    connectWiseId: str | None
-    parentId: int | None
-    grandParentId: int | None
-    parentConnectWiseId: str | None
-    grandParentConnectWiseId: str | None
-    summary: str | None
-    code: ServiceCodeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ticketId: int | None = None
+    sequence: int | None = None
+    description: str | None = None
+    connectWiseId: str | None = None
+    parentId: int | None = None
+    grandParentId: int | None = None
+    parentConnectWiseId: str | None = None
+    grandParentConnectWiseId: str | None = None
+    summary: str | None = None
+    code: ServiceCodeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTemplateTicket(SparkModel):
-    id: int | None
-    projectTemplateId: int | None
-    projectTemplatePhaseId: int | None
-    lineNumber: float | None
-    description: Annotated[str, Field(description=' Max length: 100;')]
-    connectWiseId: str | None
-    parentId: int | None
-    parentConnectWiseId: str | None
-    projectTemplatePhaseCwId: str | None
-    notes: str | None
-    internalAnalysis: str | None
-    resolution: str | None
-    budgetHours: float | None
-    duration: int | None
-    wbsCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    billSeparatelyFlag: bool | None
-    markAsMilestoneFlag: bool | None
-    recordType: Annotated[str | None, Field(description=' Max length: 1;')]
-    pmTmpProjectRecID: int | None
-    predecessorType: ProjectTemplateTicketPredecessorType | None
-    predecessorId: int | None
-    predecessorClosedFlag: bool | None
-    lagDays: int | None
-    lagNonworkingDaysFlag: bool | None
-    priority: PriorityReference | None
-    source: ServiceSourceReference | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    projectTemplateId: int | None = None
+    projectTemplatePhaseId: int | None = None
+    lineNumber: float | None = None
+    description: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    connectWiseId: str | None = None
+    parentId: int | None = None
+    parentConnectWiseId: str | None = None
+    projectTemplatePhaseCwId: str | None = None
+    notes: str | None = None
+    internalAnalysis: str | None = None
+    resolution: str | None = None
+    budgetHours: float | None = None
+    duration: int | None = None
+    wbsCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    billSeparatelyFlag: bool | None = None
+    markAsMilestoneFlag: bool | None = None
+    recordType: Annotated[str | None, Field(description=' Max length: 1;')] = None
+    pmTmpProjectRecID: int | None = None
+    predecessorType: ProjectTemplateTicketPredecessorType | None = None
+    predecessorId: int | None = None
+    predecessorClosedFlag: bool | None = None
+    lagDays: int | None = None
+    lagNonworkingDaysFlag: bool | None = None
+    priority: PriorityReference | None = None
+    source: ServiceSourceReference | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTemplateTicketPredecessorType(str, Enum):
@@ -8936,111 +9097,119 @@ class ProjectTemplateTicketPredecessorType(str, Enum):
 
 
 class ProjectTemplateWorkPlan(SparkModel):
-    templateId: int | None
-    phases: list[TemplatePhase] | None
+    templateId: int | None = None
+    phases: list[TemplatePhase] | None = None
 
 
 class ProjectTicket(SparkModel):
-    id: int | None
-    summary: Annotated[str, Field(description=' Max length: 100;')]
-    isIssueFlag: bool | None
-    board: BoardReference | None
-    status: ServiceStatusReference | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference
-    wbsCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    company: CompanyReference | None
-    site: SiteReference | None
-    siteName: Annotated[str | None, Field(description=' Max length: 50;')]
-    addressLine1: Annotated[str | None, Field(description=' Max length: 50;')]
-    addressLine2: Annotated[str | None, Field(description=' Max length: 50;')]
-    city: Annotated[str | None, Field(description=' Max length: 50;')]
-    stateIdentifier: Annotated[str | None, Field(description=' Max length: 50;')]
-    zip: Annotated[str | None, Field(description=' Max length: 12;')]
-    country: CountryReference | None
-    contact: ContactReference | None
-    contactName: Annotated[str | None, Field(description=' Max length: 62;')]
-    contactPhoneNumber: Annotated[str | None, Field(description=' Max length: 20;')]
-    contactPhoneExtension: Annotated[str | None, Field(description=' Max length: 15;')]
-    contactEmailAddress: Annotated[str | None, Field(description=' Max length: 250;')]
-    type: ServiceTypeReference | None
-    subType: ServiceSubTypeReference | None
-    item: ServiceItemReference | None
-    owner: MemberReference | None
-    priority: PriorityReference | None
-    serviceLocation: ServiceLocationReference | None
-    source: ServiceSourceReference | None
-    requiredDate: datetime | None
-    budgetHours: float | None
-    opportunity: OpportunityReference | None
-    agreement: AgreementReference | None
-    agreementType: str | None
-    knowledgeBaseCategoryId: int | None
-    knowledgeBaseSubCategoryId: int | None
-    knowledgeBaseLinkId: int | None
-    knowledgeBaseLinkType: ProjectTicketKnowledgeBaseLinkType | None
-    allowAllClientsPortalView: bool | None
-    customerUpdatedFlag: bool | None
-    automaticEmailContactFlag: bool | None
-    automaticEmailResourceFlag: bool | None
-    automaticEmailCcFlag: bool | None
-    automaticEmailCc: Annotated[str | None, Field(description=' Max length: 1000;')]
-    closedDate: str | None
-    closedBy: str | None
-    closedFlag: bool | None
-    actualHours: float | None
-    approved: bool | None
-    subBillingMethod: ProjectBillingMethod | None
-    subBillingAmount: float | None
-    subDateAccepted: str | None
-    resources: str | None
-    billTime: ActivityStopwatchBillableOption | None
-    billExpenses: ActivityStopwatchBillableOption | None
-    billProducts: ActivityStopwatchBillableOption | None
-    predecessorType: ProjectTemplateTicketPredecessorType | None
-    predecessorId: int | None
-    predecessorClosedFlag: bool | None
-    lagDays: int | None
-    lagNonworkingDaysFlag: bool | None
-    estimatedStartDate: datetime | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    duration: int | None
-    scheduleStartDate: datetime | None
-    scheduleEndDate: datetime | None
-    mobileGuid: UUID | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    tasks: list[TicketTask] | None
+    id: int | None = None
+    summary: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    isIssueFlag: bool | None = None
+    board: BoardReference | None = None
+    status: ServiceStatusReference | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    wbsCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    company: CompanyReference | None = None
+    site: SiteReference | None = None
+    siteName: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressLine1: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressLine2: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    city: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    stateIdentifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    zip: Annotated[str | None, Field(description=' Max length: 12;')] = None
+    country: CountryReference | None = None
+    contact: ContactReference | None = None
+    contactName: Annotated[str | None, Field(description=' Max length: 62;')] = None
+    contactPhoneNumber: Annotated[str | None, Field(description=' Max length: 20;')] = (
+        None
+    )
+    contactPhoneExtension: Annotated[
+        str | None, Field(description=' Max length: 15;')
+    ] = None
+    contactEmailAddress: Annotated[
+        str | None, Field(description=' Max length: 250;')
+    ] = None
+    type: ServiceTypeReference | None = None
+    subType: ServiceSubTypeReference | None = None
+    item: ServiceItemReference | None = None
+    owner: MemberReference | None = None
+    priority: PriorityReference | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    source: ServiceSourceReference | None = None
+    requiredDate: datetime | None = None
+    budgetHours: float | None = None
+    opportunity: OpportunityReference | None = None
+    agreement: AgreementReference | None = None
+    agreementType: str | None = None
+    knowledgeBaseCategoryId: int | None = None
+    knowledgeBaseSubCategoryId: int | None = None
+    knowledgeBaseLinkId: int | None = None
+    knowledgeBaseLinkType: ProjectTicketKnowledgeBaseLinkType | None = None
+    allowAllClientsPortalView: bool | None = None
+    customerUpdatedFlag: bool | None = None
+    automaticEmailContactFlag: bool | None = None
+    automaticEmailResourceFlag: bool | None = None
+    automaticEmailCcFlag: bool | None = None
+    automaticEmailCc: Annotated[str | None, Field(description=' Max length: 1000;')] = (
+        None
+    )
+    closedDate: str | None = None
+    closedBy: str | None = None
+    closedFlag: bool | None = None
+    actualHours: float | None = None
+    approved: bool | None = None
+    subBillingMethod: ProjectBillingMethod | None = None
+    subBillingAmount: float | None = None
+    subDateAccepted: str | None = None
+    resources: str | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    billExpenses: ActivityStopwatchBillableOption | None = None
+    billProducts: ActivityStopwatchBillableOption | None = None
+    predecessorType: ProjectTemplateTicketPredecessorType | None = None
+    predecessorId: int | None = None
+    predecessorClosedFlag: bool | None = None
+    lagDays: int | None = None
+    lagNonworkingDaysFlag: bool | None = None
+    estimatedStartDate: datetime | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    duration: int | None = None
+    scheduleStartDate: datetime | None = None
+    scheduleEndDate: datetime | None = None
+    mobileGuid: UUID | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    tasks: list[TicketTask] | None = None
     initialDescription: Annotated[
         str | None,
         Field(
             description='Only available for POST, will not be returned in the response.'
         ),
-    ]
+    ] = None
     initialInternalAnalysis: Annotated[
         str | None,
         Field(
             description='Only available for POST, will not be returned in the response.'
         ),
-    ]
+    ] = None
     initialResolution: Annotated[
         str | None,
         Field(
             description='Only available for POST, will not be returned in the response.'
         ),
-    ]
-    contactEmailLookup: str | None
+    ] = None
+    contactEmailLookup: str | None = None
     processNotifications: Annotated[
         bool | None,
         Field(
             description='Can be set to false to skip notification processing when adding or updating a ticket (Defaults to True).'
         ),
-    ]
-    skipCallback: bool | None
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    skipCallback: bool | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ProjectTicketKnowledgeBaseLinkType(str, Enum):
@@ -9053,22 +9222,22 @@ class ProjectTicketKnowledgeBaseLinkType(str, Enum):
 
 
 class ProjectTicketNote(SparkModel):
-    id: int | None
-    noteType: ProjectTicketNoteNoteType | None
-    ticket: TicketReference | None
-    text: str | None
-    detailDescriptionFlag: bool | None
-    internalAnalysisFlag: bool | None
-    resolutionFlag: bool | None
-    timeStart: datetime | None
-    timeEnd: datetime | None
-    bundledFlag: bool | None
-    mergedFlag: bool | None
-    issueFlag: bool | None
-    originalAuthor: str | None
-    member: MemberReference | None
-    contact: ContactReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    noteType: ProjectTicketNoteNoteType | None = None
+    ticket: TicketReference | None = None
+    text: str | None = None
+    detailDescriptionFlag: bool | None = None
+    internalAnalysisFlag: bool | None = None
+    resolutionFlag: bool | None = None
+    timeStart: datetime | None = None
+    timeEnd: datetime | None = None
+    bundledFlag: bool | None = None
+    mergedFlag: bool | None = None
+    issueFlag: bool | None = None
+    originalAuthor: str | None = None
+    member: MemberReference | None = None
+    contact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTicketNoteNoteType(str, Enum):
@@ -9078,20 +9247,20 @@ class ProjectTicketNoteNoteType(str, Enum):
 
 
 class ProjectType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ProjectTypeReference(ActivityReference):
@@ -9099,156 +9268,166 @@ class ProjectTypeReference(ActivityReference):
 
 
 class ProjectWorkplan(SparkModel):
-    projectId: int | None
-    phases: list[ProjectWorkplanProjectPhase] | None
+    projectId: int | None = None
+    phases: list[ProjectWorkplanProjectPhase] | None = None
 
 
 class ProjectWorkplanProjectPhase(SparkModel):
-    id: int | None
-    projectId: int | None
-    description: str | None
-    status: PhaseStatusReference | None
-    parentPhase: ProjectPhaseReference | None
-    wbsCode: str | None
-    markAsMilestoneFlag: bool | None
-    notes: str | None
-    startDate: str | None
-    endDate: str | None
-    budgetHours: float | None
-    actualHours: float | None
-    billableHours: float | None
-    scheduled_Hours: float | None
-    scheduled_Start: str | None
-    scheduled_End: str | None
-    scheduled_Duration: int | None
-    billPhaseSeparately: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    projectId: int | None = None
+    description: str | None = None
+    status: PhaseStatusReference | None = None
+    parentPhase: ProjectPhaseReference | None = None
+    wbsCode: str | None = None
+    markAsMilestoneFlag: bool | None = None
+    notes: str | None = None
+    startDate: str | None = None
+    endDate: str | None = None
+    budgetHours: float | None = None
+    actualHours: float | None = None
+    billableHours: float | None = None
+    scheduled_Hours: float | None = None
+    scheduled_Start: str | None = None
+    scheduled_End: str | None = None
+    scheduled_Duration: int | None = None
+    billPhaseSeparately: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class PurchaseOrder(SparkModel):
-    id: int | None
-    businessUnitId: int | None
-    businessUnit: BillingUnitReference | None
-    cancelReason: str | None
+    id: int | None = None
+    businessUnitId: int | None = None
+    businessUnit: BillingUnitReference | None = None
+    cancelReason: str | None = None
     closedFlag: Annotated[
         bool | None,
         Field(
             description='The closed flag can only be updated via updating the purchase order status to a closed/open status.'
         ),
-    ]
-    closedBy: str | None
-    customerCity: str | None
-    customerCompany: CompanyReference | None
-    customerContact: ContactReference | None
-    customerCountry: CountryReference | None
-    customerExtension: str | None
-    customerName: str | None
-    customerPhone: str | None
-    customerSite: SiteReference | None
-    customerSiteName: str | None
-    customerState: str | None
-    customerStreetLine1: str | None
-    customerStreetLine2: str | None
-    customerZip: str | None
-    dateClosed: datetime | None
-    dropShipCustomerFlag: bool | None
-    enteredBy: str | None
-    freightCost: float | None
-    freightPackingSlip: str | None
-    freightTaxTotal: float | None
-    internalNotes: str | None
-    locationId: int | None
-    location: SystemLocationReference | None
-    poDate: Annotated[datetime | None, Field(description=' Required On Updates;')]
+    ] = None
+    closedBy: str | None = None
+    customerCity: str | None = None
+    customerCompany: CompanyReference | None = None
+    customerContact: ContactReference | None = None
+    customerCountry: CountryReference | None = None
+    customerExtension: str | None = None
+    customerName: str | None = None
+    customerPhone: str | None = None
+    customerSite: SiteReference | None = None
+    customerSiteName: str | None = None
+    customerState: str | None = None
+    customerStreetLine1: str | None = None
+    customerStreetLine2: str | None = None
+    customerZip: str | None = None
+    dateClosed: datetime | None = None
+    dropShipCustomerFlag: bool | None = None
+    enteredBy: str | None = None
+    freightCost: float | None = None
+    freightPackingSlip: str | None = None
+    freightTaxTotal: float | None = None
+    internalNotes: str | None = None
+    locationId: int | None = None
+    location: SystemLocationReference | None = None
+    poDate: Annotated[datetime | None, Field(description=' Required On Updates;')] = (
+        None
+    )
     poNumber: Annotated[
         str | None, Field(description=' Required On Updates; Max length: 50;')
-    ]
-    salesTax: float | None
-    shipmentDate: datetime | None
-    shipmentMethod: ShipmentMethodReference | None
-    shippingInstructions: str | None
-    status: PurchaseOrderStatusReference
-    subTotal: float | None
-    taxCode: TaxCodeReference | None
-    taxFreightFlag: bool | None
-    taxPoFlag: bool | None
-    terms: BillingTermsReference
-    total: float | None
-    trackingNumber: Annotated[str | None, Field(description=' Max length: 50;')]
+    ] = None
+    salesTax: float | None = None
+    shipmentDate: datetime | None = None
+    shipmentMethod: ShipmentMethodReference | None = None
+    shippingInstructions: str | None = None
+    status: PurchaseOrderStatusReference | None = None
+    subTotal: float | None = None
+    taxCode: TaxCodeReference | None = None
+    taxFreightFlag: bool | None = None
+    taxPoFlag: bool | None = None
+    terms: BillingTermsReference | None = None
+    total: float | None = None
+    trackingNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
     updateShipmentInfo: Annotated[
         bool | None,
         Field(
             description='Determines whether or not to update all of the shipment info for each associated line item when new shipment info is passed in.'
         ),
-    ]
+    ] = None
     updateVendorOrderNumber: Annotated[
         bool | None,
         Field(
             description='Determines whether or not to update vendor order number for each associated line item when new vendor order number is passed in.'
         ),
-    ]
-    vendorCompany: CompanyReference
-    vendorContact: ContactReference | None
-    vendorInvoiceDate: datetime | None
-    vendorInvoiceNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    vendorOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    vendorSite: SiteReference | None
-    warehouse: WarehouseReference | None
-    warehouseContact: ContactReference | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    vendorCompany: CompanyReference | None = None
+    vendorContact: ContactReference | None = None
+    vendorInvoiceDate: datetime | None = None
+    vendorInvoiceNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    vendorOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    vendorSite: SiteReference | None = None
+    warehouse: WarehouseReference | None = None
+    warehouseContact: ContactReference | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class PurchaseOrderInfo(SparkModel):
-    id: int | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PurchaseOrderLineItem(SparkModel):
-    id: int | None
-    backorderedFlag: bool | None
-    canceledBy: str | None
-    canceledFlag: bool | None
-    canceledReason: Annotated[str | None, Field(description=' Max length: 100;')]
-    closedFlag: bool | None
-    dateCanceled: datetime | None
-    dateCanceledUtc: datetime | None
-    description: Annotated[str, Field(description=' Max length: 6000;')]
-    displayInternalNotesFlag: bool | None
-    expectedShipDate: datetime | None
-    internalNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    lineNumber: int
-    packingSlip: Annotated[str | None, Field(description=' Max length: 50;')]
-    product: IvItemReference
-    purchaseOrderId: int | None
-    purchaseOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    quantity: float
-    receivedQuantity: int | None
-    serialNumbers: str | None
-    shipDate: datetime | None
-    shipmentMethod: ShipmentMethodReference | None
-    tax: float | None
-    trackingNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    unitCost: float | None
-    unitOfMeasure: UnitOfMeasureReference
-    vendorOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')]
-    warehouse: WarehouseReference | None
-    warehouseBin: WarehouseBinReference | None
-    shipSet: Annotated[str | None, Field(description=' Max length: 10;')]
-    dateReceived: datetime | None
-    receivedStatus: PurchaseOrderLineItemReceivedStatus | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    extCost: float | None
-    expectedArrivalDate: datetime | None
-    isDetachAvailable: bool | None
-    batchedFlag: bool | None
-    unbatchedRecId: int | None
-    salesOrder: list[SalesOrderReference] | None
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    backorderedFlag: bool | None = None
+    canceledBy: str | None = None
+    canceledFlag: bool | None = None
+    canceledReason: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    closedFlag: bool | None = None
+    dateCanceled: datetime | None = None
+    dateCanceledUtc: datetime | None = None
+    description: Annotated[str | None, Field(description=' Max length: 6000;')] = None
+    displayInternalNotesFlag: bool | None = None
+    expectedShipDate: datetime | None = None
+    internalNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    lineNumber: int | None = None
+    packingSlip: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    product: IvItemReference | None = None
+    purchaseOrderId: int | None = None
+    purchaseOrderNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    quantity: float | None = None
+    receivedQuantity: int | None = None
+    serialNumbers: str | None = None
+    shipDate: datetime | None = None
+    shipmentMethod: ShipmentMethodReference | None = None
+    tax: float | None = None
+    trackingNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    unitCost: float | None = None
+    unitOfMeasure: UnitOfMeasureReference | None = None
+    vendorOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    vendorSku: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    warehouse: WarehouseReference | None = None
+    warehouseBin: WarehouseBinReference | None = None
+    shipSet: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    dateReceived: datetime | None = None
+    receivedStatus: PurchaseOrderLineItemReceivedStatus | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    extCost: float | None = None
+    expectedArrivalDate: datetime | None = None
+    isDetachAvailable: bool | None = None
+    batchedFlag: bool | None = None
+    unbatchedRecId: int | None = None
+    salesOrder: list[SalesOrderReference] | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class PurchaseOrderLineItemReceivedStatus(str, Enum):
@@ -9263,13 +9442,13 @@ class PurchaseOrderLineItemReference(AdjustmentTypeReference):
 
 
 class PurchaseOrderNote(SparkModel):
-    id: int | None
-    purchaseHeaderRecID: int | None
-    text: str | None
-    type: NoteTypeReference | None
-    flagged: bool | None
-    enteredBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    purchaseHeaderRecID: int | None = None
+    text: str | None = None
+    type: NoteTypeReference | None = None
+    flagged: bool | None = None
+    enteredBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PurchaseOrderReference(ActivityReference):
@@ -9277,28 +9456,28 @@ class PurchaseOrderReference(ActivityReference):
 
 
 class PurchaseOrderStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    closedFlag: bool | None
-    inactiveFlag: bool | None
-    defaultClosedFlag: bool | None
-    sortOrder: int | None
-    emailTemplate: PurchaseOrderStatusEmailTemplateReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    closedFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    defaultClosedFlag: bool | None = None
+    sortOrder: int | None = None
+    emailTemplate: PurchaseOrderStatusEmailTemplateReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PurchaseOrderStatusEmailTemplate(SparkModel):
-    id: int | None
-    status: PurchaseOrderStatusReference | None
-    useSenderFlag: bool | None
-    firstName: Annotated[str | None, Field(description=' Max length: 100;')]
-    lastName: Annotated[str | None, Field(description=' Max length: 100;')]
-    emailAddress: Annotated[str | None, Field(description=' Max length: 100;')]
-    subject: Annotated[str, Field(description=' Max length: 200;')]
-    body: str | None
-    copySenderFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    status: PurchaseOrderStatusReference | None = None
+    useSenderFlag: bool | None = None
+    firstName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    lastName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    emailAddress: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    subject: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    body: str | None = None
+    copySenderFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PurchaseOrderStatusEmailTemplateReference(ActivityReference):
@@ -9306,29 +9485,29 @@ class PurchaseOrderStatusEmailTemplateReference(ActivityReference):
 
 
 class PurchaseOrderStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    closedFlag: bool | None
-    inactiveFlag: bool | None
-    defaultClosedFlag: bool | None
-    sortOrder: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    closedFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    defaultClosedFlag: bool | None = None
+    sortOrder: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PurchaseOrderStatusNotification(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    status: PurchaseOrderStatusReference | None
-    member: MemberReference | None
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    status: PurchaseOrderStatusReference | None = None
+    member: MemberReference | None = None
     email: Annotated[
         str | None,
         Field(
             description='Purchase Order Status Notification email must be entered if the notify type is "Email Address". Max length: 50;'
         ),
-    ]
-    workflowStep: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    workflowStep: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class PurchaseOrderStatusReference(ActivityReference):
@@ -9336,19 +9515,19 @@ class PurchaseOrderStatusReference(ActivityReference):
 
 
 class PurchasingDemand(SparkModel):
-    warehouse: WarehouseReference | None
-    vendor: CompanyReference | None
-    products: list[ProductDemand] | None
-    purchaseOrder: PurchaseOrder | None
+    warehouse: WarehouseReference | None = None
+    vendor: CompanyReference | None = None
+    products: list[ProductDemand] | None = None
+    purchaseOrder: PurchaseOrder | None = None
 
 
 class QuoteLink(SparkModel):
-    id: int | None
-    location: SystemLocationReference | None
-    link: Annotated[str, Field(description=' Max length: 2000;')]
-    allLocationsFlag: bool | None
-    newWindowFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    link: Annotated[str | None, Field(description=' Max length: 2000;')] = None
+    allLocationsFlag: bool | None = None
+    newWindowFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class RelationshipReference(ActivityReference):
@@ -9360,7 +9539,7 @@ class ReminderReference(ActivityReference):
 
 
 class Report(SparkModel):
-    name: str | None
+    name: str | None = None
 
 
 class ReportCard(ContactRelationship):
@@ -9368,11 +9547,11 @@ class ReportCard(ContactRelationship):
 
 
 class ReportCardDetail(SparkModel):
-    id: int | None
-    kpi: KPIReference
-    sortOrder: int | None
-    reportCard: ReportCardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    kpi: KPIReference | None = None
+    sortOrder: int | None = None
+    reportCard: ReportCardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ReportCardInfo(ActivityReference):
@@ -9384,47 +9563,49 @@ class ReportCardReference(ActivityReference):
 
 
 class ReportColumnDefinition(SparkModel):
-    type: str | None
-    isNullable: bool | None
-    identityColumn: bool | None
+    type: str | None = None
+    isNullable: bool | None = None
+    identityColumn: bool | None = None
 
 
 class ReportDataResponse(SparkModel):
-    column_definitions: list[dict[str, ReportColumnDefinition]] | None
-    row_values: list[list[dict[str, Any_aliased]]] | None
+    column_definitions: list[dict[str, ReportColumnDefinition]] | None = None
+    row_values: list[list[dict[str, Any_aliased]]] | None = None
 
 
 class ReportingService(SparkModel):
-    id: int | None
-    reportingUserName: Annotated[str | None, Field(description=' Max length: 50;')]
+    id: int | None = None
+    reportingUserName: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
     reportingPassword: Annotated[
         str | None,
         Field(
             description='To blank out the password, enter an empty string here. Max length: 50;'
         ),
-    ]
-    reportingDomain: Annotated[str | None, Field(description=' Max length: 50;')]
-    reportingUrl: Annotated[str | None, Field(description=' Max length: 100;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    reportingDomain: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    reportingUrl: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class RequestPasswordRequest(SparkModel):
-    email: str
+    email: str | None = None
 
 
 class ResultInfo(SparkModel):
-    success: bool | None
-    originalIndex: int | None
-    statusCode: int | None
-    data: IRestIdentifiedItem | None
-    error: ErrorResponseMessage | None
+    success: bool | None = None
+    originalIndex: int | None = None
+    statusCode: int | None = None
+    data: IRestIdentifiedItem | None = None
+    error: ErrorResponseMessage | None = None
 
 
 class RmaAction(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class RmaActionInfo(ActivityReference):
@@ -9448,26 +9629,26 @@ class RmaDispositionReference(ActivityReference):
 
 
 class RmaStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    sortOrder: int | None
-    closedFlag: bool | None
-    emailTemplate: RmaStatusEmailTemplateReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    sortOrder: int | None = None
+    closedFlag: bool | None = None
+    emailTemplate: RmaStatusEmailTemplateReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class RmaStatusEmailTemplate(SparkModel):
-    id: int | None
-    status: RmaStatusReference | None
-    useSenderFlag: bool | None
-    firstName: Annotated[str | None, Field(description=' Max length: 100;')]
-    lastName: Annotated[str | None, Field(description=' Max length: 100;')]
-    emailAddress: Annotated[str | None, Field(description=' Max length: 100;')]
-    subject: Annotated[str, Field(description=' Max length: 200;')]
-    body: str
-    copySenderFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    status: RmaStatusReference | None = None
+    useSenderFlag: bool | None = None
+    firstName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    lastName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    emailAddress: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    subject: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    body: str | None = None
+    copySenderFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class RmaStatusEmailTemplateReference(ActivityReference):
@@ -9479,18 +9660,18 @@ class RmaStatusInfo(OpportunityRatingInfo):
 
 
 class RmaStatusNotification(SparkModel):
-    id: int | None
-    notifyWho: NotificationRecipientReference
-    status: RmaStatusReference | None
-    member: MemberReference | None
+    id: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    status: RmaStatusReference | None = None
+    member: MemberReference | None = None
     email: Annotated[
         str | None,
         Field(
             description='RMA Status Notification sendEmail must be entered if the notify type is "Email Address". Max length: 50;'
         ),
-    ]
-    workflowStep: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    workflowStep: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class RmaStatusReference(ActivityReference):
@@ -9498,116 +9679,154 @@ class RmaStatusReference(ActivityReference):
 
 
 class RmaTag(SparkModel):
-    id: int | None
-    serviceTicket: TicketReference | None
-    salesOrder: SalesOrderReference | None
-    invoice: InvoiceReference | None
-    project: ProjectReference | None
-    summary: Annotated[str | None, Field(description=' Max length: 150;')]
-    product: IvItemReference
-    ivDescription: str | None
-    productDescription: Annotated[str, Field(description=' Max length: 200;')]
-    serialNumber: str | None
-    mfgItemID: Annotated[str | None, Field(description=' Max length: 100;')]
-    status: RmaStatusReference
-    listPrice: float | None
-    unitPrice: float | None
-    location: SystemLocationReference
-    department: SystemDepartmentReference
-    problemDescription: Annotated[str | None, Field(description=' Max length: 1000;')]
-    returnedCompany: CompanyReference
-    returnedContact: ContactReference | None
-    returnedContactType: str | None
-    returnedContactPhone: str | None
-    returnedContactExtension: str | None
-    returnedContactEmail: str | None
+    id: int | None = None
+    serviceTicket: TicketReference | None = None
+    salesOrder: SalesOrderReference | None = None
+    invoice: InvoiceReference | None = None
+    project: ProjectReference | None = None
+    summary: Annotated[str | None, Field(description=' Max length: 150;')] = None
+    product: IvItemReference | None = None
+    ivDescription: str | None = None
+    productDescription: Annotated[
+        str | None, Field(description=' Max length: 200;')
+    ] = None
+    serialNumber: str | None = None
+    mfgItemID: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    status: RmaStatusReference | None = None
+    listPrice: float | None = None
+    unitPrice: float | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    problemDescription: Annotated[
+        str | None, Field(description=' Max length: 1000;')
+    ] = None
+    returnedCompany: CompanyReference | None = None
+    returnedContact: ContactReference | None = None
+    returnedContactType: str | None = None
+    returnedContactPhone: str | None = None
+    returnedContactExtension: str | None = None
+    returnedContactEmail: str | None = None
     returnedContactAddressLine1: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
+    ] = None
     returnedContactAddressLine2: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    returnedContactCity: Annotated[str | None, Field(description=' Max length: 50;')]
-    returnedContactState: Annotated[str | None, Field(description=' Max length: 50;')]
-    returnedContactZip: Annotated[str | None, Field(description=' Max length: 12;')]
-    returnedContactCountry: CountryReference | None
-    rmaDisposition: RmaDispositionReference
-    returnedSite: SiteReference | None
-    purchasedCompany: CompanyReference | None
-    purchasedContact: ContactReference | None
-    purchasedContactType: str | None
-    purchasedContactPhone: str | None
-    purchasedContactExtension: str | None
-    purchasedContactEmail: str | None
+    ] = None
+    returnedContactCity: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    returnedContactState: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    returnedContactZip: Annotated[str | None, Field(description=' Max length: 12;')] = (
+        None
+    )
+    returnedContactCountry: CountryReference | None = None
+    rmaDisposition: RmaDispositionReference | None = None
+    returnedSite: SiteReference | None = None
+    purchasedCompany: CompanyReference | None = None
+    purchasedContact: ContactReference | None = None
+    purchasedContactType: str | None = None
+    purchasedContactPhone: str | None = None
+    purchasedContactExtension: str | None = None
+    purchasedContactEmail: str | None = None
     purchasedContactAddressLine1: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
+    ] = None
     purchasedContactAddressLine2: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    purchasedContactCity: Annotated[str | None, Field(description=' Max length: 50;')]
-    purchasedContactState: Annotated[str | None, Field(description=' Max length: 50;')]
-    purchasedContactZip: Annotated[str | None, Field(description=' Max length: 12;')]
-    purchasedContactCountry: CountryReference | None
-    purchasedInvoiceNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    purchasedInvoiceDate: date_aliased | None
-    purchasedOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    purchasedVendorAction: RmaActionReference | None
+    ] = None
+    purchasedContactCity: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    purchasedContactState: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    purchasedContactZip: Annotated[
+        str | None, Field(description=' Max length: 12;')
+    ] = None
+    purchasedContactCountry: CountryReference | None = None
+    purchasedInvoiceNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    purchasedInvoiceDate: date_aliased | None = None
+    purchasedOrderNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    purchasedVendorAction: RmaActionReference | None = None
     purchasedVendorRmaNumber: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    purchasedSite: SiteReference | None
-    purchasedNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    warrantyCompany: CompanyReference | None
-    warrantyContact: ContactReference | None
-    warrantyContactType: str | None
-    warrantyContactPhone: str | None
-    warrantyContactEmail: str | None
-    warrantyContactExtension: str | None
+    ] = None
+    purchasedSite: SiteReference | None = None
+    purchasedNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = (
+        None
+    )
+    warrantyCompany: CompanyReference | None = None
+    warrantyContact: ContactReference | None = None
+    warrantyContactType: str | None = None
+    warrantyContactPhone: str | None = None
+    warrantyContactEmail: str | None = None
+    warrantyContactExtension: str | None = None
     warrantyContactAddressLine1: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
+    ] = None
     warrantyContactAddressLine2: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    warrantyContactCity: Annotated[str | None, Field(description=' Max length: 50;')]
-    warrantyContactState: Annotated[str | None, Field(description=' Max length: 50;')]
-    warrantyContactZip: Annotated[str | None, Field(description=' Max length: 12;')]
-    warrantyContactCountry: CountryReference | None
-    warrantySite: SiteReference | None
-    warrantyNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    repairCompany: CompanyReference | None
-    repairContact: ContactReference | None
-    repairContactType: str | None
-    repairContactPhone: str | None
-    repairContactExtension: str | None
-    repairContactEmail: str | None
+    ] = None
+    warrantyContactCity: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    warrantyContactState: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    warrantyContactZip: Annotated[str | None, Field(description=' Max length: 12;')] = (
+        None
+    )
+    warrantyContactCountry: CountryReference | None = None
+    warrantySite: SiteReference | None = None
+    warrantyNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    repairCompany: CompanyReference | None = None
+    repairContact: ContactReference | None = None
+    repairContactType: str | None = None
+    repairContactPhone: str | None = None
+    repairContactExtension: str | None = None
+    repairContactEmail: str | None = None
     repairContactAddressLine1: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
+    ] = None
     repairContactAddressLine2: Annotated[
         str | None, Field(description=' Max length: 50;')
-    ]
-    repairContactCity: Annotated[str | None, Field(description=' Max length: 50;')]
-    repairContactState: Annotated[str | None, Field(description=' Max length: 50;')]
-    repairContactZip: Annotated[str | None, Field(description=' Max length: 12;')]
-    repairContactCountry: CountryReference | None
-    repairOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    repairSite: SiteReference | None
-    repairNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    dropShipFlag: bool | None
-    shipMethod: ShipmentMethodReference | None
-    shippingDate: date_aliased | None
-    shippingTrackingNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    internalNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    closingNotes: Annotated[str | None, Field(description=' Max length: 1000;')]
-    dateClosed: str | None
-    accountManager: MemberReference | None
-    technicalContact: MemberReference | None
-    currency: CurrencyReference | None
-    closedBy: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    repairContactCity: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    repairContactState: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    repairContactZip: Annotated[str | None, Field(description=' Max length: 12;')] = (
+        None
+    )
+    repairContactCountry: CountryReference | None = None
+    repairOrderNumber: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    repairSite: SiteReference | None = None
+    repairNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    dropShipFlag: bool | None = None
+    shipMethod: ShipmentMethodReference | None = None
+    shippingDate: date_aliased | None = None
+    shippingTrackingNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    internalNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    closingNotes: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    dateClosed: str | None = None
+    accountManager: MemberReference | None = None
+    technicalContact: MemberReference | None = None
+    currency: CurrencyReference | None = None
+    closedBy: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class Role(ContactRelationship):
@@ -9615,28 +9834,28 @@ class Role(ContactRelationship):
 
 
 class SLA(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 25;')]
-    basedOn: SLABasedOn
-    customCalendar: CalendarReference | None
-    defaultFlag: bool | None
-    applicationOrder: int | None
-    hiImpactHiUrgency: PriorityReference | None
-    hiImpactMedUrgency: PriorityReference | None
-    hiImpactLowUrgency: PriorityReference | None
-    medImpactHiUrgency: PriorityReference | None
-    medImpactMedUrgency: PriorityReference | None
-    medImpactLowUrgency: PriorityReference | None
-    lowImpactHiUrgency: PriorityReference | None
-    lowImpactMedUrgency: PriorityReference | None
-    lowImpactLowUrgency: PriorityReference | None
-    respondHours: float | None
-    respondPercent: int | None
-    planWithin: float | None
-    planWithinPercent: int | None
-    resolutionHours: float | None
-    resolutionPercent: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    basedOn: SLABasedOn | None = None
+    customCalendar: CalendarReference | None = None
+    defaultFlag: bool | None = None
+    applicationOrder: int | None = None
+    hiImpactHiUrgency: PriorityReference | None = None
+    hiImpactMedUrgency: PriorityReference | None = None
+    hiImpactLowUrgency: PriorityReference | None = None
+    medImpactHiUrgency: PriorityReference | None = None
+    medImpactMedUrgency: PriorityReference | None = None
+    medImpactLowUrgency: PriorityReference | None = None
+    lowImpactHiUrgency: PriorityReference | None = None
+    lowImpactMedUrgency: PriorityReference | None = None
+    lowImpactLowUrgency: PriorityReference | None = None
+    respondHours: float | None = None
+    respondPercent: int | None = None
+    planWithin: float | None = None
+    planWithinPercent: int | None = None
+    resolutionHours: float | None = None
+    resolutionPercent: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SLABasedOn(str, Enum):
@@ -9651,16 +9870,16 @@ class SLAInfo(ActivityReference):
 
 
 class SLAPriority(SparkModel):
-    id: int | None
-    priority: PriorityReference
-    respondHours: float | None
-    respondPercent: int | None
-    planWithin: float | None
-    planWithinPercent: int | None
-    resolutionHours: float | None
-    resolutionPercent: int | None
-    sla: SLAReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    priority: PriorityReference | None = None
+    respondHours: float | None = None
+    respondPercent: int | None = None
+    planWithin: float | None = None
+    planWithinPercent: int | None = None
+    resolutionHours: float | None = None
+    resolutionPercent: int | None = None
+    sla: SLAReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SLAReference(ActivityReference):
@@ -9668,17 +9887,17 @@ class SLAReference(ActivityReference):
 
 
 class SalesConversion(SparkModel):
-    parentType: str | None
-    convertedTo: ConversionTypeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    parentType: str | None = None
+    convertedTo: ConversionTypeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SalesOrderRecap(SparkModel):
-    id: int | None
-    billableAmount: float | None
-    cost: float | None
-    margin: float | None
-    percent: float | None
+    id: int | None = None
+    billableAmount: float | None = None
+    cost: float | None = None
+    margin: float | None = None
+    percent: float | None = None
 
 
 class SalesOrderReference(AdjustmentTypeReference):
@@ -9686,79 +9905,83 @@ class SalesOrderReference(AdjustmentTypeReference):
 
 
 class SalesOrdersLineItem(SparkModel):
-    id: int | None
-    purchaseOrderNumber: Annotated[str | None, Field(description=' Max length: 100;')]
-    salesOrder: SalesOrderReference
-    billStatus: str | None
-    quantity: int | None
-    quantityCancelled: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    purchaseOrderNumber: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    salesOrder: SalesOrderReference | None = None
+    billStatus: str | None = None
+    quantity: int | None = None
+    quantityCancelled: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SalesProbability(SparkModel):
-    id: int | None
-    probability: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    probability: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
-class SalesProbabilityInfo(SparkModel):
-    id: int | None
-    probability: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+class SalesProbabilityInfo(SalesProbability):
+    pass
 
 
 class SalesQuota(SparkModel):
-    id: int | None
-    member: MemberReference
-    forecastYear: int | None
-    location: SystemLocationReference
-    department: SystemDepartmentReference | None
-    category: ProductCategoryReference | None
-    subCategory: ProductSubCategoryReference | None
-    januaryRevenue: float | None
-    januaryMargin: float | None
-    februaryRevenue: float | None
-    februaryMargin: float | None
-    marchRevenue: float | None
-    marchMargin: float | None
-    aprilRevenue: float | None
-    aprilMargin: float | None
-    mayRevenue: float | None
-    mayMargin: float | None
-    juneRevenue: float | None
-    juneMargin: float | None
-    julyRevenue: float | None
-    julyMargin: float | None
-    augustRevenue: float | None
-    augustMargin: float | None
-    septemberRevenue: float | None
-    septemberMargin: float | None
-    octoberRevenue: float | None
-    octoberMargin: float | None
-    novemberRevenue: float | None
-    novemberMargin: float | None
-    decemberRevenue: float | None
-    decemberMargin: float | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    forecastYear: int | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    category: ProductCategoryReference | None = None
+    subCategory: ProductSubCategoryReference | None = None
+    januaryRevenue: float | None = None
+    januaryMargin: float | None = None
+    februaryRevenue: float | None = None
+    februaryMargin: float | None = None
+    marchRevenue: float | None = None
+    marchMargin: float | None = None
+    aprilRevenue: float | None = None
+    aprilMargin: float | None = None
+    mayRevenue: float | None = None
+    mayMargin: float | None = None
+    juneRevenue: float | None = None
+    juneMargin: float | None = None
+    julyRevenue: float | None = None
+    julyMargin: float | None = None
+    augustRevenue: float | None = None
+    augustMargin: float | None = None
+    septemberRevenue: float | None = None
+    septemberMargin: float | None = None
+    octoberRevenue: float | None = None
+    octoberMargin: float | None = None
+    novemberRevenue: float | None = None
+    novemberMargin: float | None = None
+    decemberRevenue: float | None = None
+    decemberMargin: float | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SalesTeam(SparkModel):
-    id: int | None
-    salesTeamIdentifier: Annotated[str, Field(description=' Max length: 20;')]
-    salesTeamDescription: Annotated[str, Field(description=' Max length: 50;')]
-    salesTeamLocation: SystemLocationReference
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    salesTeamIdentifier: Annotated[
+        str | None, Field(description=' Max length: 20;')
+    ] = None
+    salesTeamDescription: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    salesTeamLocation: SystemLocationReference | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SalesTeamMember(SparkModel):
-    id: int | None
-    member: MemberReference
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    allowAccessFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    allowAccessFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SalesTeamReference(AdjustmentTypeReference):
@@ -9766,68 +9989,70 @@ class SalesTeamReference(AdjustmentTypeReference):
 
 
 class ScheduleColor(SparkModel):
-    id: int | None
+    id: int | None = None
     startPercent: Annotated[
         int | None,
         Field(
             description='A startPercent (0 or higher) is required if endPercent has value.'
         ),
-    ]
+    ] = None
     endPercent: Annotated[
         int | None,
         Field(description='A endPercent is required if startPercent has value.'),
-    ]
-    color: Annotated[str, Field(description='Must be a valid Hexadecimal Color Code.')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    color: Annotated[
+        str | None, Field(description='Must be a valid Hexadecimal Color Code.')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleDetail(SparkModel):
-    id: int | None
-    scheduleEntry: ScheduleEntryReference | None
-    dateStart: str | None
-    dateEnd: str | None
-    member: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    scheduleEntry: ScheduleEntryReference | None = None
+    dateStart: str | None = None
+    dateEnd: str | None = None
+    member: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleEntry(SparkModel):
-    id: int | None
-    objectId: int | None
-    name: Annotated[str | None, Field(description=' Max length: 250;')]
-    member: MemberReference | None
-    where: ServiceLocationReference | None
-    dateStart: datetime | None
-    dateEnd: datetime | None
-    reminder: ReminderReference | None
-    status: ScheduleStatusReference | None
-    type: ScheduleTypeReference
-    span: ScheduleSpanReference | None
-    doneFlag: bool | None
-    acknowledgedFlag: bool | None
-    ownerFlag: bool | None
-    meetingFlag: bool | None
-    allowScheduleConflictsFlag: bool | None
-    addMemberToProjectFlag: bool | None
-    projectRoleId: int | None
-    mobileGuid: UUID | None
-    acknowledgedDate: datetime | None
-    closeDate: datetime | None
-    notifyResource: bool | None
-    notificationSent: bool | None
-    notificationResponse: str | None
-    hours: float | None
-    startTimeSet: bool | None
-    endTimeSet: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    objectId: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    member: MemberReference | None = None
+    where: ServiceLocationReference | None = None
+    dateStart: datetime | None = None
+    dateEnd: datetime | None = None
+    reminder: ReminderReference | None = None
+    status: ScheduleStatusReference | None = None
+    type: ScheduleTypeReference | None = None
+    span: ScheduleSpanReference | None = None
+    doneFlag: bool | None = None
+    acknowledgedFlag: bool | None = None
+    ownerFlag: bool | None = None
+    meetingFlag: bool | None = None
+    allowScheduleConflictsFlag: bool | None = None
+    addMemberToProjectFlag: bool | None = None
+    projectRoleId: int | None = None
+    mobileGuid: UUID | None = None
+    acknowledgedDate: datetime | None = None
+    closeDate: datetime | None = None
+    notifyResource: bool | None = None
+    notificationSent: bool | None = None
+    notificationResponse: str | None = None
+    hours: float | None = None
+    startTimeSet: bool | None = None
+    endTimeSet: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleEntryDetail(SparkModel):
-    id: int | None
-    scheduleEntry: ScheduleEntryReference | None
-    dateStart: str | None
-    dateEnd: str | None
-    hoursScheduled: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    scheduleEntry: ScheduleEntryReference | None = None
+    dateStart: str | None = None
+    dateEnd: str | None = None
+    hoursScheduled: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleEntryReference(InOutTypeInfo):
@@ -9835,11 +10060,13 @@ class ScheduleEntryReference(InOutTypeInfo):
 
 
 class ScheduleReminderTime(SparkModel):
-    id: int | None
-    time: Annotated[int | None, Field(description='Time is calculated in minutes.')]
-    name: Annotated[str | None, Field(description=' Max length: 10;')]
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    time: Annotated[int | None, Field(description='Time is calculated in minutes.')] = (
+        None
+    )
+    name: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleSpanReference(AdjustmentTypeReference):
@@ -9847,19 +10074,19 @@ class ScheduleSpanReference(AdjustmentTypeReference):
 
 
 class ScheduleStatus(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    defaultFlag: bool | None
-    showAsTentativeFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    defaultFlag: bool | None = None
+    showAsTentativeFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleStatusInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    showAsTentativeFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    showAsTentativeFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleStatusReference(ActivityReference):
@@ -9867,45 +10094,45 @@ class ScheduleStatusReference(ActivityReference):
 
 
 class ScheduleStopwatch(SparkModel):
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    agreement: AgreementReference | None
-    billableOption: ActivityStopwatchBillableOption | None
-    businessUnitId: int | None
-    dateEntered: datetime | None
-    endTime: datetime | None
-    id: int | None
-    internalNotes: str | None
-    locationId: int | None
-    member: MemberReference
-    mobileGuid: UUID | None
-    notes: Annotated[str | None, Field(description=' Max length: 4000;')]
-    scheduleId: int
-    scheduleMobileGuid: UUID | None
-    startTime: datetime | None
-    status: ActivityStopwatchStatus
-    totalPauseTime: int | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    agreement: AgreementReference | None = None
+    billableOption: ActivityStopwatchBillableOption | None = None
+    businessUnitId: int | None = None
+    dateEntered: datetime | None = None
+    endTime: datetime | None = None
+    id: int | None = None
+    internalNotes: str | None = None
+    locationId: int | None = None
+    member: MemberReference | None = None
+    mobileGuid: UUID | None = None
+    notes: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    scheduleId: int | None = None
+    scheduleMobileGuid: UUID | None = None
+    startTime: datetime | None = None
+    status: ActivityStopwatchStatus | None = None
+    totalPauseTime: int | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
 
 
 class ScheduleType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    identifier: Annotated[str, Field(description=' Max length: 1;')]
-    chargeCode: ChargeCodeReference | None
-    where: ServiceLocationReference | None
-    systemFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    identifier: Annotated[str | None, Field(description=' Max length: 1;')] = None
+    chargeCode: ChargeCodeReference | None = None
+    where: ServiceLocationReference | None = None
+    systemFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    identifier: str | None
-    chargeCode: ChargeCodeReference | None
-    where: ServiceLocationReference | None
-    systemFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    identifier: str | None = None
+    chargeCode: ChargeCodeReference | None = None
+    where: ServiceLocationReference | None = None
+    systemFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ScheduleTypeReference(AdjustmentTypeReference):
@@ -9913,32 +10140,32 @@ class ScheduleTypeReference(AdjustmentTypeReference):
 
 
 class SchedulingMemberInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    firstName: str | None
-    middleInitial: str | None
-    lastName: str | None
-    fullName: str | None
-    defaultEmail: str | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    firstName: str | None = None
+    middleInitial: str | None = None
+    lastName: str | None = None
+    fullName: str | None = None
+    defaultEmail: str | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SecurityRole(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    roleType: Annotated[str | None, Field(description=' Max length: 30;')]
-    adminFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    roleType: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    adminFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SecurityRoleInfo(SparkModel):
-    id: int | None
-    name: str | None
-    roleType: str | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    roleType: str | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SecurityRoleReference(ActivityReference):
@@ -9946,42 +10173,42 @@ class SecurityRoleReference(ActivityReference):
 
 
 class SecurityRoleSetting(SparkModel):
-    id: int | None
-    addLevel: MySecurityAddLevel | None
-    editLevel: MySecurityAddLevel | None
-    deleteLevel: MySecurityAddLevel | None
-    inquireLevel: MySecurityAddLevel | None
-    moduleFunctionName: str | None
-    moduleFunctionDescription: str | None
-    myAllFlag: bool | None
-    moduleFunctionIdentifier: str | None
-    reportFlag: bool | None
-    restrictFlag: bool | None
-    customFlag: bool | None
-    moduleDescription: str | None
-    moduleIdentifier: str | None
-    moduleName: str | None
-    sortOrder: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    addLevel: MySecurityAddLevel | None = None
+    editLevel: MySecurityAddLevel | None = None
+    deleteLevel: MySecurityAddLevel | None = None
+    inquireLevel: MySecurityAddLevel | None = None
+    moduleFunctionName: str | None = None
+    moduleFunctionDescription: str | None = None
+    myAllFlag: bool | None = None
+    moduleFunctionIdentifier: str | None = None
+    reportFlag: bool | None = None
+    restrictFlag: bool | None = None
+    customFlag: bool | None = None
+    moduleDescription: str | None = None
+    moduleIdentifier: str | None = None
+    moduleName: str | None = None
+    sortOrder: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Service(SparkModel):
-    id: int | None
-    srNotify: ServiceSrNotify
-    scheduleSpan: ServiceScheduleSpan
-    hideDelimiterFlag: bool | None
-    allowCCFlag: bool | None
-    allowTOFlag: bool | None
-    headerColor: Annotated[str | None, Field(description=' Max length: 50;')]
-    memberColor: Annotated[str | None, Field(description=' Max length: 50;')]
-    contactColor: Annotated[str | None, Field(description=' Max length: 50;')]
-    unknownColor: Annotated[str | None, Field(description=' Max length: 50;')]
-    calendarSetup: CalendarSetupReference | None
-    headerColorDisableFlag: bool | None
-    memberColorDisableFlag: bool | None
-    contactColorDisableFlag: bool | None
-    unknownColorDisableFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    srNotify: ServiceSrNotify | None = None
+    scheduleSpan: ServiceScheduleSpan | None = None
+    hideDelimiterFlag: bool | None = None
+    allowCCFlag: bool | None = None
+    allowTOFlag: bool | None = None
+    headerColor: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    memberColor: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    contactColor: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    unknownColor: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    calendarSetup: CalendarSetupReference | None = None
+    headerColorDisableFlag: bool | None = None
+    memberColorDisableFlag: bool | None = None
+    contactColorDisableFlag: bool | None = None
+    unknownColorDisableFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceCodeReference(ActivityReference):
@@ -9989,46 +10216,46 @@ class ServiceCodeReference(ActivityReference):
 
 
 class ServiceEmailTemplate(SparkModel):
-    id: int | None
-    type: ServiceEmailTemplateType
-    serviceSurvey: ServiceSurveyReference | None
-    serviceBoard: BoardReference | None
-    useSenderFlag: bool | None
+    id: int | None = None
+    type: ServiceEmailTemplateType | None = None
+    serviceSurvey: ServiceSurveyReference | None = None
+    serviceBoard: BoardReference | None = None
+    useSenderFlag: bool | None = None
     firstName: Annotated[
         str | None,
         Field(
             description='From fields (first name, last name, email address) are required if useSenderFlag is false. Max length: 100;'
         ),
-    ]
+    ] = None
     lastName: Annotated[
         str | None,
         Field(
             description='From fields (first name, last name, email address) are required if useSenderFlag is false. Max length: 100;'
         ),
-    ]
+    ] = None
     emailAddress: Annotated[
         str | None,
         Field(
             description='From fields (first name, last name, email address) are required if useSenderFlag is false. Max length: 100;'
         ),
-    ]
-    subject: Annotated[str | None, Field(description=' Max length: 200;')]
-    body: str | None
-    copySenderFlag: bool | None
-    tasksFlag: bool | None
-    resourceRecordsFlag: bool | None
-    externalContactNotifications: bool | None
-    internalContactNotifications: bool | None
-    serviceStatus: ServiceStatusReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    subject: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    body: str | None = None
+    copySenderFlag: bool | None = None
+    tasksFlag: bool | None = None
+    resourceRecordsFlag: bool | None = None
+    externalContactNotifications: bool | None = None
+    internalContactNotifications: bool | None = None
+    serviceStatus: ServiceStatusReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceEmailTemplateReference(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    type: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    type: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceEmailTemplateType(str, Enum):
@@ -10043,12 +10270,12 @@ class ServiceEmailTemplateType(str, Enum):
 
 
 class ServiceInfo(SparkModel):
-    id: int | None
-    headerColor: str | None
-    memberColor: str | None
-    contactColor: str | None
-    unknownColor: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    headerColor: str | None = None
+    memberColor: str | None = None
+    contactColor: str | None = None
+    unknownColor: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceItemReference(ActivityReference):
@@ -10056,11 +10283,11 @@ class ServiceItemReference(ActivityReference):
 
 
 class ServiceLocation(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    where: ServiceLocationWhere
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    where: ServiceLocationWhere | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceLocationInfo(AddressFormatInfo):
@@ -10078,23 +10305,23 @@ class ServiceLocationWhere(str, Enum):
 
 
 class ServiceNote(SparkModel):
-    id: int | None
-    ticketId: int | None
-    text: str | None
-    detailDescriptionFlag: bool | None
-    internalAnalysisFlag: bool | None
-    resolutionFlag: bool | None
-    issueFlag: bool | None
-    member: MemberReference | None
-    contact: ContactReference | None
-    customerUpdatedFlag: bool | None
-    processNotifications: bool | None
-    dateCreated: str | None
-    createdBy: str | None
-    internalFlag: bool | None
-    externalFlag: bool | None
-    sentimentScore: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ticketId: int | None = None
+    text: str | None = None
+    detailDescriptionFlag: bool | None = None
+    internalAnalysisFlag: bool | None = None
+    resolutionFlag: bool | None = None
+    issueFlag: bool | None = None
+    member: MemberReference | None = None
+    contact: ContactReference | None = None
+    customerUpdatedFlag: bool | None = None
+    processNotifications: bool | None = None
+    dateCreated: str | None = None
+    createdBy: str | None = None
+    internalFlag: bool | None = None
+    externalFlag: bool | None = None
+    sentimentScore: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceRevenueReference(AgreementRevenueReference):
@@ -10108,106 +10335,110 @@ class ServiceScheduleSpan(str, Enum):
 
 
 class ServiceSignoff(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    visibleLogoFlag: bool | None
-    companyInfoFlag: bool | None
-    billingTermsFlag: bool | None
-    summaryFlag: bool | None
-    discussionFlag: bool | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    visibleLogoFlag: bool | None = None
+    companyInfoFlag: bool | None = None
+    billingTermsFlag: bool | None = None
+    summaryFlag: bool | None = None
+    discussionFlag: bool | None = None
     taskFlag: Annotated[
         bool | None,
         Field(
             description='On add/post, if this is set to true but no value is set for task, task is defaulted to ServiceTasks.All.'
         ),
-    ]
+    ] = None
     task: Annotated[
         ServiceSignoffTask | None,
         Field(
             description='On add/post, if this is set but no value is set for taskFlag, taskFlag is set to true.'
         ),
-    ]
-    configurationsFlag: bool | None
-    internalNotesFlag: bool | None
-    resolutionFlag: bool | None
+    ] = None
+    configurationsFlag: bool | None = None
+    internalNotesFlag: bool | None = None
+    resolutionFlag: bool | None = None
     timeFlag: Annotated[
         bool | None,
         Field(
             description='On add/post, if any time related flag is set to true, this is also set to true.'
         ),
-    ]
-    timeMemberFlag: bool | None
-    timeDateFlag: bool | None
-    timeStartEndFlag: bool | None
-    timeBillFlag: bool | None
-    timeHoursFlag: bool | None
-    timeRateFlag: bool | None
-    timeExtendedAmountFlag: bool | None
-    timeWorkTypeFlag: bool | None
-    timeAgreementFlag: bool | None
-    timeNotesFlag: bool | None
-    timeManualFlag: bool | None
-    timeManualEntry: int | None
-    timeTaxFlag: bool | None
+    ] = None
+    timeMemberFlag: bool | None = None
+    timeDateFlag: bool | None = None
+    timeStartEndFlag: bool | None = None
+    timeBillFlag: bool | None = None
+    timeHoursFlag: bool | None = None
+    timeRateFlag: bool | None = None
+    timeExtendedAmountFlag: bool | None = None
+    timeWorkTypeFlag: bool | None = None
+    timeAgreementFlag: bool | None = None
+    timeNotesFlag: bool | None = None
+    timeManualFlag: bool | None = None
+    timeManualEntry: int | None = None
+    timeTaxFlag: bool | None = None
     expenseFlag: Annotated[
         bool | None,
         Field(
             description='On add/post, if any expense related flag is set to true, this is also set to true.'
         ),
-    ]
-    expenseDateFlag: bool | None
-    expenseMemberFlag: bool | None
-    expenseTypeFlag: bool | None
-    expenseBillFlag: bool | None
-    expenseAmountFlag: bool | None
-    expenseAgreementFlag: bool | None
-    expenseNotesFlag: bool | None
-    expenseTaxFlag: bool | None
-    expenseManualFlag: bool | None
-    expenseManualEntry: int | None
+    ] = None
+    expenseDateFlag: bool | None = None
+    expenseMemberFlag: bool | None = None
+    expenseTypeFlag: bool | None = None
+    expenseBillFlag: bool | None = None
+    expenseAmountFlag: bool | None = None
+    expenseAgreementFlag: bool | None = None
+    expenseNotesFlag: bool | None = None
+    expenseTaxFlag: bool | None = None
+    expenseManualFlag: bool | None = None
+    expenseManualEntry: int | None = None
     productFlag: Annotated[
         bool | None,
         Field(
             description='On add/post, if any product related flag is set to true, this is also set to true.'
         ),
-    ]
-    productDescriptionFlag: bool | None
-    productBillFlag: bool | None
-    productQuantityFlag: bool | None
-    productPriceFlag: bool | None
-    productExtendedAmountFlag: bool | None
-    productAgreementFlag: bool | None
-    productManualFlag: bool | None
-    productManualEntry: int | None
-    productTaxFlag: bool | None
-    technicianSignoffFlag: bool | None
+    ] = None
+    productDescriptionFlag: bool | None = None
+    productBillFlag: bool | None = None
+    productQuantityFlag: bool | None = None
+    productPriceFlag: bool | None = None
+    productExtendedAmountFlag: bool | None = None
+    productAgreementFlag: bool | None = None
+    productManualFlag: bool | None = None
+    productManualEntry: int | None = None
+    productTaxFlag: bool | None = None
+    technicianSignoffFlag: bool | None = None
     customerSignoffTextFlag: Annotated[
         bool | None,
         Field(
             description='On add/post, if customerSignoffText.Length > 0, this is set to true.'
         ),
-    ]
-    customerSignoffText: Annotated[str | None, Field(description=' Max length: 4000;')]
-    customerSignoffFieldsFlag: bool | None
+    ] = None
+    customerSignoffText: Annotated[
+        str | None, Field(description=' Max length: 4000;')
+    ] = None
+    customerSignoffFieldsFlag: bool | None = None
     billingMethodsTextFlag: Annotated[
         bool | None,
         Field(
             description='On add/post, if billingMethodsText.Length > 0, this is set to true.'
         ),
-    ]
-    billingMethodsText: Annotated[str | None, Field(description=' Max length: 2000;')]
-    creditCardFieldsFlag: bool | None
-    defaultFFFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    billingMethodsText: Annotated[
+        str | None, Field(description=' Max length: 2000;')
+    ] = None
+    creditCardFieldsFlag: bool | None = None
+    defaultFFFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceSignoffCustomField(SparkModel):
-    id: int | None
-    sequenceNumber: float
-    displaySection: ServiceSignoffCustomFieldDisplaySection
-    userDefinedField: UserDefinedFieldReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    sequenceNumber: float | None = None
+    displaySection: ServiceSignoffCustomFieldDisplaySection | None = None
+    userDefinedField: UserDefinedFieldReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceSignoffCustomFieldDisplaySection(str, Enum):
@@ -10251,10 +10482,10 @@ class ServiceSrNotify(str, Enum):
 
 
 class ServiceStatusReference(SparkModel):
-    id: int | None
-    name: str | None
-    sort: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    sort: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceSubTypeReference(ActivityReference):
@@ -10262,38 +10493,38 @@ class ServiceSubTypeReference(ActivityReference):
 
 
 class ServiceSurvey(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    headerIncludeLogoFlag: bool | None
-    headerText: Annotated[str | None, Field(description=' Max length: 4000;')]
-    headerTextVisibleFlag: bool | None
-    footerText: Annotated[str | None, Field(description=' Max length: 500;')]
-    footerTextVisibleFlag: bool | None
-    thankYouText: Annotated[str | None, Field(description=' Max length: 4000;')]
-    notifyWho: GenericIdIdentifierReference | None
-    notifyWhoVisibleFlag: bool | None
-    notifyMember: MemberReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    headerIncludeLogoFlag: bool | None = None
+    headerText: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    headerTextVisibleFlag: bool | None = None
+    footerText: Annotated[str | None, Field(description=' Max length: 500;')] = None
+    footerTextVisibleFlag: bool | None = None
+    thankYouText: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    notifyWho: GenericIdIdentifierReference | None = None
+    notifyWhoVisibleFlag: bool | None = None
+    notifyMember: MemberReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceSurveyQuestion(SparkModel):
-    id: int | None
-    sequenceNumber: int | None
-    type: ServiceSurveyQuestionType
-    question: Annotated[str, Field(description=' Max length: 1000;')]
-    options: list[ServiceSurveyQuestionOption] | None
-    includeFlag: bool | None
-    requiredFlag: bool | None
-    noAnswerPoints: int | None
-    surveyId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    sequenceNumber: int | None = None
+    type: ServiceSurveyQuestionType | None = None
+    question: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    options: list[ServiceSurveyQuestionOption] | None = None
+    includeFlag: bool | None = None
+    requiredFlag: bool | None = None
+    noAnswerPoints: int | None = None
+    surveyId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceSurveyQuestionOption(SparkModel):
-    includeFlag: bool | None
-    caption: str | None
-    points: int | None
+    includeFlag: bool | None = None
+    caption: str | None = None
+    points: int | None = None
 
 
 class ServiceSurveyQuestionType(str, Enum):
@@ -10306,19 +10537,19 @@ class ServiceSurveyReference(ActivityReference):
 
 
 class ServiceTask(SparkModel):
-    id: int | None
-    ticketId: int | None
-    notes: str | None
-    closedFlag: bool | None
-    priority: int | None
-    schedule: ScheduleEntryReference | None
-    code: ServiceCodeReference | None
-    member: MemberReference | None
-    resolution: str | None
-    childScheduleAction: ServiceTaskChildScheduleAction | None
-    childTicketId: int | None
-    summary: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ticketId: int | None = None
+    notes: str | None = None
+    closedFlag: bool | None = None
+    priority: int | None = None
+    schedule: ScheduleEntryReference | None = None
+    code: ServiceCodeReference | None = None
+    member: MemberReference | None = None
+    resolution: str | None = None
+    childScheduleAction: ServiceTaskChildScheduleAction | None = None
+    childTicketId: int | None = None
+    summary: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTaskChildScheduleAction(str, Enum):
@@ -10328,13 +10559,13 @@ class ServiceTaskChildScheduleAction(str, Enum):
 
 
 class ServiceTeam(SparkModel):
-    id: int | None
-    name: str | None
-    leader: MemberReference | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    deleteNotifyFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    leader: MemberReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    deleteNotifyFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTeamReference(ActivityReference):
@@ -10342,68 +10573,68 @@ class ServiceTeamReference(ActivityReference):
 
 
 class ServiceTemplate(SparkModel):
-    id: int | None
-    name: str | None
-    board: BoardReference | None
-    type: ServiceTypeReference | None
-    item: ServiceItemReference | None
-    subtype: ServiceSubTypeReference | None
-    serviceLocation: ServiceLocationReference | None
-    status: ServiceStatusReference | None
-    source: ServiceSourceReference | None
-    priority: PriorityReference | None
-    team: ServiceTeamReference | None
-    company: CompanyReference | None
-    contact: ContactReference | None
-    site: SiteReference | None
-    assignedNotifyFlag: bool | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    summary: str | None
-    problem: str | None
-    hoursBudget: float | None
-    internalAnalysis: str | None
-    timeBillableFlag: bool | None
-    expenseBillableFlag: bool | None
-    purchaseOrderNumber: str | None
-    reference: str | None
-    billComplete_Flag: bool | None
-    billServiceSeparatelyFlag: bool | None
-    billingAmount: float | None
-    billUnapprovedTimeAndExpensesFlag: bool | None
-    overrideFlag: bool | None
-    timeInvoiceFlag: bool | None
-    expenseInvoiceFlag: bool | None
-    productInvoiceFlag: bool | None
-    agreement: AgreementReference | None
-    billingMethod: ProjectBillingMethod | None
-    severity: ServiceTemplateSeverity | None
-    impact: ServiceTemplateSeverity | None
-    assignedBy: MemberReference | None
-    scheduleDaysBefore: int | None
-    serviceDaysBefore: int | None
-    attachScheduleToNewServiceFlag: bool | None
-    templateFlag: bool | None
-    emailContactFlag: bool | None
-    emailResourceFlag: bool | None
-    emailCCFlag: bool | None
-    emailCC: str | None
-    restrictDownpaymentFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    board: BoardReference | None = None
+    type: ServiceTypeReference | None = None
+    item: ServiceItemReference | None = None
+    subtype: ServiceSubTypeReference | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    status: ServiceStatusReference | None = None
+    source: ServiceSourceReference | None = None
+    priority: PriorityReference | None = None
+    team: ServiceTeamReference | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    site: SiteReference | None = None
+    assignedNotifyFlag: bool | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    summary: str | None = None
+    problem: str | None = None
+    hoursBudget: float | None = None
+    internalAnalysis: str | None = None
+    timeBillableFlag: bool | None = None
+    expenseBillableFlag: bool | None = None
+    purchaseOrderNumber: str | None = None
+    reference: str | None = None
+    billComplete_Flag: bool | None = None
+    billServiceSeparatelyFlag: bool | None = None
+    billingAmount: float | None = None
+    billUnapprovedTimeAndExpensesFlag: bool | None = None
+    overrideFlag: bool | None = None
+    timeInvoiceFlag: bool | None = None
+    expenseInvoiceFlag: bool | None = None
+    productInvoiceFlag: bool | None = None
+    agreement: AgreementReference | None = None
+    billingMethod: ProjectBillingMethod | None = None
+    severity: ServiceTemplateSeverity | None = None
+    impact: ServiceTemplateSeverity | None = None
+    assignedBy: MemberReference | None = None
+    scheduleDaysBefore: int | None = None
+    serviceDaysBefore: int | None = None
+    attachScheduleToNewServiceFlag: bool | None = None
+    templateFlag: bool | None = None
+    emailContactFlag: bool | None = None
+    emailResourceFlag: bool | None = None
+    emailCCFlag: bool | None = None
+    emailCC: str | None = None
+    restrictDownpaymentFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTemplateInfo(SparkModel):
-    id: int | None
-    name: str | None
-    templateFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    templateFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTemplateReference(SparkModel):
-    id: int | None
-    name: str | None
-    summary: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    summary: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTemplateSeverity(str, Enum):
@@ -10413,41 +10644,41 @@ class ServiceTemplateSeverity(str, Enum):
 
 
 class ServiceTicketLink(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    enabledFlag: bool | None
-    linkText: Annotated[str, Field(description=' Max length: 50;')]
-    url: Annotated[str, Field(description=' Max length: 1000;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    enabledFlag: bool | None = None
+    linkText: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    url: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTicketLinkInfo(SparkModel):
-    id: int | None
-    name: str | None
-    linkText: str | None
-    url: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    linkText: str | None = None
+    url: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTicketNote(SparkModel):
-    id: int | None
-    noteType: ProjectTicketNoteNoteType | None
-    ticket: TicketReference | None
-    text: str | None
-    isMarkdownFlag: bool | None
-    detailDescriptionFlag: bool | None
-    internalAnalysisFlag: bool | None
-    resolutionFlag: bool | None
-    timeStart: str | None
-    timeEnd: str | None
-    bundledFlag: bool | None
-    mergedFlag: bool | None
-    issueFlag: bool | None
-    originalAuthor: str | None
-    createdByParentFlag: bool | None
-    member: MemberReference | None
-    contact: ContactReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    noteType: ProjectTicketNoteNoteType | None = None
+    ticket: TicketReference | None = None
+    text: str | None = None
+    isMarkdownFlag: bool | None = None
+    detailDescriptionFlag: bool | None = None
+    internalAnalysisFlag: bool | None = None
+    resolutionFlag: bool | None = None
+    timeStart: str | None = None
+    timeEnd: str | None = None
+    bundledFlag: bool | None = None
+    mergedFlag: bool | None = None
+    issueFlag: bool | None = None
+    originalAuthor: str | None = None
+    createdByParentFlag: bool | None = None
+    member: MemberReference | None = None
+    contact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ServiceTypeReference(ActivityReference):
@@ -10455,14 +10686,14 @@ class ServiceTypeReference(ActivityReference):
 
 
 class SetupScreen(SparkModel):
-    id: int | None
-    category: str | None
-    name: str | None
-    description: str | None
-    moduleDescription: str | None
-    moduleIdentifier: str | None
-    moduleName: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    category: str | None = None
+    name: str | None = None
+    description: str | None = None
+    moduleDescription: str | None = None
+    moduleIdentifier: str | None = None
+    moduleName: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Severity(Impact):
@@ -10470,19 +10701,19 @@ class Severity(Impact):
 
 
 class ShipmentMethod(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    trackingUrl: Annotated[str | None, Field(description=' Max length: 200;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    trackingUrl: Annotated[str | None, Field(description=' Max length: 200;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ShipmentMethodInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    trackingUrl: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    trackingUrl: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ShipmentMethodReference(ActivityReference):
@@ -10498,10 +10729,10 @@ class SiteReference(ActivityReference):
 
 
 class Skill(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    category: SkillCategoryReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    category: SkillCategoryReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SkillCategory(ContactDepartment):
@@ -10521,12 +10752,12 @@ class SkillReference(ActivityReference):
 
 
 class Source(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    enteredBy: str | None
-    dateEntered: datetime | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    enteredBy: str | None = None
+    dateEntered: datetime | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SourceInfo(AddressFormatInfo):
@@ -10536,80 +10767,81 @@ class SourceInfo(AddressFormatInfo):
 class SsoConfiguration(SparkModel):
     id: Annotated[
         int | None, Field(description='Unique identifier of the SSO Configuration')
-    ]
+    ] = None
     name: Annotated[
-        str, Field(description='Descriptor of the SSO Configuration Max length: 100;')
-    ]
+        str | None,
+        Field(description='Descriptor of the SSO Configuration Max length: 100;'),
+    ] = None
     ssoType: Annotated[
-        SsoConfigurationSsoType, Field(description='Type of SSO Configuration')
-    ]
+        SsoConfigurationSsoType | None, Field(description='Type of SSO Configuration')
+    ] = None
     inactiveFlag: Annotated[
         bool | None, Field(description='Whether the SSO configuration is not active')
-    ]
+    ] = None
     samlEntityId: Annotated[
         str | None, Field(description='SAML Identity Provider Id Max length: 1000;')
-    ]
+    ] = None
     samlSignInUrl: Annotated[
         str | None,
         Field(
             description='Sign in url for the SAML Identity Provider Max length: 1000;'
         ),
-    ]
+    ] = None
     samlIdpCertificate: Annotated[
         str | None,
         Field(description='Public certificate for Identity Provider signatures'),
-    ]
+    ] = None
     samlCertificateName: Annotated[
         str | None,
         Field(
             description='Name of the SAML certificate. Metadata on SAML_Idp_Certificate'
         ),
-    ]
+    ] = None
     samlCertificateIssuedTo: Annotated[
         str | None,
         Field(
             description='Who the SAML certificate was issued to. Metadata on SAML_Idp_Certificate'
         ),
-    ]
+    ] = None
     samlCertificateThumbprint: Annotated[
         str | None,
         Field(
             description='Thumbprint of the SAML certificate. Metadata on SAML_Idp_Certificate'
         ),
-    ]
+    ] = None
     samlCertificateValidFrom: Annotated[
         datetime | None,
         Field(
             description='Date when the SAML certificate becomes valid. Metadata on SAML_Idp_Certificate'
         ),
-    ]
+    ] = None
     samlCertificateValidTo: Annotated[
         datetime | None,
         Field(
             description='Date when the SAML certificate is no longer valid. Metadata on SAML_Idp_Certificate'
         ),
-    ]
+    ] = None
     locationIds: Annotated[
-        list[int],
+        list[int] | None,
         Field(description='The locations where the SAML Idp Configuration is used'),
-    ]
+    ] = None
     clientId: Annotated[
         str | None,
         Field(
             description='Client identity for this configuration of ConnectWise SSO Max length: 1000;'
         ),
-    ]
+    ] = None
     stsBaseUrl: Annotated[
         str | None, Field(description='Sign in URL for ConnectWise SSO')
-    ]
+    ] = None
     stsUserAdminUrl: Annotated[
         str | None, Field(description='User Admin Url for ConnectWise SSO')
-    ]
-    token: str | None
-    submittedMemberCount: int | None
-    allMembersSubmitted: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    isSsoOnByDefault: bool | None
+    ] = None
+    token: str | None = None
+    submittedMemberCount: int | None = None
+    allMembersSubmitted: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    isSsoOnByDefault: bool | None = None
 
 
 class SsoConfigurationSsoType(str, Enum):
@@ -10618,54 +10850,54 @@ class SsoConfigurationSsoType(str, Enum):
 
 
 class SsoUser(SparkModel):
-    id: int | None
-    ssoUserId: str | None
-    userName: str | None
-    firstName: str | None
-    lastName: str | None
-    email: str | None
-    emailConfirmed: bool | None
-    disabledFlag: bool | None
-    linkedFlag: bool | None
-    dateEntered: str | None
-    lastUpdated: str | None
-    linkedMember: MemberReference | None
+    id: int | None = None
+    ssoUserId: str | None = None
+    userName: str | None = None
+    firstName: str | None = None
+    lastName: str | None = None
+    email: str | None = None
+    emailConfirmed: bool | None = None
+    disabledFlag: bool | None = None
+    linkedFlag: bool | None = None
+    dateEntered: str | None = None
+    lastUpdated: str | None = None
+    linkedMember: MemberReference | None = None
 
 
 class StandardNote(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    contents: str
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    contents: str | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class StandardNoteInfo(SparkModel):
-    id: int | None
-    name: str | None
-    contents: str | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    board: BoardReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    contents: str | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    board: BoardReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class State(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 50;')]
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    country: CountryReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    country: CountryReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class StateInfo(SparkModel):
-    id: int | None
-    name: str | None
-    identifier: str | None
-    country: CountryReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    identifier: str | None = None
+    country: CountryReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class StateReference(CatalogItemReference):
@@ -10673,12 +10905,12 @@ class StateReference(CatalogItemReference):
 
 
 class StatusIndicator(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    color: str | None
-    icon: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    color: str | None = None
+    icon: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class StatusIndicatorReference(CatalogItemReference):
@@ -10690,35 +10922,35 @@ class StructureReference(ActivityReference):
 
 
 class SubCategory(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    category: ProductCategoryReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    category: ProductCategoryReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SubCategoryInfo(SparkModel):
-    id: int | None
-    name: str | None
-    category: ProductCategoryReference | None
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    category: ProductCategoryReference | None = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SuccessResponse(SparkModel):
-    success: bool | None
-    message: str | None
+    success: bool | None = None
+    message: str | None = None
 
 
 class Survey(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    instructions: Annotated[str | None, Field(description=' Max length: 1000;')]
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    instructions: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SurveyInfo(LegacySubCategoryInfo):
@@ -10726,24 +10958,24 @@ class SurveyInfo(LegacySubCategoryInfo):
 
 
 class SurveyOption(SparkModel):
-    id: int | None
-    caption: Annotated[str, Field(description=' Max length: 100;')]
-    points: int
-    visibleflag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    caption: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    points: int | None = None
+    visibleflag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SurveyQuestion(SparkModel):
-    id: int | None
-    survey: SurveyReference | None
-    fieldType: SurveyQuestionFieldType
-    entryType: ConfigurationTypeQuestionEntryType
-    sequenceNumber: float
-    question: Annotated[str, Field(description=' Max length: 1000;')]
-    numberOfDecimals: int | None
-    requiredFlag: bool | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    survey: SurveyReference | None = None
+    fieldType: SurveyQuestionFieldType | None = None
+    entryType: ConfigurationTypeQuestionEntryType | None = None
+    sequenceNumber: float | None = None
+    question: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    numberOfDecimals: int | None = None
+    requiredFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SurveyQuestionFieldType(str, Enum):
@@ -10765,14 +10997,14 @@ class SurveyQuestionReference(ConfigurationTypeQuestionReference):
 
 
 class SurveyQuestionValue(SparkModel):
-    id: int | None
-    survey: SurveyReference | None
-    question: SurveyQuestionReference | None
-    value: Annotated[str, Field(description=' Max length: 1000;')]
-    defaultFlag: bool | None
-    pointValue: int | None
-    inactiveFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    survey: SurveyReference | None = None
+    question: SurveyQuestionReference | None = None
+    value: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    defaultFlag: bool | None = None
+    pointValue: int | None = None
+    inactiveFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SurveyReference(ActivityReference):
@@ -10780,27 +11012,27 @@ class SurveyReference(ActivityReference):
 
 
 class SurveyResult(SparkModel):
-    id: int | None
-    ticketId: int
-    emailAddress: str | None
-    footerResponse: str | None
-    contactMeFlag: bool | None
-    contact: ContactReference | None
-    results: list[SurveyResultDetail] | None
-    totalPoints: int | None
-    company: CompanyReference | None
-    surveyId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ticketId: int | None = None
+    emailAddress: str | None = None
+    footerResponse: str | None = None
+    contactMeFlag: bool | None = None
+    contact: ContactReference | None = None
+    results: list[SurveyResultDetail] | None = None
+    totalPoints: int | None = None
+    company: CompanyReference | None = None
+    surveyId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class SurveyResultDetail(SparkModel):
-    questionId: int | None
+    questionId: int | None = None
     answer: Annotated[
         dict[str, Any_aliased] | None,
         Field(
             description='If question type is Selection, this should be the option array index.'
         ),
-    ]
+    ] = None
 
 
 class SystemDepartmentReference(CatalogItemReference):
@@ -10816,149 +11048,179 @@ class SystemMenuEntryReference(ActivityReference):
 
 
 class SystemSetting(SparkModel):
-    id: int | None
-    description: str | None
-    value: str
-    valueType: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: str | None = None
+    value: str | None = None
+    valueType: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxCode(SparkModel):
-    id: int | None
-    identifier: Annotated[str, Field(description=' Max length: 8;')]
-    description: Annotated[str, Field(description=' Max length: 50;')]
-    invoiceCaption: Annotated[str, Field(description=' Max length: 25;')]
-    country: CountryReference | None
-    effectiveDate: datetime
-    defaultFlag: bool | None
-    displayOnInvoiceFlag: bool | None
-    canadaCalculateGSTFlag: bool | None
-    cancelDate: datetime | None
-    levelOneRate: float | None
-    levelOneRateType: TaxCodeLevelOneRateType | None
-    levelOneTaxableMax: float | None
-    levelOneCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    levelOneTaxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    levelOneAgencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    levelOneServicesFlag: bool | None
-    levelOneExpensesFlag: bool | None
-    levelOneProductsFlag: bool | None
-    levelOneApplySingleUnitFlag: bool | None
-    levelOneApplySingleUnitMin: float | None
-    levelOneApplySingleUnitMax: float | None
-    levelTwoRate: float | None
-    levelTwoRateType: TaxCodeLevelOneRateType | None
-    levelTwoTaxableMax: float | None
-    levelTwoCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    levelTwoTaxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    levelTwoAgencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    levelTwoServicesFlag: bool | None
-    levelTwoExpensesFlag: bool | None
-    levelTwoProductsFlag: bool | None
-    levelTwoApplySingleUnitFlag: bool | None
-    levelTwoApplySingleUnitMin: float | None
-    levelTwoApplySingleUnitMax: float | None
-    levelThreeRate: float | None
-    levelThreeRateType: TaxCodeLevelOneRateType | None
-    levelThreeTaxableMax: float | None
-    levelThreeCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    levelThreeTaxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    levelThreeAgencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    levelThreeServicesFlag: bool | None
-    levelThreeExpensesFlag: bool | None
-    levelThreeProductsFlag: bool | None
-    levelThreeApplySingleUnitFlag: bool | None
-    levelThreeApplySingleUnitMin: float | None
-    levelThreeApplySingleUnitMax: float | None
-    levelFourRate: float | None
-    levelFourRateType: TaxCodeLevelOneRateType | None
-    levelFourTaxableMax: float | None
-    levelFourCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    levelFourTaxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    levelFourAgencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    levelFourServicesFlag: bool | None
-    levelFourExpensesFlag: bool | None
-    levelFourProductsFlag: bool | None
-    levelFourApplySingleUnitFlag: bool | None
-    levelFourApplySingleUnitMin: float | None
-    levelFourApplySingleUnitMax: float | None
-    levelFiveRate: float | None
-    levelFiveRateType: TaxCodeLevelOneRateType | None
-    levelFiveTaxableMax: float | None
-    levelFiveCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    levelFiveTaxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    levelFiveAgencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    levelFiveServicesFlag: bool | None
-    levelFiveExpensesFlag: bool | None
-    levelFiveProductsFlag: bool | None
-    levelFiveApplySingleUnitFlag: bool | None
-    levelFiveApplySingleUnitMin: float | None
-    levelFiveApplySingleUnitMax: float | None
-    levelSixRate: float | None
-    levelSixRateType: TaxCodeLevelOneRateType | None
-    levelSixTaxableMax: float | None
-    levelSixCaption: Annotated[str | None, Field(description=' Max length: 25;')]
-    levelSixTaxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    levelSixAgencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    levelSixServicesFlag: bool | None
-    levelSixExpensesFlag: bool | None
-    levelSixProductsFlag: bool | None
-    levelSixApplySingleUnitFlag: bool | None
-    levelSixApplySingleUnitMin: float | None
-    levelSixApplySingleUnitMax: float | None
+    id: int | None = None
+    identifier: Annotated[str | None, Field(description=' Max length: 8;')] = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    invoiceCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    country: CountryReference | None = None
+    effectiveDate: datetime | None = None
+    defaultFlag: bool | None = None
+    displayOnInvoiceFlag: bool | None = None
+    canadaCalculateGSTFlag: bool | None = None
+    cancelDate: datetime | None = None
+    levelOneRate: float | None = None
+    levelOneRateType: TaxCodeLevelOneRateType | None = None
+    levelOneTaxableMax: float | None = None
+    levelOneCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    levelOneTaxCodeXref: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    levelOneAgencyXref: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    levelOneServicesFlag: bool | None = None
+    levelOneExpensesFlag: bool | None = None
+    levelOneProductsFlag: bool | None = None
+    levelOneApplySingleUnitFlag: bool | None = None
+    levelOneApplySingleUnitMin: float | None = None
+    levelOneApplySingleUnitMax: float | None = None
+    levelTwoRate: float | None = None
+    levelTwoRateType: TaxCodeLevelOneRateType | None = None
+    levelTwoTaxableMax: float | None = None
+    levelTwoCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    levelTwoTaxCodeXref: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    levelTwoAgencyXref: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    levelTwoServicesFlag: bool | None = None
+    levelTwoExpensesFlag: bool | None = None
+    levelTwoProductsFlag: bool | None = None
+    levelTwoApplySingleUnitFlag: bool | None = None
+    levelTwoApplySingleUnitMin: float | None = None
+    levelTwoApplySingleUnitMax: float | None = None
+    levelThreeRate: float | None = None
+    levelThreeRateType: TaxCodeLevelOneRateType | None = None
+    levelThreeTaxableMax: float | None = None
+    levelThreeCaption: Annotated[str | None, Field(description=' Max length: 25;')] = (
+        None
+    )
+    levelThreeTaxCodeXref: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    levelThreeAgencyXref: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    levelThreeServicesFlag: bool | None = None
+    levelThreeExpensesFlag: bool | None = None
+    levelThreeProductsFlag: bool | None = None
+    levelThreeApplySingleUnitFlag: bool | None = None
+    levelThreeApplySingleUnitMin: float | None = None
+    levelThreeApplySingleUnitMax: float | None = None
+    levelFourRate: float | None = None
+    levelFourRateType: TaxCodeLevelOneRateType | None = None
+    levelFourTaxableMax: float | None = None
+    levelFourCaption: Annotated[str | None, Field(description=' Max length: 25;')] = (
+        None
+    )
+    levelFourTaxCodeXref: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    levelFourAgencyXref: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    levelFourServicesFlag: bool | None = None
+    levelFourExpensesFlag: bool | None = None
+    levelFourProductsFlag: bool | None = None
+    levelFourApplySingleUnitFlag: bool | None = None
+    levelFourApplySingleUnitMin: float | None = None
+    levelFourApplySingleUnitMax: float | None = None
+    levelFiveRate: float | None = None
+    levelFiveRateType: TaxCodeLevelOneRateType | None = None
+    levelFiveTaxableMax: float | None = None
+    levelFiveCaption: Annotated[str | None, Field(description=' Max length: 25;')] = (
+        None
+    )
+    levelFiveTaxCodeXref: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    levelFiveAgencyXref: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    levelFiveServicesFlag: bool | None = None
+    levelFiveExpensesFlag: bool | None = None
+    levelFiveProductsFlag: bool | None = None
+    levelFiveApplySingleUnitFlag: bool | None = None
+    levelFiveApplySingleUnitMin: float | None = None
+    levelFiveApplySingleUnitMax: float | None = None
+    levelSixRate: float | None = None
+    levelSixRateType: TaxCodeLevelOneRateType | None = None
+    levelSixTaxableMax: float | None = None
+    levelSixCaption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    levelSixTaxCodeXref: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    levelSixAgencyXref: Annotated[
+        str | None, Field(description=' Max length: 100;')
+    ] = None
+    levelSixServicesFlag: bool | None = None
+    levelSixExpensesFlag: bool | None = None
+    levelSixProductsFlag: bool | None = None
+    levelSixApplySingleUnitFlag: bool | None = None
+    levelSixApplySingleUnitMin: float | None = None
+    levelSixApplySingleUnitMax: float | None = None
     workRoleIds: Annotated[
         list[int] | None,
         Field(description='Array of work role exemptions for the tax code.'),
-    ]
-    addAllWorkRoles: bool | None
-    removeAllWorkRoles: bool | None
+    ] = None
+    addAllWorkRoles: bool | None = None
+    removeAllWorkRoles: bool | None = None
     expenseTypeIds: Annotated[
         list[int] | None,
         Field(description='Array of expense type exemptions for the tax code.'),
-    ]
-    addAllExpenseTypes: bool | None
-    removeAllExpenseTypes: bool | None
+    ] = None
+    addAllExpenseTypes: bool | None = None
+    removeAllExpenseTypes: bool | None = None
     productTypeIds: Annotated[
         list[int] | None,
         Field(description='Array of product type exemptions for the tax code.'),
-    ]
-    addAllProductTypes: bool | None
-    removeAllProductTypes: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    addAllProductTypes: bool | None = None
+    removeAllProductTypes: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxCodeInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    description: str | None
-    effectiveDate: str | None
-    cancelDate: str | None
-    defaultFlag: bool | None
-    levelOneRate: float | None
-    levelTwoRate: float | None
-    levelThreeRate: float | None
-    levelFourRate: float | None
-    levelFiveRate: float | None
-    levelSixRate: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    description: str | None = None
+    effectiveDate: str | None = None
+    cancelDate: str | None = None
+    defaultFlag: bool | None = None
+    levelOneRate: float | None = None
+    levelTwoRate: float | None = None
+    levelThreeRate: float | None = None
+    levelFourRate: float | None = None
+    levelFiveRate: float | None = None
+    levelSixRate: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxCodeLevel(SparkModel):
-    id: int | None
-    taxLevel: int | None
-    taxRate: float
-    rateType: TaxCodeLevelOneRateType
-    taxableMax: float | None
-    caption: Annotated[str | None, Field(description=' Max length: 25;')]
-    taxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    agencyXref: Annotated[str | None, Field(description=' Max length: 100;')]
-    taxServicesFlag: bool | None
-    taxExpensesFlag: bool | None
-    taxProductsFlag: bool | None
-    singleUnitFlag: bool | None
-    singleUnitMinimum: float | None
-    singleUnitMaximum: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    taxLevel: int | None = None
+    taxRate: float | None = None
+    rateType: TaxCodeLevelOneRateType | None = None
+    taxableMax: float | None = None
+    caption: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    taxCodeXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    agencyXref: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    taxServicesFlag: bool | None = None
+    taxExpensesFlag: bool | None = None
+    taxProductsFlag: bool | None = None
+    singleUnitFlag: bool | None = None
+    singleUnitMinimum: float | None = None
+    singleUnitMaximum: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxCodeLevelOneRateType(str, Enum):
@@ -10975,18 +11237,18 @@ class TaxCodeReference(ActivityReference):
 
 
 class TaxCodeXRef(SparkModel):
-    id: int | None
-    description: Annotated[str, Field(description=' Max length: 50;')]
-    defaultFlag: bool | None
-    levelOne: TaxCodeXRefLevelOne | None
-    levelTwo: TaxCodeXRefLevelOne | None
-    levelThree: TaxCodeXRefLevelOne | None
-    levelFour: TaxCodeXRefLevelOne | None
-    levelFive: TaxCodeXRefLevelOne | None
-    levelSix: TaxCodeXRefLevelOne | None
-    taxCode: TaxCodeReference | None
-    taxableLevels: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    description: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultFlag: bool | None = None
+    levelOne: TaxCodeXRefLevelOne | None = None
+    levelTwo: TaxCodeXRefLevelOne | None = None
+    levelThree: TaxCodeXRefLevelOne | None = None
+    levelFour: TaxCodeXRefLevelOne | None = None
+    levelFive: TaxCodeXRefLevelOne | None = None
+    levelSix: TaxCodeXRefLevelOne | None = None
+    taxCode: TaxCodeReference | None = None
+    taxableLevels: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxCodeXRefLevelOne(str, Enum):
@@ -10995,30 +11257,32 @@ class TaxCodeXRefLevelOne(str, Enum):
 
 
 class TaxIntegration(SparkModel):
-    taxIntegrationType: TaxIntegrationTaxIntegrationType | None
-    id: int | None
-    accountNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    licenseKey: Annotated[str | None, Field(description=' Max length: 50;')]
-    serviceUrl: Annotated[str | None, Field(description=' Max length: 250;')]
-    companyCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    timeTaxCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    expenseTaxCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    productTaxCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    invoiceAmountTaxCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    enabledFlag: bool | None
-    commitTransactionsFlag: bool | None
-    salesInvoiceFlag: bool | None
-    freightTaxCode: Annotated[str | None, Field(description=' Max length: 50;')]
-    accountingIntegrationFlag: bool | None
-    taxLineFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    taxIntegrationType: TaxIntegrationTaxIntegrationType | None = None
+    id: int | None = None
+    accountNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    licenseKey: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    serviceUrl: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    companyCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    timeTaxCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    expenseTaxCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    productTaxCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    invoiceAmountTaxCode: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    enabledFlag: bool | None = None
+    commitTransactionsFlag: bool | None = None
+    salesInvoiceFlag: bool | None = None
+    freightTaxCode: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    accountingIntegrationFlag: bool | None = None
+    taxLineFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxIntegrationInfo(SparkModel):
-    id: int | None
-    enabledFlag: bool | None
-    taxIntegrationType: TaxIntegrationTaxIntegrationType | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    enabledFlag: bool | None = None
+    taxIntegrationType: TaxIntegrationTaxIntegrationType | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxIntegrationTaxIntegrationType(str, Enum):
@@ -11026,9 +11290,9 @@ class TaxIntegrationTaxIntegrationType(str, Enum):
 
 
 class TaxableExpenseTypeLevel(SparkModel):
-    id: int | None
-    taxCodeLevel: TaxCodeLevelReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    taxCodeLevel: TaxCodeLevelReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TaxableProductTypeLevel(TaxableExpenseTypeLevel):
@@ -11044,33 +11308,33 @@ class TaxableXRefLevel(TaxableExpenseTypeLevel):
 
 
 class Team(SparkModel):
-    id: int | None
-    type: TeamType
-    member: MemberReference | None
-    salesTeam: SalesTeamReference | None
-    commissionPercent: int | None
-    referralFlag: bool | None
-    opportunityId: int | None
-    responsibleFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: TeamType | None = None
+    member: MemberReference | None = None
+    salesTeam: SalesTeamReference | None = None
+    commissionPercent: int | None = None
+    referralFlag: bool | None = None
+    opportunityId: int | None = None
+    responsibleFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TeamMember(SparkModel):
-    id: int | None
-    board: BoardReference | None
-    team: ServiceTeamReference
-    member: MemberReference
-    teamLeaderFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    board: BoardReference | None = None
+    team: ServiceTeamReference | None = None
+    member: MemberReference | None = None
+    teamLeaderFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TeamRole(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 20;')]
-    accountManagerFlag: bool | None
-    techFlag: bool | None
-    salesFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 20;')] = None
+    accountManagerFlag: bool | None = None
+    techFlag: bool | None = None
+    salesFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TeamRoleInfo(ActivityReference):
@@ -11087,285 +11351,301 @@ class TeamType(str, Enum):
 
 
 class TemplateGeneratedCountsModel(SparkModel):
-    serviceCount: int | None
-    scheduleCount: int | None
+    serviceCount: int | None = None
+    scheduleCount: int | None = None
 
 
 class TemplatePhase(SparkModel):
-    parentPhase: ProjectTemplatePhaseReference | None
-    id: int | None
-    templateId: int | None
-    description: str | None
-    notes: str | None
-    markAsMilestoneFlag: bool | None
-    billPhaseSeparately: bool | None
-    wbsCode: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    parentPhase: ProjectTemplatePhaseReference | None = None
+    id: int | None = None
+    templateId: int | None = None
+    description: str | None = None
+    notes: str | None = None
+    markAsMilestoneFlag: bool | None = None
+    billPhaseSeparately: bool | None = None
+    wbsCode: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Ticket(SparkModel):
-    id: int | None
-    summary: Annotated[str, Field(description=' Max length: 100;')]
-    recordType: ConvertItemRecordType | None
-    board: BoardReference | None
-    status: ServiceStatusReference | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    company: CompanyReference
-    site: SiteReference | None
-    siteName: Annotated[str | None, Field(description=' Max length: 50;')]
-    addressLine1: Annotated[str | None, Field(description=' Max length: 50;')]
-    addressLine2: Annotated[str | None, Field(description=' Max length: 50;')]
-    city: Annotated[str | None, Field(description=' Max length: 50;')]
-    stateIdentifier: Annotated[str | None, Field(description=' Max length: 50;')]
-    zip: Annotated[str | None, Field(description=' Max length: 12;')]
-    country: CountryReference | None
-    contact: ContactReference | None
-    contactName: Annotated[str | None, Field(description=' Max length: 62;')]
-    contactPhoneNumber: Annotated[str | None, Field(description=' Max length: 20;')]
-    contactPhoneExtension: Annotated[str | None, Field(description=' Max length: 15;')]
-    contactEmailAddress: Annotated[str | None, Field(description=' Max length: 250;')]
-    type: ServiceTypeReference | None
-    subType: ServiceSubTypeReference | None
-    item: ServiceItemReference | None
-    team: ServiceTeamReference | None
-    owner: MemberReference | None
-    priority: PriorityReference | None
-    serviceLocation: ServiceLocationReference | None
-    source: ServiceSourceReference | None
-    requiredDate: datetime | None
-    budgetHours: float | None
-    opportunity: OpportunityReference | None
-    agreement: AgreementReference | None
-    agreementType: str | None
+    id: int | None = None
+    summary: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    recordType: ConvertItemRecordType | None = None
+    board: BoardReference | None = None
+    status: ServiceStatusReference | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    company: CompanyReference | None = None
+    site: SiteReference | None = None
+    siteName: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressLine1: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    addressLine2: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    city: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    stateIdentifier: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    zip: Annotated[str | None, Field(description=' Max length: 12;')] = None
+    country: CountryReference | None = None
+    contact: ContactReference | None = None
+    contactName: Annotated[str | None, Field(description=' Max length: 62;')] = None
+    contactPhoneNumber: Annotated[str | None, Field(description=' Max length: 20;')] = (
+        None
+    )
+    contactPhoneExtension: Annotated[
+        str | None, Field(description=' Max length: 15;')
+    ] = None
+    contactEmailAddress: Annotated[
+        str | None, Field(description=' Max length: 250;')
+    ] = None
+    type: ServiceTypeReference | None = None
+    subType: ServiceSubTypeReference | None = None
+    item: ServiceItemReference | None = None
+    team: ServiceTeamReference | None = None
+    owner: MemberReference | None = None
+    priority: PriorityReference | None = None
+    serviceLocation: ServiceLocationReference | None = None
+    source: ServiceSourceReference | None = None
+    requiredDate: datetime | None = None
+    budgetHours: float | None = None
+    opportunity: OpportunityReference | None = None
+    agreement: AgreementReference | None = None
+    agreementType: str | None = None
     severity: Annotated[
         ServiceTemplateSeverity | None, Field(description=' Required On Updates;')
-    ]
+    ] = None
     impact: Annotated[
         ServiceTemplateSeverity | None, Field(description=' Required On Updates;')
-    ]
-    externalXRef: Annotated[str | None, Field(description=' Max length: 100;')]
-    poNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    knowledgeBaseCategoryId: int | None
-    knowledgeBaseSubCategoryId: int | None
-    allowAllClientsPortalView: bool | None
-    customerUpdatedFlag: bool | None
-    automaticEmailContactFlag: bool | None
-    automaticEmailResourceFlag: bool | None
-    automaticEmailCcFlag: bool | None
-    automaticEmailCc: Annotated[str | None, Field(description=' Max length: 1000;')]
+    ] = None
+    externalXRef: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    poNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    knowledgeBaseCategoryId: int | None = None
+    knowledgeBaseSubCategoryId: int | None = None
+    allowAllClientsPortalView: bool | None = None
+    customerUpdatedFlag: bool | None = None
+    automaticEmailContactFlag: bool | None = None
+    automaticEmailResourceFlag: bool | None = None
+    automaticEmailCcFlag: bool | None = None
+    automaticEmailCc: Annotated[str | None, Field(description=' Max length: 1000;')] = (
+        None
+    )
     initialDescription: Annotated[
         str | None,
         Field(
             description='Only available for POST, will not be returned in the response.'
         ),
-    ]
+    ] = None
     initialInternalAnalysis: Annotated[
         str | None,
         Field(
             description='Only available for POST, will not be returned in the response.'
         ),
-    ]
+    ] = None
     initialResolution: Annotated[
         str | None,
         Field(
             description='Only available for POST, will not be returned in the response.'
         ),
-    ]
-    initialDescriptionFrom: str | None
-    contactEmailLookup: str | None
+    ] = None
+    initialDescriptionFrom: str | None = None
+    contactEmailLookup: str | None = None
     processNotifications: Annotated[
         bool | None,
         Field(
             description='Can be set to false to skip notification processing when adding or updating a ticket (Defaults to True).'
         ),
-    ]
-    skipCallback: bool | None
-    closedDate: str | None
-    closedBy: str | None
-    closedFlag: bool | None
-    actualHours: float | None
-    approved: bool | None
-    estimatedExpenseCost: float | None
-    estimatedExpenseRevenue: float | None
-    estimatedProductCost: float | None
-    estimatedProductRevenue: float | None
-    estimatedTimeCost: float | None
-    estimatedTimeRevenue: float | None
-    billingMethod: ProjectBillingMethod | None
-    billingAmount: float | None
-    hourlyRate: float | None
-    subBillingMethod: ProjectBillingMethod | None
-    subBillingAmount: float | None
-    subDateAccepted: str | None
-    dateResolved: str | None
-    dateResplan: str | None
-    dateResponded: str | None
-    resolveMinutes: int | None
-    resPlanMinutes: int | None
-    respondMinutes: int | None
-    isInSla: bool | None
-    knowledgeBaseLinkId: int | None
-    resources: str | None
-    parentTicketId: int | None
-    hasChildTicket: bool | None
-    hasMergedChildTicketFlag: bool | None
-    knowledgeBaseLinkType: ProjectTicketKnowledgeBaseLinkType | None
-    billTime: ActivityStopwatchBillableOption | None
-    billExpenses: ActivityStopwatchBillableOption | None
-    billProducts: ActivityStopwatchBillableOption | None
-    predecessorType: ProjectTemplateTicketPredecessorType | None
-    predecessorId: int | None
-    predecessorClosedFlag: bool | None
-    lagDays: int | None
-    lagNonworkingDaysFlag: bool | None
-    estimatedStartDate: datetime | None
-    duration: int | None
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    mobileGuid: UUID | None
-    sla: SLAReference | None
-    slaStatus: str | None
-    requestForChangeFlag: bool | None
-    currency: CurrencyReference | None
-    mergedParentTicket: TicketReference | None
-    integratorTags: list[str] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    escalationStartDateUTC: str | None
-    escalationLevel: int | None
-    minutesBeforeWaiting: int | None
-    respondedSkippedMinutes: int | None
-    resplanSkippedMinutes: int | None
-    respondedHours: float | None
-    respondedBy: str | None
-    resplanHours: float | None
-    resplanBy: str | None
-    resolutionHours: float | None
-    resolvedBy: str | None
-    minutesWaiting: int | None
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    skipCallback: bool | None = None
+    closedDate: str | None = None
+    closedBy: str | None = None
+    closedFlag: bool | None = None
+    actualHours: float | None = None
+    approved: bool | None = None
+    estimatedExpenseCost: float | None = None
+    estimatedExpenseRevenue: float | None = None
+    estimatedProductCost: float | None = None
+    estimatedProductRevenue: float | None = None
+    estimatedTimeCost: float | None = None
+    estimatedTimeRevenue: float | None = None
+    billingMethod: ProjectBillingMethod | None = None
+    billingAmount: float | None = None
+    hourlyRate: float | None = None
+    subBillingMethod: ProjectBillingMethod | None = None
+    subBillingAmount: float | None = None
+    subDateAccepted: str | None = None
+    dateResolved: str | None = None
+    dateResplan: str | None = None
+    dateResponded: str | None = None
+    resolveMinutes: int | None = None
+    resPlanMinutes: int | None = None
+    respondMinutes: int | None = None
+    isInSla: bool | None = None
+    knowledgeBaseLinkId: int | None = None
+    resources: str | None = None
+    parentTicketId: int | None = None
+    hasChildTicket: bool | None = None
+    hasMergedChildTicketFlag: bool | None = None
+    knowledgeBaseLinkType: ProjectTicketKnowledgeBaseLinkType | None = None
+    billTime: ActivityStopwatchBillableOption | None = None
+    billExpenses: ActivityStopwatchBillableOption | None = None
+    billProducts: ActivityStopwatchBillableOption | None = None
+    predecessorType: ProjectTemplateTicketPredecessorType | None = None
+    predecessorId: int | None = None
+    predecessorClosedFlag: bool | None = None
+    lagDays: int | None = None
+    lagNonworkingDaysFlag: bool | None = None
+    estimatedStartDate: datetime | None = None
+    duration: int | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    mobileGuid: UUID | None = None
+    sla: SLAReference | None = None
+    slaStatus: str | None = None
+    requestForChangeFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    mergedParentTicket: TicketReference | None = None
+    integratorTags: list[str] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    escalationStartDateUTC: str | None = None
+    escalationLevel: int | None = None
+    minutesBeforeWaiting: int | None = None
+    respondedSkippedMinutes: int | None = None
+    resplanSkippedMinutes: int | None = None
+    respondedHours: float | None = None
+    respondedBy: str | None = None
+    resplanHours: float | None = None
+    resplanBy: str | None = None
+    resolutionHours: float | None = None
+    resolvedBy: str | None = None
+    minutesWaiting: int | None = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class TicketBundle(SparkModel):
-    childTicketIds: list[int] | None
+    childTicketIds: list[int] | None = None
 
 
 class TicketChangeLog(SparkModel):
-    id: Annotated[int | None, Field(description='Ticket Change Log ID')]
-    partnerId: Annotated[str | None, Field(description='Partner ID.')]
-    productInstanceId: Annotated[str | None, Field(description='Product Instance ID.')]
-    action: Annotated[str | None, Field(description='Action.')]
-    boardId: Annotated[int | None, Field(description='Board ID.')]
-    boardName: Annotated[str | None, Field(description='Board Name.')]
-    companyIdentifier: Annotated[int | None, Field(description='Company Identifier.')]
-    companyName: Annotated[str | None, Field(description='Company Name.')]
-    contactId: Annotated[int | None, Field(description='Contact ID.')]
-    contactName: Annotated[str | None, Field(description='Contact Name.')]
-    impact: Annotated[str | None, Field(description='Impact.')]
-    ownerIdentifier: Annotated[int | None, Field(description='Owner Identifier.')]
-    priorityId: Annotated[int | None, Field(description='Priority ID.')]
-    priorityLevel: Annotated[str | None, Field(description='Priority Level.')]
-    priorityName: Annotated[str | None, Field(description='Priority Name.')]
-    prioritySort: Annotated[int | None, Field(description='Priority Sort.')]
-    resourceList: Annotated[str | None, Field(description='Resource List.')]
-    severity: Annotated[str | None, Field(description='Severity.')]
-    slaName: Annotated[str | None, Field(description='SLA Name.')]
-    slaStatus: Annotated[str | None, Field(description='SLA Status.')]
-    status: Annotated[str | None, Field(description='Status.')]
-    summary: Annotated[str | None, Field(description='Summary.')]
-    teamName: Annotated[str | None, Field(description='Team Name.')]
-    ticketNumber: Annotated[int | None, Field(description='Ticket Number.')]
-    recordType: Annotated[str | None, Field(description='Record Type.')]
-    ticketOwner: Annotated[str | None, Field(description='Ticket Owner.')]
-    closedFlag: Annotated[bool | None, Field(description='Closed Flag.')]
+    id: Annotated[int | None, Field(description='Ticket Change Log ID')] = None
+    partnerId: Annotated[str | None, Field(description='Partner ID.')] = None
+    productInstanceId: Annotated[
+        str | None, Field(description='Product Instance ID.')
+    ] = None
+    action: Annotated[str | None, Field(description='Action.')] = None
+    boardId: Annotated[int | None, Field(description='Board ID.')] = None
+    boardName: Annotated[str | None, Field(description='Board Name.')] = None
+    companyIdentifier: Annotated[
+        int | None, Field(description='Company Identifier.')
+    ] = None
+    companyName: Annotated[str | None, Field(description='Company Name.')] = None
+    contactId: Annotated[int | None, Field(description='Contact ID.')] = None
+    contactName: Annotated[str | None, Field(description='Contact Name.')] = None
+    impact: Annotated[str | None, Field(description='Impact.')] = None
+    ownerIdentifier: Annotated[int | None, Field(description='Owner Identifier.')] = (
+        None
+    )
+    priorityId: Annotated[int | None, Field(description='Priority ID.')] = None
+    priorityLevel: Annotated[str | None, Field(description='Priority Level.')] = None
+    priorityName: Annotated[str | None, Field(description='Priority Name.')] = None
+    prioritySort: Annotated[int | None, Field(description='Priority Sort.')] = None
+    resourceList: Annotated[str | None, Field(description='Resource List.')] = None
+    severity: Annotated[str | None, Field(description='Severity.')] = None
+    slaName: Annotated[str | None, Field(description='SLA Name.')] = None
+    slaStatus: Annotated[str | None, Field(description='SLA Status.')] = None
+    status: Annotated[str | None, Field(description='Status.')] = None
+    summary: Annotated[str | None, Field(description='Summary.')] = None
+    teamName: Annotated[str | None, Field(description='Team Name.')] = None
+    ticketNumber: Annotated[int | None, Field(description='Ticket Number.')] = None
+    recordType: Annotated[str | None, Field(description='Record Type.')] = None
+    ticketOwner: Annotated[str | None, Field(description='Ticket Owner.')] = None
+    closedFlag: Annotated[bool | None, Field(description='Closed Flag.')] = None
     customerUpdatedFlag: Annotated[
         bool | None, Field(description='Customer Updated Flag.')
-    ]
-    processingStatus: Annotated[str | None, Field(description='Processing Status.')]
-    parentTicketId: Annotated[int | None, Field(description='Parent Ticket ID.')]
+    ] = None
+    processingStatus: Annotated[str | None, Field(description='Processing Status.')] = (
+        None
+    )
+    parentTicketId: Annotated[int | None, Field(description='Parent Ticket ID.')] = None
     mergedParentTicketId: Annotated[
         int | None, Field(description='Merged Parent Ticket ID.')
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TicketInfo(SparkModel):
-    id: int | None
-    summary: str | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    summary: str | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TicketMerge(SparkModel):
-    mergeTicketIds: list[int]
-    status: ServiceStatusReference
+    mergeTicketIds: list[int] | None = None
+    status: ServiceStatusReference | None = None
 
 
 class TicketNote(SparkModel):
-    id: int | None
-    ticketId: int | None
-    text: str | None
-    detailDescriptionFlag: bool | None
-    internalAnalysisFlag: bool | None
-    resolutionFlag: bool | None
-    issueFlag: bool | None
-    member: MemberReference | None
-    contact: ContactReference | None
-    customerUpdatedFlag: bool | None
-    processNotifications: bool | None
-    internalFlag: bool | None
-    externalFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ticketId: int | None = None
+    text: str | None = None
+    detailDescriptionFlag: bool | None = None
+    internalAnalysisFlag: bool | None = None
+    resolutionFlag: bool | None = None
+    issueFlag: bool | None = None
+    member: MemberReference | None = None
+    contact: ContactReference | None = None
+    customerUpdatedFlag: bool | None = None
+    processNotifications: bool | None = None
+    internalFlag: bool | None = None
+    externalFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TicketReference(SparkModel):
-    id: int | None
-    summary: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    summary: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TicketStopwatch(SparkModel):
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    agreement: AgreementReference | None
-    billableOption: ActivityStopwatchBillableOption | None
-    businessUnitId: int | None
-    dateEntered: datetime | None
-    endTime: datetime | None
-    id: int | None
-    internalNotes: str | None
-    locationId: int | None
-    member: MemberReference
-    mobileGuid: UUID | None
-    notes: Annotated[str | None, Field(description=' Max length: 4000;')]
-    serviceStatus: ServiceStatusReference | None
-    startTime: datetime | None
-    status: ActivityStopwatchStatus
-    ticket: TicketReference
-    ticketMobileGuid: UUID | None
-    totalPauseTime: int | None
-    workRole: WorkRoleReference | None
-    workType: WorkTypeReference | None
-    showNotesInDiscussionFlag: bool | None
-    showNotesInInternalFlag: bool | None
-    showNotesInResolutionFlag: bool | None
-    emailNotesToContactFlag: bool | None
-    emailNotesToResourcesFlag: bool | None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    agreement: AgreementReference | None = None
+    billableOption: ActivityStopwatchBillableOption | None = None
+    businessUnitId: int | None = None
+    dateEntered: datetime | None = None
+    endTime: datetime | None = None
+    id: int | None = None
+    internalNotes: str | None = None
+    locationId: int | None = None
+    member: MemberReference | None = None
+    mobileGuid: UUID | None = None
+    notes: Annotated[str | None, Field(description=' Max length: 4000;')] = None
+    serviceStatus: ServiceStatusReference | None = None
+    startTime: datetime | None = None
+    status: ActivityStopwatchStatus | None = None
+    ticket: TicketReference | None = None
+    ticketMobileGuid: UUID | None = None
+    totalPauseTime: int | None = None
+    workRole: WorkRoleReference | None = None
+    workType: WorkTypeReference | None = None
+    showNotesInDiscussionFlag: bool | None = None
+    showNotesInInternalFlag: bool | None = None
+    showNotesInResolutionFlag: bool | None = None
+    emailNotesToContactFlag: bool | None = None
+    emailNotesToResourcesFlag: bool | None = None
 
 
 class TicketSync(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 80;')]
-    vendorType: TicketSyncVendorType
-    integratorLogin: IntegratorLoginReference
-    company: CompanyReference
-    url: str
-    userName: str | None
-    password: str | None
-    psg: str | None
-    problemDescriptionFlag: bool | None
-    internalAnalysisFlag: bool | None
-    resolutionFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 80;')] = None
+    vendorType: TicketSyncVendorType | None = None
+    integratorLogin: IntegratorLoginReference | None = None
+    company: CompanyReference | None = None
+    url: str | None = None
+    userName: str | None = None
+    password: str | None = None
+    psg: str | None = None
+    problemDescriptionFlag: bool | None = None
+    internalAnalysisFlag: bool | None = None
+    resolutionFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TicketSyncVendorType(str, Enum):
@@ -11373,74 +11653,74 @@ class TicketSyncVendorType(str, Enum):
 
 
 class TicketTask(SparkModel):
-    id: int | None
-    ticketId: int | None
-    notes: str | None
-    closedFlag: bool | None
-    priority: int | None
-    schedule: ScheduleEntryReference | None
-    code: ServiceCodeReference | None
-    member: MemberReference | None
-    resolution: str | None
-    summary: str | None
-    childScheduleAction: ServiceTaskChildScheduleAction | None
-    childTicketId: int | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    ticketId: int | None = None
+    notes: str | None = None
+    closedFlag: bool | None = None
+    priority: int | None = None
+    schedule: ScheduleEntryReference | None = None
+    code: ServiceCodeReference | None = None
+    member: MemberReference | None = None
+    resolution: str | None = None
+    summary: str | None = None
+    childScheduleAction: ServiceTaskChildScheduleAction | None = None
+    childTicketId: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeAccrual(SparkModel):
-    id: int | None
-    location: SystemLocationReference | None
+    id: int | None = None
+    location: SystemLocationReference | None = None
     vacationFlag: Annotated[
         bool | None,
         Field(
             description='if vacationFlag is set to false, system will clear out or ingore the values of vacationAvailableType, vacationCarryoverAllowedFlag, vacationCarryoverLimit'
         ),
-    ]
-    vacationAvailableType: TimeAccrualVacationAvailableType | None
-    vacationCarryoverAllowedFlag: bool | None
-    vacationCarryoverLimit: float | None
+    ] = None
+    vacationAvailableType: TimeAccrualVacationAvailableType | None = None
+    vacationCarryoverAllowedFlag: bool | None = None
+    vacationCarryoverLimit: float | None = None
     sickFlag: Annotated[
         bool | None,
         Field(
             description='if sickFlag is set to false, system will clear out or ignore the values of sickAvailableType, sickCarryoverAllowedFlag, sickCarryoverLimit'
         ),
-    ]
-    sickAvailableType: TimeAccrualVacationAvailableType | None
-    sickCarryoverAllowedFlag: bool | None
-    sickCarryoverLimit: float | None
+    ] = None
+    sickAvailableType: TimeAccrualVacationAvailableType | None = None
+    sickCarryoverAllowedFlag: bool | None = None
+    sickCarryoverLimit: float | None = None
     ptoFlag: Annotated[
         bool | None,
         Field(
             description='if ptoFlag is set to false, system will clear out or ignore the values of ptoAvailableType, ptoCarryoverAllowedFlag, ptoCarryoverLimit'
         ),
-    ]
-    ptoAvailableType: TimeAccrualVacationAvailableType | None
-    ptoCarryoverAllowedFlag: bool | None
-    ptoCarryoverLimit: float | None
+    ] = None
+    ptoAvailableType: TimeAccrualVacationAvailableType | None = None
+    ptoCarryoverAllowedFlag: bool | None = None
+    ptoCarryoverLimit: float | None = None
     holidayFlag: Annotated[
         bool | None,
         Field(
             description='if holidayFlag is set to false, system will clear out or ignore the values of holidayAvailableType, holidayCarryoverAllowedFlag, holidayCarryoverLimit'
         ),
-    ]
-    holidayAvailableType: TimeAccrualVacationAvailableType | None
-    holidayCarryoverAllowedFlag: bool | None
-    holidayCarryoverLimit: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    holidayAvailableType: TimeAccrualVacationAvailableType | None = None
+    holidayCarryoverAllowedFlag: bool | None = None
+    holidayCarryoverLimit: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeAccrualDetail(SparkModel):
-    id: int | None
+    id: int | None = None
     accrualType: Annotated[
-        MemberAccrualAccrualType,
+        MemberAccrualAccrualType | None,
         Field(description='Available types are: Holiday, PTO, Sick and Vacation.'),
-    ]
-    startYear: int
-    endYear: int
-    hours: float
-    timeAccrual: TimeAccrualReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    startYear: int | None = None
+    endYear: int | None = None
+    hours: float | None = None
+    timeAccrual: TimeAccrualReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeAccrualReference(ActivityReference):
@@ -11453,227 +11733,253 @@ class TimeAccrualVacationAvailableType(str, Enum):
 
 
 class TimeEntry(SparkModel):
-    id: int | None
-    company: CompanyReference | None
-    companyType: str | None
+    id: int | None = None
+    company: CompanyReference | None = None
+    companyType: str | None = None
     chargeToId: Annotated[
         int | None,
         Field(
             description='If chargeToId is not specified, we asume you enter time against the company specified'
         ),
-    ]
+    ] = None
     chargeToType: Annotated[
         ExpenseEntryChargeToType | None,
         Field(
             description='If chargeToId is not specified, we asume you enter time against the company specified'
         ),
-    ]
-    member: MemberReference | None
-    locationId: int | None
-    businessUnitId: int | None
-    businessGroupDesc: str | None
-    location: OwnerLevelReference | None
-    department: BillingUnitReference | None
-    workType: WorkTypeReference | None
-    workRole: WorkRoleReference | None
-    agreement: AgreementReference | None
-    agreementType: str | None
-    activity: ActivityReference | None
-    opportunityRecid: int | None
-    projectActivity: str | None
-    territory: str | None
-    timeStart: datetime
-    timeEnd: datetime | None
-    hoursDeduct: float | None
-    actualHours: float | None
+    ] = None
+    member: MemberReference | None = None
+    locationId: int | None = None
+    businessUnitId: int | None = None
+    businessGroupDesc: str | None = None
+    location: OwnerLevelReference | None = None
+    department: BillingUnitReference | None = None
+    workType: WorkTypeReference | None = None
+    workRole: WorkRoleReference | None = None
+    agreement: AgreementReference | None = None
+    agreementType: str | None = None
+    activity: ActivityReference | None = None
+    opportunityRecid: int | None = None
+    projectActivity: str | None = None
+    territory: str | None = None
+    timeStart: datetime | None = None
+    timeEnd: datetime | None = None
+    hoursDeduct: float | None = None
+    actualHours: float | None = None
     billableOption: Annotated[
         ActivityStopwatchBillableOption | None,
         Field(description=' Required On Updates;'),
-    ]
-    notes: str | None
-    internalNotes: str | None
-    addToDetailDescriptionFlag: bool | None
-    addToInternalAnalysisFlag: bool | None
-    addToResolutionFlag: bool | None
+    ] = None
+    notes: str | None = None
+    internalNotes: str | None = None
+    addToDetailDescriptionFlag: bool | None = None
+    addToInternalAnalysisFlag: bool | None = None
+    addToResolutionFlag: bool | None = None
     emailResourceFlag: Annotated[
         bool | None,
         Field(
             description='This is an action flag. To update this value use the /service/tickets endpoint automaticEmailResourceFlag field'
         ),
-    ]
+    ] = None
     emailContactFlag: Annotated[
         bool | None,
         Field(
             description='This is an action flag. To update this value use the /service/tickets endpoint automaticEmailContactFlag field'
         ),
-    ]
+    ] = None
     emailCcFlag: Annotated[
         bool | None,
         Field(
             description='This is an action flag. To update this value use the /service/tickets endpoint automaticEmailCcFlag field'
         ),
-    ]
+    ] = None
     emailCc: Annotated[
         str | None,
         Field(
             description='To update this value use the /service/tickets endpoint automaticEmailCc field'
         ),
-    ]
-    hoursBilled: float | None
-    invoiceHours: float | None
-    hourlyCost: str | None
-    enteredBy: str | None
-    dateEntered: datetime | None
-    invoice: InvoiceReference | None
-    mobileGuid: UUID | None
+    ] = None
+    hoursBilled: float | None = None
+    invoiceHours: float | None = None
+    hourlyCost: str | None = None
+    enteredBy: str | None = None
+    dateEntered: datetime | None = None
+    invoice: InvoiceReference | None = None
+    mobileGuid: UUID | None = None
     hourlyRate: Annotated[
         float | None,
         Field(description='This field may only be Updated, it is defaulted on Create'),
-    ]
-    overageRate: float | None
-    agreementHours: float | None
-    agreementAmount: float | None
-    agreementAdjustment: float | None
-    adjustment: float | None
-    invoiceReady: int | None
-    timeSheet: TimeSheetReference | None
-    status: ExpenseEntryStatus | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference | None
-    ticketBoard: str | None
-    ticketStatus: str | None
-    ticketType: str | None
-    ticketSubType: str | None
-    invoiceFlag: bool | None
-    extendedInvoiceAmount: float | None
-    locationName: str | None
-    taxCode: TaxCodeReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    ] = None
+    overageRate: float | None = None
+    agreementHours: float | None = None
+    agreementAmount: float | None = None
+    agreementAdjustment: float | None = None
+    adjustment: float | None = None
+    invoiceReady: int | None = None
+    timeSheet: TimeSheetReference | None = None
+    status: ExpenseEntryStatus | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    ticketBoard: str | None = None
+    ticketStatus: str | None = None
+    ticketType: str | None = None
+    ticketSubType: str | None = None
+    invoiceFlag: bool | None = None
+    extendedInvoiceAmount: float | None = None
+    locationName: str | None = None
+    taxCode: TaxCodeReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class TimeEntryAudit(SparkModel):
-    id: int | None
-    member: MemberReference | None
-    source: ExpenseEntryAuditSource | None
-    type: ExpenseEntryAuditType | None
-    message: str | None
-    oldValue: str | None
-    newValue: str | None
-    value: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    source: ExpenseEntryAuditSource | None = None
+    type: ExpenseEntryAuditType | None = None
+    message: str | None = None
+    oldValue: str | None = None
+    newValue: str | None = None
+    value: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeEntryChangeLog(SparkModel):
-    id: Annotated[int | None, Field(description='Time Entry Change Log ID.')]
-    partnerId: Annotated[str | None, Field(description='Partner ID.')]
-    productInstanceId: Annotated[str | None, Field(description='Product Instance ID.')]
-    action: Annotated[str | None, Field(description='Action.')]
-    activitySubject: Annotated[str | None, Field(description='Activity Subject.')]
+    id: Annotated[int | None, Field(description='Time Entry Change Log ID.')] = None
+    partnerId: Annotated[str | None, Field(description='Partner ID.')] = None
+    productInstanceId: Annotated[
+        str | None, Field(description='Product Instance ID.')
+    ] = None
+    action: Annotated[str | None, Field(description='Action.')] = None
+    activitySubject: Annotated[str | None, Field(description='Activity Subject.')] = (
+        None
+    )
     actualUtilizedHrs: Annotated[
         float | None, Field(description='Actual Utilized Hours.')
-    ]
+    ] = None
     agreementAdjustmentFirm: Annotated[
         float | None, Field(description='Agreement Adjustment Firm.')
-    ]
+    ] = None
     agreementAdjustmentTotal: Annotated[
         float | None, Field(description='Agreement Adjustment Total.')
-    ]
+    ] = None
     agreementAmountCovered: Annotated[
         float | None, Field(description='Agreement Amount Covered.')
-    ]
+    ] = None
     agreementHoursCovered: Annotated[
         float | None, Field(description='Agreement Hours Covered.')
-    ]
-    billableAmount: Annotated[float | None, Field(description='Billable Amount.')]
-    billableFlag: Annotated[bool | None, Field(description='Billable Flag.')]
-    billableHours: Annotated[float | None, Field(description='Billable Hours.')]
+    ] = None
+    billableAmount: Annotated[float | None, Field(description='Billable Amount.')] = (
+        None
+    )
+    billableFlag: Annotated[bool | None, Field(description='Billable Flag.')] = None
+    billableHours: Annotated[float | None, Field(description='Billable Hours.')] = None
     billableUtilizedHours: Annotated[
         float | None, Field(description='Billable Utilized Hours.')
-    ]
+    ] = None
     memberDailyCapacity: Annotated[
         float | None, Field(description='Member Daily Capacity.')
-    ]
+    ] = None
     billableOption: Annotated[
         ActivityStopwatchBillableOption | None, Field(description='Billable Option.')
-    ]
-    businessGroup: Annotated[str | None, Field(description='Business Group.')]
-    locationName: Annotated[str | None, Field(description='Location Name.')]
-    chargeCode: Annotated[str | None, Field(description='Charge Code.')]
-    chargeTo: Annotated[str | None, Field(description='Charge To.')]
+    ] = None
+    businessGroup: Annotated[str | None, Field(description='Business Group.')] = None
+    locationName: Annotated[str | None, Field(description='Location Name.')] = None
+    chargeCode: Annotated[str | None, Field(description='Charge Code.')] = None
+    chargeTo: Annotated[str | None, Field(description='Charge To.')] = None
     chargeToType: Annotated[
         ExpenseEntryChargeToType | None, Field(description='Charge To Type.')
-    ]
-    chargeToRecId: Annotated[int | None, Field(description='Charge To Record ID.')]
+    ] = None
+    chargeToRecId: Annotated[int | None, Field(description='Charge To Record ID.')] = (
+        None
+    )
     companyAndAgreement: Annotated[
         str | None, Field(description='Company and Agreement.')
-    ]
-    companyName: Annotated[str | None, Field(description='Company Name.')]
-    timeStart: Annotated[str | None, Field(description='Time Start.')]
-    timeStartUtc: Annotated[str | None, Field(description='Time Start UTC.')]
-    timeEnd: Annotated[str | None, Field(description='Time End.')]
-    timeEndUtc: Annotated[str | None, Field(description='Time End UTC.')]
-    dateStart: Annotated[str | None, Field(description='Date Start.')]
-    dateInvoice: Annotated[str | None, Field(description='Date Invoice.')]
-    firstName: Annotated[str | None, Field(description='First Name.')]
-    hourlyCost: Annotated[str | None, Field(description='Hourly Cost.')]
+    ] = None
+    companyName: Annotated[str | None, Field(description='Company Name.')] = None
+    timeStart: Annotated[str | None, Field(description='Time Start.')] = None
+    timeStartUtc: Annotated[str | None, Field(description='Time Start UTC.')] = None
+    timeEnd: Annotated[str | None, Field(description='Time End.')] = None
+    timeEndUtc: Annotated[str | None, Field(description='Time End UTC.')] = None
+    dateStart: Annotated[str | None, Field(description='Date Start.')] = None
+    dateInvoice: Annotated[str | None, Field(description='Date Invoice.')] = None
+    firstName: Annotated[str | None, Field(description='First Name.')] = None
+    hourlyCost: Annotated[str | None, Field(description='Hourly Cost.')] = None
     hourlyCostDecimal: Annotated[
         float | None, Field(description='Hourly Cost in Decimal.')
-    ]
-    hourlyRate: Annotated[float | None, Field(description='Hourly Rate.')]
-    hoursActual: Annotated[float | None, Field(description='Actual Hours.')]
-    internalNote: Annotated[str | None, Field(description='Internal Note.')]
+    ] = None
+    hourlyRate: Annotated[float | None, Field(description='Hourly Rate.')] = None
+    hoursActual: Annotated[float | None, Field(description='Actual Hours.')] = None
+    internalNote: Annotated[str | None, Field(description='Internal Note.')] = None
     invoiceAdjustmentFirm: Annotated[
         float | None, Field(description='Invoice Adjustment Firm.')
-    ]
+    ] = None
     invoiceAdjustmentTotal: Annotated[
         float | None, Field(description='Invoice Adjustment Total.')
-    ]
-    invoiceFlag: Annotated[bool | None, Field(description='Invoice Flag.')]
-    invoiceNumber: Annotated[str | None, Field(description='Invoice Number.')]
-    invoiceReady: Annotated[bool | None, Field(description='Invoice Ready status.')]
-    lastName: Annotated[str | None, Field(description='Last Name.')]
-    memberId: Annotated[str | None, Field(description='Member ID.')]
-    nonBillableAmt: Annotated[float | None, Field(description='Non-Billable Amount.')]
-    nonBillableHrs: Annotated[float | None, Field(description='Non-Billable Hours.')]
-    notes: Annotated[str | None, Field(description='Notes.')]
-    opportunityRecId: Annotated[int | None, Field(description='Opportunity Record ID.')]
-    optionId: Annotated[str | None, Field(description='Option ID.')]
-    projectActivity: Annotated[str | None, Field(description='Project Activity.')]
-    projectName: Annotated[str | None, Field(description='Project Name.')]
-    projectPhase: Annotated[str | None, Field(description='Project Phase.')]
+    ] = None
+    invoiceFlag: Annotated[bool | None, Field(description='Invoice Flag.')] = None
+    invoiceNumber: Annotated[str | None, Field(description='Invoice Number.')] = None
+    invoiceReady: Annotated[bool | None, Field(description='Invoice Ready status.')] = (
+        None
+    )
+    lastName: Annotated[str | None, Field(description='Last Name.')] = None
+    memberId: Annotated[str | None, Field(description='Member ID.')] = None
+    nonBillableAmt: Annotated[
+        float | None, Field(description='Non-Billable Amount.')
+    ] = None
+    nonBillableHrs: Annotated[
+        float | None, Field(description='Non-Billable Hours.')
+    ] = None
+    notes: Annotated[str | None, Field(description='Notes.')] = None
+    opportunityRecId: Annotated[
+        int | None, Field(description='Opportunity Record ID.')
+    ] = None
+    optionId: Annotated[str | None, Field(description='Option ID.')] = None
+    projectActivity: Annotated[str | None, Field(description='Project Activity.')] = (
+        None
+    )
+    projectName: Annotated[str | None, Field(description='Project Name.')] = None
+    projectPhase: Annotated[str | None, Field(description='Project Phase.')] = None
     serviceRequestStatus: Annotated[
         str | None, Field(description='Service Request Status.')
-    ]
+    ] = None
     serviceRequestSummary: Annotated[
         str | None, Field(description='Service Request Summary.')
-    ]
-    territory: Annotated[str | None, Field(description='Territory.')]
-    timeRecId: Annotated[int | None, Field(description='Time Record ID.')]
-    timeStatus: Annotated[str | None, Field(description='Time Status.')]
-    utilizationFlag: Annotated[bool | None, Field(description='Utilization Flag.')]
-    companyType: Annotated[str | None, Field(description='Company Type.')]
+    ] = None
+    territory: Annotated[str | None, Field(description='Territory.')] = None
+    timeRecId: Annotated[int | None, Field(description='Time Record ID.')] = None
+    timeStatus: Annotated[str | None, Field(description='Time Status.')] = None
+    utilizationFlag: Annotated[bool | None, Field(description='Utilization Flag.')] = (
+        None
+    )
+    companyType: Annotated[str | None, Field(description='Company Type.')] = None
     ticketCurrentBoard: Annotated[
         str | None, Field(description='Current Board of the Ticket.')
-    ]
-    ticketType: Annotated[str | None, Field(description='Type of the Ticket.')]
-    ticketSubtype: Annotated[str | None, Field(description='Subtype of the Ticket.')]
-    agreementType: Annotated[str | None, Field(description='Type of the Agreement.')]
-    billingStatus: Annotated[str | None, Field(description='Billing Status.')]
-    processingStatus: Annotated[str | None, Field(description='Processing Status.')]
-    invoicedhours: Annotated[float | None, Field(description='Invoiced Hours.')]
-    company: CompanyReference | None
-    member: MemberReference | None
-    workType: WorkTypeReference | None
-    workRole: WorkRoleReference | None
-    agreement: AgreementReference | None
-    invoice: InvoiceReference | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    phase: ProjectPhaseReference | None
-    activity: ActivityReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    ticketType: Annotated[str | None, Field(description='Type of the Ticket.')] = None
+    ticketSubtype: Annotated[
+        str | None, Field(description='Subtype of the Ticket.')
+    ] = None
+    agreementType: Annotated[
+        str | None, Field(description='Type of the Agreement.')
+    ] = None
+    billingStatus: Annotated[str | None, Field(description='Billing Status.')] = None
+    processingStatus: Annotated[str | None, Field(description='Processing Status.')] = (
+        None
+    )
+    invoicedhours: Annotated[float | None, Field(description='Invoiced Hours.')] = None
+    company: CompanyReference | None = None
+    member: MemberReference | None = None
+    workType: WorkTypeReference | None = None
+    workRole: WorkRoleReference | None = None
+    agreement: AgreementReference | None = None
+    invoice: InvoiceReference | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    phase: ProjectPhaseReference | None = None
+    activity: ActivityReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeEntryReference(CalendarSetupReference):
@@ -11681,52 +11987,52 @@ class TimeEntryReference(CalendarSetupReference):
 
 
 class TimeExpense(SparkModel):
-    id: int | None
-    tier1ApprovalFlag: bool | None
-    tier2ApprovalFlag: bool | None
-    disableTimeEntryFlag: bool | None
-    requireTimeNoteFlag: bool | None
-    requireExpenseNoteFlag: bool | None
-    roundingFactor: float | None
-    invoiceStart: int | None
-    defaultSpecialInvoiceType: CommissionBillingMethod | None
-    internalCompany: CompanyReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    tier1ApprovalFlag: bool | None = None
+    tier2ApprovalFlag: bool | None = None
+    disableTimeEntryFlag: bool | None = None
+    requireTimeNoteFlag: bool | None = None
+    requireExpenseNoteFlag: bool | None = None
+    roundingFactor: float | None = None
+    invoiceStart: int | None = None
+    defaultSpecialInvoiceType: CommissionBillingMethod | None = None
+    internalCompany: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimePeriod(SparkModel):
-    id: int | None
-    timePeriodSetup: TimePeriodSetupReference | None
-    period: int | None
-    startDate: str | None
-    endDate: str | None
-    deadlineDate: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    timePeriodSetup: TimePeriodSetupReference | None = None
+    period: int | None = None
+    startDate: str | None = None
+    endDate: str | None = None
+    deadlineDate: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimePeriodSetup(SparkModel):
-    id: int | None
-    periodApplyTo: TimePeriodSetupPeriodApplyTo
-    year: int
-    numberFuturePeriods: int
-    type: TimePeriodSetupType
-    description: Annotated[str | None, Field(description=' Max length: 100;')]
-    firstPeriodEndDate: date_aliased
+    id: int | None = None
+    periodApplyTo: TimePeriodSetupPeriodApplyTo | None = None
+    year: int | None = None
+    numberFuturePeriods: int | None = None
+    type: TimePeriodSetupType | None = None
+    description: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    firstPeriodEndDate: date_aliased | None = None
     monthlyPeriodEnds: Annotated[
         int | None, Field(description='Only needed when type is monthly')
-    ]
+    ] = None
     semiMonthlyFirstPeriod: Annotated[
         int | None, Field(description='Only needed when type is semi-monthly')
-    ]
+    ] = None
     semiMonthlySecondPeriod: Annotated[
         int | None, Field(description='Only needed when type is semi-monthly')
-    ]
-    semiMonthlyLastDayFlag: bool | None
+    ] = None
+    semiMonthlyLastDayFlag: bool | None = None
     lastDayFlag: Annotated[
         bool | None, Field(description='Only needed when type is monthly')
-    ]
-    daysPastEndDate: int
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    daysPastEndDate: int | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimePeriodSetupDefaults(AgreementTabsCount):
@@ -11755,16 +12061,16 @@ class TimeRevenueReference(AgreementRevenueReference):
 
 
 class TimeSheet(SparkModel):
-    id: int | None
-    member: MemberReference | None
-    year: int | None
-    period: int | None
-    dateStart: str | None
-    dateEnd: str | None
-    status: ExpenseEntryStatus | None
-    hours: float | None
-    deadline: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    member: MemberReference | None = None
+    year: int | None = None
+    period: int | None = None
+    dateStart: str | None = None
+    dateEnd: str | None = None
+    status: ExpenseEntryStatus | None = None
+    hours: float | None = None
+    deadline: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeSheetAudit(TimeEntryAudit):
@@ -11784,29 +12090,29 @@ class TimeZoneReference(ActivityReference):
 
 
 class TimeZoneSetup(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    timeZone: TimeZoneReference
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    timeZone: TimeZoneReference | None = None
     offset: Annotated[
         float | None, Field(description='The hours offset from UTC (+/-)')
-    ]
+    ] = None
     defaultFlag: Annotated[
         bool | None, Field(description='Identifies the default system time zone setup')
-    ]
+    ] = None
     daylightSavingsFlag: Annotated[
         bool | None,
         Field(
             description='Determined based on system library value for specified timeZone.\n            Not able to be used in query params at this time'
         ),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeZoneSetupInfo(SparkModel):
-    id: int | None
-    name: str | None
-    offset: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    offset: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TimeZoneSetupReference(ActivityReference):
@@ -11814,49 +12120,49 @@ class TimeZoneSetupReference(ActivityReference):
 
 
 class TodayPageCategory(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 30;')]
-    sortOrder: int
-    location: SystemLocationReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 30;')] = None
+    sortOrder: int | None = None
+    location: SystemLocationReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Token(SparkModel):
-    publicKey: str | None
-    privateKey: str | None
-    expiration: str | None
+    publicKey: str | None = None
+    privateKey: str | None = None
+    expiration: str | None = None
 
 
 class Track(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    inactiveFlag: bool | None
-    notifyActionIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    inactiveFlag: bool | None = None
+    notifyActionIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TrackAction(SparkModel):
-    id: int | None
-    notifyType: TrackActionNotifyType
-    serviceTemplate: ServiceTemplateReference | None
-    specificMemberTo: MemberReference | None
-    emailRecipient: Annotated[str | None, Field(description=' Max length: 250;')]
-    specificMemberFrom: MemberReference | None
-    emailFrom: Annotated[str | None, Field(description=' Max length: 250;')]
-    subject: Annotated[str | None, Field(description=' Max length: 100;')]
-    notes: str | None
-    activityType: ActivityTypeReference | None
-    activityStatus: ActivityStatusReference | None
-    companyStatus: CompanyStatusReference | None
-    track: TrackReference | None
-    attachedTrack: TrackReference | None
-    group: GroupReference | None
-    ccContact: ContactReference | None
-    bccContact: ContactReference | None
-    daysToExecute: int | None
-    notifyWho: NotificationRecipientReference | None
-    notifyFrom: NotificationRecipientReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    notifyType: TrackActionNotifyType | None = None
+    serviceTemplate: ServiceTemplateReference | None = None
+    specificMemberTo: MemberReference | None = None
+    emailRecipient: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    specificMemberFrom: MemberReference | None = None
+    emailFrom: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    subject: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    notes: str | None = None
+    activityType: ActivityTypeReference | None = None
+    activityStatus: ActivityStatusReference | None = None
+    companyStatus: CompanyStatusReference | None = None
+    track: TrackReference | None = None
+    attachedTrack: TrackReference | None = None
+    group: GroupReference | None = None
+    ccContact: ContactReference | None = None
+    bccContact: ContactReference | None = None
+    daysToExecute: int | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    notifyFrom: NotificationRecipientReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class TrackActionNotifyType(str, Enum):
@@ -11873,12 +12179,12 @@ class TrackReference(ActivityReference):
 
 
 class UnitOfMeasure(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    uomScheduleXref: Annotated[str | None, Field(description=' Max length: 31;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    uomScheduleXref: Annotated[str | None, Field(description=' Max length: 31;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UnitOfMeasureReference(ActivityReference):
@@ -11886,79 +12192,79 @@ class UnitOfMeasureReference(ActivityReference):
 
 
 class UnpostedExpense(SparkModel):
-    id: int | None
-    locationId: int | None
-    departmentId: int | None
-    company: CompanyReference | None
-    accountNumber: str | None
-    creditAccount: str | None
-    expenseDetailId: int | None
-    expenseType: ExpenseTypeReference | None
-    classification: UnpostedExpenseClassification | None
-    glType: GLAccountGlType | None
-    member: MemberReference | None
-    dateExpense: str | None
-    chargeCode: ChargeCodeReference | None
-    chargeDescription: str | None
-    inPolicy: bool | None
-    paymentMethod: PaymentMethodReference | None
-    currency: CurrencyReference | None
-    total: float | None
-    billableAmount: float | None
-    nonBillableAmount: float | None
-    agreement: AgreementReference | None
-    agreementAmountCovered: float | None
-    ticket: TicketReference | None
-    project: ProjectReference | None
-    projectPhase: ProjectPhaseReference | None
-    taxCode: TaxCodeReference | None
+    id: int | None = None
+    locationId: int | None = None
+    departmentId: int | None = None
+    company: CompanyReference | None = None
+    accountNumber: str | None = None
+    creditAccount: str | None = None
+    expenseDetailId: int | None = None
+    expenseType: ExpenseTypeReference | None = None
+    classification: UnpostedExpenseClassification | None = None
+    glType: GLAccountGlType | None = None
+    member: MemberReference | None = None
+    dateExpense: str | None = None
+    chargeCode: ChargeCodeReference | None = None
+    chargeDescription: str | None = None
+    inPolicy: bool | None = None
+    paymentMethod: PaymentMethodReference | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    billableAmount: float | None = None
+    nonBillableAmount: float | None = None
+    agreement: AgreementReference | None = None
+    agreementAmountCovered: float | None = None
+    ticket: TicketReference | None = None
+    project: ProjectReference | None = None
+    projectPhase: ProjectPhaseReference | None = None
+    taxCode: TaxCodeReference | None = None
     avalaraTaxFlag: Annotated[
         bool | None, Field(description='Used to determine if Avalara tax is enabled.')
-    ]
-    itemTaxableFlag: bool | None
-    salesTaxAmount: float | None
+    ] = None
+    itemTaxableFlag: bool | None = None
+    salesTaxAmount: float | None = None
     stateTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the state level.'),
-    ]
-    stateTaxXref: str | None
-    stateTaxAmount: float | None
+    ] = None
+    stateTaxXref: str | None = None
+    stateTaxAmount: float | None = None
     countyTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the county level.'),
-    ]
-    countyTaxXref: str | None
-    countyTaxAmount: float | None
+    ] = None
+    countyTaxXref: str | None = None
+    countyTaxAmount: float | None = None
     cityTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the city level.'),
-    ]
-    cityTaxXref: str | None
-    cityTaxAmount: float | None
+    ] = None
+    cityTaxXref: str | None = None
+    cityTaxAmount: float | None = None
     countryTaxFlag: Annotated[
         bool | None,
         Field(
             description='Set to true if transaction is taxable at the country level.'
         ),
-    ]
-    countryTaxXref: str | None
-    countryTaxAmount: float | None
+    ] = None
+    countryTaxXref: str | None = None
+    countryTaxAmount: float | None = None
     compositeTaxFlag: Annotated[
         bool | None,
         Field(
             description='Set to true if transaction is taxable at the composite level.'
         ),
-    ]
-    compositeTaxXref: str | None
-    compositeTaxAmount: float | None
+    ] = None
+    compositeTaxXref: str | None = None
+    compositeTaxAmount: float | None = None
     levelSixTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at level six.'),
-    ]
-    levelSixTaxXref: str | None
-    levelSixTaxAmount: float | None
-    dateClosed: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    levelSixTaxXref: str | None = None
+    levelSixTaxAmount: float | None = None
+    dateClosed: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UnpostedExpenseClassification(str, Enum):
@@ -11968,89 +12274,89 @@ class UnpostedExpenseClassification(str, Enum):
 
 
 class UnpostedExpenseTaxableLevel(SparkModel):
-    id: int | None
-    taxLevel: int | None
-    taxCodeXref: str | None
-    taxAmount: float | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    taxLevel: int | None = None
+    taxCodeXref: str | None = None
+    taxAmount: float | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UnpostedInvoice(SparkModel):
-    id: int | None
-    billingLogId: int | None
-    locationId: int | None
-    location: OwnerLevelReference | None
-    departmentId: int | None
-    department: SystemDepartmentReference | None
-    company: CompanyReference | None
-    accountNumber: str | None
-    billToCompany: CompanyReference | None
-    billToSite: SiteReference | None
-    shipToCompany: CompanyReference | None
-    shipToSite: SiteReference | None
-    invoiceNumber: str | None
-    invoiceDate: str | None
-    invoiceType: CommissionBillingMethod | None
-    description: str | None
-    billingTerms: BillingTermsReference | None
-    dueDays: str | None
-    dueDate: str | None
-    currency: CurrencyReference | None
-    subTotal: float | None
-    total: float | None
-    hasTime: bool | None
-    hasExpenses: bool | None
-    hasProducts: bool | None
-    invoiceTaxableFlag: bool | None
-    taxCode: TaxCodeReference | None
+    id: int | None = None
+    billingLogId: int | None = None
+    locationId: int | None = None
+    location: OwnerLevelReference | None = None
+    departmentId: int | None = None
+    department: SystemDepartmentReference | None = None
+    company: CompanyReference | None = None
+    accountNumber: str | None = None
+    billToCompany: CompanyReference | None = None
+    billToSite: SiteReference | None = None
+    shipToCompany: CompanyReference | None = None
+    shipToSite: SiteReference | None = None
+    invoiceNumber: str | None = None
+    invoiceDate: str | None = None
+    invoiceType: CommissionBillingMethod | None = None
+    description: str | None = None
+    billingTerms: BillingTermsReference | None = None
+    dueDays: str | None = None
+    dueDate: str | None = None
+    currency: CurrencyReference | None = None
+    subTotal: float | None = None
+    total: float | None = None
+    hasTime: bool | None = None
+    hasExpenses: bool | None = None
+    hasProducts: bool | None = None
+    invoiceTaxableFlag: bool | None = None
+    taxCode: TaxCodeReference | None = None
     avalaraTaxFlag: Annotated[
         bool | None, Field(description='Used to determine if Avalara tax is enabled.')
-    ]
-    itemTaxableFlag: bool | None
-    salesTaxAmount: float | None
+    ] = None
+    itemTaxableFlag: bool | None = None
+    salesTaxAmount: float | None = None
     stateTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the state level.'),
-    ]
-    stateTaxXref: str | None
-    stateTaxAmount: float | None
+    ] = None
+    stateTaxXref: str | None = None
+    stateTaxAmount: float | None = None
     countyTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the county level.'),
-    ]
-    countyTaxXref: str | None
-    countyTaxAmount: float | None
+    ] = None
+    countyTaxXref: str | None = None
+    countyTaxAmount: float | None = None
     cityTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the city level.'),
-    ]
-    cityTaxXref: str | None
-    cityTaxAmount: float | None
+    ] = None
+    cityTaxXref: str | None = None
+    cityTaxAmount: float | None = None
     countryTaxFlag: Annotated[
         bool | None,
         Field(
             description='Set to true if transaction is taxable at the country level.'
         ),
-    ]
-    countryTaxXref: str | None
-    countryTaxAmount: float | None
+    ] = None
+    countryTaxXref: str | None = None
+    countryTaxAmount: float | None = None
     compositeTaxFlag: Annotated[
         bool | None,
         Field(
             description='Set to true if transaction is taxable at the composite level.'
         ),
-    ]
-    compositeTaxXref: str | None
-    compositeTaxAmount: float | None
+    ] = None
+    compositeTaxXref: str | None = None
+    compositeTaxAmount: float | None = None
     levelSixTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at level six.'),
-    ]
-    levelSixTaxXref: str | None
-    levelSixTaxAmount: float | None
-    createdBy: str | None
-    dateClosed: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    levelSixTaxXref: str | None = None
+    levelSixTaxAmount: float | None = None
+    createdBy: str | None = None
+    dateClosed: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UnpostedInvoiceTaxableLevel(UnpostedExpenseTaxableLevel):
@@ -12058,91 +12364,91 @@ class UnpostedInvoiceTaxableLevel(UnpostedExpenseTaxableLevel):
 
 
 class UnpostedPayments(SparkModel):
-    id: int | None
-    type: str | None
-    source: InvoicePaymentSource | None
-    invoice: InvoiceReference | None
-    amount: float | None
-    paymentDate: str | None
-    appliedBy: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    wisePayPayment: WisePayPayment | None
-    paymentSyncStatus: str | None
-    paymentSyncDate: str | None
-    paymentAccount: str | None
-    aRPaymentAccount: str | None
+    id: int | None = None
+    type: str | None = None
+    source: InvoicePaymentSource | None = None
+    invoice: InvoiceReference | None = None
+    amount: float | None = None
+    paymentDate: str | None = None
+    appliedBy: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    wisePayPayment: WisePayPayment | None = None
+    paymentSyncStatus: str | None = None
+    paymentSyncDate: str | None = None
+    paymentAccount: str | None = None
+    aRPaymentAccount: str | None = None
 
 
 class UnpostedProcurement(SparkModel):
-    id: int | None
-    description: str | None
-    unpostedProductId: str | None
-    locationId: int | None
-    departmentId: int | None
-    procurementType: UnpostedProcurementProcurementType | None
-    purchaseOrder: PurchaseOrderReference | None
-    purchaseDate: str | None
-    trackingNumber: str | None
-    billingTerms: BillingTermsReference | None
-    currency: CurrencyReference | None
-    total: float | None
-    taxCode: TaxCodeReference | None
+    id: int | None = None
+    description: str | None = None
+    unpostedProductId: str | None = None
+    locationId: int | None = None
+    departmentId: int | None = None
+    procurementType: UnpostedProcurementProcurementType | None = None
+    purchaseOrder: PurchaseOrderReference | None = None
+    purchaseDate: str | None = None
+    trackingNumber: str | None = None
+    billingTerms: BillingTermsReference | None = None
+    currency: CurrencyReference | None = None
+    total: float | None = None
+    taxCode: TaxCodeReference | None = None
     avalaraTaxFlag: Annotated[
         bool | None, Field(description='Used to determine if Avalara tax is enabled.')
-    ]
-    itemTaxableFlag: bool | None
-    purchaseOrderTaxableFlag: bool | None
+    ] = None
+    itemTaxableFlag: bool | None = None
+    purchaseOrderTaxableFlag: bool | None = None
     stateTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the state level.'),
-    ]
-    stateTaxXref: str | None
-    stateTaxAmount: float | None
+    ] = None
+    stateTaxXref: str | None = None
+    stateTaxAmount: float | None = None
     countyTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the county level.'),
-    ]
-    countyTaxXref: str | None
-    countyTaxAmount: float | None
+    ] = None
+    countyTaxXref: str | None = None
+    countyTaxAmount: float | None = None
     cityTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at the city level.'),
-    ]
-    cityTaxXref: str | None
-    cityTaxAmount: float | None
+    ] = None
+    cityTaxXref: str | None = None
+    cityTaxAmount: float | None = None
     countryTaxFlag: Annotated[
         bool | None,
         Field(
             description='Set to true if transaction is taxable at the country level.'
         ),
-    ]
-    countryTaxXref: str | None
-    countryTaxAmount: float | None
+    ] = None
+    countryTaxXref: str | None = None
+    countryTaxAmount: float | None = None
     compositeTaxFlag: Annotated[
         bool | None,
         Field(
             description='Set to true if transaction is taxable at the composite level.'
         ),
-    ]
-    compositeTaxXref: str | None
-    compositeTaxAmount: float | None
+    ] = None
+    compositeTaxXref: str | None = None
+    compositeTaxAmount: float | None = None
     levelSixTaxFlag: Annotated[
         bool | None,
         Field(description='Set to true if transaction is taxable at level six.'),
-    ]
-    levelSixTaxXref: str | None
-    levelSixTaxAmount: float | None
-    taxTotal: float | None
-    customer: CompanyReference | None
-    vendor: CompanyReference | None
-    vendorAccountNumber: str | None
-    vendorInvoiceNumber: str | None
-    vendorInvoiceDate: str | None
-    taxFreightFlag: bool | None
-    freightTaxTotal: float | None
-    freightCost: float | None
-    dateClosed: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    levelSixTaxXref: str | None = None
+    levelSixTaxAmount: float | None = None
+    taxTotal: float | None = None
+    customer: CompanyReference | None = None
+    vendor: CompanyReference | None = None
+    vendorAccountNumber: str | None = None
+    vendorInvoiceNumber: str | None = None
+    vendorInvoiceDate: str | None = None
+    taxFreightFlag: bool | None = None
+    freightTaxTotal: float | None = None
+    freightCost: float | None = None
+    dateClosed: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UnpostedProcurementProcurementType(str, Enum):
@@ -12156,117 +12462,126 @@ class UnpostedProcurementTaxableLevel(UnpostedExpenseTaxableLevel):
 
 
 class Usage(SparkModel):
-    type: str | None
-    count: int | None
-    id: int | None
-    description: str | None
-    hyperlink: str | None
-    typeKey: str | None
+    type: str | None = None
+    count: int | None = None
+    id: int | None = None
+    description: str | None = None
+    hyperlink: str | None = None
+    typeKey: str | None = None
 
 
 class UserDefinedField(SparkModel):
-    id: Annotated[int | None, Field(description='ID of the custom user defined field')]
+    id: Annotated[
+        int | None, Field(description='ID of the custom user defined field')
+    ] = None
     podId: Annotated[
-        int, Field(description='Id of the Pod where the custom field will be placed')
-    ]
-    caption: Annotated[str, Field(description='Field caption Max length: 25;')]
+        int | None,
+        Field(description='Id of the Pod where the custom field will be placed'),
+    ] = None
+    caption: Annotated[
+        str | None, Field(description='Field caption Max length: 25;')
+    ] = None
     sequenceNumber: Annotated[
-        int,
+        int | None,
         Field(
             description='Must be between 1 and 500.  This defines the order in which the custom fields will appear'
         ),
-    ]
-    screenId: Annotated[str | None, Field(description='Field ScreenID Max length: 25;')]
+    ] = None
+    screenId: Annotated[
+        str | None, Field(description='Field ScreenID Max length: 25;')
+    ] = None
     helpText: Annotated[
         str | None,
         Field(description='Help text to accompany the custom field Max length: 1000;'),
-    ]
-    fieldTypeIdentifier: CustomFieldValueType
+    ] = None
+    fieldTypeIdentifier: CustomFieldValueType | None = None
     numberDecimals: Annotated[
         int | None, Field(description='Only valid for Number or percent')
-    ]
-    entryTypeIdentifier: ConfigurationTypeQuestionEntryType | None
-    requiredFlag: bool | None
-    displayOnScreenFlag: bool | None
-    readOnlyFlag: bool | None
+    ] = None
+    entryTypeIdentifier: ConfigurationTypeQuestionEntryType | None = None
+    requiredFlag: bool | None = None
+    displayOnScreenFlag: bool | None = None
+    readOnlyFlag: bool | None = None
     listViewFlag: Annotated[
         bool | None,
         Field(description='Denotes that this custom field is included on a list view'),
-    ]
+    ] = None
     buttonUrl: Annotated[
         str | None,
         Field(
             description='Only available with Button Field Type. Required when entryTypeIdentifier is button Max length: 1000;'
         ),
-    ]
-    options: list[UserDefinedFieldOption] | None
-    businessUnitIds: list[int] | None
-    locationIds: list[int] | None
-    addAllBusinessUnits: bool | None
-    removeAllBusinessUnits: bool | None
-    addAllLocations: bool | None
-    removeAllLocations: bool | None
-    connectWiseID: str | None
+    ] = None
+    options: list[UserDefinedFieldOption] | None = None
+    businessUnitIds: list[int] | None = None
+    locationIds: list[int] | None = None
+    addAllBusinessUnits: bool | None = None
+    removeAllBusinessUnits: bool | None = None
+    addAllLocations: bool | None = None
+    removeAllLocations: bool | None = None
+    connectWiseID: str | None = None
     dateCreated: Annotated[
         datetime | None, Field(description='Date in UTC the custom field was created')
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UserDefinedFieldInfo(SparkModel):
-    id: Annotated[int | None, Field(description='ID of the custom user defined field')]
+    id: Annotated[
+        int | None, Field(description='ID of the custom user defined field')
+    ] = None
     podId: Annotated[
         int | None,
         Field(description='Id of the Pod where the custom field will be placed'),
-    ]
-    caption: Annotated[str | None, Field(description='Field caption')]
+    ] = None
+    caption: Annotated[str | None, Field(description='Field caption')] = None
     sequenceNumber: Annotated[
         int | None,
         Field(
             description='Must be between 1 and 500.  This defines the order in which the custom fields will appear'
         ),
-    ]
+    ] = None
     helpText: Annotated[
         str | None, Field(description='Help text to accompany the custom field')
-    ]
-    fieldTypeIdentifier: CustomFieldValueType | None
+    ] = None
+    fieldTypeIdentifier: CustomFieldValueType | None = None
     numberDecimals: Annotated[
         int | None, Field(description='Only valid for Number or percent')
-    ]
-    entryTypeIdentifier: ConfigurationTypeQuestionEntryType | None
-    requiredFlag: bool | None
-    displayOnScreenFlag: bool | None
-    readOnlyFlag: bool | None
+    ] = None
+    entryTypeIdentifier: ConfigurationTypeQuestionEntryType | None = None
+    requiredFlag: bool | None = None
+    displayOnScreenFlag: bool | None = None
+    readOnlyFlag: bool | None = None
     listViewFlag: Annotated[
         bool | None,
         Field(description='Denotes that this custom field is included on a list view'),
-    ]
+    ] = None
     buttonUrl: Annotated[
         str | None,
         Field(
             description='Only available with Button Field Type. Required when entryTypeIdentifier is button'
         ),
-    ]
-    options: list[UserDefinedFieldOption] | None
+    ] = None
+    options: list[UserDefinedFieldOption] | None = None
     businessUnitIds: Annotated[
         list[int] | None,
         Field(description='List of business unit ids using custom field'),
-    ]
+    ] = None
     locationIds: Annotated[
         list[int] | None, Field(description='List of locations ids using custom field')
-    ]
+    ] = None
     dateCreated: Annotated[
         str | None, Field(description='Date in UTC the custom field was created')
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class UserDefinedFieldOption(SparkModel):
-    id: int | None
-    optionValue: str | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    sortOrder: int | None
+    id: int | None = None
+    optionValue: str | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    sortOrder: int | None = None
 
 
 class UserDefinedFieldReference(ActivityReference):
@@ -12274,93 +12589,93 @@ class UserDefinedFieldReference(ActivityReference):
 
 
 class UserDefinedFieldValueModel(SparkModel):
-    userDefinedFieldRecId: int | None
-    value: str | None
-    rowNum: int | None
-    skipLocationAndBillingUnit: bool | None
-    filtered: bool | None
+    userDefinedFieldRecId: int | None = None
+    value: str | None = None
+    rowNum: int | None = None
+    skipLocationAndBillingUnit: bool | None = None
+    filtered: bool | None = None
 
 
 class UserEmail(SparkModel):
-    id: str | None
-    displayName: str | None
-    userPrincipalName: str | None
+    id: str | None = None
+    displayName: str | None = None
+    userPrincipalName: str | None = None
 
 
 class ValidatePortalRequest(SparkModel):
-    email: str
-    password: str
+    email: str | None = None
+    password: str | None = None
 
 
 class ValidatePortalResponse(SparkModel):
-    success: bool | None
-    contactId: int | None
+    success: bool | None = None
+    contactId: int | None = None
 
 
 class ValidationError(SparkModel):
-    code: str | None
-    message: str | None
-    resource: str | None
-    field: str | None
-    details: str | None
+    code: str | None = None
+    message: str | None = None
+    resource: str | None = None
+    field: str | None = None
+    details: str | None = None
 
 
 class Version(SparkModel):
-    major: int | None
-    minor: int | None
-    build: int | None
-    revision: int | None
-    majorRevision: int | None
-    minorRevision: int | None
+    major: int | None = None
+    minor: int | None = None
+    build: int | None = None
+    revision: int | None = None
+    majorRevision: int | None = None
+    minorRevision: int | None = None
 
 
 class Warehouse(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    company: CompanyReference | None
-    location: SystemLocationReference
-    contact: ContactReference | None
-    department: SystemDepartmentReference
-    manager: MemberReference | None
-    site: SiteReference | None
-    locationXref: Annotated[str | None, Field(description=' Max length: 10;')]
-    locationDefaultFlag: bool | None
-    overallDefaultFlag: bool | None
-    inactiveFlag: bool | None
-    lockedFlag: bool | None
-    currency: CurrencyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    company: CompanyReference | None = None
+    location: SystemLocationReference | None = None
+    contact: ContactReference | None = None
+    department: SystemDepartmentReference | None = None
+    manager: MemberReference | None = None
+    site: SiteReference | None = None
+    locationXref: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    locationDefaultFlag: bool | None = None
+    overallDefaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    lockedFlag: bool | None = None
+    currency: CurrencyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WarehouseBin(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    warehouse: WarehouseReference
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
-    minQuantity: float | None
-    maxQuantity: float | None
-    overflowBin: WarehouseBinReference | None
-    manager: MemberReference | None
-    length: float | None
-    width: float | None
-    height: float | None
-    weight: float | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    quantityOnHand: int | None
-    company: CompanyReference | None
-    transferBin: WarehouseBinReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    warehouse: WarehouseReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
+    minQuantity: float | None = None
+    maxQuantity: float | None = None
+    overflowBin: WarehouseBinReference | None = None
+    manager: MemberReference | None = None
+    length: float | None = None
+    width: float | None = None
+    height: float | None = None
+    weight: float | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    quantityOnHand: int | None = None
+    company: CompanyReference | None = None
+    transferBin: WarehouseBinReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WarehouseBinInfo(SparkModel):
-    id: int | None
-    name: str | None
-    warehouse: WarehouseReference | None
-    inactiveFlag: bool | None
-    defaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    warehouse: WarehouseReference | None = None
+    inactiveFlag: bool | None = None
+    defaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WarehouseBinReference(ActivityReference):
@@ -12368,38 +12683,38 @@ class WarehouseBinReference(ActivityReference):
 
 
 class WarehouseInfo(SparkModel):
-    id: int | None
-    name: str | None
-    inactiveFlag: bool | None
-    overallDefaultFlag: bool | None
-    company: CompanyReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    inactiveFlag: bool | None = None
+    overallDefaultFlag: bool | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WarehouseReference(SparkModel):
-    id: int | None
-    name: str | None
-    lockedFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    lockedFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WisePayBatchPayment(SparkModel):
-    amount: float | None
-    wisePayHref: str | None
+    amount: float | None = None
+    wisePayHref: str | None = None
 
 
 class WisePayFeeInvoice(SparkModel):
-    id: int | None
-    invoiceNumber: str | None
-    amount: float | None
-    invoiceHref: str | None
+    id: int | None = None
+    invoiceNumber: str | None = None
+    amount: float | None = None
+    invoiceHref: str | None = None
 
 
 class WisePayPayment(SparkModel):
-    paymentDateUtc: str | None
-    wisePayReference: str | None
-    batchPayment: WisePayBatchPayment | None
-    feeInvoice: WisePayFeeInvoice | None
+    paymentDateUtc: str | None = None
+    wisePayReference: str | None = None
+    batchPayment: WisePayBatchPayment | None = None
+    feeInvoice: WisePayFeeInvoice | None = None
 
 
 class WonRevenueReference(AgreementRevenueReference):
@@ -12407,28 +12722,28 @@ class WonRevenueReference(AgreementRevenueReference):
 
 
 class WorkRole(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    hourlyRate: float | None
-    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')]
-    inactiveFlag: bool | None
-    addAllLocations: bool | None
-    removeAllLocations: bool | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    hourlyRate: float | None = None
+    integrationXref: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    inactiveFlag: bool | None = None
+    addAllLocations: bool | None = None
+    removeAllLocations: bool | None = None
     addAllAgreementExclusions: Annotated[
         bool | None,
         Field(
             description='Used only on create to add the work role to all agreement and agreement type exclusion lists'
         ),
-    ]
-    locationIds: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    locationIds: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkRoleExemption(SparkModel):
-    id: int | None
-    workRole: WorkRoleReference
-    taxableLevels: list[int] | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    workRole: WorkRoleReference | None = None
+    taxableLevels: list[int] | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkRoleInfo(LegacySubCategoryInfo):
@@ -12436,11 +12751,11 @@ class WorkRoleInfo(LegacySubCategoryInfo):
 
 
 class WorkRoleLocation(SparkModel):
-    id: int | None
-    location: SystemLocationReference
-    hourlyRate: float | None
-    workRole: WorkRoleReference | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    location: SystemLocationReference | None = None
+    hourlyRate: float | None = None
+    workRole: WorkRoleReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkRoleReference(ActivityReference):
@@ -12448,141 +12763,143 @@ class WorkRoleReference(ActivityReference):
 
 
 class WorkType(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    billTime: AdditionBillCustomer
-    rateType: AgreementTypeWorkRoleRateType
-    rate: float
-    hoursMin: float | None
-    hoursMax: float | None
-    roundBillHoursTo: float | None
-    accrualType: MemberAccrualAccrualType | None
-    inactiveFlag: bool | None
-    overallDefaultFlag: bool | None
-    activityDefaultFlag: bool | None
-    utilizationFlag: bool | None
-    costMultiplier: float | None
-    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')]
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    billTime: AdditionBillCustomer | None = None
+    rateType: AgreementTypeWorkRoleRateType | None = None
+    rate: float | None = None
+    hoursMin: float | None = None
+    hoursMax: float | None = None
+    roundBillHoursTo: float | None = None
+    accrualType: MemberAccrualAccrualType | None = None
+    inactiveFlag: bool | None = None
+    overallDefaultFlag: bool | None = None
+    activityDefaultFlag: bool | None = None
+    utilizationFlag: bool | None = None
+    costMultiplier: float | None = None
+    integrationXRef: Annotated[str | None, Field(description=' Max length: 50;')] = None
     addAllAgreementExclusions: Annotated[
         bool | None,
         Field(
             description='Used only on create to add the work type to all agreement and agreement type exclusion lists'
         ),
-    ]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkTypeInfo(SparkModel):
-    id: int | None
-    name: str | None
-    defaultFlag: bool | None
-    inactiveFlag: bool | None
-    activityDefaultFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    defaultFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    activityDefaultFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkTypeReference(SparkModel):
-    id: int | None
-    name: str | None
-    utilizationFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    utilizationFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Workflow(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    tableType: WorkflowTableTypeReference
-    location: SystemLocationReference | None
-    department: SystemDepartmentReference | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    tableType: WorkflowTableTypeReference | None = None
+    location: SystemLocationReference | None = None
+    department: SystemDepartmentReference | None = None
     activateFlag: Annotated[
         bool | None,
         Field(
             description='Batches can not be turned on until after the workflow is created and it has atleast one event associated with it'
         ),
-    ]
-    batchInterval: int | None
+    ] = None
+    batchInterval: int | None = None
     batchFrequencyUnit: Annotated[
         WorkflowBatchFrequencyUnit | None,
         Field(
             description='If not specified, defaults to Minutes. Months is not supported as month length varies'
         ),
-    ]
-    batchLastRan: datetime | None
+    ] = None
+    batchLastRan: datetime | None = None
     batchSchedule: Annotated[
         WorkflowBatchSchedule | None,
         Field(description='If activateFlag is true, batchSchedule is required'),
-    ]
-    board: BoardReference | None
-    connectWiseID: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    board: BoardReference | None = None
+    connectWiseID: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowAction(SparkModel):
-    id: int | None
-    notifyType: NotifyTypeReference
-    notifyWho: NotificationRecipientReference | None
-    specificMemberTo: MemberReference | None
+    id: int | None = None
+    notifyType: NotifyTypeReference | None = None
+    notifyWho: NotificationRecipientReference | None = None
+    specificMemberTo: MemberReference | None = None
     emailRecipient: Annotated[
         str | None,
         Field(
             description='Required when notifyWho is set to: "Email Address" Max length: 250;'
         ),
-    ]
-    notifyFrom: NotificationRecipientReference | None
-    specificMemberFrom: MemberReference | None
+    ] = None
+    notifyFrom: NotificationRecipientReference | None = None
+    specificMemberFrom: MemberReference | None = None
     emailFrom: Annotated[
         str | None,
         Field(
             description='Required when notifyFrom is set to: "Email Address" Max length: 250;'
         ),
-    ]
-    ccContact: ContactReference | None
-    bccContact: ContactReference | None
+    ] = None
+    ccContact: ContactReference | None = None
+    bccContact: ContactReference | None = None
     subject: Annotated[
         str | None,
         Field(
             description='Required when notifyType is set to: "Create Activity", "Send Email", "Assign Resource" Max length: 100;'
         ),
-    ]
-    notes: str | None
-    activityStatus: ActivityStatusReference | None
-    activityType: ActivityTypeReference | None
-    attachedTrack: TrackReference | None
-    daysToExecute: int | None
-    board: BoardReference | None
-    boardStatus: ServiceStatusReference | None
-    serviceType: ServiceTypeReference | None
-    serviceSubType: ServiceSubTypeReference | None
-    serviceItem: ServiceItemReference | None
-    group: GroupReference | None
-    serviceTemplate: ServiceTemplateReference | None
-    invoiceMinDays: int | None
-    automateScript: AutomateScriptReference | None
-    scriptSuccessStatus: ServiceStatusReference | None
-    scriptFailStatus: ServiceStatusReference | None
-    detailNotesFlag: bool | None
-    internalNotesFlag: bool | None
-    auditNotesFlag: bool | None
-    servicePriority: PriorityReference | None
-    updateOwnerFlag: bool | None
-    salesOrderStatus: OrderStatusReference | None
-    projectStatus: ProjectStatusReference | None
-    companyStatus: CompanyStatusReference | None
-    attachments: list[int] | None
-    serviceSurvey: ServiceSurveyReference | None
-    specificTeamTo: GenericBoardTeamReference | None
+    ] = None
+    notes: str | None = None
+    activityStatus: ActivityStatusReference | None = None
+    activityType: ActivityTypeReference | None = None
+    attachedTrack: TrackReference | None = None
+    daysToExecute: int | None = None
+    board: BoardReference | None = None
+    boardStatus: ServiceStatusReference | None = None
+    serviceType: ServiceTypeReference | None = None
+    serviceSubType: ServiceSubTypeReference | None = None
+    serviceItem: ServiceItemReference | None = None
+    group: GroupReference | None = None
+    serviceTemplate: ServiceTemplateReference | None = None
+    invoiceMinDays: int | None = None
+    automateScript: AutomateScriptReference | None = None
+    scriptSuccessStatus: ServiceStatusReference | None = None
+    scriptFailStatus: ServiceStatusReference | None = None
+    detailNotesFlag: bool | None = None
+    internalNotesFlag: bool | None = None
+    auditNotesFlag: bool | None = None
+    servicePriority: PriorityReference | None = None
+    updateOwnerFlag: bool | None = None
+    salesOrderStatus: OrderStatusReference | None = None
+    projectStatus: ProjectStatusReference | None = None
+    companyStatus: CompanyStatusReference | None = None
+    attachments: list[int] | None = None
+    serviceSurvey: ServiceSurveyReference | None = None
+    specificTeamTo: GenericBoardTeamReference | None = None
     attachConfigurationsFor: Annotated[
         WorkflowActionAttachConfigurationsFor | None,
         Field(description='Required when notifyType is set to: "Attach Configuration"'),
-    ]
-    configurationType: ConfigurationTypeReference | None
-    configurationStatus: ConfigurationStatusReference | None
-    connectWiseID: str | None
-    parentId: Annotated[int | None, Field(description='WF_NotifyEvents_RecID')]
-    grandParentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')]
-    parentConnectWiseId: str | None
-    grandParentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    configurationType: ConfigurationTypeReference | None = None
+    configurationStatus: ConfigurationStatusReference | None = None
+    connectWiseID: str | None = None
+    parentId: Annotated[int | None, Field(description='WF_NotifyEvents_RecID')] = None
+    grandParentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')] = (
+        None
+    )
+    parentConnectWiseId: str | None = None
+    grandParentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowActionAttachConfigurationsFor(str, Enum):
@@ -12591,43 +12908,45 @@ class WorkflowActionAttachConfigurationsFor(str, Enum):
 
 
 class WorkflowActionAutomateParameter(SparkModel):
-    id: int | None
-    name: str
-    value: str | None
-    connectWiseID: str | None
-    parentId: Annotated[int | None, Field(description='WF_NotifyActions_RecID')]
-    parentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    value: str | None = None
+    connectWiseID: str | None = None
+    parentId: Annotated[int | None, Field(description='WF_NotifyActions_RecID')] = None
+    parentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowActionUserDefinedField(SparkModel):
-    id: int | None
-    eventId: int | None
-    actionId: int | None
-    caption: str | None
-    userDefinedFieldId: int | None
-    value: str | None
-    overwriteFlag: bool | None
-    podDescription: str | None
-    fieldTypeId: str | None
-    entryTypeId: str | None
-    requiredFlag: bool | None
-    inactiveFlag: bool | None
-    connectWiseID: str | None
-    parentId: Annotated[int | None, Field(description='WF_NotifyActions_RecID')]
-    grandParentId: Annotated[int | None, Field(description='WF_NotifyEvents_RecID')]
-    parentConnectWiseId: str | None
-    grandParentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    eventId: int | None = None
+    actionId: int | None = None
+    caption: str | None = None
+    userDefinedFieldId: int | None = None
+    value: str | None = None
+    overwriteFlag: bool | None = None
+    podDescription: str | None = None
+    fieldTypeId: str | None = None
+    entryTypeId: str | None = None
+    requiredFlag: bool | None = None
+    inactiveFlag: bool | None = None
+    connectWiseID: str | None = None
+    parentId: Annotated[int | None, Field(description='WF_NotifyActions_RecID')] = None
+    grandParentId: Annotated[int | None, Field(description='WF_NotifyEvents_RecID')] = (
+        None
+    )
+    parentConnectWiseId: str | None = None
+    grandParentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowAttachment(SparkModel):
-    id: int | None
-    name: str | None
-    connectWiseID: str | None
-    parentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')]
-    parentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    connectWiseID: str | None = None
+    parentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')] = None
+    parentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowBatchFrequencyUnit(str, Enum):
@@ -12643,35 +12962,35 @@ class WorkflowBatchSchedule(str, Enum):
 
 
 class WorkflowEvent(SparkModel):
-    id: int | None
-    name: str | None
-    eventCondition: str
+    id: int | None = None
+    name: str | None = None
+    eventCondition: str | None = None
     frequencyUnit: Annotated[
         WorkflowEventFrequencyUnit | None,
         Field(
             description='Required when exectionTimes is set to MultipleTimes or Continuously'
         ),
-    ]
+    ] = None
     frequencyOfExecution: Annotated[
         int | None,
         Field(
             description='Required when exectionTimes is set to MultipleTimes or Continuously'
         ),
-    ]
+    ] = None
     maxNumberOfExecution: Annotated[
         int | None,
         Field(description='Required when exectionTimes is set to MultipleTimes'),
-    ]
+    ] = None
     executionTime: Annotated[
         WorkflowEventExecutionTime | None,
         Field(description='Defaults to Once when not specified'),
-    ]
-    dateTestedUTC: datetime | None
-    testRecordsMatched: int | None
-    connectWiseID: str | None
-    parentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')]
-    parentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    dateTestedUTC: datetime | None = None
+    testRecordsMatched: int | None = None
+    connectWiseID: str | None = None
+    parentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')] = None
+    parentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowEventExecutionTime(str, Enum):
@@ -12688,41 +13007,41 @@ class WorkflowEventFrequencyUnit(str, Enum):
 
 
 class WorkflowNotifyType(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
     isSetupFlag: Annotated[
         bool | None,
         Field(
             description='If the current action is available because it is already set up. Pertains to integrations such as Automate'
         ),
-    ]
+    ] = None
     externalFlag: Annotated[
         bool | None,
         Field(
             description='If the current action effects external objects e.g. integrations or sending an email'
         ),
-    ]
-    connectWiseID: str | None
-    parentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')]
-    parentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    ] = None
+    connectWiseID: str | None = None
+    parentId: Annotated[int | None, Field(description='WF_NotifyHeader_RecID')] = None
+    parentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowNotifyTypeInfo(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    isSetupFlag: bool | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    isSetupFlag: bool | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowTableType(SparkModel):
-    id: int | None
-    identifier: str | None
-    name: str | None
-    connectWiseID: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    identifier: str | None = None
+    name: str | None = None
+    connectWiseID: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowTableTypeInfo(CatalogItemReference):
@@ -12734,29 +13053,29 @@ class WorkflowTableTypeReference(CatalogItemReference):
 
 
 class WorkflowTrigger(SparkModel):
-    id: int | None
-    name: str | None
-    description: str | None
-    hasOptionsFlag: bool | None
-    hasOperatorFlag: bool | None
-    customField: UserDefinedFieldReference | None
-    expectedType: str | None
-    connectWiseID: str | None
-    parentId: int | None
-    parentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+    hasOptionsFlag: bool | None = None
+    hasOperatorFlag: bool | None = None
+    customField: UserDefinedFieldReference | None = None
+    expectedType: str | None = None
+    connectWiseID: str | None = None
+    parentId: int | None = None
+    parentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class WorkflowTriggerOption(SparkModel):
-    value: str | None
-    name: str | None
-    customField: UserDefinedFieldReference | None
-    connectWiseID: str | None
-    parentId: int | None
-    grandParentId: int | None
-    parentConnectWiseId: str | None
-    grandParentConnectWiseId: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    value: str | None = None
+    name: str | None = None
+    customField: UserDefinedFieldReference | None = None
+    connectWiseID: str | None = None
+    parentId: int | None = None
+    grandParentId: int | None = None
+    parentConnectWiseId: str | None = None
+    grandParentConnectWiseId: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class ExpenseEntryAudit(TimeEntryAudit):

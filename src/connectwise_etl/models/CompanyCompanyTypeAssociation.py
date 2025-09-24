@@ -12,7 +12,7 @@ from . import CompanyReference, CompanyTypeReference
 
 
 class CompanyTypeAssociation(SparkModel):
-    id: int | None
-    type: CompanyTypeReference
-    company: CompanyReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: CompanyTypeReference | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None

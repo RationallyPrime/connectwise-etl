@@ -13,17 +13,19 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.ExceptionRenderer(),
         structlog.processors.UnicodeDecoder(),
-        structlog.dev.ConsoleRenderer()
+        structlog.dev.ConsoleRenderer(),
     ],
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
     cache_logger_on_first_use=True,
 )
 
+
 # Export commonly used functions
 def get_logger(name: str):
     """Get a structured logger for the given module name."""
     return structlog.get_logger(name)
+
 
 # Re-export commonly used items from submodules
 from .base import ErrorCode, ErrorLevel

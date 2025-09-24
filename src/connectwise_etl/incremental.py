@@ -29,7 +29,9 @@ class IncrementalProcessor:
                 return None
 
             # Bronze uses etlTimestamp, Silver/Gold use _etl_processed_at
-            timestamp_col: Literal['etlTimestamp', '_etl_processed_at'] = "etlTimestamp" if "bronze" in table_name else "_etl_processed_at"
+            timestamp_col: Literal["etlTimestamp", "_etl_processed_at"] = (
+                "etlTimestamp" if "bronze" in table_name else "_etl_processed_at"
+            )
 
             result: list[Row] = self.spark.sql(f"""
                 SELECT MAX({timestamp_col}) as last_refresh
@@ -58,12 +60,16 @@ class IncrementalProcessor:
             logger.info(f"Getting records from {source_table} since {since_timestamp}")
 
             # Bronze uses etlTimestamp, Silver/Gold use _etl_processed_at
-            timestamp_col: Literal['etlTimestamp', '_etl_processed_at'] = "etlTimestamp" if "bronze" in source_table else "_etl_processed_at"
+            timestamp_col: Literal["etlTimestamp", "_etl_processed_at"] = (
+                "etlTimestamp" if "bronze" in source_table else "_etl_processed_at"
+            )
 
-            return self.spark.sql(sqlQuery=f"""
+            return self.spark.sql(
+                sqlQuery=f"""
                 SELECT * FROM {source_table}
                 WHERE {timestamp_col} > '{since_timestamp.isoformat()}'
-            """)
+            """
+            )
         else:
             logger.info(f"No timestamp found, getting all records from {source_table}")
             return self.spark.table(source_table)
@@ -134,7 +140,9 @@ class IncrementalProcessor:
         source_df.createOrReplaceTempView(temp_view)
 
         # Build merge conditions
-        merge_conditions: str = " AND ".join([f"target.{key} = source.{key}" for key in business_keys])
+        merge_conditions: str = " AND ".join(
+            [f"target.{key} = source.{key}" for key in business_keys]
+        )
 
         # Execute MERGE
         merge_sql: str = f"""

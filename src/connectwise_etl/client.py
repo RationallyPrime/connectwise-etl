@@ -321,13 +321,17 @@ class ConnectWiseClient:
                     raise ETLProcessingError(
                         f"Rate limited while fetching {entity_name}",
                         code=ErrorCode.API_RATE_LIMITED,
-                        details={"entity_name": entity_name, "page": page, "endpoint": endpoint}
+                        details={"entity_name": entity_name, "page": page, "endpoint": endpoint},
                     ) from e
                 elif e.response.status_code >= 500:
                     raise ETLProcessingError(
                         f"Server error while fetching {entity_name}",
                         code=ErrorCode.API_RESPONSE_INVALID,
-                        details={"entity_name": entity_name, "page": page, "status_code": e.response.status_code}
+                        details={
+                            "entity_name": entity_name,
+                            "page": page,
+                            "status_code": e.response.status_code,
+                        },
                     ) from e
                 else:
                     logger.error(f"HTTP error fetching {entity_name} page {page}: {e}")
@@ -361,6 +365,8 @@ class ConnectWiseClient:
             "ProductItem": "ProductItem",
             "PostedInvoice": "PostedInvoice",
             "UnpostedInvoice": "Invoice",  # Note: UnpostedInvoice uses Invoice model
+            "Member": "Member",
+            "Company": "Company",
         }
 
         model_name = model_name_mapping.get(entity_name)
@@ -368,7 +374,10 @@ class ConnectWiseClient:
             raise ETLConfigError(
                 f"Unknown entity: {entity_name}. Available entities: {list(model_name_mapping.keys())}",
                 code=ErrorCode.CONFIG_INVALID,
-                details={"entity_name": entity_name, "available_entities": list(model_name_mapping.keys())}
+                details={
+                    "entity_name": entity_name,
+                    "available_entities": list(model_name_mapping.keys()),
+                },
             )
 
         # Get the model class from the module
@@ -377,7 +386,7 @@ class ConnectWiseClient:
             raise ETLConfigError(
                 f"Model class {model_name} not found in models module",
                 code=ErrorCode.CONFIG_MISSING,
-                details={"model_name": model_name}
+                details={"model_name": model_name},
             )
 
         return model_class
@@ -464,6 +473,8 @@ class ConnectWiseClient:
             "/time/entries": "TimeEntry",
             "/expense/entries": "ExpenseEntry",
             "/procurement/products": "ProductItem",
+            "/system/members": "Member",
+            "/company/companies": "Company",
         }
 
         # Try exact match first
@@ -479,7 +490,7 @@ class ConnectWiseClient:
         raise ETLConfigError(
             f"Cannot determine entity name from endpoint: {endpoint}",
             code=ErrorCode.CONFIG_INVALID,
-            details={"endpoint": endpoint}
+            details={"endpoint": endpoint},
         )
 
     @with_etl_error_handling(operation="extract_all")

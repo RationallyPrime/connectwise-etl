@@ -10,7 +10,7 @@ from sparkdantic import SparkModel
 
 
 class CampaignSubType(SparkModel):
-    id: int | None
-    typeId: int | None
-    name: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    typeId: int | None = None
+    name: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None

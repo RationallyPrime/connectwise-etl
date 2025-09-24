@@ -55,7 +55,9 @@ def with_etl_error_handling(
                         error_code=e.code.value,
                         error_message=str(e),
                         operation=op_name,
-                        error_details=e.details.model_dump() if hasattr(e.details, 'model_dump') else e.details,
+                        error_details=e.details.model_dump()
+                        if hasattr(e.details, "model_dump")
+                        else e.details,
                         exc_info=True,
                     )
                     if reraise:
@@ -90,7 +92,9 @@ def with_etl_error_handling(
                         error_code=e.code.value,
                         error_message=str(e),
                         operation=op_name,
-                        error_details=e.details.model_dump() if hasattr(e.details, 'model_dump') else e.details,
+                        error_details=e.details.model_dump()
+                        if hasattr(e.details, "model_dump")
+                        else e.details,
                         exc_info=True,
                     )
                     if reraise:

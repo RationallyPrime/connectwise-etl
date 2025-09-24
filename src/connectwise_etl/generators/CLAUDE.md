@@ -91,55 +91,23 @@ All generated models inherit from `sparkdantic.SparkModel`:
 - Built-in validation
 - Seamless DataFrame conversion
 
-### Auto-Detection
+  uv run datamodel-codegen \
+      --input PSA_OpenAPI_schema.json \
+      --output src/connectwise_etl/models/ \
+      --input-file-type openapi \
+      --base-class sparkdantic.SparkModel \
+      --parent-scoped-naming \
+      --reuse-model \
+      --keep-model-order \
+      --use-annotated \
+      --use-subclass-enum \
+      --use-standard-collections \
+      --force-optional \
+      --use-union-operator \
+      --openapi-scopes schemas \
+      --disable-timestamp
 
-The generator automatically detects input format:
-- `.json` files containing `"openapi"` → OpenAPI generator
-- `.json` files containing `"cdm:traits"` → CDM generator
-- Override with `--format` flag if needed
-
-## Adding New Generators
-
-1. Create a new generator class inheriting from `BaseGenerator`:
-   ```python
-   from .base import BaseGenerator
-   
-   class MyGenerator(BaseGenerator):
-       def can_handle(self, content: dict) -> bool:
-           return "my_format" in content
-       
-       def generate(self, input_path: str, output_path: str, **kwargs) -> None:
-           # Implementation
-   ```
-
-2. Register in `registry.py`:
-   ```python
-   registry.register("myformat", MyGenerator)
-   ```
-
-3. Use via regenerate_models_v2.py:
-   ```bash
-   python scripts/regenerate_models_v2.py input.json output.py --format myformat
-   ```
-
-## Common Issues
-
-### Wrong Field Names
-- **Issue**: Fields become snake_case instead of camelCase
-- **Fix**: Ensure `snake-case-field = false` in generation.toml
-
-### Missing Models
-- **Issue**: Not all schemas are generated
-- **Fix**: Check `openapi-scopes = "schemas"` setting
-
-### Import Errors
-- **Issue**: Generated models have incorrect imports
-- **Fix**: Use `--base-class sparkdantic.SparkModel` explicitly
-
-## Templates
-
-Custom templates in `templates/` directory:
-- `psa/`: ConnectWise-specific customizations
-- Add new directories for other systems
-
-Templates override default generation behavior for specific models or fields.
+  The key flags that made the difference:
+  - --parent-scoped-naming - Creates the nested structure with proper relationships
+  - --reuse-model - Prevents duplicate model definitions
+  - --strip-default-none - Cleaner output without excessive None defaults

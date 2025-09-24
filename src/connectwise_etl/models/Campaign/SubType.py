@@ -12,7 +12,7 @@ from .. import CampaignTypeReference
 
 
 class CampaignSubType(SparkModel):
-    id: int | None
-    type: CampaignTypeReference
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: CampaignTypeReference | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None

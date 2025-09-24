@@ -12,17 +12,21 @@ from . import CurrencyCodeReference
 
 
 class Currency(SparkModel):
-    id: int | None
-    currencyIdentifier: Annotated[str, Field(description=' Max length: 10;')]
-    name: Annotated[str, Field(description=' Max length: 50;')]
-    symbol: Annotated[str | None, Field(description=' Max length: 10;')]
-    displayIdFlag: bool | None
-    displaySymbolFlag: bool | None
-    currencyCode: CurrencyCodeReference | None
-    thousandsSeparator: Annotated[str | None, Field(description=' Max length: 1;')]
-    decimalSeparator: Annotated[str | None, Field(description=' Max length: 1;')]
-    negativeParenthesesFlag: bool | None
-    rightAlign: bool | None
-    numberOfDecimals: int | None
-    reportFormat: str | None
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    currencyIdentifier: Annotated[str | None, Field(description=' Max length: 10;')] = (
+        None
+    )
+    name: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    symbol: Annotated[str | None, Field(description=' Max length: 10;')] = None
+    displayIdFlag: bool | None = None
+    displaySymbolFlag: bool | None = None
+    currencyCode: CurrencyCodeReference | None = None
+    thousandsSeparator: Annotated[str | None, Field(description=' Max length: 1;')] = (
+        None
+    )
+    decimalSeparator: Annotated[str | None, Field(description=' Max length: 1;')] = None
+    negativeParenthesesFlag: bool | None = None
+    rightAlign: bool | None = None
+    numberOfDecimals: int | None = None
+    reportFormat: str | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None

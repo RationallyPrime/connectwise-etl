@@ -35,12 +35,17 @@ def create_dimension_from_yaml(
         raise ETLConfigError(
             f"Dimension '{dimension_name}' not found in YAML config",
             code=ErrorCode.CONFIG_MISSING,
-            details={"available": list(dimensions.keys())}
+            details={"available": list(dimensions.keys())},
         )
 
     dim_schema = dimensions[dimension_name]
 
     # Read source data
+    if not dim_schema.source_table:
+        raise ETLConfigError(
+            f"Source table not defined for dimension '{dimension_name}'",
+            code=ErrorCode.CONFIG_MISSING,
+        )
     source_df = spark.table(dim_schema.source_table)
     natural_key = dim_schema.natural_key
 
@@ -48,13 +53,12 @@ def create_dimension_from_yaml(
         raise ETLProcessingError(
             f"Natural key '{natural_key}' not found in {dim_schema.source_table}",
             code=ErrorCode.GOLD_DIMENSION_ERROR,
-            details={"available_columns": source_df.columns}
+            details={"available_columns": source_df.columns},
         )
 
     # Create dimension with distinct values and usage counts
     dim_df = (
-        source_df
-        .where(F.col(natural_key).isNotNull())
+        source_df.where(F.col(natural_key).isNotNull())
         .groupBy(natural_key)
         .agg(F.count("*").alias("usage_count"))
         .orderBy(F.desc("usage_count"))
@@ -62,30 +66,28 @@ def create_dimension_from_yaml(
 
     # Add surrogate key (from YAML primary_key)
     window = Window.orderBy(F.desc("usage_count"))
-    dim_df = dim_df.withColumn(
-        dim_schema.primary_key,
-        F.row_number().over(window)
-    )
+    dim_df = dim_df.withColumn(dim_schema.primary_key, F.row_number().over(window))
 
     # Add any other columns from the source that are defined in YAML schema
     available_columns = set(source_df.columns)
     for col_schema in dim_schema.columns:
         col_name = col_schema.name
-        if col_name != dim_schema.primary_key and col_name != natural_key:
-            if col_name in available_columns:
-                # Add the column (take first non-null value)
-                enriched = (
-                    source_df
-                    .where(F.col(col_name).isNotNull())
-                    .groupBy(natural_key)
-                    .agg(F.first(col_name).alias(col_name))
-                )
-                dim_df = dim_df.join(enriched, on=natural_key, how="left")
+        if (
+            col_name != dim_schema.primary_key
+            and col_name != natural_key
+            and col_name in available_columns
+        ):
+            # Add the column (take first non-null value)
+            enriched = (
+                source_df.where(F.col(col_name).isNotNull())
+                .groupBy(natural_key)
+                .agg(F.first(col_name).alias(col_name))
+            )
+            dim_df = dim_df.join(enriched, on=natural_key, how="left")
 
     # Add standard dimension attributes
     dim_df = (
-        dim_df
-        .withColumn("IsActive", F.lit(True))
+        dim_df.withColumn("IsActive", F.lit(True))
         .withColumn("EffectiveDate", F.current_timestamp())
         .withColumn("EndDate", F.lit(None).cast("timestamp"))
     )
@@ -145,15 +147,17 @@ def get_dimension_mappings_from_yaml(
 
     mappings = []
 
-    for dim_name, dim_schema in dimension_schemas.items():
+    for _, dim_schema in dimension_schemas.items():
         natural_key = dim_schema.natural_key
 
         # Check if fact table has this dimension's natural key
         if natural_key in fact_table_columns:
-            mappings.append((
-                natural_key,                # fact column (e.g., "memberId")
-                dim_schema.table_name,      # dimension table (e.g., "gold.dimmember")
-                dim_schema.primary_key      # surrogate key (e.g., "MemberKey")
-            ))
+            mappings.append(
+                (
+                    natural_key,  # fact column (e.g., "memberId")
+                    dim_schema.table_name,  # dimension table (e.g., "gold.dimmember")
+                    dim_schema.primary_key,  # surrogate key (e.g., "MemberKey")
+                )
+            )
 
     return mappings

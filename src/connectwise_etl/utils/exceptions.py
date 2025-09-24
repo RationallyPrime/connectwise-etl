@@ -16,10 +16,7 @@ class ETLConfigError(ApplicationError):
 
     def __init__(self, message: str, code: ErrorCode = ErrorCode.CONFIG_INVALID, **kwargs):
         super().__init__(
-            message=message,
-            code=code,
-            level=kwargs.pop("level", ErrorLevel.ERROR),
-            **kwargs
+            message=message, code=code, level=kwargs.pop("level", ErrorLevel.ERROR), **kwargs
         )
 
 
@@ -35,10 +32,7 @@ class ETLProcessingError(ApplicationError):
 
     def __init__(self, message: str, code: ErrorCode, **kwargs):
         super().__init__(
-            message=message,
-            code=code,
-            level=kwargs.pop("level", ErrorLevel.ERROR),
-            **kwargs
+            message=message, code=code, level=kwargs.pop("level", ErrorLevel.ERROR), **kwargs
         )
 
 
@@ -54,10 +48,7 @@ class ETLInfrastructureError(ApplicationError):
 
     def __init__(self, message: str, code: ErrorCode = ErrorCode.SPARK_SESSION_FAILED, **kwargs):
         super().__init__(
-            message=message,
-            code=code,
-            level=kwargs.pop("level", ErrorLevel.CRITICAL),
-            **kwargs
+            message=message, code=code, level=kwargs.pop("level", ErrorLevel.CRITICAL), **kwargs
         )
 
 

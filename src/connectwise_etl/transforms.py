@@ -12,8 +12,7 @@ from .agreement_utils import (
     extract_agreement_number,
     resolve_agreement_hierarchy,
 )
-from .date_utils import add_date_key
-from .gold import add_etl_metadata
+from .gold import add_date_key_column as add_date_key, add_etl_metadata
 
 logger: Logger = logging.getLogger(name=__name__)
 
@@ -68,7 +67,9 @@ def create_time_entry_fact(
         "hourlyRate",
     ]
 
-    missing_columns: list[str] = [col for col in required_columns if col not in time_entry_df.columns]
+    missing_columns: list[str] = [
+        col for col in required_columns if col not in time_entry_df.columns
+    ]
     if missing_columns:
         raise ValueError(f"Missing required columns for time entry fact: {missing_columns}")
 
@@ -190,13 +191,12 @@ def create_time_entry_fact(
         F.when(F.col("agreement_type_normalized") == "internal_project", "Internal")
         .when(F.col("billableOption") == "Billable", "Billable")
         .when(F.col("billableOption") == "DoNotBill", "Non-Billable")
-        .when(F.col("billableOption") == "NoCharge", "No Charge")
+        .when(F.col("billableOption") == "NoCharge", "No Charge"),
     )
 
     # Add cross-product of utilizationType and status
     fact_df = fact_df.withColumn(
-        "utilizationStatus",
-        F.concat(F.col("utilizationType"), F.lit(" - "), F.col("status"))
+        "utilizationStatus", F.concat(F.col("utilizationType"), F.lit(" - "), F.col("status"))
     )
 
     # Add dimension keys using YAML-driven approach
@@ -211,9 +211,7 @@ def create_time_entry_fact(
             dim_df = spark.table(dim_table)
             if dim_df.count() > 0:  # Only join if dimension exists
                 fact_df = fact_df.join(
-                    dim_df.select(F.col(fact_col), F.col(surrogate_key)),
-                    on=fact_col,
-                    how="left"
+                    dim_df.select(F.col(fact_col), F.col(surrogate_key)), on=fact_col, how="left"
                 )
                 logger.info(f"Added {surrogate_key} from {dim_table}")
 
@@ -306,7 +304,6 @@ def create_invoice_line_fact(
     invoice_lines.append(time_lines)
     logger.info(f"Added {time_lines.count()} time-based lines")
 
-
     product_lines = (
         product_df.alias("p")
         .filter(F.col("p.invoiceId").isNotNull())
@@ -344,14 +341,12 @@ def create_invoice_line_fact(
         fact_df = fact_df.unionByName(df, allowMissingColumns=True)
 
     # Add line metadata
-    fact_df = (
-        fact_df.withColumn(
-            "LineType",
-            F.when(F.col("productClass") == "Service", "SERVICE")
-             .when(F.col("productClass").isNull() & F.col("timeEntryId").isNotNull(), "SERVICE")
-             .when(F.col("productClass").isNotNull(), "PRODUCT")
-             .when(F.col("agreementId").isNotNull(), "AGREEMENT")
-        )
+    fact_df = fact_df.withColumn(
+        "LineType",
+        F.when(F.col("productClass") == "Service", "SERVICE")
+        .when(F.col("productClass").isNull() & F.col("timeEntryId").isNotNull(), "SERVICE")
+        .when(F.col("productClass").isNotNull(), "PRODUCT")
+        .when(F.col("agreementId").isNotNull(), "AGREEMENT"),
     )
 
     # Calculate line cost and margin
@@ -388,10 +383,7 @@ def create_invoice_line_fact(
     )
 
     # Default applyToType to "Services" when null
-    fact_df = fact_df.withColumn(
-        "applyToType",
-        F.coalesce(F.col("applyToType"), F.lit("Services"))
-    )
+    fact_df = fact_df.withColumn("applyToType", F.coalesce(F.col("applyToType"), F.lit("Services")))
 
     # Add surrogate keys
     fact_df = fact_df.withColumn(
@@ -438,9 +430,7 @@ def create_invoice_line_fact(
             dim_df = spark.table(dim_table)
             if dim_df.count() > 0:  # Only join if dimension exists
                 fact_df = fact_df.join(
-                    dim_df.select(F.col(fact_col), F.col(surrogate_key)),
-                    on=fact_col,
-                    how="left"
+                    dim_df.select(F.col(fact_col), F.col(surrogate_key)), on=fact_col, how="left"
                 )
 
     # Add ETL metadata
@@ -502,17 +492,14 @@ def create_agreement_dimension(
         F.sha2(F.col("id").cast("string"), 256).alias("AgreementSK"),
         F.col("id").alias("agreementId"),
         F.col("agreementNumber"),
-
         # Basic attributes
         "name",
         F.col("typeId").alias("agreementTypeId"),
         F.col("typeName").alias("agreementTypeName"),
         F.col("agreementStatus").alias("status"),
-
         # Hierarchy
         F.col("parentAgreementId"),
         F.col("parentAgreementName"),
-
         # Customer relationships
         "companyId",
         "companyName",
@@ -521,7 +508,6 @@ def create_agreement_dimension(
         "contactName",
         "siteId",
         "siteName",
-
         # Billing relationships
         "billToCompanyId",
         "billToCompanyName",
@@ -529,25 +515,21 @@ def create_agreement_dimension(
         "billToContactName",
         "billToSiteId",
         "billToSiteName",
-
         # Billing model
         F.col("applicationUnits").alias("billingModel"),  # Amount/Hours/Incidents
         F.col("applicationLimit").alias("contractLimit"),
         F.col("applicationCycle").alias("billingCycle"),
         F.col("applicationUnlimitedFlag").alias("isUnlimited"),
-
         # Coverage flags
         F.col("coverAgreementTime").alias("coversTime"),
         F.col("coverAgreementProduct").alias("coversProducts"),
         F.col("coverAgreementExpense").alias("coversExpenses"),
         F.col("coverSalesTax").alias("coversSalesTax"),
-
         # Billing rules
         F.col("carryOverUnused").alias("allowsCarryOver"),
         F.col("allowOverruns").alias("allowsOverruns"),
         F.col("expireWhenZero").alias("expiresWhenZero"),
         F.col("chargeToFirm").alias("chargeToFirm"),
-
         # Financial terms
         F.col("billAmount").alias("recurringAmount"),
         F.lit(None).cast("double").alias("defaultHourlyRate"),  # hourlyRate not in agreement table
@@ -556,20 +538,17 @@ def create_agreement_dimension(
         F.col("taxable").alias("isTaxable"),
         F.col("taxCodeId"),
         F.col("taxCodeName"),
-
         # Billing configuration
         F.col("billTime").alias("defaultTimeBilling"),  # Billable/DoNotBill/NoCharge
         F.col("billExpenses").alias("defaultExpenseBilling"),
         F.col("billProducts").alias("defaultProductBilling"),
         F.col("billOneTimeFlag").alias("isOneTimeBilling"),
         F.col("prorateFlag").alias("allowsProration"),
-
         # Work defaults
         F.col("workRoleId").alias("defaultWorkRoleId"),
         F.col("workRoleName").alias("defaultWorkRoleName"),
         F.col("workTypeId").alias("defaultWorkTypeId"),
         F.col("workTypeName").alias("defaultWorkTypeName"),
-
         # Lifecycle dates
         F.to_date("startDate").alias("startDate"),
         F.to_date("endDate").alias("endDate"),
@@ -577,19 +556,19 @@ def create_agreement_dimension(
         F.to_date("dateCancelled").alias("cancelledDate"),
         F.col("cancelledFlag").alias("isCancelled"),
         F.col("reasonCancelled").alias("cancellationReason"),
-
         # Derived fields
         F.when(F.col("endDate").isNull() | (F.col("endDate") > F.current_date()), True)
-         .otherwise(False).alias("isActive"),
+        .otherwise(False)
+        .alias("isActive"),
         F.months_between(F.current_date(), F.col("startDate")).alias("ageInMonths"),
-        F.datediff(F.coalesce("endDate", F.current_date()), F.col("startDate")).alias("durationDays"),
-
+        F.datediff(F.coalesce("endDate", F.current_date()), F.col("startDate")).alias(
+            "durationDays"
+        ),
         # Invoice configuration
         F.col("invoiceTemplateId"),
         F.col("invoiceTemplateName"),
         F.col("autoInvoiceFlag").alias("isAutoInvoice"),
         F.col("nextInvoiceDate"),
-
         # Other attributes
         F.col("customerPO").alias("customerPONumber"),
         F.col("workOrder").alias("workOrderNumber"),
@@ -605,18 +584,24 @@ def create_agreement_dimension(
         .when(F.col("agreementTypeName").rlike(r"(?i)Tímapottur\s*:?"), "prepaid_hours")
         .when(F.col("agreementTypeName").rlike(r"(?i)Innri verkefni"), "internal_project")
         .when(F.col("agreementTypeName").rlike(r"(?i)Rekstrarþjónusta|Alrekstur"), "operations")
-        .when(F.col("agreementTypeName").rlike(r"(?i)Hugbúnaðarþjónusta|Office 365"), "software_service")
-        .otherwise("other")
+        .when(
+            F.col("agreementTypeName").rlike(r"(?i)Hugbúnaðarþjónusta|Office 365"),
+            "software_service",
+        )
+        .otherwise("other"),
     )
 
     # Add billing behavior classification
     dim_df = dim_df.withColumn(
         "billingBehavior",
-        F.when(F.col("agreementTypeNormalized").isin("billable_service", "software_service"), "billable")
+        F.when(
+            F.col("agreementTypeNormalized").isin("billable_service", "software_service"),
+            "billable",
+        )
         .when(F.col("agreementTypeNormalized") == "prepaid_hours", "prepaid")
         .when(F.col("agreementTypeNormalized") == "internal_project", "internal")
         .when(F.col("agreementTypeNormalized") == "operations", "operations")
-        .otherwise("unknown")
+        .otherwise("unknown"),
     )
 
     # Add ETL metadata
@@ -712,10 +697,133 @@ def create_expense_entry_fact(
             dim_df = spark.table(dim_table)
             if dim_df.count() > 0:  # Only join if dimension exists
                 fact_df = fact_df.join(
-                    dim_df.select(F.col(fact_col), F.col(surrogate_key)),
-                    on=fact_col,
-                    how="left"
+                    dim_df.select(F.col(fact_col), F.col(surrogate_key)), on=fact_col, how="left"
                 )
+
+    # Add ETL metadata
+    fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")
+
+    return fact_df
+
+
+def create_product_fact(
+    spark: SparkSession,  # pylint: disable=unused-argument
+    product_df: DataFrame,
+    agreement_df: DataFrame | None = None,
+    config: dict[str, Any] | None = None,  # pylint: disable=unused-argument
+) -> DataFrame:
+    """Create product fact table for ConnectWise products/services.
+
+    This fact table captures product sales, service offerings, and agreements.
+    Essential for tracking product-based revenue vs. service delivery.
+
+    Args:
+        spark: SparkSession
+        product_df: Silver product DataFrame
+        agreement_df: Optional agreement DataFrame for hierarchy resolution
+        config: Optional configuration
+
+    Returns:
+        DataFrame with product facts
+    """
+    # Validate required columns (minimal set that should exist)
+    required_columns = [
+        "id",
+        "description",
+        "price",
+        "cost",
+    ]
+
+    missing_columns = [col for col in required_columns if col not in product_df.columns]
+    if missing_columns:
+        raise ValueError(f"Missing required columns for product fact: {missing_columns}")
+
+    # Start with base product data (only select columns that exist)
+    available_columns = set(product_df.columns)
+
+    fact_df = product_df.select(
+        # Keys (required)
+        F.sha2(F.col("id").cast("string"), 256).alias("ProductSK"),
+        F.col("id").alias("productId"),
+        *(
+            [F.col("identifier").alias("productIdentifier")]
+            if "identifier" in available_columns
+            else []
+        ),
+        # Core attributes
+        "description",
+        *([F.col("customerDescription")] if "customerDescription" in available_columns else []),
+        # Financial metrics (required)
+        "price",
+        "cost",
+        # Optional dimensions
+        *([F.col("categoryId")] if "categoryId" in available_columns else []),
+        *([F.col("typeId")] if "typeId" in available_columns else []),
+        *([F.col("unitOfMeasure")] if "unitOfMeasure" in available_columns else []),
+        # Flags (with safe defaults)
+        F.coalesce("inactiveFlag", F.lit(False)).alias("isInactiveFlag"),
+        F.coalesce("serializedFlag", F.lit(False)).alias("isSerializedFlag"),
+        F.coalesce("recurringFlag", F.lit(False)).alias("isRecurringFlag"),
+        # Inventory (safe defaults)
+        F.coalesce("quantityOnHand", F.lit(0)).alias("quantityOnHand"),
+        F.coalesce("minStockLevel", F.lit(0)).alias("minStockLevel"),
+        # Dates (if available)
+        *(
+            [F.to_date("dateEntered").alias("dateEntered")]
+            if "dateEntered" in available_columns
+            else []
+        ),
+    )
+
+    # Calculate derived metrics
+    fact_df = (
+        fact_df.withColumn("margin", F.col("price") - F.col("cost"))
+        .withColumn(
+            "marginPercentage",
+            F.when(F.col("price") > 0, (F.col("margin") / F.col("price") * 100)).otherwise(0),
+        )
+        .withColumn("inventoryValue", F.col("quantityOnHand") * F.col("cost"))
+    )
+
+    # Add basic product classification
+    fact_df = fact_df.withColumn(
+        "productTypeCategory",
+        F.when(F.col("isRecurringFlag") == True, "Recurring")  # noqa: E712
+        .when(F.col("isSerializedFlag") == True, "Serialized Item")  # noqa: E712
+        .otherwise("Standard"),
+    )
+
+    # Add inventory status
+    fact_df = fact_df.withColumn(
+        "inventoryStatus",
+        F.when(F.col("isInactiveFlag") == True, "Inactive")  # noqa: E712
+        .when(F.col("quantityOnHand") <= F.col("minStockLevel"), "Low Stock")
+        .when(F.col("quantityOnHand") > 0, "In Stock")
+        .otherwise("Out of Stock"),
+    )
+
+    # Add date keys if date columns exist
+    if "dateEntered" in fact_df.columns:
+        fact_df = add_date_key(fact_df, "dateEntered", "DateEnteredSK")
+
+    # Add dimension keys using YAML schema
+    from .yaml_dimensions import get_dimension_mappings_from_yaml
+
+    # Get dimension mappings and add keys via joins
+    dimension_mappings = get_dimension_mappings_from_yaml(fact_df.columns)
+    for fact_col, dim_table, surrogate_key in dimension_mappings:
+        if fact_col in fact_df.columns:
+            try:
+                dim_df = spark.table(dim_table)
+                if dim_df.count() > 0:  # Only join if dimension exists
+                    fact_df = fact_df.join(
+                        dim_df.select(F.col(fact_col), F.col(surrogate_key)),
+                        on=fact_col,
+                        how="left",
+                    )
+                    logger.info(f"Added {surrogate_key} from {dim_table}")
+            except Exception as e:
+                logger.warning(f"Could not join dimension {dim_table}: {e}")
 
     # Add ETL metadata
     fact_df = add_etl_metadata(fact_df, layer="gold", source="connectwise")

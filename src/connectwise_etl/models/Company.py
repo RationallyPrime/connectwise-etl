@@ -29,75 +29,83 @@ from . import (
 
 
 class CompanyTypeAssociation(SparkModel):
-    id: int | None
-    type: CompanyTypeReference
-    company: CompanyReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: CompanyTypeReference | None = None
+    company: CompanyReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
 
 
 class Configuration(SparkModel):
-    id: int | None
-    name: Annotated[str, Field(description=' Max length: 100;')]
-    type: ConfigurationTypeReference
-    status: ConfigurationStatusReference | None
-    company: CompanyReference
-    contact: ContactReference | None
-    site: SiteReference | None
-    locationId: int | None
-    location: SystemLocationReference | None
-    businessUnitId: int | None
-    department: SystemDepartmentReference | None
-    deviceIdentifier: Annotated[str | None, Field(description=' Max length: 100;')]
-    serialNumber: Annotated[str | None, Field(description=' Max length: 250;')]
-    modelNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    tagNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    purchaseDate: datetime | None
-    installationDate: datetime | None
-    installedBy: MemberReference | None
-    warrantyExpirationDate: datetime | None
-    vendorNotes: str | None
-    notes: str | None
-    macAddress: Annotated[str | None, Field(description=' Max length: 25;')]
-    lastLoginName: Annotated[str | None, Field(description=' Max length: 100;')]
-    billFlag: bool | None
-    backupSuccesses: int | None
-    backupIncomplete: int | None
-    backupFailed: int | None
-    backupRestores: int | None
-    lastBackupDate: datetime | None
-    backupServerName: Annotated[str | None, Field(description=' Max length: 50;')]
-    backupBillableSpaceGb: float | None
-    backupProtectedDeviceList: str | None
-    backupYear: int | None
-    backupMonth: int | None
-    ipAddress: Annotated[str | None, Field(description=' Max length: 50;')]
-    defaultGateway: Annotated[str | None, Field(description=' Max length: 50;')]
-    osType: Annotated[str | None, Field(description=' Max length: 250;')]
-    osInfo: Annotated[str | None, Field(description=' Max length: 250;')]
-    cpuSpeed: Annotated[str | None, Field(description=' Max length: 100;')]
-    ram: Annotated[str | None, Field(description=' Max length: 25;')]
-    localHardDrives: str | None
-    parentConfigurationId: int | None
-    vendor: CompanyReference | None
-    manufacturer: ManufacturerReference | None
-    questions: list[ConfigurationQuestion] | None
-    activeFlag: bool | None
-    managementLink: Annotated[str | None, Field(description=' Max length: 1000;')]
-    remoteLink: Annotated[str | None, Field(description=' Max length: 1000;')]
-    sla: SLAReference | None
-    mobileGuid: UUID | None
-    displayVendorFlag: bool | None
-    companyLocationId: int | None
-    showRemoteFlag: bool | None
-    showAutomateFlag: bool | None
-    needsRenewalFlag: bool | None
-    manufacturerPartNumber: Annotated[str | None, Field(description=' Max length: 50;')]
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
-    customFields: list[CustomFieldValue] | None
+    id: int | None = None
+    name: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    type: ConfigurationTypeReference | None = None
+    status: ConfigurationStatusReference | None = None
+    company: CompanyReference | None = None
+    contact: ContactReference | None = None
+    site: SiteReference | None = None
+    locationId: int | None = None
+    location: SystemLocationReference | None = None
+    businessUnitId: int | None = None
+    department: SystemDepartmentReference | None = None
+    deviceIdentifier: Annotated[str | None, Field(description=' Max length: 100;')] = (
+        None
+    )
+    serialNumber: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    modelNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    tagNumber: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    purchaseDate: datetime | None = None
+    installationDate: datetime | None = None
+    installedBy: MemberReference | None = None
+    warrantyExpirationDate: datetime | None = None
+    vendorNotes: str | None = None
+    notes: str | None = None
+    macAddress: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    lastLoginName: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    billFlag: bool | None = None
+    backupSuccesses: int | None = None
+    backupIncomplete: int | None = None
+    backupFailed: int | None = None
+    backupRestores: int | None = None
+    lastBackupDate: datetime | None = None
+    backupServerName: Annotated[str | None, Field(description=' Max length: 50;')] = (
+        None
+    )
+    backupBillableSpaceGb: float | None = None
+    backupProtectedDeviceList: str | None = None
+    backupYear: int | None = None
+    backupMonth: int | None = None
+    ipAddress: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    defaultGateway: Annotated[str | None, Field(description=' Max length: 50;')] = None
+    osType: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    osInfo: Annotated[str | None, Field(description=' Max length: 250;')] = None
+    cpuSpeed: Annotated[str | None, Field(description=' Max length: 100;')] = None
+    ram: Annotated[str | None, Field(description=' Max length: 25;')] = None
+    localHardDrives: str | None = None
+    parentConfigurationId: int | None = None
+    vendor: CompanyReference | None = None
+    manufacturer: ManufacturerReference | None = None
+    questions: list[ConfigurationQuestion] | None = None
+    activeFlag: bool | None = None
+    managementLink: Annotated[str | None, Field(description=' Max length: 1000;')] = (
+        None
+    )
+    remoteLink: Annotated[str | None, Field(description=' Max length: 1000;')] = None
+    sla: SLAReference | None = None
+    mobileGuid: UUID | None = None
+    displayVendorFlag: bool | None = None
+    companyLocationId: int | None = None
+    showRemoteFlag: bool | None = None
+    showAutomateFlag: bool | None = None
+    needsRenewalFlag: bool | None = None
+    manufacturerPartNumber: Annotated[
+        str | None, Field(description=' Max length: 50;')
+    ] = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
+    customFields: list[CustomFieldValue] | None = None
 
 
 class ContactTypeAssociation(SparkModel):
-    id: int | None
-    type: ContactTypeReference
-    contact: ContactReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: ContactTypeReference | None = None
+    contact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None

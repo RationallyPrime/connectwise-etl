@@ -200,7 +200,9 @@ def generate_surrogate_key(
     if not df:
         raise ETLConfigError("DataFrame is required", code=ErrorCode.CONFIG_MISSING)
     if not business_keys:
-        raise ETLConfigError("business_keys list is required and cannot be empty", code=ErrorCode.CONFIG_MISSING)
+        raise ETLConfigError(
+            "business_keys list is required and cannot be empty", code=ErrorCode.CONFIG_MISSING
+        )
     if not key_name:
         raise ETLConfigError("key_name is required", code=ErrorCode.CONFIG_MISSING)
 
@@ -210,7 +212,7 @@ def generate_surrogate_key(
         raise ETLProcessingError(
             f"Business key columns not found in DataFrame: {missing_keys}",
             code=ErrorCode.GOLD_SURROGATE_KEY,
-            details={"missing_keys": missing_keys, "available_columns": df.columns}
+            details={"missing_keys": missing_keys, "available_columns": df.columns},
         )
 
     # Validate partition columns if provided
@@ -220,7 +222,7 @@ def generate_surrogate_key(
             raise ETLProcessingError(
                 f"Partition columns not found in DataFrame: {missing_partitions}",
                 code=ErrorCode.GOLD_SURROGATE_KEY,
-                details={"missing_partitions": missing_partitions, "available_columns": df.columns}
+                details={"missing_partitions": missing_partitions, "available_columns": df.columns},
             )
 
     try:
@@ -242,7 +244,7 @@ def generate_surrogate_key(
             raise ETLProcessingError(
                 f"Failed to generate surrogate key column: {key_name}",
                 code=ErrorCode.GOLD_SURROGATE_KEY,
-                details={"key_name": key_name}
+                details={"key_name": key_name},
             )
 
         # Log statistics
@@ -259,7 +261,7 @@ def generate_surrogate_key(
         raise ETLProcessingError(
             f"Surrogate key generation failed: {e}",
             code=ErrorCode.GOLD_SURROGATE_KEY,
-            details={"key_name": key_name, "business_keys": business_keys, "error": str(e)}
+            details={"key_name": key_name, "business_keys": business_keys, "error": str(e)},
         ) from e
 
 
@@ -338,7 +340,7 @@ def add_date_key_column(
         raise ETLProcessingError(
             f"Date column '{date_column}' not found in DataFrame",
             code=ErrorCode.GOLD_DIMENSION_FAILED,
-            details={"date_column": date_column, "available_columns": df.columns}
+            details={"date_column": date_column, "available_columns": df.columns},
         )
 
     if date_key_column is None:
@@ -355,7 +357,11 @@ def add_date_key_column(
         raise ETLProcessingError(
             f"DateKey generation failed: {e}",
             code=ErrorCode.GOLD_DIMENSION_FAILED,
-            details={"date_column": date_column, "date_key_column": date_key_column, "error": str(e)}
+            details={
+                "date_column": date_column,
+                "date_key_column": date_key_column,
+                "error": str(e),
+            },
         ) from e
 
 

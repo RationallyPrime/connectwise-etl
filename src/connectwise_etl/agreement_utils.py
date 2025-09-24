@@ -160,7 +160,6 @@ def resolve_agreement_hierarchy(
     return result
 
 
-
 def filter_billable_time_entries(time_df: DataFrame) -> DataFrame:
     """Filter time entries for invoice creation, excluding prepaid and internal work.
 
@@ -192,9 +191,13 @@ def calculate_effective_billing_status(df: DataFrame) -> DataFrame:
         F.when(F.col("invoiceId").isNotNull(), "Invoiced")
         .when(F.col("agreement_type_normalized") == "internal_project", "Internal")
         .when(F.col("agreement_type_normalized") == "prepaid_hours", "Prepaid")
-        .when((F.col("agreement_billing_behavior") == "billable") & (F.col("billableOption") == "Billable"), "Billable")
+        .when(
+            (F.col("agreement_billing_behavior") == "billable")
+            & (F.col("billableOption") == "Billable"),
+            "Billable",
+        )
         .when(F.col("billableOption") == "NoCharge", "NoCharge")
-        .when(F.col("billableOption") == "DoNotBill", "DoNotBill")
+        .when(F.col("billableOption") == "DoNotBill", "DoNotBill"),
     )
 
 

@@ -21,14 +21,18 @@ from .utils.exceptions import ETLConfigError
 logger = get_logger(__name__)
 
 
+def get_table_name(layer: str, entity: str) -> str:
+    """Generate table name following ConnectWise convention."""
+    return f"{layer}.{layer}_cw_{entity}"
+
+
 def _flatten_structs(df: DataFrame, max_depth: int = 3) -> DataFrame:
     """Flatten nested struct columns with conflict resolution."""
     if max_depth <= 0 or df.isEmpty():
         return df
 
     struct_cols = [
-        field.name for field in df.schema.fields
-        if isinstance(field.dataType, StructType)
+        field.name for field in df.schema.fields if isinstance(field.dataType, StructType)
     ]
 
     if not struct_cols:
@@ -63,9 +67,7 @@ def _flatten_structs(df: DataFrame, max_depth: int = 3) -> DataFrame:
                     suffix += 1
 
                 generated_names.add(final_name)
-                select_cols.append(
-                    F.col(f"{field.name}.{struct_field.name}").alias(final_name)
-                )
+                select_cols.append(F.col(f"{field.name}.{struct_field.name}").alias(final_name))
 
     flattened_df = df.select(select_cols)
     return _flatten_structs(flattened_df, max_depth - 1)
@@ -73,7 +75,6 @@ def _flatten_structs(df: DataFrame, max_depth: int = 3) -> DataFrame:
 
 @with_etl_error_handling(operation="extract_bronze_data")
 def extract_bronze_data(
-    config: dict,
     spark: SparkSession,
     mode: Literal["full", "incremental"],
     lookback_days: int,
@@ -92,8 +93,9 @@ def extract_bronze_data(
         "TimeEntry": "/time/entries",
         "ExpenseEntry": "/expense/entries",
         "ProductItem": "/procurement/products",
-        "PostedInvoice": "/finance/invoices/posted",
-        "UnpostedInvoice": "/finance/invoices",
+        "Invoice": "/finance/invoices",
+        "Member": "/system/members",
+        "Company": "/company/companies",
     }
 
     for entity_name, endpoint in endpoints.items():
@@ -112,9 +114,13 @@ def extract_bronze_data(
             logger.info(f"No new records for {entity_name}")
             continue
 
-        table_name = config.get_table_name("bronze", "connectwise", entity_name.lower())
+        table_name = get_table_name("bronze", entity_name.lower())
 
-        if mode == "incremental" and spark.catalog.tableExists(table_name) and incremental_processor:
+        if (
+            mode == "incremental"
+            and spark.catalog.tableExists(table_name)
+            and incremental_processor
+        ):
             merged, total = incremental_processor.merge_bronze_incremental(bronze_df, table_name)
             logger.info(f"Merged {merged} records into {table_name} (total: {total})")
         else:
@@ -124,24 +130,25 @@ def extract_bronze_data(
 
 @with_etl_error_handling(operation="transform_silver_data")
 def transform_silver_data(
-    config: dict,
     spark: SparkSession,
     mode: Literal["full", "incremental"],
 ) -> None:
     """Transform bronze data to silver tables."""
-    from . import models
+    from .models.registry import models
     # EntityConfig eliminated - models themselves define the structure!
 
     incremental_processor = None
     if mode == "incremental":
         incremental_processor = IncrementalProcessor(spark)
 
-    for entity_name, model_class in models.items():
-        bronze_table = config.get_table_name("bronze", "connectwise", entity_name.lower())
-        silver_table = config.get_table_name("silver", "connectwise", entity_name.lower())
+    for entity_name, _ in models.items():
+        bronze_table = get_table_name("bronze", entity_name)
+        silver_table = get_table_name("silver", entity_name)
 
         if mode == "incremental" and incremental_processor:
-            bronze_df = incremental_processor.get_changed_records(bronze_table, target_table=silver_table)
+            bronze_df = incremental_processor.get_changed_records(
+                bronze_table, target_table=silver_table
+            )
         else:
             bronze_df = spark.table(bronze_table)
 
@@ -153,8 +160,7 @@ def transform_silver_data(
         # Transform to silver
         silver_df = bronze_df
         silver_df = (
-            silver_df
-            .withColumn("_etl_processed_at", F.current_timestamp())
+            silver_df.withColumn("_etl_processed_at", F.current_timestamp())
             .withColumn("_etl_source", F.lit("connectwise"))
             .withColumn("_etl_batch_id", F.lit(datetime.now().strftime("%Y%m%d_%H%M%S")))
         )
@@ -174,15 +180,17 @@ def transform_silver_data(
             logger.info(f"Merged {processed_count} records into {silver_table}")
         else:
             # Full mode: overwrite schema to handle any changes
-            silver_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(silver_table)
+            silver_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+                silver_table
+            )
             logger.info(f"Processed {total_rows} records to {silver_table}")
 
 
 @with_etl_error_handling(operation="create_gold_tables_yaml")
-def create_gold_tables_yaml(config: dict, spark: SparkSession) -> None:
+def create_gold_tables_yaml(spark: SparkSession) -> None:
     """Create fact tables and dimensions using YAML schemas."""
-    from .yaml_dimensions import create_all_dimensions_yaml
     from . import transforms
+    from .yaml_dimensions import create_all_dimensions_yaml
 
     # Create dimensions first using YAML
     logger.info("Creating ConnectWise dimensions from YAML...")
@@ -196,16 +204,22 @@ def create_gold_tables_yaml(config: dict, spark: SparkSession) -> None:
     facts_to_create = [
         {
             "name": "timeentry",
-            "silver_table": config.get_table_name("silver", "connectwise", "timeentry"),
-            "gold_table": config.get_table_name("gold", "connectwise", "timeentry", table_type="fact"),
-            "transform_function": "create_time_entry_fact"
+            "silver_table": get_table_name("silver", "timeentry"),
+            "gold_table": get_table_name("gold", "fact_timeentry"),
+            "transform_function": "create_time_entry_fact",
         },
         {
             "name": "expenseentry",
-            "silver_table": config.get_table_name("silver", "connectwise", "expenseentry"),
-            "gold_table": config.get_table_name("gold", "connectwise", "expenseentry", table_type="fact"),
-            "transform_function": "create_expense_entry_fact"
-        }
+            "silver_table": get_table_name("silver", "expenseentry"),
+            "gold_table": get_table_name("gold", "fact_expenseentry"),
+            "transform_function": "create_expense_entry_fact",
+        },
+        {
+            "name": "productitem",
+            "silver_table": get_table_name("silver", "productitem"),
+            "gold_table": get_table_name("gold", "fact_productitem"),
+            "transform_function": "create_product_fact",
+        },
     ]
 
     for fact_info in facts_to_create:
@@ -219,8 +233,8 @@ def create_gold_tables_yaml(config: dict, spark: SparkSession) -> None:
             if transform_func:
                 # Load agreement data for enrichment
                 try:
-                    agreement_df = spark.table(config.get_table_name("silver", "connectwise", "agreement"))
-                except:
+                    agreement_df = spark.table(get_table_name("silver", "agreement"))
+                except Exception:
                     agreement_df = None
 
                 gold_df = transform_func(
@@ -228,19 +242,21 @@ def create_gold_tables_yaml(config: dict, spark: SparkSession) -> None:
                     time_entry_df=silver_df if fact_info["name"] == "timeentry" else None,
                     expense_df=silver_df if fact_info["name"] == "expenseentry" else None,
                     agreement_df=agreement_df,
-                    config={"source": "connectwise", "business_key": "id"}
+                    config={"source": "connectwise", "business_key": "id"},
                 )
             else:
                 # Fallback to generic fact creation
                 from . import facts
+
                 gold_df = facts.create_generic_fact_table(
-                    config=config,
                     fact_config={"source": "connectwise", "business_key": "id"},
                     silver_df=silver_df,
                     spark=spark,
                 )
 
-            gold_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(fact_info["gold_table"])
+            gold_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+                fact_info["gold_table"]
+            )
             logger.info(f"✅ Created fact table {fact_info['gold_table']}")
 
         except Exception as e:
@@ -250,29 +266,22 @@ def create_gold_tables_yaml(config: dict, spark: SparkSession) -> None:
 
 @with_etl_error_handling(operation="run_etl_pipeline")
 def run_etl_pipeline(
-    config: dict,
     spark: SparkSession,
     layers: list[Literal["bronze", "silver", "gold"]],
     mode: Literal["full", "incremental"],
     lookback_days: int,
 ) -> None:
     """Run ConnectWise ETL pipeline."""
-    if not config:
-        raise ETLConfigError("ETL configuration is required", code=ErrorCode.CONFIG_MISSING)
     if not spark:
         raise ETLConfigError("SparkSession is required", code=ErrorCode.CONFIG_MISSING)
     if not layers:
         raise ETLConfigError("At least one layer must be specified", code=ErrorCode.CONFIG_MISSING)
     if mode not in ["full", "incremental"]:
         raise ETLConfigError(
-            f"Invalid mode '{mode}'. Must be 'full' or 'incremental'",
-            code=ErrorCode.CONFIG_INVALID
+            f"Invalid mode '{mode}'. Must be 'full' or 'incremental'", code=ErrorCode.CONFIG_INVALID
         )
     if lookback_days <= 0:
         raise ETLConfigError("lookback_days must be positive", code=ErrorCode.CONFIG_INVALID)
-
-    if "connectwise" not in config.integrations:
-        raise ETLConfigError("ConnectWise configuration required", code=ErrorCode.CONFIG_MISSING)
 
     logger.info("Running ConnectWise ETL pipeline")
     logger.info(f"Processing layers: {layers}")
@@ -280,19 +289,18 @@ def run_etl_pipeline(
 
     if "bronze" in layers:
         logger.info("Running bronze layer")
-        extract_bronze_data(config, spark, mode, lookback_days)
+        extract_bronze_data(spark, mode, lookback_days)
 
     if "silver" in layers:
         logger.info("Running silver layer")
-        transform_silver_data(config, spark, mode)
+        transform_silver_data(spark, mode)
 
     if "gold" in layers:
         logger.info("Running gold layer")
-        create_gold_tables_yaml(config, spark)
+        create_gold_tables_yaml(spark)
 
 
 if __name__ == "__main__":
     raise ETLConfigError(
-        "All parameters are required. See function signature.",
-        code=ErrorCode.CONFIG_MISSING
+        "All parameters are required. See function signature.", code=ErrorCode.CONFIG_MISSING
     )

@@ -3,9 +3,10 @@
 import logging
 
 from .client import ConnectWiseClient, ConnectWiseExtractor
+
 # Config models eliminated with config monster
 from .main import run_etl_pipeline
-from .models import models as models_module
+from .models.registry import models
 from .transforms import (
     create_expense_entry_fact,
     create_invoice_line_fact,
@@ -24,14 +25,7 @@ except Exception as e:
     logger.debug(f"ConnectWise client initialization skipped: {e}")
     extractor = None
 
-models = {
-    "agreement": models_module.Agreement,
-    "timeentry": models_module.TimeEntry,  # No underscore - matches table name
-    "invoice": models_module.Invoice,
-    "expenseentry": models_module.ExpenseEntry,  # No underscore - matches table name
-    "productitem": models_module.ProductItem,  # No underscore - matches table name
-    # "productrecurring": models_module.ProductRecurring,  # Commenting out - table doesn't exist in bronze
-}
+# Models dict is now imported from models module
 
 # Entity configs eliminated - models themselves define the structure!
 # Models with proper typing ARE the configuration

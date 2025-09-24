@@ -12,7 +12,7 @@ from . import ContactReference, ContactTypeReference
 
 
 class ContactTypeAssociation(SparkModel):
-    id: int | None
-    type: ContactTypeReference
-    contact: ContactReference
-    field_info: Annotated[dict[str, str] | None, Field(alias='_info')]
+    id: int | None = None
+    type: ContactTypeReference | None = None
+    contact: ContactReference | None = None
+    field_info: Annotated[dict[str, str] | None, Field(alias='_info')] = None
