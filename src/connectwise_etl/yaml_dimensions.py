@@ -25,7 +25,7 @@ def create_dimension_from_yaml(
 ) -> DataFrame:
     """Create a dimension table from YAML schema - simple and clean."""
     if not schema_dir:
-        schema_dir = Path(__file__).parent.parent.parent / "configs"
+        schema_dir = Path(__file__).parent / "schemas"
 
     # Load YAML schemas
     loader = SchemaLoader(schema_dir)
@@ -52,7 +52,7 @@ def create_dimension_from_yaml(
     if natural_key not in source_df.columns:
         raise ETLProcessingError(
             f"Natural key '{natural_key}' not found in {dim_schema.source_table}",
-            code=ErrorCode.GOLD_DIMENSION_ERROR,
+            code=ErrorCode.GOLD_DIMENSION_FAILED,
             details={"available_columns": source_df.columns},
         )
 
@@ -105,7 +105,7 @@ def create_all_dimensions_yaml(
 ) -> dict[str, DataFrame]:
     """Create all dimensions from YAML - clean and simple."""
     if not schema_dir:
-        schema_dir = Path(__file__).parent.parent.parent / "configs"
+        schema_dir = Path(__file__).parent / "schemas"
 
     # Load all dimension schemas
     loader = SchemaLoader(schema_dir)
@@ -140,7 +140,7 @@ def get_dimension_mappings_from_yaml(
     Returns list of (fact_column, dimension_table, surrogate_key_column) tuples.
     """
     if not schema_dir:
-        schema_dir = Path(__file__).parent.parent.parent / "configs"
+        schema_dir = Path(__file__).parent / "schemas"
 
     loader = SchemaLoader(schema_dir)
     dimension_schemas = loader.load_dimensions()

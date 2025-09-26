@@ -420,11 +420,14 @@ class ConnectWiseClient:
 
         # Generate fields string if not provided
         if fields is None:
-            from .api_utils import get_fields_for_api_call
-
-            fields_str = get_fields_for_api_call(model_class, max_depth=2)
+            # Member has too many fields - even depth 1 exceeds URL limit
+            if entity_name.lower() == "member":
+                fields_str = None  # Don't specify fields for Member
+            else:
+                from .api_utils import get_fields_for_api_call
+                fields_str = get_fields_for_api_call(model_class, max_depth=2)
         else:
-            fields_str = ",".join(fields)
+            fields_str = ",".join(fields) if fields else None
 
         logger.info(f"Extracting {entity_name} from {endpoint}")
 

@@ -760,13 +760,7 @@ def create_product_fact(
         *([F.col("categoryId")] if "categoryId" in available_columns else []),
         *([F.col("typeId")] if "typeId" in available_columns else []),
         *([F.col("unitOfMeasure")] if "unitOfMeasure" in available_columns else []),
-        # Flags (with safe defaults)
-        F.coalesce("inactiveFlag", F.lit(False)).alias("isInactiveFlag"),
-        F.coalesce("serializedFlag", F.lit(False)).alias("isSerializedFlag"),
-        F.coalesce("recurringFlag", F.lit(False)).alias("isRecurringFlag"),
-        # Inventory (safe defaults)
-        F.coalesce("quantityOnHand", F.lit(0)).alias("quantityOnHand"),
-        F.coalesce("minStockLevel", F.lit(0)).alias("minStockLevel"),
+        # Flags (with safe defaults) - removed non-existent fields
         # Dates (if available)
         *(
             [F.to_date("dateEntered").alias("dateEntered")]
@@ -782,24 +776,19 @@ def create_product_fact(
             "marginPercentage",
             F.when(F.col("price") > 0, (F.col("margin") / F.col("price") * 100)).otherwise(0),
         )
-        .withColumn("inventoryValue", F.col("quantityOnHand") * F.col("cost"))
+        .withColumn("inventoryValue", F.lit(0))  # No quantity data available
     )
 
-    # Add basic product classification
+    # Add basic product classification (simplified - no flag data available)
     fact_df = fact_df.withColumn(
         "productTypeCategory",
-        F.when(F.col("isRecurringFlag") == True, "Recurring")  # noqa: E712
-        .when(F.col("isSerializedFlag") == True, "Serialized Item")  # noqa: E712
-        .otherwise("Standard"),
+        F.lit("Standard"),  # Default classification
     )
 
-    # Add inventory status
+    # Add inventory status (simplified - no status data available)
     fact_df = fact_df.withColumn(
         "inventoryStatus",
-        F.when(F.col("isInactiveFlag") == True, "Inactive")  # noqa: E712
-        .when(F.col("quantityOnHand") <= F.col("minStockLevel"), "Low Stock")
-        .when(F.col("quantityOnHand") > 0, "In Stock")
-        .otherwise("Out of Stock"),
+        F.lit("Active"),  # Default status
     )
 
     # Add date keys if date columns exist

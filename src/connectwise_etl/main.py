@@ -237,13 +237,28 @@ def create_gold_tables_yaml(spark: SparkSession) -> None:
                 except Exception:
                     agreement_df = None
 
-                gold_df = transform_func(
-                    spark=spark,
-                    time_entry_df=silver_df if fact_info["name"] == "timeentry" else None,
-                    expense_df=silver_df if fact_info["name"] == "expenseentry" else None,
-                    agreement_df=agreement_df,
-                    config={"source": "connectwise", "business_key": "id"},
-                )
+                # Call appropriate function with correct parameters
+                if fact_info["name"] == "timeentry":
+                    gold_df = transform_func(
+                        spark=spark,
+                        time_entry_df=silver_df,
+                        agreement_df=agreement_df,
+                        config={"source": "connectwise", "business_key": "id"},
+                    )
+                elif fact_info["name"] == "expenseentry":
+                    gold_df = transform_func(
+                        spark=spark,
+                        expense_df=silver_df,
+                        agreement_df=agreement_df,
+                        config={"source": "connectwise", "business_key": "id"},
+                    )
+                else:  # productitem and others
+                    gold_df = transform_func(
+                        spark=spark,
+                        product_df=silver_df,
+                        agreement_df=agreement_df,
+                        config={"source": "connectwise", "business_key": "id"},
+                    )
             else:
                 # Fallback to generic fact creation
                 from . import facts

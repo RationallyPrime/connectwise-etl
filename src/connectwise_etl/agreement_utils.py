@@ -62,21 +62,35 @@ def normalize_agreement_type(type_name: str | None) -> tuple[AgreementType, str]
 
 
 def extract_agreement_number(df: DataFrame, custom_fields_col: str = "customFields") -> DataFrame:
-    """Extract agreement number from customFields JSON with validation.
+    """Extract agreement number from customFields with validation.
 
-    Handles multiple formats and validates the JSON structure exists.
+    Handles both JSON string and already-parsed struct formats.
     """
-    # First, parse the JSON string to array if it's a string
-    df_parsed = df.withColumn(
-        "_parsed_custom_fields",
-        F.when(
-            F.col(custom_fields_col).isNotNull(),
-            F.from_json(
-                F.col(custom_fields_col),
-                "array<struct<id:string,caption:string,type:string,value:string>>",
-            ),
-        ).otherwise(None),
-    )
+    # Check if customFields is already parsed (struct/array) or needs JSON parsing
+    from pyspark.sql.types import StringType, ArrayType, StructType
+
+    custom_fields_type = None
+    for field in df.schema.fields:
+        if field.name == custom_fields_col:
+            custom_fields_type = field.dataType
+            break
+
+    # Use customFields directly if it's already an array/struct, otherwise parse JSON
+    if isinstance(custom_fields_type, (ArrayType, StructType)):
+        # Already parsed - use directly
+        df_parsed = df.withColumn("_parsed_custom_fields", F.col(custom_fields_col))
+    else:
+        # String type - needs JSON parsing
+        df_parsed = df.withColumn(
+            "_parsed_custom_fields",
+            F.when(
+                F.col(custom_fields_col).isNotNull(),
+                F.from_json(
+                    F.col(custom_fields_col),
+                    "array<struct<id:string,caption:string,type:string,value:string>>",
+                ),
+            ).otherwise(None),
+        )
 
     # Extract agreement number with validation
     return df_parsed.withColumn(
