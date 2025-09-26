@@ -8,11 +8,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 # ETLConfig eliminated with config monster
-from .incremental import (
-    IncrementalProcessor,
-    build_incremental_conditions,
-    get_incremental_lookback_days,
-)
+from .incremental import IncrementalProcessor, build_incremental_conditions
 from .utils import get_logger
 from .utils.base import ErrorCode
 from .utils.decorators import with_etl_error_handling
@@ -101,8 +97,7 @@ def extract_bronze_data(
     for entity_name, endpoint in endpoints.items():
         conditions = None
         if mode == "incremental":
-            entity_lookback = get_incremental_lookback_days(entity_name, lookback_days)
-            since_date = (datetime.now() - timedelta(days=entity_lookback)).strftime("%Y-%m-%d")
+            since_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
             conditions = build_incremental_conditions(entity_name, since_date)
 
         bronze_df = extractor.extract(endpoint=endpoint, conditions=conditions, page_size=1000)

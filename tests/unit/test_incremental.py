@@ -10,7 +10,6 @@ import pyspark.sql.functions as F
 from connectwise_etl.incremental import (
     IncrementalProcessor,
     build_incremental_conditions,
-    get_incremental_lookback_days,
 )
 
 
@@ -152,47 +151,3 @@ class TestIncrementalConditions:
         """Test building conditions for unknown entity (falls back to dateEntered)."""
         result = build_incremental_conditions("UnknownEntity", "2024-01-01")
         assert result == "dateEntered>=[2024-01-01]"
-
-
-class TestLookbackDays:
-    """Test the get_incremental_lookback_days function."""
-
-    def test_lookback_for_agreement(self):
-        """Test Agreement has 90 day lookback."""
-        result = get_incremental_lookback_days("Agreement")
-        assert result == 90
-
-    def test_lookback_for_time_entry(self):
-        """Test TimeEntry has 30 day lookback."""
-        result = get_incremental_lookback_days("TimeEntry")
-        assert result == 30
-
-    def test_lookback_for_invoice(self):
-        """Test Invoice has 60 day lookback."""
-        result = get_incremental_lookback_days("Invoice")
-        assert result == 60
-
-    def test_lookback_for_posted_invoice(self):
-        """Test PostedInvoice has 90 day lookback."""
-        result = get_incremental_lookback_days("PostedInvoice")
-        assert result == 90
-
-    def test_lookback_for_product_item(self):
-        """Test ProductItem has 180 day lookback."""
-        result = get_incremental_lookback_days("ProductItem")
-        assert result == 180
-
-    def test_lookback_for_unposted_invoice(self):
-        """Test UnpostedInvoice has 7 day lookback."""
-        result = get_incremental_lookback_days("UnpostedInvoice")
-        assert result == 7
-
-    def test_lookback_default(self):
-        """Test unknown entity uses default lookback."""
-        result = get_incremental_lookback_days("UnknownEntity")
-        assert result == 30
-
-    def test_lookback_custom_default(self):
-        """Test custom default lookback."""
-        result = get_incremental_lookback_days("UnknownEntity", default=60)
-        assert result == 60

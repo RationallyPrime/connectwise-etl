@@ -208,19 +208,3 @@ def build_incremental_conditions(
     # Default to lastUpdated for ALL entities
     # This ensures we catch both new records AND updates to old records
     return f"lastUpdated>=[{since_date}]"
-
-
-def get_incremental_lookback_days(entity_name: str, default: int = 30) -> int:
-    """Get the appropriate lookback period for an entity."""
-    # Entity-specific lookback periods
-    lookback_config: dict[str, int] = {
-        "Agreement": 90,  # Agreements change less frequently
-        "TimeEntry": 30,  # Recent time entries
-        "ExpenseEntry": 30,  # Recent expenses
-        "Invoice": 60,  # Invoices may be updated after creation
-        "PostedInvoice": 90,  # Posted invoices rarely change
-        "ProductItem": 180,  # Products are relatively stable
-        "UnpostedInvoice": 7,  # Work in progress, very recent
-    }
-
-    return lookback_config.get(entity_name, default)
