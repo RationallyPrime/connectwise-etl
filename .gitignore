@@ -24,16 +24,24 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.manifest
+*.spec
 
 # Testing
 .coverage
+.coverage.*
 .pytest_cache/
 htmlcov/
 .tox/
+.nox/
 .hypothesis/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 
 # IDE
 .vscode/
@@ -45,8 +53,10 @@ dmypy.json
 
 # Environment
 .env
+.env.*
 .env.local
 *.log
+local_settings.py
 
 # Spark/Data
 spark-warehouse/
@@ -56,12 +66,36 @@ derby.log
 *.csv
 !bronze_cw_timeentry.csv  # Keep sample data
 
+# Jupyter
+.ipynb_checkpoints
+notebooks/
+fabric_bc_pipeline_test.ipynb
+
 # Project specific
 /data/
 /output/
 /temp/
 .databricks/
 .fabric/
+.target/
+.scrapy
+instance/
+.webassets-cache
 
-# UV
+# Package managers
 .python-version
+Pipfile.lock
+poetry.lock
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Documentation
+.docs/_build/
+
+# Translations
+*.mo
+*.pot
+
+# IPython
+profile_default/
+ipython_config.py
