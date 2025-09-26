@@ -86,6 +86,7 @@ instance/
 .python-version
 Pipfile.lock
 poetry.lock
+uv.lock
 pip-log.txt
 pip-delete-this-directory.txt
 
