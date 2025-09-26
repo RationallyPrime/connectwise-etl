@@ -16,6 +16,8 @@ aliased_fields = true
 collapse_root_models = true
 openapi_scopes = ["schemas"]
 validation = true
+parent_scoped_naming = true  # Use parent scope for nested model names
+use_subclass_enum = true
 
 [generation.cdm]
 # CDM-specific mappings
