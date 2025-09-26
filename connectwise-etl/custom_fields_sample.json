@@ -1,0 +1,600 @@
+{
+  "agreements_with_custom_fields": [
+    {
+      "id": 3,
+      "name": "Any name",
+      "type": {
+        "id": 31,
+        "name": "T\u00edmapottur ",
+        "_info": {
+          "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements/types/31"
+        }
+      },
+      "company": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297"
+        }
+      },
+      "contact": {
+        "id": 7,
+        "name": "Fred Stone",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/7"
+        }
+      },
+      "site": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002"
+        }
+      },
+      "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+      },
+      "department": {
+        "id": 1,
+        "identifier": "Service",
+        "name": "Service",
+        "_info": {
+          "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/1"
+        }
+      },
+      "restrictLocationFlag": false,
+      "restrictDepartmentFlag": false,
+      "startDate": "2018-05-17T00:00:00Z",
+      "endDate": "2018-08-31T00:00:00Z",
+      "noEndingDateFlag": false,
+      "cancelledFlag": false,
+      "applicationUnits": "Hours",
+      "applicationLimit": 1.0,
+      "applicationCycle": "CalendarMonth",
+      "applicationUnlimitedFlag": false,
+      "oneTimeFlag": false,
+      "coverAgreementTime": true,
+      "coverAgreementProduct": false,
+      "coverAgreementExpense": false,
+      "coverSalesTax": false,
+      "carryOverUnused": true,
+      "allowOverruns": true,
+      "expireWhenZero": false,
+      "chargeToFirm": false,
+      "employeeCompRate": "Actual",
+      "employeeCompNotExceed": "Billing",
+      "compHourlyRate": 0.0,
+      "compLimitAmount": 0.0,
+      "billingCycle": {
+        "id": 2,
+        "name": "Monthly",
+        "_info": {
+          "billingCycle_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/billingCycles/2"
+        }
+      },
+      "billOneTimeFlag": false,
+      "invoicingCycle": "CalendarYear",
+      "billToCompany": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297"
+        }
+      },
+      "billToContact": {
+        "id": 1,
+        "name": "Jorge Smith",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/1"
+        }
+      },
+      "billToSite": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002"
+        }
+      },
+      "billAmount": 0.0,
+      "taxable": false,
+      "billStartDate": "2018-05-17T00:00:00Z",
+      "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+          "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+      },
+      "restrictDownPayment": false,
+      "prorateFlag": false,
+      "invoiceProratedAdditionsFlag": false,
+      "topComment": false,
+      "bottomComment": false,
+      "billTime": "NoDefault",
+      "billExpenses": "NoDefault",
+      "billProducts": "NoDefault",
+      "billableTimeInvoice": false,
+      "billableExpenseInvoice": false,
+      "billableProductInvoice": false,
+      "currency": {
+        "id": 27,
+        "symbol": " kr.",
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+          "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+      },
+      "autoInvoiceFlag": false,
+      "companyLocation": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+      },
+      "shipToCompany": {
+        "id": 19297,
+        "identifier": "XYZTestCompany",
+        "name": "XYZ Test Company",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297"
+        }
+      },
+      "shipToSite": {
+        "id": 1002,
+        "name": "Main",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19297/sites/1002"
+        }
+      },
+      "agreementStatus": "Expired",
+      "_info": {
+        "lastUpdated": "2018-09-08T14:26:16Z",
+        "updatedBy": "trigger        ",
+        "createdDate": "2018-05-17T13:31:23Z",
+        "createdBy": "trigger"
+      },
+      "customFields": [
+        {
+          "id": 4,
+          "caption": "S Number",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "a342924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 20,
+          "caption": "365 Tenant",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "1ce6e2fb-9ed9-ef11-9187-005056aeec2b"
+        },
+        {
+          "id": 31,
+          "caption": "\u00c1st\u00e6\u00f0uk\u00f3\u00f0i",
+          "type": "Text",
+          "entryMethod": "List",
+          "numberOfDecimals": 0,
+          "connectWiseId": "7b2f3558-dd92-f011-9192-005056aeec2b"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "H\u00fdsing b\u00fana\u00f0ar",
+      "type": {
+        "id": 34,
+        "name": "zH\u00fdsing b\u00fana\u00f0ar",
+        "_info": {
+          "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements/types/34"
+        }
+      },
+      "company": {
+        "id": 19300,
+        "identifier": "SMV",
+        "name": "Samvirkni ehf",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19300"
+        }
+      },
+      "contact": {
+        "id": 15,
+        "name": "Bj\u00f6rk \u00deorsteinsd\u00f3ttir",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/15"
+        }
+      },
+      "site": {
+        "id": 1006,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19300/sites/1006"
+        }
+      },
+      "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+      },
+      "department": {
+        "id": 2,
+        "identifier": "Sales",
+        "name": "Sales & Marketing",
+        "_info": {
+          "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/2"
+        }
+      },
+      "restrictLocationFlag": false,
+      "restrictDepartmentFlag": false,
+      "startDate": "2018-05-01T00:00:00Z",
+      "endDate": "2019-01-31T00:00:00Z",
+      "noEndingDateFlag": false,
+      "cancelledFlag": false,
+      "applicationLimit": 0.0,
+      "applicationUnlimitedFlag": false,
+      "oneTimeFlag": false,
+      "coverAgreementTime": false,
+      "coverAgreementProduct": false,
+      "coverAgreementExpense": false,
+      "coverSalesTax": false,
+      "carryOverUnused": false,
+      "allowOverruns": false,
+      "expireWhenZero": false,
+      "chargeToFirm": false,
+      "employeeCompRate": "Actual",
+      "employeeCompNotExceed": "Billing",
+      "compHourlyRate": 0.0,
+      "compLimitAmount": 0.0,
+      "billingCycle": {
+        "id": 2,
+        "name": "Monthly",
+        "_info": {
+          "billingCycle_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/billingCycles/2"
+        }
+      },
+      "billOneTimeFlag": false,
+      "invoicingCycle": "CalendarYear",
+      "billToCompany": {
+        "id": 19300,
+        "identifier": "SMV",
+        "name": "Samvirkni ehf",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19300"
+        }
+      },
+      "billToContact": {
+        "id": 15,
+        "name": "Bj\u00f6rk \u00deorsteinsd\u00f3ttir",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/15"
+        }
+      },
+      "billToSite": {
+        "id": 1006,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19300/sites/1006"
+        }
+      },
+      "billAmount": 0.0,
+      "taxable": true,
+      "billStartDate": "2018-05-01T00:00:00Z",
+      "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+          "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+      },
+      "restrictDownPayment": false,
+      "prorateFlag": false,
+      "invoiceProratedAdditionsFlag": false,
+      "topComment": false,
+      "bottomComment": false,
+      "billTime": "NoDefault",
+      "billExpenses": "NoDefault",
+      "billProducts": "NoDefault",
+      "billableTimeInvoice": false,
+      "billableExpenseInvoice": false,
+      "billableProductInvoice": false,
+      "currency": {
+        "id": 27,
+        "symbol": " kr.",
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+          "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+      },
+      "autoInvoiceFlag": false,
+      "companyLocation": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+      },
+      "shipToCompany": {
+        "id": 19300,
+        "identifier": "SMV",
+        "name": "Samvirkni ehf",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19300"
+        }
+      },
+      "shipToSite": {
+        "id": 1006,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19300/sites/1006"
+        }
+      },
+      "agreementStatus": "Expired",
+      "_info": {
+        "lastUpdated": "2019-02-06T09:36:16Z",
+        "updatedBy": "petur          ",
+        "createdDate": "2018-05-25T10:19:23Z",
+        "createdBy": "trigger"
+      },
+      "customFields": [
+        {
+          "id": 4,
+          "caption": "S Number",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "a342924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 20,
+          "caption": "365 Tenant",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "1ce6e2fb-9ed9-ef11-9187-005056aeec2b"
+        },
+        {
+          "id": 31,
+          "caption": "\u00c1st\u00e6\u00f0uk\u00f3\u00f0i",
+          "type": "Text",
+          "entryMethod": "List",
+          "numberOfDecimals": 0,
+          "connectWiseId": "7b2f3558-dd92-f011-9192-005056aeec2b"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Afritunar\u00fej\u00f3nusta",
+      "type": {
+        "id": 33,
+        "name": "zAfritunar\u00fej\u00f3nusta",
+        "_info": {
+          "type_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/agreements/types/33"
+        }
+      },
+      "company": {
+        "id": 19299,
+        "identifier": "MAA",
+        "name": "Minjasafni\u00f0 \u00e1 Akureyri",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19299"
+        }
+      },
+      "contact": {
+        "id": 14,
+        "name": "Haraldur \u00de\u00f3r Egilsson",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/14"
+        }
+      },
+      "site": {
+        "id": 1005,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19299/sites/1005"
+        }
+      },
+      "location": {
+        "id": 11,
+        "name": "\u00deekking Tristan hf",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/11"
+        }
+      },
+      "department": {
+        "id": 2,
+        "identifier": "Sales",
+        "name": "Sales & Marketing",
+        "_info": {
+          "department_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/departments/2"
+        }
+      },
+      "restrictLocationFlag": false,
+      "restrictDepartmentFlag": false,
+      "startDate": "2018-05-01T00:00:00Z",
+      "endDate": "2019-01-31T00:00:00Z",
+      "noEndingDateFlag": false,
+      "cancelledFlag": false,
+      "applicationLimit": 0.0,
+      "applicationUnlimitedFlag": false,
+      "oneTimeFlag": false,
+      "coverAgreementTime": false,
+      "coverAgreementProduct": false,
+      "coverAgreementExpense": false,
+      "coverSalesTax": false,
+      "carryOverUnused": false,
+      "allowOverruns": false,
+      "expireWhenZero": false,
+      "chargeToFirm": false,
+      "employeeCompRate": "Actual",
+      "employeeCompNotExceed": "Billing",
+      "compHourlyRate": 0.0,
+      "compLimitAmount": 0.0,
+      "billingCycle": {
+        "id": 2,
+        "name": "Monthly",
+        "_info": {
+          "billingCycle_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/billingCycles/2"
+        }
+      },
+      "billOneTimeFlag": false,
+      "invoicingCycle": "CalendarYear",
+      "billToCompany": {
+        "id": 19299,
+        "identifier": "MAA",
+        "name": "Minjasafni\u00f0 \u00e1 Akureyri",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19299"
+        }
+      },
+      "billToContact": {
+        "id": 14,
+        "name": "Haraldur \u00de\u00f3r Egilsson",
+        "_info": {
+          "contact_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/contacts/14"
+        }
+      },
+      "billToSite": {
+        "id": 1005,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19299/sites/1005"
+        }
+      },
+      "billAmount": 0.0,
+      "taxable": false,
+      "billStartDate": "2018-05-01T00:00:00Z",
+      "taxCode": {
+        "id": 16,
+        "name": "Vir\u00f0isaukaskattur",
+        "_info": {
+          "taxCode_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/taxCodes/16"
+        }
+      },
+      "restrictDownPayment": false,
+      "prorateFlag": false,
+      "invoiceProratedAdditionsFlag": false,
+      "topComment": false,
+      "bottomComment": false,
+      "billTime": "NoDefault",
+      "billExpenses": "NoDefault",
+      "billProducts": "NoDefault",
+      "billableTimeInvoice": false,
+      "billableExpenseInvoice": false,
+      "billableProductInvoice": false,
+      "currency": {
+        "id": 27,
+        "symbol": " kr.",
+        "currencyCode": "ISK",
+        "decimalSeparator": ",",
+        "numberOfDecimals": 0,
+        "thousandsSeparator": ".",
+        "negativeParenthesesFlag": false,
+        "displaySymbolFlag": true,
+        "currencyIdentifier": "ISK",
+        "displayIdFlag": false,
+        "rightAlign": true,
+        "name": "Islensk krona",
+        "_info": {
+          "currency_href": "https://verk.thekking.is/v4_6_release/apis/3.0/finance/currencies/27"
+        }
+      },
+      "autoInvoiceFlag": false,
+      "companyLocation": {
+        "id": 2,
+        "name": "My Company",
+        "_info": {
+          "location_href": "https://verk.thekking.is/v4_6_release/apis/3.0/system/locations/2"
+        }
+      },
+      "shipToCompany": {
+        "id": 19299,
+        "identifier": "MAA",
+        "name": "Minjasafni\u00f0 \u00e1 Akureyri",
+        "_info": {
+          "company_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19299"
+        }
+      },
+      "shipToSite": {
+        "id": 1005,
+        "name": "Akureyri",
+        "_info": {
+          "site_href": "https://verk.thekking.is/v4_6_release/apis/3.0/company/companies/19299/sites/1005"
+        }
+      },
+      "agreementStatus": "Expired",
+      "_info": {
+        "lastUpdated": "2019-02-05T16:59:54Z",
+        "updatedBy": "petur          ",
+        "createdDate": "2018-05-25T10:20:37Z",
+        "createdBy": "trigger"
+      },
+      "customFields": [
+        {
+          "id": 4,
+          "caption": "S Number",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "a342924e-4b95-ee11-9169-ad5b9ff0933e"
+        },
+        {
+          "id": 20,
+          "caption": "365 Tenant",
+          "type": "Text",
+          "entryMethod": "EntryField",
+          "numberOfDecimals": 0,
+          "connectWiseId": "1ce6e2fb-9ed9-ef11-9187-005056aeec2b"
+        },
+        {
+          "id": 31,
+          "caption": "\u00c1st\u00e6\u00f0uk\u00f3\u00f0i",
+          "type": "Text",
+          "entryMethod": "List",
+          "numberOfDecimals": 0,
+          "connectWiseId": "7b2f3558-dd92-f011-9192-005056aeec2b"
+        }
+      ]
+    }
+  ],
+  "value_type_examples": {
+    "str": [
+      {
+        "value": "S0708",
+        "field_type": "Text"
+      },
+      {
+        "value": "S1144",
+        "field_type": "Text"
+      }
+    ]
+  }
+}

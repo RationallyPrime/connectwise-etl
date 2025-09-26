@@ -1,0 +1,37 @@
+# Model Generation Configuration
+
+[generation]
+temp_dir = ".temp/generation"
+validate_output = true
+add_header_comment = true
+
+# Default settings for all generators
+base_class = "sparkdantic.SparkModel"
+target_python = "3.11"
+snake_case_field = false  # Preserve camelCase
+aliased_fields = true
+
+[generation.openapi]
+# OpenAPI-specific settings
+collapse_root_models = true
+openapi_scopes = ["schemas"]
+validation = true
+
+[generation.cdm]
+# CDM-specific mappings
+handle_special_fields = ["$Company", "$systemId"]
+
+[generation.cdm.type_mapping]
+# CDM type to JSON Schema type mappings
+String = "string"
+Int32 = "integer"
+Int64 = "integer"
+Decimal = "number"
+Boolean = "boolean"
+DateTime = "string"  # With format: date-time
+Guid = "string"  # With format: uuid
+
+[generation.json]
+# For raw JSON, infer schema
+infer_types = true
+sample_size = 100

@@ -1,0 +1,19 @@
+# Test configuration for better model generation
+[generation]
+temp_dir = "/tmp/test_models"
+validate_output = true
+add_header_comment = true
+
+# Settings with parent-scoped naming and enhanced flags
+base_class = "sparkdantic.SparkModel"
+target_python = "3.11"
+snake_case_field = false  # Preserve camelCase
+aliased_fields = true
+use_subclass_enum = true
+
+[generation.openapi]
+# OpenAPI-specific settings
+collapse_root_models = true
+openapi_scopes = ["schemas"]
+validation = true
+parent_scoped_naming = true  # This is what we want to test
