@@ -157,3 +157,4 @@ refresh_*.ipynb
 # VS Code settings (keep project settings, ignore local)
 
 # Build artifacts are in dist/.gitignore already
+.mcp.json
