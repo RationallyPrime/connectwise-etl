@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, TypeAlias
 
 # Use TYPE_CHECKING to keep Spark types for static analysis without runtime dependency
 if TYPE_CHECKING:
-    from pyspark.sql import DataFrame, SparkSession
+    from pyspark.sql import DataFrame
 
     try:
-        from sparkdantic import SparkModel
+        from sparkdantic import SparkModel  # type: ignore[assignment]
     except ImportError:
         # Fallback for type checking when sparkdantic not installed
         class SparkModel:  # type: ignore
@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 else:
     # At runtime, use Any when Spark isn't available (e.g., during type checking in CI)
     DataFrame = Any
-    SparkSession = Any
 
     class SparkModel:  # type: ignore
         ...
