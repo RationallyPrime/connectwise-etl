@@ -58,10 +58,10 @@ class ConnectWiseClient:
         """
         self.config = config or {}
 
-        # Get base URL from environment or use default
+        # Get base URL from environment or use default (EU cloud)
         self.base_url = os.getenv(
             "CW_BASE_URL",
-            "https://verk.thekking.is/v4_6_release/apis/3.0",
+            "https://eu.myconnectwise.net/v4_6_release/apis/3.0",
         )
 
         # Get credentials from environment variables
