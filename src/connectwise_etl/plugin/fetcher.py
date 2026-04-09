@@ -1,23 +1,84 @@
-"""ConnectWise data fetcher implementing DataFetcherProtocol."""
+"""ConnectWise data fetcher — adapts the generic HttpxFetcher to the ETL protocol."""
 
-from typing import Any, Iterator
+from __future__ import annotations
+
+import os
+from collections.abc import Iterator
+from typing import Any
 
 from etl_core.domain.protocols import TConfigDict, TLoadMode
+from etl_core.fetch import BasicAuth, EndpointConfig, HttpxFetcher, PageNumberPagination
 from etl_core.utils.errors import FetchError
-
-from ..client import ConnectWiseClient
 
 
 class ConnectWiseFetcher:
-    """
-    ConnectWise data fetcher implementing DataFetcherProtocol.
+    """Fetches data from ConnectWise API via the generic HttpxFetcher.
 
-    Adapts the existing ConnectWiseClient to the protocol interface.
+    Builds an EndpointConfig per entity from the registry config,
+    wiring in ConnectWise-specific auth, pagination, and headers.
     """
 
-    def __init__(self):
-        """Initialize the fetcher with ConnectWise client."""
-        self.client = ConnectWiseClient()
+    CW_ACCEPT_HEADER = "application/vnd.connectwise.com+json; version=2025.1"
+
+    def __init__(self, page_size: int = 1000) -> None:
+        base_url = os.getenv(
+            "CW_BASE_URL",
+            "https://eu.myconnectwise.net/v4_6_release/apis/3.0",
+        )
+        client_id = os.getenv("CW_CLIENTID", "")
+
+        self._base_url = base_url
+        self._auth = BasicAuth(
+            username_env="CW_AUTH_USERNAME",
+            password_env="CW_AUTH_PASSWORD",
+        )
+        self._default_headers = {
+            "clientId": client_id,
+            "Accept": self.CW_ACCEPT_HEADER,
+            "Content-Type": "application/json",
+        }
+        self._default_page_size = page_size
+        self._fetcher = HttpxFetcher(timeout=30.0, retries=5)
+
+    def _build_endpoint_config(
+        self,
+        entity_name: str,
+        config: TConfigDict,
+        *,
+        conditions: str | None = None,
+        fields: str | None = None,
+        page_size: int | None = None,
+    ) -> EndpointConfig:
+        """Build an EndpointConfig from registry entity config."""
+        endpoint = config.get("endpoint")
+        if not endpoint:
+            raise FetchError(
+                f"No endpoint configured for entity: {entity_name}",
+                details={
+                    "source": "ConnectWiseFetcher",
+                    "operation": "build_endpoint_config",
+                },
+            )
+
+        query_params: dict[str, str] = {}
+        if conditions:
+            query_params["conditions"] = conditions
+        if fields:
+            query_params["fields"] = fields
+
+        return EndpointConfig(
+            base_url=self._base_url,
+            path=f"/{endpoint.lstrip('/')}",
+            entity_name=entity_name,
+            auth=self._auth,
+            pagination=PageNumberPagination(
+                page_size=page_size or self._default_page_size,
+                page_param="page",
+                size_param="pageSize",
+            ),
+            headers=self._default_headers,
+            query_params=query_params,
+        )
 
     def fetch_raw(
         self,
@@ -26,93 +87,48 @@ class ConnectWiseFetcher:
         config: TConfigDict,
         **kwargs: Any,
     ) -> Iterator[dict[str, Any]]:
+        """Fetch raw records from ConnectWise API.
+
+        Builds an EndpointConfig from the entity's registry config,
+        then delegates to HttpxFetcher for paginated retrieval.
         """
-        Fetch raw records from ConnectWise API.
+        conditions: str | None = None
+        if mode == "incremental":
+            from datetime import datetime, timedelta
 
-        Args:
-            entity_name: Name of the entity to fetch.
-            mode: Load mode (full, incremental, append).
-            config: Entity-specific configuration with 'endpoint' key.
-            **kwargs: Additional parameters (page_size, lookback_days, etc.).
+            lookback_days = kwargs.get("lookback_days", 7)
+            since_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+            conditions = f"lastUpdated > [{since_date}]"
 
-        Returns:
-            Iterator of raw dictionaries (unvalidated).
+        fields_str: str | None = config.get("fields")
+        page_size: int | None = kwargs.get("page_size")
 
-        Raises:
-            FetchError: If data extraction fails.
-        """
-        try:
-            # Get endpoint from config
-            endpoint = config.get("endpoint")
-            if not endpoint:
-                raise FetchError(
-                    f"No endpoint configured for entity: {entity_name}",
-                    details={
-                        "source": "ConnectWiseFetcher",
-                        "operation": "fetch_raw",
-                        "entity_name": entity_name,
-                    },
-                )
+        endpoint_config = self._build_endpoint_config(
+            entity_name,
+            config,
+            conditions=conditions,
+            fields=fields_str,
+            page_size=page_size,
+        )
 
-            # Get optional parameters
-            page_size = kwargs.get("page_size", 1000)
-            conditions = None
-
-            # Handle incremental mode
-            if mode == "incremental":
-                lookback_days = kwargs.get("lookback_days", 7)
-                # Build incremental conditions
-                from datetime import datetime, timedelta
-
-                since_date = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
-                # ConnectWise uses lastUpdated for most entities
-                conditions = f"lastUpdated > [{since_date}]"
-
-            # Get fields from config if specified
-            fields_str = config.get("fields")
-
-            # Use existing client's paginate method
-            records = self.client.paginate(
-                endpoint=endpoint,
-                entity_name=entity_name,
-                fields=fields_str,
-                conditions=conditions,
-                page_size=page_size,
-            )
-
-            # Convert list to iterator
-            return iter(records)
-
-        except Exception as e:
-            raise FetchError(
-                f"Failed to fetch {entity_name} from ConnectWise: {e}",
-                details={
-                    "source": "ConnectWiseFetcher",
-                    "operation": "fetch_raw",
-                    "entity_name": entity_name,
-                    "endpoint": config.get("endpoint"),
-                },
-            ) from e
+        yield from self._fetcher.fetch(endpoint_config)
 
     def test_connection(self) -> bool:
-        """
-        Verify connectivity with ConnectWise API.
-
-        Returns:
-            True if connection successful, False otherwise.
-        """
+        """Verify connectivity with ConnectWise API."""
         try:
-            # Simple test: fetch 1 record from system info
-            self.client.get("/system/info")
+            test_config = EndpointConfig(
+                base_url=self._base_url,
+                path="/system/info",
+                entity_name="_test",
+                auth=self._auth,
+                pagination=PageNumberPagination(page_size=1),
+                headers=self._default_headers,
+            )
+            self._fetcher._request(test_config, {})
             return True
         except Exception:
             return False
 
     def close(self) -> None:
-        """
-        Clean up resources (close HTTP session).
-
-        The requests.Session will be closed when the client is garbage collected.
-        """
-        if hasattr(self.client, "session"):
-            self.client.session.close()
+        """Close the underlying HTTP client."""
+        self._fetcher.close()

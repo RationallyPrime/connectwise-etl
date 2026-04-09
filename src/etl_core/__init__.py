@@ -23,31 +23,54 @@ from .domain.protocols import (
     TSparkModelClass,
     ValidationResult,
 )
+from .fetch import (
+    ApiKeyAuth,
+    Auth,
+    BasicAuth,
+    BearerAuth,
+    CursorPagination,
+    EndpointConfig,
+    HttpxFetcher,
+    OffsetLimitPagination,
+    PageNumberPagination,
+    Pagination,
+)
 
 __version__ = "0.1.0"
 
 __all__ = [
-    # Configuration
-    "LakehouseConfig",
-    "RuntimeContext",
+    # Fetch layer
+    "ApiKeyAuth",
+    "Auth",
+    "BasicAuth",
+    "BearerAuth",
+    "BronzeProcessorProtocol",
+    "BronzeResult",
+    "CursorPagination",
     # Protocols
     "DataFetcherProtocol",
     "DataValidatorProtocol",
-    "ModelRegistryProtocol",
-    "BronzeProcessorProtocol",
-    "SilverProcessorProtocol",
+    "EndpointConfig",
     "GoldProcessorProtocol",
-    "IntegrationPluginProtocol",
-    # Result types
-    "ValidationResult",
-    "BronzeResult",
-    "SilverResult",
     "GoldResult",
+    "HttpxFetcher",
+    "IntegrationPluginProtocol",
+    # Configuration
+    "LakehouseConfig",
     "MergeResult",
+    "ModelRegistryProtocol",
+    "OffsetLimitPagination",
+    "PageNumberPagination",
+    "Pagination",
     "Processors",
-    # Type aliases
-    "TSparkModelClass",
+    "RuntimeContext",
+    "SilverProcessorProtocol",
+    "SilverResult",
     "TConfigDict",
     "TLayer",
     "TLoadMode",
+    # Type aliases
+    "TSparkModelClass",
+    # Result types
+    "ValidationResult",
 ]
